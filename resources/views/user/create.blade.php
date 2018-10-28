@@ -57,7 +57,7 @@
                             <label for="company" class="col-md-4 col-form-label text-md-right">{{ __('Company and Role') }}</label>
 
                             <div class="col-md-6">
-                                <select id="company" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company" required>
+                                <select id="company" class="form-control{{ $errors->has('company') ? ' is-invalid' : '' }}" name="company" required onchange="if(this.value == 'admin') document.getElementById('role').style.display='none'; else document.getElementById('role').style.display='block'">
                                     <option value="admin" {{ old('company')=='admin' ? 'selected' : '' }}>Site Admin</option>
                                     @foreach($companies as $company)
                                     <option value="{{$company->id}}" {{ old('company')==$company->id ? 'selected' : '' }}>{{$company->name}} - {{$company->type}} </option>
@@ -68,7 +68,7 @@
                                         <strong>{{ $errors->first('company') }}</strong>
                                     </span>
                                 @endif
-                                <select id="role" class="form-control{{ $errors->has('role') ? ' is-invalid' : '' }}" name="role" required>
+                                <select id="role" class="form-control{{ $errors->has('role') ? ' is-invalid' : '' }}" name="role" style="display: none">
                                     <option value="user" {{ old('role')=='user' ? 'selected' : '' }}>User</option>
                                     <option value="admin" {{ old('role')=='admin' ? 'selected' : '' }}>Admin</option>
                                 </select>
