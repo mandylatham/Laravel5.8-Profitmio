@@ -19,7 +19,7 @@ class CompanyPolicy
      */
     public function view(User $user, Company $company)
     {
-        //
+        return ($user->isCompanyAdmin($company->id) || $user->isCompanyUser($company->id));
     }
 
     /**
@@ -79,5 +79,10 @@ class CompanyPolicy
     public function forceDelete(User $user, Company $company)
     {
         //
+    }
+
+    public function manage(User $user, Company $company)
+    {
+        return $user->isCompanyAdmin($company->id);
     }
 }

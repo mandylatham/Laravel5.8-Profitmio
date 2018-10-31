@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Campaign;
 use App\Company;
-use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
-class CompanyController extends Controller
+class CampaignController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -17,8 +15,8 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $companies = Company::all();
-        return view('company/index', ['companies' => $companies]);
+        $campaigns = Campaign::all();
+        return view('campaign/index', ['campaigns' => $campaigns]);
     }
 
     /**
@@ -28,7 +26,9 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('company/create');
+        $agencies = Company::getAgencies();
+        $dealerships = Company::getDealerships();
+        return view('campaign/create', ['agencies' => $agencies, 'dealerships' => $dealerships]);
     }
 
     /**
@@ -39,8 +39,8 @@ class CompanyController extends Controller
      */
     public function store(Request $request)
     {
-        Company::create($request->only(['name', 'type']));
-        return response()->redirectToRoute('companies.index');
+        Campaign::create($request->only(['name', 'agency_id', 'dealership_id']));
+        return response()->redirectToRoute('campaigns.index');
     }
 
     /**
@@ -86,25 +86,5 @@ class CompanyController extends Controller
     public function destroy(Company $company)
     {
         //
-    }
-
-    public function dashboard(Company $company)
-    {
-        /** @var User $user */
-        $user = Auth::user();
-        $templateSuffix = '';
-        if ($user->isCompanyAdmin($company->id)) {
-            $templateSuffix = '-manager';
-            $campaigns = Campaign::getCompanyCampaigns($company->id);
-        } else {
-            $campaigns = $user->getCampaigns($company->id);
-        }
-
-        return view('company/dashboard' . $templateSuffix, ['campaigns' => $campaigns, 'company' => $company]);
-    }
-    
-    public function users(Company $company)
-    {
-        return response()->json($company->users);
     }
 }

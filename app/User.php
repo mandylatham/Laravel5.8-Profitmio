@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\DB;
 
 class User extends Authenticatable
 {
@@ -36,7 +37,15 @@ class User extends Authenticatable
      */
     public function companies()
     {
-        return $this->belongsToMany('App\Company')->withPivot('role');
+        return $this->belongsToMany(Company::class)->withPivot('role');
+    }
+
+    /**
+     * The roles that belong to the user.
+     */
+    public function campaigns()
+    {
+        return $this->belongsToMany(Campaign::class);
     }
 
     public function isAdmin(): bool
@@ -60,5 +69,18 @@ class User extends Authenticatable
             return false;
         }
         return true;
+    }
+
+    public function getCampaigns(int $companyId)
+    {
+        return DB::table('campaigns')
+                 ->select('campaigns.*')
+                 ->join('campaign_user', 'campaign_user.campaign_id', '=', 'campaigns.id')
+                 ->where('campaign_user.user_id', $this->id)
+                 ->where(function($query) use ($companyId) {
+                        $query->where('campaigns.agency_id', $companyId)
+                        ->orWhere('campaigns.dealership_id', $companyId);
+                 })
+                 ->get();
     }
 }

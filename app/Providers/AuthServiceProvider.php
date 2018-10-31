@@ -39,6 +39,11 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('company.create', 'App\Policies\CompanyPolicy@create');
         Gate::define('company.update', 'App\Policies\CompanyPolicy@update');
         Gate::define('company.delete', 'App\Policies\CompanyPolicy@delete');
+
+        Gate::define('company.manage', 'App\Policies\CompanyPolicy@manage');
+
+
+        Gate::define('campaign.create', 'App\Policies\CampaignPolicy@create');
     }
 
 
