@@ -24,9 +24,11 @@ Route::resource('/companies', 'CompanyController')->middleware('can:create,App\C
 
 Route::get('/companies/{company}/dashboard', 'CompanyController@dashboard')->middleware('can:view,company')->name('companies.dashboard');
 
-Route::get('/companies/{company}/users', 'CompanyController@users')->middleware('can:manage,company')->name('companies.getusers');
-Route::get('/companies/{company}/campaigns', 'CompanyController@campaigns')->middleware('can:manage,company')->name('companies.getcampaigns');
-Route::post('/companies/{company}/users', 'CompanyController@storeuser')->middleware('can:manage,company')->name('companies.adduser');
+Route::get('/companies/{company}/adduser', 'CompanyController@createuser')->middleware('can:manage,company')->name('companies.createuser');
+Route::post('/companies/{company}/adduser', 'CompanyController@storeuser')->middleware('can:manage,company')->name('companies.storeuser');
+
+Route::get('/companies/{company}/campaign/{campaign}', 'CompanyController@campaignaccess')->middleware('can:manage,campaign')->name('companies.campaignaccess');
+Route::post('/companies/{company}/campaign/{campaign}', 'CompanyController@setcampaignaccess')->middleware('can:manage,campaign')->name('companies.setcampaignaccess');
 
 Route::resource('/users', 'UserController')->middleware('can:create,App\User');
 Route::resource('/campaigns', 'CampaignController')->middleware('can:create,App\Campaign');

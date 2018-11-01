@@ -2,7 +2,9 @@
 
 namespace App\Providers;
 
+use App\Campaign;
 use App\Company;
+use App\Policies\CampaignPolicy;
 use App\Policies\CompanyPolicy;
 use App\User;
 use Illuminate\Support\Facades\Gate;
@@ -18,6 +20,7 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         'App\Model' => 'App\Policies\ModelPolicy',
         Company::class => CompanyPolicy::class,
+        Campaign::class => CampaignPolicy::class,
     ];
 
     /**
@@ -44,6 +47,7 @@ class AuthServiceProvider extends ServiceProvider
 
 
         Gate::define('campaign.create', 'App\Policies\CampaignPolicy@create');
+        Gate::define('campaign.manage', 'App\Policies\CampaignPolicy@manage');
     }
 
 

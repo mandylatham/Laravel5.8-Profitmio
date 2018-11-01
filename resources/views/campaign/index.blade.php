@@ -12,7 +12,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Agency</th>
                     <th scope="col">Dealership</th>
-                    <th scope="col"></th>
+                    {{--<th scope="col"></th>--}}
                 </tr>
             </thead>
             <tbody>
@@ -22,7 +22,7 @@
                     <td>{{$campaign->name}}</td>
                     <td>{{$campaign->agency->name}}</td>
                     <td>{{$campaign->dealership->name}}</td>
-                    <td><a class="btn btn-link" href="{{route('campaigns.edit', ['campaign' => $campaign->id])}}">{{ __('Edit') }}</a> </td>
+                    {{--<td><a class="btn btn-link" href="{{route('campaigns.edit', ['campaign' => $campaign->id])}}">{{ __('Edit') }}</a> </td>--}}
                 </tr>
             @endforeach
             </tbody>

@@ -83,4 +83,13 @@ class User extends Authenticatable
                  })
                  ->get();
     }
+
+    public function hasAccessToCampaign(int $campaignId)
+    {
+        $company = $this->campaigns()->find($campaignId);
+        if (empty($company)) {
+            return false;
+        }
+        return true;
+    }
 }

@@ -7,6 +7,7 @@ use App\Company;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class CompanyController extends Controller
 {
@@ -103,8 +104,44 @@ class CompanyController extends Controller
         return view('company/dashboard' . $templateSuffix, ['campaigns' => $campaigns, 'company' => $company]);
     }
     
+    public function createuser(Company $company)
+    {
+        return view('company/createuser', ['company' => $company]);
+    }
+
+    public function storeuser(Request $request, Company $company)
+    {
+        $user = User::where('email', $request->get['email'])->first();
+        if (empty($user)) {
+            $userParameters = $request->only(['name', 'email']);
+            $userParameters['password'] = Hash::make($request->get('password'));
+            $user = User::create($userParameters);
+        }
+        $user->companies()->attach($company->id, ['role' => User::ROLE_USER]);
+        return response()->redirectToRoute('companies.dashboard', ['company' => $company->id]);
+    }
+
     public function users(Company $company)
     {
         return response()->json($company->users);
+    }
+
+    public function campaignaccess(Company $company, Campaign $campaign)
+    {
+        return view('company/campaignaccess', ['campaign' => $campaign, 'company' => $company]);
+    }
+
+    public function setcampaignaccess(Request $request, Company $company, Campaign $campaign)
+    {
+        $allowedUsers = $request->get('allowedusers', []);
+        /** @var User $user */
+        foreach($company->users as $user) {
+            if (in_array($user->id, $allowedUsers)) {
+                $user->campaigns()->syncWithoutDetaching([$campaign->id]);
+            } else {
+                $user->campaigns()->detach([$campaign->id]);
+            }
+        }
+        return response()->redirectToRoute('companies.campaignaccess', ['company' => $company->id, 'campaign' => $campaign->id]);
     }
 }

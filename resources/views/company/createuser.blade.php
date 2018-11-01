@@ -1,18 +1,19 @@
-@extends('layouts.app')
+@extends('layouts.app', ['companyId' => $company->id])
 
 @section('content')
 <div class="container">
+    <p class="h2">{{$company->name}}</p>
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
-                <div class="card-header">{{ __('Create Campaign') }}</div>
+                <div class="card-header">{{ __('Create User') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('campaigns.store') }}">
+                    <form method="POST" action="{{ route('companies.createuser', ['company' => $company->id]) }}">
                         @csrf
 
                         <div class="form-group row">
-                            <label for="name" class="col-sm-4 col-form-label text-md-right">{{ __('Campaign name') }}</label>
+                            <label for="name" class="col-sm-4 col-form-label text-md-right">{{ __('User name') }}</label>
 
                             <div class="col-md-6">
                                 <input id="name" type="text" class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}" name="name" value="{{ old('name') }}" required>
@@ -26,34 +27,28 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="type" class="col-md-4 col-form-label text-md-right">{{ __('Agency') }}</label>
+                            <label for="email" class="col-sm-4 col-form-label text-md-right">{{ __('User email') }}</label>
 
                             <div class="col-md-6">
-                                <select id="agency_id" class="form-control{{ $errors->has('agency_id') ? ' is-invalid' : '' }}" name="agency_id" required>
-                                    @foreach($agencies as $agency)
-                                    <option value="{{$agency->id}}" {{ old('agency_id')==$agency->id ? 'selected' : '' }}>{{$agency->name}}</option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('agency_id'))
+                                <input id="email" type="email" class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}" name="email" value="{{ old('email') }}" required>
+
+                                @if ($errors->has('email'))
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('agency_id') }}</strong>
+                                        <strong>{{ $errors->first('email') }}</strong>
                                     </span>
                                 @endif
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label for="type" class="col-md-4 col-form-label text-md-right">{{ __('Dealership') }}</label>
+                            <label for="password" class="col-sm-4 col-form-label text-md-right">{{ __('User password') }}</label>
 
                             <div class="col-md-6">
-                                <select id="dealership_id" class="form-control{{ $errors->has('dealership_id') ? ' is-invalid' : '' }}" name="dealership_id" required>
-                                    @foreach($dealerships as $dealership)
-                                    <option value="{{$dealership->id}}" {{ old('dealership_id')==$dealership->id ? 'selected' : '' }}>{{$dealership->name}}</option>
-                                    @endforeach
-                                </select>
-                                @if ($errors->has('dealership_id'))
+                                <input id="password" type="password" class="form-control{{ $errors->has('password') ? ' is-invalid' : '' }}" name="password" value="{{ old('password') }}" required>
+
+                                @if ($errors->has('password'))
                                     <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $errors->first('dealership_id') }}</strong>
+                                        <strong>{{ $errors->first('password') }}</strong>
                                     </span>
                                 @endif
                             </div>

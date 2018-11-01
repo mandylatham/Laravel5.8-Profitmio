@@ -80,4 +80,18 @@ class CampaignPolicy
     {
         //
     }
+
+    /**
+     * Determine whether the user can permanently delete the campaign.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Campaign  $campaign
+     * @return mixed
+     */
+    public function manage(User $user, Campaign $campaign)
+    {
+        // user is admin of dealership or agency
+        return ($user->isCompanyAdmin($campaign->agency->id) || $user->isCompanyAdmin($campaign->dealership->id));
+    }
+
 }
