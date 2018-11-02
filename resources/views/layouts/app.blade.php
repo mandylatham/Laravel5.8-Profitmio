@@ -86,7 +86,9 @@
                                                      document.getElementById('logout-form').submit();">
                                         {{ __('Logout') }}
                                     </a>
-
+                                    @impersonating
+                                    <a class="dropdown-item" href="{{ route('auth.leaveimpersonate') }}">Leave Impersonating</a>
+                                    @endImpersonating
                                     <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
                                         @csrf
                                     </form>

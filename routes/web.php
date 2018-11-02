@@ -31,4 +31,6 @@ Route::get('/companies/{company}/campaign/{campaign}', 'CompanyController@campai
 Route::post('/companies/{company}/campaign/{campaign}', 'CompanyController@setcampaignaccess')->middleware('can:manage,campaign')->name('companies.setcampaignaccess');
 
 Route::resource('/users', 'UserController')->middleware('can:create,App\User');
+Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\User')->name('auth.impersonate');
+Route::get('/leaveimpersonating', 'Auth\ImpersonateController@leave')->name('auth.leaveimpersonate');
 Route::resource('/campaigns', 'CampaignController')->middleware('can:create,App\Campaign');

@@ -10,7 +10,8 @@
                 <tr>
                     <th scope="col">Id</th>
                     <th scope="col">Name</th>
-                    <th scope="col">Action</th>
+                    <th scope="col"></th>
+                    <th scope="col"></th>
                 </tr>
             </thead>
             <tbody>
@@ -19,6 +20,7 @@
                     <td>{{$user->id}}</td>
                     <td>{{$user->name}}</td>
                     <td><a class="btn btn-link" href="{{route('users.edit', ['user' => $user->id])}}">{{ __('Edit') }}</a> </td>
+                    <td><a class="btn btn-link" href="{{route('auth.impersonate', ['user' => $user->id])}}">{{ __('Log in as') }}</a> </td>
                 </tr>
             @endforeach
             </tbody>
