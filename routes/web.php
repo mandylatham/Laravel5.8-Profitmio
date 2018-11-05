@@ -18,6 +18,10 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::middleware('signed')->group(function() {
+    Route::get('/registration/complete', 'Auth\RegisterController@showcomplete')->name('registration.complete');
+    Route::post('/registration/complete', 'Auth\RegisterController@complete');
+});
 
 //Route::get('/company/{company}', 'HomeController@companytest')->middleware('company');
 Route::resource('/companies', 'CompanyController')->middleware('can:create,App\Company');

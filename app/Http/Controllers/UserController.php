@@ -3,9 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\Mail\InviteUser;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Carbon;
 
 class UserController extends Controller
 {
@@ -40,7 +44,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $userParameters = $request->only(['name', 'email']);
-        $userParameters['password'] = Hash::make($request->get('password'));
+        $userParameters['password'] = '';
         $user = User::create($userParameters);
         if ($request->get('company') == 'admin') {
             $user->is_admin = 1;
@@ -48,6 +52,11 @@ class UserController extends Controller
         } else {
             $user->companies()->attach($request->get('company'), ['role' => $request->get('role')]);
         }
+
+        $processRegistration = URL::temporarySignedRoute(
+            'registration.complete', Carbon::now()->addMinutes(60), ['id' => $user->getKey()]
+        );
+        Mail::to($user)->send(new InviteUser($user, $processRegistration));
         return response()->redirectToRoute('users.index');
     }
 
