@@ -66,14 +66,14 @@
                                     $companyId = 0;
                                 }
                                 @endphp
-                                @foreach(Auth::user()->companies as $company)
-                                    <li class="nav-item dropdown">
-                                        <select onchange="window.location.href=this.options[this.options.selectedIndex].getAttribute('rel')">
-                                            <option>Choose company</option>
-                                            <option {{($company->id == $companyId ? 'selected' : '')}} rel="{{ route('companies.dashboard', ['company' => $company->id]) }}">{{$company->name}}</option>
-                                        </select>
-                                    </li>
-                                @endforeach
+                                <li class="nav-item dropdown">
+                                    <select onchange="window.location.href=this.options[this.options.selectedIndex].getAttribute('rel')">
+                                        <option>Choose company</option>
+                                        @foreach(Auth::user()->companies as $company)
+                                        <option {{($company->id == $companyId ? 'selected' : '')}} rel="{{ route('companies.dashboard', ['company' => $company->id]) }}">{{$company->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </li>
                             @endcan
                             <li class="nav-item dropdown">
                                 <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>

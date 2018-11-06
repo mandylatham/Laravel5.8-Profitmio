@@ -19,6 +19,25 @@ class CompanyPolicy
      */
     public function view(User $user, Company $company)
     {
+        $company = $user->companies->find($company->id);
+
+        if (is_null($company->pivot->completed_at)) {
+            redirect(route('companies.preferences', ['company' => $company->id]))->send();
+        }
+        return ($user->isCompanyAdmin($company->id) || $user->isCompanyUser($company->id));
+    }
+
+    /**
+     * Determine whether the user can view the company.
+     *
+     * @param  \App\User  $user
+     * @param  \App\Company  $company
+     * @return mixed
+     */
+    public function viewForPreferences(User $user, Company $company)
+    {
+        $company = $user->companies->find($company->id);
+
         return ($user->isCompanyAdmin($company->id) || $user->isCompanyUser($company->id));
     }
 

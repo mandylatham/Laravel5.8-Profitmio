@@ -38,7 +38,7 @@ class User extends Authenticatable
      */
     public function companies()
     {
-        return $this->belongsToMany(Company::class)->withPivot('role');
+        return $this->belongsToMany(Company::class)->using(CompanyUser::class)->withPivot('role', 'config', 'completed_at');
     }
 
     /**
@@ -92,5 +92,17 @@ class User extends Authenticatable
             return false;
         }
         return true;
+    }
+
+    public function getPossibleTimezones()
+    {
+        return [
+            'US/Eastern',
+            'US/Central',
+            'US/Mountain',
+            'US/Pacific',
+            'America/Anchorage',
+            'Pacific/Honolulu',
+        ];
     }
 }

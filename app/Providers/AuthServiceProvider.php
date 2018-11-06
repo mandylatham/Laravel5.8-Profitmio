@@ -38,6 +38,7 @@ class AuthServiceProvider extends ServiceProvider
             }
         });
 
+        Gate::define('company.viewforpreferences', 'App\Policies\CompanyPolicy@viewForPreferences');
         Gate::define('company.view', 'App\Policies\CompanyPolicy@view');
         Gate::define('company.create', 'App\Policies\CompanyPolicy@create');
         Gate::define('company.update', 'App\Policies\CompanyPolicy@update');

@@ -19,14 +19,16 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 Route::middleware('signed')->group(function() {
-    Route::get('/registration/complete', 'Auth\RegisterController@showcomplete')->name('registration.complete');
-    Route::post('/registration/complete', 'Auth\RegisterController@complete');
+    Route::get('/registration/complete', 'Auth\CompleteController@show')->name('registration.complete');
+    Route::post('/registration/complete', 'Auth\CompleteController@set');
 });
 
 //Route::get('/company/{company}', 'HomeController@companytest')->middleware('company');
 Route::resource('/companies', 'CompanyController')->middleware('can:create,App\Company');
 
 Route::get('/companies/{company}/dashboard', 'CompanyController@dashboard')->middleware('can:view,company')->name('companies.dashboard');
+Route::get('/companies/{company}/preferences', 'CompanyController@preferences')->middleware('can:viewforpreferences,company')->name('companies.preferences');
+Route::post('/companies/{company}/preferences', 'CompanyController@setpreferences')->middleware('can:viewforpreferences,company')->name('companies.setpreferences');
 
 Route::get('/companies/{company}/adduser', 'CompanyController@createuser')->middleware('can:manage,company')->name('companies.createuser');
 Route::post('/companies/{company}/adduser', 'CompanyController@storeuser')->middleware('can:manage,company')->name('companies.storeuser');

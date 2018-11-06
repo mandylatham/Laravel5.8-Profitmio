@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -69,26 +71,5 @@ class RegisterController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
-    }
-
-    public function showcomplete(Request $request)
-    {
-        $user = User::find($request->get('id'));
-        return view('auth/complete', ['user' => $user]);
-    }
-
-    public function complete(Request $request)
-    {
-        $user = User::find($request->get('id'));
-
-        Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
-            'password' => 'required|string|min:6|confirmed',
-        ])->validate();
-
-        $user->name = $request->get('name');
-        $user->password = $userParameters['password'] = Hash::make($request->get('password'));
-        $user->save();
-        return response()->redirectToRoute('login');
     }
 }
