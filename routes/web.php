@@ -18,7 +18,7 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-Route::middleware('signed')->group(function() {
+Route::middleware('signed', 'justinvited')->group(function() {
     Route::get('/registration/complete', 'Auth\CompleteController@show')->name('registration.complete');
     Route::post('/registration/complete', 'Auth\CompleteController@set');
 });
