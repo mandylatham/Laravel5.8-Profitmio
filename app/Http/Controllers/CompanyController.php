@@ -176,4 +176,25 @@ class CompanyController extends Controller
         }
         return response()->redirectToRoute('companies.dashboard', ['company' => $company->id]);
     }
+
+    public function useraccess(Company $company, User $user)
+    {
+        $campaigns = Campaign::getCompanyCampaigns($company->id);
+        return view('company/useraccess', ['campaigns' => $campaigns, 'company' => $company, 'user' => $user]);
+    }
+
+    public function setuseraccess(Request $request, Company $company, User $user)
+    {
+        $allowedCampaigns = $request->get('allowedcampaigns', []);
+        /** @var Campaign $campaign */
+        foreach(Campaign::getCompanyCampaigns($company->id) as $campaign) {
+            if (in_array($campaign->id, $allowedCampaigns)) {
+                $user->campaigns()->syncWithoutDetaching([$campaign->id]);
+            } else {
+                $user->campaigns()->detach([$campaign->id]);
+            }
+        }
+        return response()->redirectToRoute('companies.useraccess', ['company' => $company->id, 'user' => $user]);
+    }
+
 }

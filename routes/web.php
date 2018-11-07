@@ -36,6 +36,9 @@ Route::post('/companies/{company}/adduser', 'CompanyController@storeuser')->midd
 Route::get('/companies/{company}/campaign/{campaign}', 'CompanyController@campaignaccess')->middleware('can:manage,campaign')->name('companies.campaignaccess');
 Route::post('/companies/{company}/campaign/{campaign}', 'CompanyController@setcampaignaccess')->middleware('can:manage,campaign')->name('companies.setcampaignaccess');
 
+Route::get('/companies/{company}/user/{user}', 'CompanyController@useraccess')->middleware('can:manage,company')->name('companies.useraccess');
+Route::post('/companies/{company}/user/{user}', 'CompanyController@setuseraccess')->middleware('can:manage,company')->name('companies.setuseraccess');
+
 Route::resource('/users', 'UserController')->middleware('can:create,App\User');
 Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\User')->name('auth.impersonate');
 Route::get('/leaveimpersonating', 'Auth\ImpersonateController@leave')->name('auth.leaveimpersonate');

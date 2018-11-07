@@ -10,7 +10,10 @@
             <div class="card-body">
                 <ul class="list-group list-group-flush">
                     @foreach($company->users as $user)
-                    <li class="list-group-item">{{$user->name}} ({{$user->pivot->role}})</li>
+                    <li class="list-group-item">
+                        {{$user->name}} ({{$user->pivot->role}})
+                        <a href="{{route('companies.useraccess', ['company' => $company->id, 'user' => $user->id])}}">Access</a>
+                    </li>
                     @endforeach
                 </ul>
                 <a class="btn btn-link" href="{{ route('companies.createuser', ['company' => $company->id]) }}">
