@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Campaign;
+use App\CampaignUser;
 use App\Company;
+use App\CompanyUser;
 use App\Mail\InviteUser;
 use App\User;
 use Carbon\Carbon;
@@ -127,6 +129,12 @@ class CompanyController extends Controller
             Mail::to($user)->send(new InviteUser($user, $processRegistration));
         }
         $user->companies()->attach($company->id, ['role' => User::ROLE_USER]);
+        $pivot = new CompanyUser();
+        $pivot->id = $user->id;
+        activity()
+            ->performedOn($pivot)
+            ->withProperties([$company->id, ['role' => User::ROLE_USER]])
+            ->log('attach');
         return response()->redirectToRoute('companies.dashboard', ['company' => $company->id]);
     }
 
@@ -143,12 +151,25 @@ class CompanyController extends Controller
     public function setcampaignaccess(Request $request, Company $company, Campaign $campaign)
     {
         $allowedUsers = $request->get('allowedusers', []);
+        $pivot = new CampaignUser();
         /** @var User $user */
         foreach($company->users as $user) {
-            if (in_array($user->id, $allowedUsers)) {
+            $pivot->id = $user->id;
+            $log = false;
+            $hasAccess = $user->hasAccessToCampaign($campaign->id);
+            if (in_array($user->id, $allowedUsers) && !$hasAccess) {
+                $log = 'syncWithoutDetaching';
                 $user->campaigns()->syncWithoutDetaching([$campaign->id]);
-            } else {
+            }
+            if (!in_array($user->id, $allowedUsers) && $hasAccess){
+                $log = 'detach';
                 $user->campaigns()->detach([$campaign->id]);
+            }
+            if ($log) {
+                activity()
+                    ->performedOn($pivot)
+                    ->withProperties([$campaign->id])
+                    ->log($log);
             }
         }
         return response()->redirectToRoute('companies.campaignaccess', ['company' => $company->id, 'campaign' => $campaign->id]);
@@ -173,6 +194,13 @@ class CompanyController extends Controller
                 'completed_at' => Carbon::now()->toDateTimeString(),
             ];
             $user->companies()->updateExistingPivot($company->id, $attributes);
+
+            $pivot = new CompanyUser();
+            $pivot->id = $user->id;
+            activity()
+                ->performedOn($pivot)
+                ->withProperties([$company->id, $attributes])
+                ->log('updateExistingPivot');
         }
         return response()->redirectToRoute('companies.dashboard', ['company' => $company->id]);
     }
@@ -186,12 +214,26 @@ class CompanyController extends Controller
     public function setuseraccess(Request $request, Company $company, User $user)
     {
         $allowedCampaigns = $request->get('allowedcampaigns', []);
+        $pivot = new CampaignUser();
+        $pivot->id = $user->id;
+
         /** @var Campaign $campaign */
         foreach(Campaign::getCompanyCampaigns($company->id) as $campaign) {
-            if (in_array($campaign->id, $allowedCampaigns)) {
+            $hasAccess = $user->hasAccessToCampaign($campaign->id);
+            $log = false;
+            if (in_array($campaign->id, $allowedCampaigns) && !$hasAccess) {
+                $log = 'syncWithoutDetaching';
                 $user->campaigns()->syncWithoutDetaching([$campaign->id]);
-            } else {
+            }
+            if (!in_array($campaign->id, $allowedCampaigns) && $hasAccess) {
+                $log = 'detach';
                 $user->campaigns()->detach([$campaign->id]);
+            }
+            if ($log) {
+                activity()
+                    ->performedOn($pivot)
+                    ->withProperties([$campaign->id])
+                    ->log($log);
             }
         }
         return response()->redirectToRoute('companies.useraccess', ['company' => $company->id, 'user' => $user]);

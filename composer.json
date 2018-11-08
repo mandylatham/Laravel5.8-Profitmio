@@ -10,7 +10,8 @@
         "guzzlehttp/guzzle": "^6.3",
         "lab404/laravel-impersonate": "^1.2",
         "laravel/framework": "5.7.*",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "spatie/laravel-activitylog": "^3.1"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

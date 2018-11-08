@@ -3,10 +3,14 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Campaign extends Model
 {
+    use LogsActivity;
+
     protected $fillable = ['agency_id', 'dealership_id', 'name'];
+    protected static $logAttributes = ['id', 'agency_id', 'dealership_id', 'name'];
 
     public function agency()
     {

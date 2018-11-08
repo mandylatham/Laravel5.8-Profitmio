@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Company;
+use App\CompanyUser;
 use App\Mail\InviteUser;
 use App\User;
 use Illuminate\Http\Request;
@@ -51,6 +52,12 @@ class UserController extends Controller
             $user->save();
         } else {
             $user->companies()->attach($request->get('company'), ['role' => $request->get('role')]);
+            $pivot = new CompanyUser();
+            $pivot->id = $user->id;
+            activity()
+                ->performedOn($pivot)
+                ->withProperties([$request->get('company') => ['role' => $request->get('role')]])
+                ->log('attach');
         }
 
         $processRegistration = URL::temporarySignedRoute(
@@ -105,6 +112,12 @@ class UserController extends Controller
                 $permissions[$companyId] = ['role' => $role];
             }
             $user->companies()->sync($permissions);
+            $pivot = new CompanyUser();
+            $pivot->id = $user->id;
+            activity()
+                ->performedOn($pivot)
+                ->withProperties($permissions)
+                ->log('synced');
         }
 
         return response()->redirectToRoute('users.index');

@@ -7,10 +7,13 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Lab404\Impersonate\Models\Impersonate;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
-    use Notifiable, Impersonate;
+    use Notifiable, Impersonate, LogsActivity;
+
+    protected static $logAttributes = ['id', 'name', 'is_admin', 'email'];
 
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
@@ -56,6 +59,9 @@ class User extends Authenticatable
 
     public function isCompanyAdmin(int $companyId): bool
     {
+        if ($this->isAdmin()) {
+            return true;
+        }
         $company = $this->companies()->find($companyId);
         if (empty($company) || $company->pivot->role != self::ROLE_ADMIN) {
             return false;

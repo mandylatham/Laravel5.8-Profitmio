@@ -3,14 +3,19 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Company extends Model
 {
+    use LogsActivity;
+
     const TYPE_SUPPORT = 'support';
     const TYPE_AGENCY = 'agency';
     const TYPE_DEALERSHIP = 'dealership';
 
     protected $fillable = ['name', 'type'];
+
+    protected static $logAttributes = ['id', 'name', 'type'];
 
     public function users()
     {
