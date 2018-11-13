@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Campaign;
 use App\CampaignUser;
+use App\Classes\CampaignUserActivityLog;
+use App\Classes\CompanyUserActivityLog;
 use App\Company;
 use App\CompanyUser;
 use App\Mail\InviteUser;
@@ -17,6 +19,18 @@ use Illuminate\Support\Facades\URL;
 
 class CompanyController extends Controller
 {
+    /** @var CompanyUserActivityLog  */
+    private $companyUserActivityLog;
+
+    /** @var CampaignUserActivityLog  */
+    private $campaignUserActivityLog;
+
+    public function __construct(CompanyUserActivityLog $companyUserActivityLog, CampaignUserActivityLog $campaignUserActivityLog)
+    {
+        $this->companyUserActivityLog = $companyUserActivityLog;
+        $this->campaignUserActivityLog = $campaignUserActivityLog;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -129,12 +143,7 @@ class CompanyController extends Controller
             Mail::to($user)->send(new InviteUser($user, $processRegistration));
         }
         $user->companies()->attach($company->id, ['role' => User::ROLE_USER]);
-        $pivot = new CompanyUser();
-        $pivot->id = $user->id;
-        activity()
-            ->performedOn($pivot)
-            ->withProperties([$company->id, ['role' => User::ROLE_USER]])
-            ->log('attach');
+        $this->companyUserActivityLog->attach($user, $company->id, User::ROLE_USER);
         return response()->redirectToRoute('companies.dashboard', ['company' => $company->id]);
     }
 
@@ -151,25 +160,17 @@ class CompanyController extends Controller
     public function setcampaignaccess(Request $request, Company $company, Campaign $campaign)
     {
         $allowedUsers = $request->get('allowedusers', []);
-        $pivot = new CampaignUser();
         /** @var User $user */
         foreach($company->users as $user) {
-            $pivot->id = $user->id;
             $log = false;
             $hasAccess = $user->hasAccessToCampaign($campaign->id);
             if (in_array($user->id, $allowedUsers) && !$hasAccess) {
-                $log = 'syncWithoutDetaching';
                 $user->campaigns()->syncWithoutDetaching([$campaign->id]);
+                $this->campaignUserActivityLog->attach($user, $campaign->id);
             }
             if (!in_array($user->id, $allowedUsers) && $hasAccess){
-                $log = 'detach';
                 $user->campaigns()->detach([$campaign->id]);
-            }
-            if ($log) {
-                activity()
-                    ->performedOn($pivot)
-                    ->withProperties([$campaign->id])
-                    ->log($log);
+                $this->campaignUserActivityLog->detach($user, $campaign->id);
             }
         }
         return response()->redirectToRoute('companies.campaignaccess', ['company' => $company->id, 'campaign' => $campaign->id]);
@@ -184,6 +185,7 @@ class CompanyController extends Controller
 
     public function setpreferences(Request $request, Company $company)
     {
+        /** @var User $user */
         $user = Auth::user();
         $config = $request->get('config', []);
         if (isset($config['timezone'])) {
@@ -194,13 +196,7 @@ class CompanyController extends Controller
                 'completed_at' => Carbon::now()->toDateTimeString(),
             ];
             $user->companies()->updateExistingPivot($company->id, $attributes);
-
-            $pivot = new CompanyUser();
-            $pivot->id = $user->id;
-            activity()
-                ->performedOn($pivot)
-                ->withProperties([$company->id, $attributes])
-                ->log('updateExistingPivot');
+            $this->companyUserActivityLog->updatePreferences($user, $company->id, $attributes);
         }
         return response()->redirectToRoute('companies.dashboard', ['company' => $company->id]);
     }
@@ -214,26 +210,18 @@ class CompanyController extends Controller
     public function setuseraccess(Request $request, Company $company, User $user)
     {
         $allowedCampaigns = $request->get('allowedcampaigns', []);
-        $pivot = new CampaignUser();
-        $pivot->id = $user->id;
 
         /** @var Campaign $campaign */
         foreach(Campaign::getCompanyCampaigns($company->id) as $campaign) {
             $hasAccess = $user->hasAccessToCampaign($campaign->id);
             $log = false;
             if (in_array($campaign->id, $allowedCampaigns) && !$hasAccess) {
-                $log = 'syncWithoutDetaching';
                 $user->campaigns()->syncWithoutDetaching([$campaign->id]);
+                $this->campaignUserActivityLog->attach($user, $campaign->id);
             }
             if (!in_array($campaign->id, $allowedCampaigns) && $hasAccess) {
-                $log = 'detach';
                 $user->campaigns()->detach([$campaign->id]);
-            }
-            if ($log) {
-                activity()
-                    ->performedOn($pivot)
-                    ->withProperties([$campaign->id])
-                    ->log($log);
+                $this->campaignUserActivityLog->detach($user, $campaign->id);
             }
         }
         return response()->redirectToRoute('companies.useraccess', ['company' => $company->id, 'user' => $user]);

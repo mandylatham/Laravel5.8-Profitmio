@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Classes\CompanyUserActivityLog;
 use App\User;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
@@ -13,6 +14,14 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 
 class CompleteController extends Controller
 {
+    /** @var CompanyUserActivityLog  */
+    private $companyUserActivityLog;
+
+    public function __construct(CompanyUserActivityLog $companyUserActivityLog)
+    {
+        $this->companyUserActivityLog = $companyUserActivityLog;
+    }
+
     public function show(Request $request)
     {
         if (Auth::check()) {
@@ -46,6 +55,7 @@ class CompleteController extends Controller
                     'completed_at' => Carbon::now()->toDateTimeString(),
                 ];
                 $user->companies()->updateExistingPivot($companyId, $attributes);
+                $this->companyUserActivityLog->updatePreferences($user, $companyId, $attributes);
             }
         }
         return response()->redirectToRoute('login');

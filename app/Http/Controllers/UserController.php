@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\CompanyUserActivityLog;
 use App\Company;
 use App\CompanyUser;
 use App\Mail\InviteUser;
@@ -14,6 +15,14 @@ use Illuminate\Support\Carbon;
 
 class UserController extends Controller
 {
+    /** @var CompanyUserActivityLog  */
+    private $companyUserActivityLog;
+
+    public function __construct(CompanyUserActivityLog $companyUserActivityLog)
+    {
+        $this->companyUserActivityLog = $companyUserActivityLog;
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -52,12 +61,7 @@ class UserController extends Controller
             $user->save();
         } else {
             $user->companies()->attach($request->get('company'), ['role' => $request->get('role')]);
-            $pivot = new CompanyUser();
-            $pivot->id = $user->id;
-            activity()
-                ->performedOn($pivot)
-                ->withProperties([$request->get('company') => ['role' => $request->get('role')]])
-                ->log('attach');
+            $this->companyUserActivityLog->attach($user, (int)$request->get('company'), $request->get('role'));
         }
 
         $processRegistration = URL::temporarySignedRoute(
@@ -108,16 +112,17 @@ class UserController extends Controller
             $user->save();
         } else {
             $permissions = [];
+            $oldPermissions = [];
             foreach ($request->get('role', []) as $companyId => $role) {
                 $permissions[$companyId] = ['role' => $role];
+                $userCompany = $user->companies()->find($companyId);
+                if (!empty($userCompany)) {
+                    $oldPermissions[$companyId] = ['role' => $userCompany->pivot->role];
+                }
             }
-            $user->companies()->sync($permissions);
-            $pivot = new CompanyUser();
-            $pivot->id = $user->id;
-            activity()
-                ->performedOn($pivot)
-                ->withProperties($permissions)
-                ->log('synced');
+
+            $changes = $user->companies()->sync($permissions);
+            $this->companyUserActivityLog->sync($user, $changes, $permissions, $oldPermissions);
         }
 
         return response()->redirectToRoute('users.index');

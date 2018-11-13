@@ -35,7 +35,7 @@
                                     {{ __('Update') }}
                                 </button>
                                 <a href="{{route('companies.dashboard', ['company' => $company->id])}}" class="btn btn-dark">
-                                    {{ __('Back to compangy') }}
+                                    {{ __('Back to company') }}
                                 </a>
                             </div>
                         </div>

@@ -13,7 +13,7 @@ class User extends Authenticatable
 {
     use Notifiable, Impersonate, LogsActivity;
 
-    protected static $logAttributes = ['id', 'name', 'is_admin', 'email'];
+    protected static $logAttributes = ['id', 'name', 'is_admin', 'email', 'campaigns', 'companies'];
 
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
