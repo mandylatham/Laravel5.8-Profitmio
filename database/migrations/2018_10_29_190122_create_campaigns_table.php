@@ -28,7 +28,7 @@ class CreateCampaignsTable extends Migration
             $table->string('client_passthrough_email')->nullable();
             $table->timestamp('starts_at')->nullable();
             $table->timestamp('ends_at')->nullable();
-            $table->enum('status', ['Active', 'Archived', 'Completed', 'Expired', 'Upcoming'])->default('Active');
+            $table->enum('status', ['Active', 'Archived', 'Completed', 'Expired', 'Upcoming', 'Cancelled'])->default('Active');
 
             // adding created_at, updated_at, deleted_at columns
             $table->timestamp('created_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
