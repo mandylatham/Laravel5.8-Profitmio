@@ -103,12 +103,19 @@ class User extends Authenticatable
     public function getPossibleTimezones()
     {
         return [
-            'US/Eastern',
+            'US/Alaska',
+            'US/Aleutian',
+            'US/Arizona',
             'US/Central',
+            'US/East-Indiana',
+            'US/Eastern',
+            'US/Hawaii',
+            'US/Indiana-Starke',
+            'US/Michigan',
             'US/Mountain',
             'US/Pacific',
-            'America/Anchorage',
-            'Pacific/Honolulu',
+            'US/Pacific-New',
+            'US/Samoa',
         ];
     }
 }

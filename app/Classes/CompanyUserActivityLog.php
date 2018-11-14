@@ -2,15 +2,16 @@
 
 namespace App\Classes;
 
+use App\Company;
 use App\CompanyUser;
 use App\User;
 
 class CompanyUserActivityLog
 {
-    private const MESSAGE_ATTACHED = 'User %d assigned to company %d with role %s';
-    private const MESSAGE_DETACHED = 'User %d de-assigned from company %d';
-    private const MESSAGE_UPDATED = 'Role for user %d in company %d changed from %s to %s';
-    private const MESSAGE_UPDATED_PREFERENCES = 'User %d set timezone %s for company %d';
+    private const MESSAGE_ATTACHED = 'User %d (%s) assigned to company %d (%s) with role %s';
+    private const MESSAGE_DETACHED = 'User %d (%s) de-assigned from company %d (%s)';
+    private const MESSAGE_UPDATED = 'Role for user %d (%s) in company %d (%s) changed from %s to %s';
+    private const MESSAGE_UPDATED_PREFERENCES = 'User %d (%s) set timezone %s for company %d(%s) ';
 
     public function attach(User $user, int $companyId, string $role): void
     {
@@ -21,7 +22,8 @@ class CompanyUserActivityLog
         ];
         $pivot = new CompanyUser();
         $pivot->id = $user->id;
-        $logMessage = sprintf(self::MESSAGE_ATTACHED, $user->id, $companyId, $role);
+        $company = Company::find($companyId);
+        $logMessage = sprintf(self::MESSAGE_ATTACHED, $user->id, $user->name, $companyId, $company->name, $role);
         activity()
             ->performedOn($pivot)
             ->withProperties($properties)
@@ -36,7 +38,8 @@ class CompanyUserActivityLog
         ];
         $pivot = new CompanyUser();
         $pivot->id = $user->id;
-        $logMessage = sprintf(self::MESSAGE_DETACHED, $user->id, $companyId);
+        $company = Company::find($companyId);
+        $logMessage = sprintf(self::MESSAGE_DETACHED, $user->id, $user->name, $companyId, $company->name);
         activity()
             ->performedOn($pivot)
             ->withProperties($properties)
@@ -53,7 +56,8 @@ class CompanyUserActivityLog
         ];
         $pivot = new CompanyUser();
         $pivot->id = $user->id;
-        $logMessage = sprintf(self::MESSAGE_UPDATED, $user->id, $companyId, $oldRole, $newRole);
+        $company = Company::find($companyId);
+        $logMessage = sprintf(self::MESSAGE_UPDATED, $user->id, $user->name, $companyId, $company->name, $oldRole, $newRole);
         activity()
             ->performedOn($pivot)
             ->withProperties($properties)
@@ -82,7 +86,8 @@ class CompanyUserActivityLog
         ];
         $pivot = new CompanyUser();
         $pivot->id = $user->id;
-        $logMessage = sprintf(self::MESSAGE_UPDATED_PREFERENCES, $user->id, $attributes['config']['timezone'], $companyId);
+        $company = Company::find($companyId);
+        $logMessage = sprintf(self::MESSAGE_UPDATED_PREFERENCES, $user->id, $user->name, $attributes['config']['timezone'], $companyId, $company->name);
         activity()
             ->performedOn($pivot)
             ->withProperties($properties)

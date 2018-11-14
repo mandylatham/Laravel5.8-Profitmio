@@ -2,13 +2,14 @@
 
 namespace App\Classes;
 
+use App\Campaign;
 use App\CampaignUser;
 use App\User;
 
 class CampaignUserActivityLog
 {
-    private const MESSAGE_ATTACHED = 'User %d assigned to campaign %d';
-    private const MESSAGE_DETACHED = 'User %d de-assigned from campaign %d';
+    private const MESSAGE_ATTACHED = 'User %d (%s) assigned to campaign %d (%s)';
+    private const MESSAGE_DETACHED = 'User %d (%s) de-assigned from campaign %d (%s)';
 
     public function attach(User $user, int $campaignId): void
     {
@@ -18,7 +19,8 @@ class CampaignUserActivityLog
         ];
         $pivot = new CampaignUser();
         $pivot->id = $user->id;
-        $logMessage = sprintf(self::MESSAGE_ATTACHED, $user->id, $campaignId);
+        $campaign = Campaign::find($campaignId);
+        $logMessage = sprintf(self::MESSAGE_ATTACHED, $user->id, $user->name, $campaignId, $campaign->name);
         activity()
             ->performedOn($pivot)
             ->withProperties($properties)
@@ -33,7 +35,8 @@ class CampaignUserActivityLog
         ];
         $pivot = new CampaignUser();
         $pivot->id = $user->id;
-        $logMessage = sprintf(self::MESSAGE_DETACHED, $user->id, $campaignId);
+        $campaign = Campaign::find($campaignId);
+        $logMessage = sprintf(self::MESSAGE_DETACHED, $user->id, $user->name, $campaignId, $campaign->name);
         activity()
             ->performedOn($pivot)
             ->withProperties($properties)
