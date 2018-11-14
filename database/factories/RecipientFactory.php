@@ -1,8 +1,9 @@
 <?php
 
 use Faker\Generator as Faker;
-use Carbon\Carbon;
-use App\Models\User;
+use App\Models\RecipientList;
+use App\Models\Recipient;
+use App\Models\Campaign;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +16,12 @@ use App\Models\User;
 |
 */
 
-$factory->define(User::class, function (Faker $faker) {
+$factory->define(Recipient::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'is_admin'=> $faker->randomElement([true, false]),
-        'email_verified_at' => Carbon::now()->toDateTimeString(),
-        'password' => bcrypt('password')
+        'campaign_id' => Campaign::inRandomOrder()->first()->id,
+        'recipient_list_id' => RecipientList::inRandomOrder()->first()->id,
+        'first_name' => $faker->name,
+        'last_name' => $faker->lastName,
+        'email' => $faker->email
     ];
 });

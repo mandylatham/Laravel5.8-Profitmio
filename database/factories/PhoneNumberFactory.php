@@ -1,8 +1,8 @@
 <?php
 
 use Faker\Generator as Faker;
-use Carbon\Carbon;
-use App\Models\User;
+use App\Models\Company;
+use App\Models\PhoneNumber;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,12 +15,14 @@ use App\Models\User;
 |
 */
 
-$factory->define(User::class, function (Faker $faker) {
+$factory->define(PhoneNumber::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
-        'email' => $faker->unique()->safeEmail,
-        'is_admin'=> $faker->randomElement([true, false]),
-        'email_verified_at' => Carbon::now()->toDateTimeString(),
-        'password' => bcrypt('password')
+        'dealership_id' => Company::where('type', 'dealership')->first()->id,
+        'phone_number' => $faker->phoneNumber,
+        'forward' => $faker->phoneNumber,
+        'sid' => '',
+        'region' => $faker->stateAbbr,
+        'state' => $faker->stateAbbr,
+        'zip' => $faker->postcode,
     ];
 });

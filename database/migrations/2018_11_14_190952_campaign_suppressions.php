@@ -37,6 +37,6 @@ class CampaignSuppressions extends Migration
      */
     public function down()
     {
-        Schema::drop('campaign_suppression');
+        Schema::drop('campaign_suppressions');
     }
 }

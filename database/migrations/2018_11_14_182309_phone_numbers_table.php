@@ -15,7 +15,7 @@ class PhoneNumbersTable extends Migration
     {
         Schema::create('phone_numbers', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('company_id');
+            $table->unsignedInteger('dealership_id');
             $table->string('phone_number');
             $table->string('forward');
             $table->string('sid');
