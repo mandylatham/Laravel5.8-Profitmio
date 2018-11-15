@@ -121,12 +121,12 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the current user is impersonated.
+     * Get id of impersonator
      *
      * @param   void
      * @return  bool
      */
-    public function getImpersonarotId()
+    public function getImpersonatorId()
     {
         return app(ImpersonateManager::class)->getImpersonatorId();
     }
