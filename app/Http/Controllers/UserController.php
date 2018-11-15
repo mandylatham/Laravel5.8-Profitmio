@@ -140,28 +140,27 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $userParameters = $request->only(['name', 'email']);
-        if (!empty($request->get('password'))) {
-            $userParameters['password'] = Hash::make($request->get('password'));
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->get('password'));
         }
-        $user->update($userParameters);
-        if ($request->get('is_admin', false)) {
-            $user->is_admin = 1;
-            $user->save();
-        } else {
-            $permissions = [];
-            $oldPermissions = [];
-            foreach ($request->get('role', []) as $companyId => $role) {
-                $permissions[$companyId] = ['role' => $role];
-                $userCompany = $user->companies()->find($companyId);
-                if (!empty($userCompany)) {
-                    $oldPermissions[$companyId] = ['role' => $userCompany->pivot->role];
-                }
-            }
-
-            $changes = $user->companies()->sync($permissions);
-            $this->companyUserActivityLog->sync($user, $changes, $permissions, $oldPermissions);
-        }
+        $user->update($request->except(['password']));
+//        if ($request->get('is_admin', false)) {
+//            $user->is_admin = 1;
+//            $user->save();
+//        } else {
+//            $permissions = [];
+//            $oldPermissions = [];
+//            foreach ($request->get('role', []) as $companyId => $role) {
+//                $permissions[$companyId] = ['role' => $role];
+//                $userCompany = $user->companies()->find($companyId);
+//                if (!empty($userCompany)) {
+//                    $oldPermissions[$companyId] = ['role' => $userCompany->pivot->role];
+//                }
+//            }
+//
+//            $changes = $user->companies()->sync($permissions);
+//            $this->companyUserActivityLog->sync($user, $changes, $permissions, $oldPermissions);
+//        }
 
         return response()->redirectToRoute('users.index');
     }
@@ -169,6 +168,7 @@ class UserController extends Controller
     public function updateForm(User $user)
     {
         $viewData['user'] = $user;
+        $viewData['companies'] = Company::all();
 
         return view('users.edit', $viewData);
     }

@@ -35,7 +35,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     /* USERS */
     Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\Models\User')->name('auth.impersonate');
-    Route::get('/users', 'UserController@index')->middleware('can:view-users');
+    Route::get('/users', 'UserController@index')->middleware('can:view-users')->name('users.index');
     Route::get('/users/new', 'UserController@createForm')->middleware('can:change-users');
     Route::post('/user/create', 'UserController@create')->middleware('can:change-users');
     Route::group(['prefix' => '/user/{user}'], function () {

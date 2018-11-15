@@ -34,10 +34,10 @@ class Drop extends Model
         return $this->belongsTo(Campaign::class, 'campaign_id', 'campaign_id');
     }
 
-    public function recipients()
-    {
-        return $this->hasMany(Recipient::class, 'campaign_id', 'campaign_id');
-    }
+//    public function recipients()
+//    {
+//        return $this->hasMany(Recipient::class, 'campaign_id', 'campaign_id');
+//    }
 
     public function recipients()
     {

@@ -50,6 +50,15 @@ class User extends Authenticatable
     }
 
     /**
+     * Check if user belongs to given company
+     * @param int $companyId
+     * @return bool
+     */
+    public function belongsToCompany(int $companyId)
+    {
+        return $this->companies()->where('companies.id', $companyId)->count() === 1;
+    }
+    /**
      * The roles that belong to the user.
      */
     public function companies()

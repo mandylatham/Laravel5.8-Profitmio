@@ -112,15 +112,27 @@
                                 <div class="form-group form-material floating">
                                     <select name="access" class="form-control" required>
                                         <option selected disabled>Choose access level...</option>
-                                        <option {{ $user->access == 'Admin' ? 'selected' : '' }}>Admin</option>
-                                        <option {{ $user->access == 'Agency' ? 'selected' : '' }}>Agency</option>
-                                        <option {{ $user->access == 'Client' ? 'selected' : '' }}>Client</option>
+                                        <option value="admin" {{ $user->isAdmin() ? 'selected' : '' }}>Admin</option>
+                                        <option value="company_user" {{ !$user->isAdmin() ? 'selected' : '' }}>Company User</option>
                                     </select>
                                     <label for="access" class="floating-label">User Type</label>
                                 </div>
                                 <div class="form-group form-material floating">
-                                    <input type="text" class="form-control" name="organization" data-fv-field="organization" value="{{ old('organization') ?: $user->organization }}" required>
-                                    <label for="organization" class="floating-label">User Organization</label>
+                                    <select name="company" class="form-control" required>
+                                        <option selected disabled>Select a Company</option>
+                                        @foreach ($companies as $company)
+                                            <option {{ $user->belongsToCompany($company->id) ? 'selected' : '' }} value="{{ $company->id }}">{{ $company->name }}</option>
+                                        @endforeach
+                                    </select>
+                                    <label for="access" class="floating-label">Company</label>
+                                </div>
+                                <div class="form-group form-material floating">
+                                    <select name="role" class="form-control" required>
+                                        <option selected disabled>Choose role...</option>
+                                        <option value="admin">Admin</option>
+                                        <option value="user">User</option>
+                                    </select>
+                                    <label for="role" class="floating-label">Role</label>
                                 </div>
                                 <div class="form-group form-material floating">
                                     <input type="text" class="form-control" name="first_name" autocomplete="off" data-fv-field="first_name" value="{{ old('first_name') ?: $user->first_name }}" required>
@@ -135,7 +147,7 @@
                                 <div class="form-group form-material floating">
                                     <select name="timezone" class="form-control selectpicker" style="margin-top: 10px; padding-top: 10px;">
                                         <option disabled {{ old('timezone') ?: $user->timezone == '' ? 'selected' : '' }}>Choose Timezone...</option>
-                                        @foreach (DateTimeZone::listIdentifiers(DateTimeZone::AMERICA) as $timezone)
+                                        @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
                                             <option {{ old('timezone') ?: $user->timezone == $timezone ? 'selected' : '' }}>{{ $timezone }}</option>
                                         @endforeach
                                     </select>
