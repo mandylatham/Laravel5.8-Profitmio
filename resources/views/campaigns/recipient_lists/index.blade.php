@@ -100,7 +100,7 @@
                                 <li>{{ old('uploaded_file_name') }}</li>
                             @endif
                         </ul>
-                        <form action="{{ secure_url('campaign/' . $campaign->campaign_id . '/recipients/upload') }}"
+                        <form action="{{ secure_url('campaign/' . $campaign->id . '/recipients/upload') }}"
                               method="post" id="file-attributes-form">
                             <input type="hidden" name="uploaded_file_name" value="{{ old('uploaded_file_name') }}">
                             <input type="hidden" name="uploaded_file_headers" value="{{ old('uploaded_file_headers') }}">

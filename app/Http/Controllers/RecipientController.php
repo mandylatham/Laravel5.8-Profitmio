@@ -267,7 +267,7 @@ class RecipientController extends Controller
             }
         }
 
-        $recipients = Target::where('campaign_id', $campaign->campaign_id)
+        $recipients = Target::where('campaign_id', $campaign->id)
             ->where($filters);
 
         if ($request->query->has("sortField") && $request->query->get('sortField') != '') {
@@ -309,7 +309,7 @@ class RecipientController extends Controller
                 DB::raw("sum(trim(coalesce(zip,'')) = '') as zip"),
                 DB::raw("sum(trim(coalesce(vin,'')) = '') as vin"),
                 DB::raw("count(*) as total"))
-            ->where('campaign_id', $campaign->campaign_id)
+            ->where('campaign_id', $campaign->id)
             ->whereNull('deleted_at')
             ->where(function ($query) {
                 $query->orWhere(function ($or) {
@@ -353,7 +353,7 @@ class RecipientController extends Controller
             $this->abortBadFields();
         }
 
-        $recipients = Target::where('campaign_id', $campaign->campaign_id)
+        $recipients = Target::where('campaign_id', $campaign->id)
             ->where(function ($query) use($field) {
                 $query->orWhereNull($field);
                 $query->orWhere($field, '=', '');
@@ -375,7 +375,7 @@ class RecipientController extends Controller
         $field = $request->field;
 
         if ($field == 'name') {
-            $toBeRemoved = Target::where('campaign_id', $campaign->campaign_id)
+            $toBeRemoved = Target::where('campaign_id', $campaign->id)
                 ->where(function ($query) {
                     $query->orWhere('first_name', '=', '');
                     $query->orWhereNull('first_name');
@@ -385,7 +385,7 @@ class RecipientController extends Controller
                     $query->orWhereNull('last_name');
                 });
         } else {
-            $toBeRemoved = Target::where('campaign_id', $campaign->campaign_id)
+            $toBeRemoved = Target::where('campaign_id', $campaign->id)
                 ->where(function ($query) use ($field) {
                     $query->orWhere($field, '=', '');
                     $query->orWhereNull($field);
@@ -476,7 +476,7 @@ class RecipientController extends Controller
             'year' => $request->get('year'),
             'make' => $request->get('make'),
             'model' => $request->get('model'),
-            'campaign_id' => $campaign->campaign_id,
+            'campaign_id' => $campaign->id,
             'subgroup' => $group_id,
         ]);
 
@@ -485,10 +485,10 @@ class RecipientController extends Controller
 
     public function download(Campaign $campaign)
     {
-        $recipients = Target::where('campaign_id', $campaign->campaign_id)->get()->toArray();
+        $recipients = Target::where('campaign_id', $campaign->id)->get()->toArray();
         $columns = \DB::getSchemaBuilder()->getColumnListing('recipients');
 
-        $filename ='Campaign_' . $campaign->campaign_id . '_recipients.csv';
+        $filename ='Campaign_' . $campaign->id . '_recipients.csv';
 
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Type: application/force-download');
@@ -718,7 +718,7 @@ class RecipientController extends Controller
      */
     public function bulkUpload(Request $request, Campaign $campaign)
     {
-        $campaign_id = $campaign->campaign_id;
+        $campaign_id = $campaign->id;
         $data = $request->request->get('recipients');
         $upload_id = substr(sha1($request->upload_identifier), 0, 63);
 
@@ -774,9 +774,9 @@ class RecipientController extends Controller
 
     public function deleteAll(Campaign $campaign)
     {
-        Target::where('campaign_id', $campaign->campaign_id)->delete();
+        Target::where('campaign_id', $campaign->id)->delete();
 
-        return redirect('/campaign/' . $campaign->campaign_id . '/recipients');
+        return redirect('/campaign/' . $campaign->id . '/recipients');
     }
 
     private function abortBadFields()

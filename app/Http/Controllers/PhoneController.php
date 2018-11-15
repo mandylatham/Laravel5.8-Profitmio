@@ -103,7 +103,7 @@ class PhoneController extends Controller
             }
         }
 
-        $phones = PhoneNumber::where('campaign_id', $campaign->campaign_id)
+        $phones = PhoneNumber::where('campaign_id', $campaign->id)
             ->where($filters);
 
         if ($request->query->has("sortField") && $request->query->get("sortField") != '') {

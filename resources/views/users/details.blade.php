@@ -17,7 +17,7 @@
             @foreach ($campaigns as $campaign)
             <td>
                 <a href="{{ secure_url('/campaign/' . $campaign->id) }}" class="btn btn-primary">
-                    # {{ $campaign->campaign_id }}
+                    # {{ $campaign->id }}
                 </a>
             </td>
             <td>{{ $campaign->name }}</td>

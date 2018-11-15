@@ -1,6 +1,6 @@
 $(document).ready(function() {
     $(".delete-all-missing-field").click(function() {
-        $.post("{{ secure_url('campaign/' . $campaign->campaign_id . '/recipients/deletePartialByField/') }}/", {field: $(this).data("field")}, 'json');
+        $.post("{{ secure_url('campaign/' . $campaign->id . '/recipients/deletePartialByField/') }}/", {field: $(this).data("field")}, 'json');
         location.reload();
     });
 
@@ -8,7 +8,7 @@ $(document).ready(function() {
     var recipient_data = [];
     var mrBungle = "";
 
-    $.get("{{ secure_url('campaign/' . $campaign->campaign_id . '/recipient-list') }}",
+    $.get("{{ secure_url('campaign/' . $campaign->id . '/recipient-list') }}",
         function(data, recipient_data) {
             recipient_data = data;
         }, 'json');
@@ -44,7 +44,7 @@ $(document).ready(function() {
             loadData: function(filter) {
                 return $.ajax({
                     type: "GET",
-                    url: "{{ secure_url('campaign/' . $campaign->campaign_id . '/recipient-list') }}",
+                    url: "{{ secure_url('campaign/' . $campaign->id . '/recipient-list') }}",
                     dataType: "json",
                     data: filter
                 });
@@ -53,7 +53,7 @@ $(document).ready(function() {
                 item._token = '{{ csrf_token() }}';
                 return $.ajax({
                     type: "POST",
-                    url: "{{ secure_url('campaign/' . $campaign->campaign_id . '/add-recipient') }}",
+                    url: "{{ secure_url('campaign/' . $campaign->id . '/add-recipient') }}",
                     data: item
                 });
             },
@@ -62,7 +62,7 @@ $(document).ready(function() {
                 item._token = '{{ csrf_token() }}';
                 return $.ajax({
                     type: "PUT",
-                    url: "{{ secure_url('campaign/' . $campaign->campaign_id . '/update-recipient') }}",
+                    url: "{{ secure_url('campaign/' . $campaign->id . '/update-recipient') }}",
                     data: item
                 });
             },
@@ -71,7 +71,7 @@ $(document).ready(function() {
                 item._token = '{{ csrf_token() }}';
                 return $.ajax({
                     type: "DELETE",
-                    url: "{{ secure_url('campaign/' . $campaign->campaign_id . '/remove-recipient') }}",
+                    url: "{{ secure_url('campaign/' . $campaign->id . '/remove-recipient') }}",
                     data: item
                 });
             }
@@ -207,7 +207,7 @@ $(document).ready(function() {
             $('#targetProgressBar > .meter').css('width', Math.min(Math.floor((diff/totalTargets)*100), 100)+'%');
 
             $.ajax({
-                url: "{{ secure_url('campaign/' . $campaign->campaign_id . '/recipients/upload') }}",
+                url: "{{ secure_url('campaign/' . $campaign->id . '/recipients/upload') }}",
                 type: "POST",
                 data: {
                     targets:JSON.stringify(batch)

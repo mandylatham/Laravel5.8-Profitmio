@@ -31,10 +31,10 @@
 
 @section('campaign_content')
     <div class="container-fluid">
-        <form data-fv-live="enabled" id="campaign-form" class="form form-horizontal" action="{{ secure_url('/campaign/' . $campaign->campaign_id . '/update') }}" method="post">
+        <form data-fv-live="enabled" id="campaign-form" class="form form-horizontal" action="{{ secure_url('/campaign/' . $campaign->id . '/update') }}" method="post">
             {{ csrf_field() }}
             <input type="hidden" name="phone_number_id" value="{{ $campaign->phone_number_id }}">
-            <input type="hidden" name="campaign_id" value="{{ $campaign->campaign_id }}">
+            <input type="hidden" name="campaign_id" value="{{ $campaign->id }}">
             @if ($errors->count() > 0)
             <div class="row-fluid">
                 <div class="col-md-12">

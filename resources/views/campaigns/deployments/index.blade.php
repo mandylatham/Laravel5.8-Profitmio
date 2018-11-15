@@ -41,7 +41,7 @@
         <a class="badge badge-outline text-default" href="#" id="show-cards" style="font-size: 24px; color: #666">
             <i class="icon fa-3x fa-th"></i>
         </a>
-        <a href="{{ secure_url('campaign/' . $campaign->campaign_id . '/drops/new') }}"
+        <a href="{{ secure_url('campaign/' . $campaign->id . '/drops/new') }}"
            class="btn btn-success waves-effect float-right">
             <i class="icon md-plus" aria-hidden="true"></i>
             New

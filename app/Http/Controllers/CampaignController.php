@@ -73,7 +73,7 @@ class CampaignController extends Controller
                 DB::raw("sum(if(event = 'dropped', 1, 0)) as dropped"),
                 DB::raw("sum(if(event = 'unsubscribed', 1, 0)) as unsubscribed"),
                 DB::raw("count(*) as total"))
-            ->where('campaign_id', $campaign->campaign_id)
+            ->where('campaign_id', $campaign->id)
             ->get();
 
         if ($emailStats->count() > 0 && $emailStats->first()->sent > 0) {
@@ -96,7 +96,7 @@ class CampaignController extends Controller
                 DB::raw("sum(wrong_number) as wrong_number"),
                 DB::raw("sum(car_sold) as car_sold"),
                 DB::raw("count(*) as total"))
-            ->where('campaign_id', $campaign->campaign_id)
+            ->where('campaign_id', $campaign->id)
             ->get();
 
         $viewData['emailCount'] = $emailStats->count();
@@ -109,7 +109,7 @@ class CampaignController extends Controller
 
     public function details(Campaign $campaign)
     {
-        $allCampaignData = Campaign::where('campaign_id', $campaign->campaign_id)
+        $allCampaignData = Campaign::where('campaign_id', $campaign->id)
             ->with('client', 'agency', 'schedules', 'phone_number')
             ->get();
         $viewData['campaign'] = $allCampaignData->first();
@@ -170,7 +170,7 @@ class CampaignController extends Controller
 
     public function update(Campaign $campaign, NewCampaignRequest $request)
     {
-        if ($request->has('phone_number_id') || $request->has('forward')) {
+        if ($request->filled('phone_number_id') || $request->filled('forward')) {
             $phone = \App\Models\PhoneNumber::findOrFail($request->phone_number_id);
             $phone->fill(['forward' => $request->forward]);
             $phone->save();
@@ -199,8 +199,7 @@ class CampaignController extends Controller
 
         $campaign->save();
 
-
-        return redirect('/campaign/' . $campaign->campaign_id . '/edit');
+        return redirect('/campaign/' . $campaign->id . '/edit');
     }
 
     public function delete(Campaign $campaign)
