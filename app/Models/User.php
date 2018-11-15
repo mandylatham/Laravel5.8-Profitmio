@@ -36,6 +36,11 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function agencyCampaigns()
+    {
+        return $this->hasMany(Campaign::class, 'agency_id', 'id');
+    }
+
     /**
      * The roles that belong to the user.
      */
@@ -76,6 +81,37 @@ class User extends Authenticatable
             return false;
         }
         return true;
+    }
+
+    /**
+     * Method that verify if user belongs to an agency company (user or admin)
+     * @param int|null $companyId Id of company if we want to verify specific company
+     * @return bool
+     */
+    public function isAgencyUser(int $companyId = null): bool
+    {
+        $userCompanies = $this->companies()
+            ->where('companies.type', 'agency');
+        if ($companyId) {
+            $userCompanies->where('companies.id', $companyId);
+        }
+        return $userCompanies->count() > 0;
+    }
+
+
+    /**
+     * Method that verify if user belongs to an dealership company (user or admin)
+     * @param int|null $companyId Id of company if we want to verify specific company
+     * @return bool
+     */
+    public function isDealershipUser(int $companyId = null): bool
+    {
+        $userCompanies = $this->companies()
+            ->where('companies.type', 'dealership');
+        if ($companyId) {
+            $userCompanies->where('companies.id', $companyId);
+        }
+        return $userCompanies->count() > 0;
     }
 
     public function getCampaigns(int $companyId)

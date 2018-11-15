@@ -2,11 +2,11 @@
 
 namespace App\Providers;
 
-use App\Campaign;
-use App\Company;
+use App\Models\Campaign;
+use App\Models\Company;
 use App\Policies\CampaignPolicy;
 use App\Policies\CompanyPolicy;
-use App\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 

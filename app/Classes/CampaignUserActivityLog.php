@@ -2,9 +2,9 @@
 
 namespace App\Classes;
 
-use App\Campaign;
-use App\CampaignUser;
-use App\User;
+use App\Models\Campaign;
+use App\Models\CampaignUser;
+use App\Models\User;
 
 class CampaignUserActivityLog
 {

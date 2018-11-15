@@ -3,10 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CompanyUserActivityLog;
-use App\Company;
-use App\CompanyUser;
+use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Mail\InviteUser;
-use App\User;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -31,7 +31,7 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('user/index', ['users' => $users]);
+        return view('users.index', ['users' => $users]);
     }
 
     /**
@@ -74,17 +74,28 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function show(User $user)
     {
+        $viewData['user'] = $user;
+        $viewData['campaigns'] = collect([]);
+
+        if ($user->isAgencyUser()) {
+            $viewData['campaigns'] = $user->agencyCampaigns()->get();
+        }
+        if ($user->access == 'Client') {
+            $viewData['campaigns'] = $user->campaigns()->get();
+        }
+
+        return view('users.details', $viewData);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function edit(User $user)
@@ -97,7 +108,7 @@ class UserController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, User $user)
@@ -128,10 +139,17 @@ class UserController extends Controller
         return response()->redirectToRoute('users.index');
     }
 
+    public function updateForm(User $user)
+    {
+        $viewData['user'] = $user;
+
+        return view('users.edit', $viewData);
+    }
+
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\User  $user
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
     public function destroy(User $user)
