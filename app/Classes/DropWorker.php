@@ -138,7 +138,7 @@ class DropWorker
                 $html = $twig->render('html', $templateVars);
                 $text = $twig->render('text', $templateVars);
             } catch (\Exception $e) {
-                /*  Mark DropTarget as Sent  */
+                /*  Mark DropRecipient as Sent  */
                 $affected = \DB::table('deployment_recipients')
                     ->where('deployment_id', $drop->id)
                     ->where('recipient_id', $recipient->id)
@@ -183,7 +183,7 @@ class DropWorker
                 $this->abortRun($drop, $e, "DropWorker: email tracking failure. current recipient is #{$recipient->id} \nAborting! \nException: {$e->getMessage}");
             }
 
-            /*  Mark DropTarget as Sent  */
+            /*  Mark DropRecipient as Sent  */
             $affected = \DB::table('deployment_recipients')
                 ->where('deployment_id', $drop->id)
                 ->where('recipient_id', $recipient->id)

@@ -174,7 +174,7 @@
                         @endif
                     </h4>
                     <p class="card-text">
-                        <i class="icon fa-folder"></i> <strong>Group {{ $drop->target_group }}</strong><br>
+                        <i class="icon fa-folder"></i> <strong>Group {{ $drop->recipient_group }}</strong><br>
                         <i class="icon md-account"></i> &nbsp;<strong>{{ $drop->recipients }} recipients</strong>
                     </p>
                     <p class="card-text">

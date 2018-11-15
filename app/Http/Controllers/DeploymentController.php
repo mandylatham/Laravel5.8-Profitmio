@@ -98,7 +98,7 @@ class DeploymentController extends Controller
                 $updateField = 'sent_at';
             }
 
-            /*  Mark DropTarget as Sent  */
+            /*  Mark DropRecipient as Sent  */
             if ($drop->system_id == 2) {
                 \DB::table('deployment_recipients')
                     ->where('deployment_id', $drop->id)
@@ -127,7 +127,7 @@ class DeploymentController extends Controller
                 'debug' => json_encode($filler),
             ];
         } catch (\Exception $e) {
-            /*  Mark DropTarget as Sent  */
+            /*  Mark DropRecipient as Sent  */
             if ($drop->system_id == 2) {
                 \DB::table('deployment_recipients')
                     ->where('deployment_id', $drop->id)
@@ -166,7 +166,7 @@ class DeploymentController extends Controller
 
         $deployments = collect($this->createBulkDeployments($campaign, $request));
         $recipients = collect($this->getBulkRecipients($campaign, $request));
-        $batches = $this->assembleTargetBatches($info, $recipients, $deployments);
+        $batches = $this->assembleRecipientBatches($info, $recipients, $deployments);
 
         \DB::table('deployment_recipients')->insert($batches);
 
@@ -434,12 +434,12 @@ class DeploymentController extends Controller
                 ->where('email_valid', 1);
         }
         if ($contact == 'no-resp-email') {
-            $recipients->whereNotIn('recipient_id',
+            $recipients->whereNotIn('id',
                 \DB::table('responses')->where('campaign_id', $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
                 ->where('email_valid', 1);
         }
         if ($contact == 'no-resp-sms') {
-            $recipients->whereNotIn('recipient_id',
+            $recipients->whereNotIn('id',
                 \DB::table('responses')->where('campaign_id', $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
                 ->whereRaw("length(phone) > 9");
         }
@@ -456,9 +456,9 @@ class DeploymentController extends Controller
                 $recipients->whereFromDealerDb(false);
             }
         }
-        Log::debug("recipient count: " . $recipients->select('recipient_id')->count());
+        Log::debug("recipient count: " . $recipients->select('id')->count());
 
-        return $recipients->select('recipient_id')->get();
+        return $recipients->select('id')->get();
     }
 
     /**
@@ -468,7 +468,7 @@ class DeploymentController extends Controller
      *
      * @return array
      */
-    protected function assembleTargetBatches($info, $recipients, $deployments)
+    protected function assembleRecipientBatches($info, $recipients, $deployments)
     {
         $i = 0;
         $batch = 0;
@@ -493,7 +493,7 @@ class DeploymentController extends Controller
                 })->toArray();
             }
         } catch (\Exception $e) {
-            \Log::error('DeploymentController@assembleTargetBatches(): cannot assemble batches => ' . $e->getMessage());
+            \Log::error('DeploymentController@assembleRecipientBatches(): cannot assemble batches => ' . $e->getMessage());
             dd($e->getMessage());
         }
 

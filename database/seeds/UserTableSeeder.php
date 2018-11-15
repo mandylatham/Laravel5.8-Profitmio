@@ -15,10 +15,13 @@ class UserTableSeeder extends Seeder
     public function run()
     {
         $user = new User();
-        $user->name = 'Carlos';
+        $user->first_name = 'Carlos';
+        $user->last_name = 'Arauz';
         $user->email = 'carauzs@gmail.com';
+        $user->username = 'carauzs';
         $user->is_admin = true;
         $user->email_verified_at = Carbon::now()->toDateTimeString();
+        $user->timezone = 'US/Alaska';
         $user->password = bcrypt('password');
         $user->save();
 

@@ -24,7 +24,15 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'is_admin',
+        'first_name',
+        'last_name',
+        'last_name',
+        'email',
+        'timezone',
+        'phone_number',
+        'password',
+        'is_admin',
+        'username'
     ];
 
     /**
@@ -137,6 +145,11 @@ class User extends Authenticatable
     }
 
     public function getPossibleTimezones()
+    {
+        return self::getPossibleTimezonesForUser();
+    }
+
+    static function getPossibleTimezonesForUser()
     {
         return [
             'US/Alaska',

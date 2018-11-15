@@ -7,7 +7,7 @@ use App\Models\Campaign;
 use App\Classes\MailgunService;
 use App\Mail\CrmNotification;
 use App\Mail\LeadNotification;
-use App\Target;
+use App\Recipient;
 use Illuminate\Http\Request;
 
 /**
@@ -48,12 +48,12 @@ class AppointmentController extends Controller
             $alt_phone_number = $alt_phone_number->phoneNumber;
         }
 
-        $recipient = Target::where('campaign_id', $campaign->id)
+        $recipient = Recipient::where('campaign_id', $campaign->id)
             ->where('phone', $phone_number ?: $request->json()->get('phone_number'))
             ->first();
 
         if (!$recipient) {
-            $recipient = new Target([
+            $recipient = new Recipient([
                 'first_name' => $request->json()->get('first_name'),
                 'last_name' => $request->json()->get('last_name'),
                 'phone' => $phone_number ?: $request->json()->get('phone_number'),

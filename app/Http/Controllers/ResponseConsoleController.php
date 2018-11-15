@@ -560,7 +560,7 @@ class ResponseConsoleController extends Controller
         # Lookup caller's "caller-name" from Twilio
         $sender = (object) \Twilio::getNameFromPhoneNumber($request->get('From'));
 
-        # Create a new Target and add it to the campaign for the person
+        # Create a new Recipient and add it to the campaign for the person
         $recipient = new Recipient([
             'first_name' => $sender->first_name,
             'last_name' => $sender->last_name,

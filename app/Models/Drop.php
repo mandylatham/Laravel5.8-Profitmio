@@ -17,7 +17,7 @@ class Drop extends Model
     ];
 
     public $fillable = [
-        'type', 'send_at', 'email_subject', 'email_text', 'email_html', 'target_group',
+        'type', 'send_at', 'email_subject', 'email_text', 'email_html', 'recipient_group',
         'text_message', 'text_message_image', 'send_vehicle_image', 'campaign_id', 'status',
         'percentage_complete', 'completed_at', 'system_id'
     ];
@@ -34,14 +34,14 @@ class Drop extends Model
         return $this->belongsTo(Campaign::class, 'campaign_id', 'campaign_id');
     }
 
-    public function targets()
+    public function recipients()
     {
-        return $this->hasMany(Target::class, 'campaign_id', 'campaign_id');
+        return $this->hasMany(Recipient::class, 'campaign_id', 'campaign_id');
     }
 
     public function recipients()
     {
-        return $this->belongsToMany(Recipient::class, 'deployment_targets', 'deployment_id', 'target_id');
+        return $this->belongsToMany(Recipient::class, 'deployment_recipients', 'deployment_id', 'recipient_id');
     }
 
     public function getSendAtAttribute($value)

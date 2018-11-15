@@ -25,7 +25,7 @@ $factory->define(Company::class, function (Faker $faker) {
         'city' => $faker->city,
         'state' => $faker->state,
         'zip' => $faker->postcode,
-        'country' => $faker->country,
+        'country' => $faker->countryCode,
         'url' => $faker->url,
         'image_url' => $faker->imageUrl(),
         'facebook' => $faker->url,

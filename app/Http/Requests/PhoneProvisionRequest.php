@@ -13,7 +13,7 @@ class PhoneProvisionRequest extends FormRequest
      */
     public function authorize()
     {
-        return \Auth::user()->isAdmin;
+        return auth()->user()->isAdmin();
     }
 
     /**

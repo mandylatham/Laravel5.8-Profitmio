@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\CompanyUserActivityLog;
 use App\Models\Company;
-use App\Models\CompanyUser;
+use App\Http\Requests\UserRequest;
 use App\Mail\InviteUser;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -35,14 +35,41 @@ class UserController extends Controller
     }
 
     /**
+     * @param UserRequest $request
+     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
+     */
+    public function create(UserRequest $request)
+    {
+        $user = new User([
+            'first_name' => $request->first_name,
+            'last_name' => $request->last_name,
+            'username' => $request->username,
+            'email' => $request->email,
+            'is_admin' => $request->input('access') === 'admin',
+            'password' => bcrypt($request->password),
+            'phone_number' => $request->phone_number,
+            'timezone' => $request->timezone
+        ]);
+        $user->save();
+        $user->companies()->attach($request->get('company'), ['role' => $request->get('role')]);
+        $this->companyUserActivityLog->attach($user, (int)$request->get('company'), $request->get('role'));
+//        $processRegistration = URL::temporarySignedRoute('registration.complete', Carbon::now()->addMinutes(60), ['id' => $user->getKey()]);
+//        Mail::to($user)->send(new InviteUser($user, $processRegistration));
+
+        return redirect('/user/' . $user->id . '/edit');
+    }
+
+    /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function createForm()
     {
-        $companies = Company::all();
-        return view('user/create', ['companies' => $companies]);
+        $viewData = [
+            'companies' => Company::all()
+        ];
+        return view('users.new', $viewData);
     }
 
     /**

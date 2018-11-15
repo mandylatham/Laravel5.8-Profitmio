@@ -10,7 +10,6 @@ use App\Jobs\ProcessList;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
-use App\Target;
 use App\Jobs\LoadListRecipients;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -62,12 +61,12 @@ class RecipientController extends Controller
                 ->where('email_valid', 1);
         }
         if ($contact == 'no-resp-email') {
-            $recipients->whereNotIn('recipient_id',
+            $recipients->whereNotIn('id',
                 \DB::table('responses')->where('campaign_id', $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
                 ->where('email_valid', 1);
         }
         if ($contact == 'no-resp-sms') {
-            $recipients->whereNotIn('recipient_id',
+            $recipients->whereNotIn('id',
                 \DB::table('responses')->where('campaign_id', $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
                 ->whereRaw("length(phone) > 9");
         }
@@ -267,7 +266,7 @@ class RecipientController extends Controller
             }
         }
 
-        $recipients = Target::where('campaign_id', $campaign->id)
+        $recipients = Recipient::where('campaign_id', $campaign->id)
             ->where($filters);
 
         if ($request->query->has("sortField") && $request->query->get('sortField') != '') {
@@ -288,13 +287,13 @@ class RecipientController extends Controller
     }
 
     /**
-     * Get an object containing Target counts with partial data
+     * Get an object containing Recipient counts with partial data
      *
      * @param \App\Models\Campaign $campaign
      *
      * @return \Illuminate\Database\Eloquent\Collection
      */
-    protected function getPartialTargetCounts(Campaign $campaign)
+    protected function getPartialRecipientCounts(Campaign $campaign)
     {
         $missing = \DB::table('recipients')
             ->select(
@@ -353,7 +352,7 @@ class RecipientController extends Controller
             $this->abortBadFields();
         }
 
-        $recipients = Target::where('campaign_id', $campaign->id)
+        $recipients = Recipient::where('campaign_id', $campaign->id)
             ->where(function ($query) use($field) {
                 $query->orWhereNull($field);
                 $query->orWhere($field, '=', '');
@@ -375,7 +374,7 @@ class RecipientController extends Controller
         $field = $request->field;
 
         if ($field == 'name') {
-            $toBeRemoved = Target::where('campaign_id', $campaign->id)
+            $toBeRemoved = Recipient::where('campaign_id', $campaign->id)
                 ->where(function ($query) {
                     $query->orWhere('first_name', '=', '');
                     $query->orWhereNull('first_name');
@@ -385,7 +384,7 @@ class RecipientController extends Controller
                     $query->orWhereNull('last_name');
                 });
         } else {
-            $toBeRemoved = Target::where('campaign_id', $campaign->id)
+            $toBeRemoved = Recipient::where('campaign_id', $campaign->id)
                 ->where(function ($query) use ($field) {
                     $query->orWhere($field, '=', '');
                     $query->orWhereNull($field);
@@ -405,7 +404,7 @@ class RecipientController extends Controller
             abort(422, "Invalid Parameters");
         }
 
-        if ( Target::whereIn('recipient_id', $request->input('recipient_ids'))->count() != count($request->input('recipient_ids'))) {
+        if ( Recipient::whereIn('recipient_id', $request->input('recipient_ids'))->count() != count($request->input('recipient_ids'))) {
             abort(422, "Not all recipients exist, please try again");
         }
 
@@ -424,7 +423,7 @@ class RecipientController extends Controller
             return redirect()->back()->withErrors($errors);
         }
 
-        $recipient = Target::whereIn('campaign_id', $campaign->id)
+        $recipient = Recipient::whereIn('campaign_id', $campaign->id)
             ->whereIn('recipient_id', $request->input('recipient_ids'))
             ->whereNotIn('recipient_id', $dropped)
             ->delete();
@@ -438,7 +437,7 @@ class RecipientController extends Controller
      */
     public function update(AddRecipientRequest $request, Campaign $campaign)
     {
-        $recipient = Target::findOrFail($request->recipient_id);
+        $recipient = Recipient::findOrFail($request->recipient_id);
 
         $recipient->update([
             'first_name' => $request->get('first_name'),
@@ -485,7 +484,7 @@ class RecipientController extends Controller
 
     public function download(Campaign $campaign)
     {
-        $recipients = Target::where('campaign_id', $campaign->id)->get()->toArray();
+        $recipients = Recipient::where('campaign_id', $campaign->id)->get()->toArray();
         $columns = \DB::getSchemaBuilder()->getColumnListing('recipients');
 
         $filename ='Campaign_' . $campaign->id . '_recipients.csv';
@@ -744,7 +743,7 @@ class RecipientController extends Controller
                 $recipient['phone'] = preg_replace("/[^0-9]/", "", $recipient['phone']);
             }
             try {
-                Target::insert($recipients);
+                Recipient::insert($recipients);
                 return json_encode(['code' => 200, 'message' => 'success']);
             } catch (\Exception $e) {
                 // echo $e->getMessage();
@@ -774,7 +773,7 @@ class RecipientController extends Controller
 
     public function deleteAll(Campaign $campaign)
     {
-        Target::where('campaign_id', $campaign->id)->delete();
+        Recipient::where('campaign_id', $campaign->id)->delete();
 
         return redirect('/campaign/' . $campaign->id . '/recipients');
     }

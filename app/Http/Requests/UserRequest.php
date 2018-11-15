@@ -13,7 +13,7 @@ class UserRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->isAdmin;
+        return auth()->user()->isAdmin();
     }
 
     /**
@@ -24,11 +24,13 @@ class UserRequest extends FormRequest
     public function rules()
     {
         return [
-            'access' => 'required|in:Admin,Agency,Client',
-            'organization' => 'required',
+            'access' => 'required|in:admin,company_user',
+            'role' => 'required_if:access,company_user|in:admin,user',
+            'company' => 'required_if:access,company_user|exists:companies,id',
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
+            'username' => 'required',
             'phone_number' => 'required',
             'password' => 'nullable',
             'timezone' => 'required',

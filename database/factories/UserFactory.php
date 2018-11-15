@@ -17,9 +17,12 @@ use App\Models\User;
 
 $factory->define(User::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
+        'first_name' => $faker->firstName,
+        'last_name' => $faker->lastName,
+        'username' => $faker->userName,
         'email' => $faker->unique()->safeEmail,
         'is_admin'=> $faker->randomElement([true, false]),
+        'timezone'=> $faker->randomElement(User::getPossibleTimezonesForUser()),
         'email_verified_at' => Carbon::now()->toDateTimeString(),
         'password' => bcrypt('password')
     ];

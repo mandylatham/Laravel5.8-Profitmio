@@ -49,7 +49,7 @@
                 </div>
             </div>
         </div>
-        <div class="page-content container-fluid">
+        <div class="page-content container-fluid">f
             <div class="row-fluid" data-plugin="matchHeight" data-by-row="true">
                 <div class="col-md-6 offset-md-3">
                     <div class="panel" id="add-new-campaign-wizard">
@@ -87,14 +87,26 @@
                                             <label for="access" class="floating-label">User Type</label>
                                             <select name="access" class="form-control" required>
                                                 <option selected disabled>Choose access level...</option>
-                                                <option>Admin</option>
-                                                <option>Agency</option>
-                                                <option>Client</option>
+                                                <option value="admin">Admin</option>
+                                                <option value="company_user">Company User</option>
                                             </select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="name" class="floating-label">Organization</label>
-                                            <input type="text" class="form-control empty" name="organization" data-fv-field="organization" value="{{ old('organization') }}" required>
+                                            <label for="access" class="floating-label">Company</label>
+                                            <select name="company" class="form-control" required>
+                                                <option selected disabled>Select a Company</option>
+                                                @foreach ($companies as $company)
+                                                <option value="{{ $company->id }}">{{ $company->name }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="role" class="floating-label">Role</label>
+                                            <select name="role" class="form-control" required>
+                                                <option selected disabled>Choose role...</option>
+                                                <option value="admin">Admin</option>
+                                                <option value="user">User</option>
+                                            </select>
                                         </div>
                                         <div class="form-group">
                                             <label for="order" class="floating-label">First Name</label>
@@ -131,7 +143,7 @@
                                         <div class="form-group">
                                             <select name="timezone" class="form-control" data-plugin="select2">
                                                 <option disabled {{ old('timezone') == '' ? 'selected' : '' }}>Choose Timezone...</option>
-                                                @foreach (DateTimeZone::listIdentifiers(DateTimeZone::AMERICA) as $timezone)
+                                                @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
                                                     <option {{ old('timezone') == $timezone ? 'selected' : '' }}>{{ $timezone }}</option>
                                                 @endforeach
                                             </select>

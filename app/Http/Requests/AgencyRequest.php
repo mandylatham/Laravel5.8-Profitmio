@@ -13,6 +13,6 @@ class AgencyRequest extends UserRequest
      */
     public function authorize()
     {
-        return \Auth::user()->isAdmin;
+        return auth()->user()->isAdmin();
     }
 }
