@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Lab404\Impersonate\Models\Impersonate;
+use Lab404\Impersonate\Services\ImpersonateManager;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
@@ -117,5 +118,16 @@ class User extends Authenticatable
             'US/Pacific-New',
             'US/Samoa',
         ];
+    }
+
+    /**
+     * Check if the current user is impersonated.
+     *
+     * @param   void
+     * @return  bool
+     */
+    public function getImpersonarotId()
+    {
+        return app(ImpersonateManager::class)->getImpersonatorId();
     }
 }

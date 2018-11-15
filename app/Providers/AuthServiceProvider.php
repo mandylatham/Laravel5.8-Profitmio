@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use App\Campaign;
 use App\Company;
+use App\ImpersonatedUser;
 use App\Policies\CampaignPolicy;
 use App\Policies\CompanyPolicy;
 use App\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -31,7 +33,13 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        $this->defineGates();
 
+        $this->defineImpersonateAuthGate();
+    }
+
+    private function defineGates(): void
+    {
         Gate::before(function (User $user, $ability) {
             if ($user->isAdmin()) {
                 return true;
@@ -49,6 +57,19 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('campaign.create', 'App\Policies\CampaignPolicy@create');
         Gate::define('campaign.manage', 'App\Policies\CampaignPolicy@manage');
+    }
+
+    private function defineImpersonateAuthGate(): void
+    {
+        Auth::viaRequest('impersonuser', function () {
+            /** @var User $user */
+            $user = Auth::user();
+            if ($user->isImpersonated()) {
+                return ImpersonatedUser::findOrCreateImpersonatedUser($user->id, $user->getImpersonarotId());
+            } else {
+                return $user;
+            }
+        });
     }
 
 

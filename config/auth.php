@@ -45,6 +45,11 @@ return [
             'driver' => 'token',
             'provider' => 'users',
         ],
+
+        'impersonuser' => [
+            'driver' => 'impersonuser',
+            'provider' => 'users',
+        ],
     ],
 
     /*
