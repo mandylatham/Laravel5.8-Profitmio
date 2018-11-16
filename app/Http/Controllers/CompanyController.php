@@ -19,14 +19,21 @@ use Illuminate\Support\Facades\URL;
 
 class CompanyController extends Controller
 {
+
+    /**
+     * @var Company
+     */
+    private $company;
+
     /** @var CompanyUserActivityLog  */
     private $companyUserActivityLog;
 
     /** @var CampaignUserActivityLog  */
     private $campaignUserActivityLog;
 
-    public function __construct(CompanyUserActivityLog $companyUserActivityLog, CampaignUserActivityLog $campaignUserActivityLog)
+    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, CampaignUserActivityLog $campaignUserActivityLog)
     {
+        $this->company = $company;
         $this->companyUserActivityLog = $companyUserActivityLog;
         $this->campaignUserActivityLog = $campaignUserActivityLog;
     }
@@ -38,8 +45,14 @@ class CompanyController extends Controller
      */
     public function index()
     {
-        $companies = Company::all();
-        return view('company/index', ['companies' => $companies]);
+        $companies = $this->company->all();
+        return view('company.index', ['companies' => $companies]);
+    }
+
+    public function indexCampaign(Company $company)
+    {
+        $campaigns = $company->getCampaigns();
+        return view('company.campaign.index', ['companies' => $companies]);
     }
 
     /**
@@ -49,7 +62,7 @@ class CompanyController extends Controller
      */
     public function create()
     {
-        return view('company/create');
+        return view('company.create');
     }
 
     /**
@@ -109,19 +122,26 @@ class CompanyController extends Controller
         //
     }
 
+    /**
+     *  Show the template for view the specified resource.
+     * If logged user is a company admin, then company.dashboard-manager view is returned
+     * else, if logged user is company regular user, then company.dashboard view is returned
+     * @param Company $company
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function dashboard(Company $company)
     {
         /** @var User $user */
-        $user = Auth::user();
+        $user = auth()->user();
         $templateSuffix = '';
         if ($user->isCompanyAdmin($company->id)) {
             $templateSuffix = '-manager';
-            $campaigns = Campaign::getCompanyCampaigns($company->id);
+            $campaigns = $company->getCampaigns();
         } else {
-            $campaigns = $user->getCampaigns($company->id);
+            $campaigns = $user->getCampaignsForCompany($company);
         }
 
-        return view('company/dashboard' . $templateSuffix, ['campaigns' => $campaigns, 'company' => $company]);
+        return view('company.dashboard' . $templateSuffix, ['campaigns' => $campaigns, 'company' => $company]);
     }
 
     public function createuser(Company $company)

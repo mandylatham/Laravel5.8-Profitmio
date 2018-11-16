@@ -58,6 +58,7 @@ class User extends Authenticatable
     {
         return $this->companies()->where('companies.id', $companyId)->count() === 1;
     }
+
     /**
      * The roles that belong to the user.
      */
@@ -131,17 +132,15 @@ class User extends Authenticatable
         return $userCompanies->count() > 0;
     }
 
-    public function getCampaigns(int $companyId)
+    public function getCampaignsForCompany(Company $company)
     {
-        return DB::table('campaigns')
-                 ->select('campaigns.*')
-                 ->join('campaign_user', 'campaign_user.campaign_id', '=', 'campaigns.id')
-                 ->where('campaign_user.user_id', $this->id)
-                 ->where(function($query) use ($companyId) {
-                        $query->where('campaigns.agency_id', $companyId)
-                        ->orWhere('campaigns.dealership_id', $companyId);
-                 })
-                 ->get();
+        return $this->campaigns()
+            ->where(function ($query) use ($company) {
+                $query
+                    ->where('campaigns.agency_id', $company->id)
+                    ->orWhere('campaigns.dealership_id', $company->id);
+            })
+            ->get();
     }
 
     public function hasAccessToCampaign(int $campaignId)

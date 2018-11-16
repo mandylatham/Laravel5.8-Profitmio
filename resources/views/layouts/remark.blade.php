@@ -159,6 +159,9 @@
         .dropdown-menu {
             z-index: 9000;
         }
+        .v-center {
+            vertical-align: middle !important;
+        }
         @yield('manualStyle')
     </style>
 </head>
@@ -354,6 +357,12 @@
                         </a>
                     </li>
                     @endif
+                    <li class="site-menu-item">
+                        <a href="{{ route('company.index') }}" class=" waves-effect waves-classic">
+                            <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
+                            <span class="site-menu-title">Companies</span>
+                        </a>
+                    </li>
                     @if (\Gate::allows('admin-only'))
                     <li class="site-menu-category">System</li>
                     <li class="dropdown site-menu-item has-sub">

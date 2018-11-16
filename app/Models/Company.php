@@ -31,4 +31,12 @@ class Company extends Model
     {
         return self::where('type', self::TYPE_DEALERSHIP)->whereNull('deleted_at')->get();
     }
+
+    public function getCampaigns()
+    {
+        return Campaign::where(function ($query) {
+            $query->where('agency_id', $this->id)
+                ->orWhere('dealership_id', $this->id);
+        })->get();
+    }
 }
