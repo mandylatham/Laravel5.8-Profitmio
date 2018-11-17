@@ -61,6 +61,25 @@ class Campaign extends Model
                 })->get();
     }
 
+    /**
+     * Return the HTML template to show the name of the company in datatables
+     * @return string
+     */
+    public function getNameForTemplate()
+    {
+        $template = "<h5 style='max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space:nowrap;'>";
+        if (isset($this->order_id)) {
+            $template .= "<small>Order $this->order_id </small><br>";
+        }
+        $template .= ucwords($this->name);
+        if (!empty($this->starts_at) && !empty($this->ends_at)) {
+            $template .= "<br><small>From <code> " . show_date($this->starts_at, 'm/d/Y') . "</code> to <code>" . show_date($this->ends_at, 'm/d/Y') . "</code></small><br>";
+        } else {
+            $template = "<br><small>No Dates</small><br>";
+        }
+        return $template;
+    }
+
     public function phone()
     {
         return $this->hasOne(PhoneNumber::class, 'id', 'phone_number_id');

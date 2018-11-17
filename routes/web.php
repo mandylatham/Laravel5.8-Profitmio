@@ -168,9 +168,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'companies'], function () {
         Route::get('', 'CompanyController@index')->middleware('can:create')->name('company.index');
         Route::get('/create', 'CompanyController@create')->middleware('can:create')->name('company.create');
-        Route::get('/{company}/dashboard', 'CompanyController@dashboard')->middleware('can:view,company')->name('company.dashboard');
-        Route::get('/{company}/campaign', 'CompanyController@indexCampaign')->middleware('can:view,company')->name('company.campaign.index');
-        Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');
+        Route::get('/{company}/user', 'CompanyController@userIndex')->middleware('can:manage,company')->name('company.user.index');
+        Route::get('/{company}/user/create', 'CompanyController@userCreate')->middleware('can:manage,company')->name('company.user.create');
+        Route::get('/{company}/user/{user}/edit', 'CompanyController@userEdit')->middleware('can:manage,company')->name('company.user.edit');
+        Route::post('/{company}/user', 'CompanyController@userStore')->middleware('can:manage,company')->name('company.user.store');
+        Route::get('/{company}/campaign', 'CompanyController@campaignIndex')->middleware('can:viewForPreferences,company')->name('company.campaign.index');
+        Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:manage,company')->name('company.edit');
     });
     //endregion
 });
@@ -180,10 +183,10 @@ Route::group(['middleware' => 'auth'], function () {
 //Auth::routes();
 //
 //Route::get('/home', 'HomeController@index')->name('home');
-//Route::middleware('signed', 'justinvited')->group(function() {
-//    Route::get('/registration/complete', 'Auth\CompleteController@show')->name('registration.complete');
-//    Route::post('/registration/complete', 'Auth\CompleteController@set');
-//});
+Route::middleware('signed', 'justinvited')->group(function() {
+    Route::get('/registration/complete', 'Auth\CompleteController@show')->name('registration.complete');
+    Route::post('/registration/complete', 'Auth\CompleteController@set');
+});
 //
 Route::get('/company/{company}', 'HomeController@companytest')->middleware('company');
 //Route::resource('/companies', 'CompanyController')->middleware('can:create,App\Models\Company');

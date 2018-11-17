@@ -38,6 +38,23 @@ class CompanyController extends Controller
         $this->campaignUserActivityLog = $campaignUserActivityLog;
     }
 
+    public function campaignIndex(Company $company)
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        $templateSuffix = '';
+        if ($user->isCompanyAdmin($company->id)) {
+            $campaigns = $company->getCampaigns();
+            $templateSuffix = '-manager';
+        } else {
+            $campaigns = $user->getCampaignsForCompany($company);
+        }
+        return view('company.campaign.index' . $templateSuffix, [
+            'campaigns' => $campaigns,
+            'company' => $company
+        ]);
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -47,12 +64,6 @@ class CompanyController extends Controller
     {
         $companies = $this->company->all();
         return view('company.index', ['companies' => $companies]);
-    }
-
-    public function indexCampaign(Company $company)
-    {
-        $campaigns = $company->getCampaigns();
-        return view('company.campaign.index', ['companies' => $companies]);
     }
 
     /**
@@ -123,7 +134,7 @@ class CompanyController extends Controller
     }
 
     /**
-     *  Show the template for view the specified resource.
+     * Show the template for view the specified resource.
      * If logged user is a company admin, then company.dashboard-manager view is returned
      * else, if logged user is company regular user, then company.dashboard view is returned
      * @param Company $company
@@ -155,6 +166,10 @@ class CompanyController extends Controller
         if (empty($user)) {
             $userParameters = $request->only(['name', 'email']);
             $userParameters['password'] = '';
+            $userParameters['first_name'] = '';
+            $userParameters['last_name'] = '';
+            $userParameters['timezone'] = '';
+            $userParameters['username'] = '';
             $user = User::create($userParameters);
 
             $processRegistration = URL::temporarySignedRoute(
@@ -164,7 +179,7 @@ class CompanyController extends Controller
         }
         $user->companies()->attach($company->id, ['role' => User::ROLE_USER]);
         $this->companyUserActivityLog->attach($user, $company->id, User::ROLE_USER);
-        return response()->redirectToRoute('companies.dashboard', ['company' => $company->id]);
+        return response()->redirectToRoute('company.user.index', ['company' => $company->id]);
     }
 
     public function users(Company $company)
@@ -199,7 +214,7 @@ class CompanyController extends Controller
     public function preferences(Request $request, Company $company)
     {
         $user = Auth::user();
-        $pivot = $user->companies->find($company->id)->pivot;
+        $pivot = $user->companies()->find($company->id)->pivot;
         return view('company/preferences', ['user' => $user, 'company' => $company, 'pivot' => $pivot]);
     }
 
@@ -247,4 +262,67 @@ class CompanyController extends Controller
         return response()->redirectToRoute('companies.useraccess', ['company' => $company->id, 'user' => $user]);
     }
 
+    //region User Resource
+    /**
+     * Show lists of users
+     * @param Company $company
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function userIndex(Company $company)
+    {
+        return view('company.user.index', ['company' => $company]);
+    }
+
+    /**
+     * Show form to create a new user
+     * @param Company $company
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function userCreate(Company $company)
+    {
+        return view('company.user.create', ['company' => $company]);
+    }
+
+    /**
+     * Show form to edit a user
+     * @param Company $company
+     * @param User $user
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function userEdit(Company $company, User $user)
+    {
+        return view('company.user.edit', [
+            'company' => $company,
+            'user' => $user
+        ]);
+    }
+
+    /**
+     * Store a new user in storage
+     * @param Company $company
+     * @param Request $request
+     * @return \Illuminate\Http\RedirectResponse
+     */
+    public function userStore(Company $company, Request $request)
+    {
+        $user = new User([
+            'first_name' => $request->input('first_name'),
+            'last_name' => $request->input('last_name'),
+            'username' => $request->input('username'),
+            'email' => $request->input('email'),
+            'is_admin' => false,
+            'password' => bcrypt($request->input('password')),
+            'phone_number' => $request->input('phone_number'),
+            'timezone' => $request->input('timezone')
+        ]);
+        $user->save();
+
+        $user->companies()->attach($company->id, [
+            'role' => $request->input('role')]
+        );
+        $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
+
+        return redirect()->route('company.user.edit', ['company' => $company->id]);
+    }
+    //endregion
 }

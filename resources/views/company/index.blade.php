@@ -61,7 +61,7 @@
                                                 <div class="company-image" style="background-image: url('{{ $company->image_url }}')"></div>
                                             </td>
                                             <td class="v-center">
-                                                <a href="{{ route('company.dashboard', ['company' => $company->id]) }}">{{ $company->name }}</a>
+                                                <a href="{{ route('company.campaign.index', ['company' => $company->id]) }}">{{ $company->name }}</a>
                                             </td>
                                             <td class="text-capitalize v-center">{{ $company->type }}</td>
                                             <td class="v-center">{{ $company->url }}</td>

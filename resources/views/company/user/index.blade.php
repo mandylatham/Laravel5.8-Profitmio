@@ -7,8 +7,8 @@
 @endsection
 
 @section('secondary_navbar')
-    <a href=""
-       class="btn btn-sm btn-success waves-effect navbar-btn navbar-right">
+    <a href="{{ route('company.user.create', ['company' => $company->id]) }}"
+       class="btn btn-sm btn-success waves-effect navbar-btn pull-right">
         <i class="icon md-plus" aria-hidden="true"></i>
         Add New User
     </a>

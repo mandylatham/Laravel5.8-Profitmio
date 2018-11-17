@@ -5,7 +5,7 @@
         <div class="page-header container-fluid">
             <div class="row-fluid">
                 <div class="col-xxl-8 offset-xxl-2 col-lg-12">
-                    <div style="display: flex">
+                    <div class="d-flex">
                         <button type="button"
                                 role="button"
                                 data-url="{{ route('company.index') }}"
@@ -46,16 +46,16 @@
                                     </div>
                                     <div class="navbar-collapse collapse" id="navbar-collapse-1">
                                         <ul class="nav navbar-nav">
-                                            <li id="dashboard-link" class="nav-item">
-                                                <a id="users-nav-link" class="nav-link" href="{{ route('company.dashboard', ['company' => $company->id]) }}">
-                                                    <i class="icon oi-dashboard"></i>
-                                                    Users
+                                            <li id="drops-link" class="nav-item {{ Route::currentRouteNamed('company.campaign.index') ? 'active' : '' }}">
+                                                <a id="campaigns-nav-link" class="nav-link" href="{{ route('company.campaign.index', ['company' => $company->id]) }}">
+                                                    <i class="icon icon-lg wi-raindrops"></i>
+                                                    Campaigns
                                                 </a>
                                             </li>
-                                            <li id="drops-link" class="nav-item">
-                                                <a id="campaigns-nav-link" class="nav-link" href="{{ route('company.campaign.index', ['company' => $company->id]) }}">
-                                                    <i class="icon icon-lg wi-raindrops" style="font-size: 28px;"></i>
-                                                    Campaigns
+                                            <li id="dashboard-link" class="nav-item {{ Route::currentRouteNamed('company.user.index') ? 'active' : '' }}">
+                                                <a id="users-nav-link" class="nav-link" href="{{ route('company.user.index', ['company' => $company->id]) }}">
+                                                    <i class="icon oi-dashboard" ></i>
+                                                    Users
                                                 </a>
                                             </li>
                                         </ul>

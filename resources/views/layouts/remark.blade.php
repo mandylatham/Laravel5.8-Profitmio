@@ -65,7 +65,6 @@
                 min-width: 180px;
             }
         }
-
         .site-navbar {
             border-bottom: 1px solid #878787;
         }
