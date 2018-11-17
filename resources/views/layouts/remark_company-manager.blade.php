@@ -1,11 +1,23 @@
 @extends('layouts.remark')
 
+@section('manualStyle')
+    .company-image {
+        width: 40px;
+        background-size: cover;
+        background-position: 50% 50%;
+        height: 40px;
+        border-radius: 50%;
+        box-shadow: 1px 1px 4px #4a4a4a;
+        background-color: #ddd;
+    }
+@endsection
+
 @section('content')
     <div class="page">
         <div class="page-header container-fluid">
             <div class="row-fluid">
                 <div class="col-xxl-8 offset-xxl-2 col-lg-12">
-                    <div class="d-flex">
+                    <div class="d-flex align-items-center">
                         <button type="button"
                                 role="button"
                                 data-url="{{ route('company.index') }}"
@@ -25,6 +37,7 @@
                             <small>#</small> {{ $company->id }}:
                             {{ ucwords($company->name) }}
                         </h3>
+                        <div class="company-image ml-10" style="background-image: url({{ $company->image_url }})"></div>
                     </div>
                     <div class="page-header-actions">
                     </div>
