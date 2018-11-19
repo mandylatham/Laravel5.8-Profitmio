@@ -82,16 +82,29 @@ class CompanyController extends Controller
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Company  $company
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Company $company)
+    {
+        return view('company.edit', ['company' => $company]);
+    }
+
+
+    /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param StoreCompanyRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(StoreCompanyRequest $request)
     {
         $company = new $this->company([
             'name' => $request->input('name'),
             'type' => $request->input('type'),
+            'phone' => $request->input('phone'),
             'address' => $request->input('address'),
             'address2' => $request->input('address2'),
             'city' => $request->input('city'),
@@ -117,31 +130,37 @@ class CompanyController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show(Company $company)
-    {
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Company  $company
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Company $company)
-    {
-        return view('company/edit', ['company' => $company]);
-    }
+    {}
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Company  $company
-     * @return \Illuminate\Http\Response
+     * @param Company $company
+     * @param StoreCompanyRequest $request
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Request $request, Company $company)
+    public function update(Company $company, StoreCompanyRequest $request)
     {
-        $company->update($request->only(['name', 'type']));
-        return response()->redirectToRoute('companies.index');
+        $company->update([
+            'name' => $request->input('name'),
+            'type' => $request->input('type'),
+            'phone' => $request->input('phone'),
+            'address' => $request->input('address'),
+            'address2' => $request->input('address2'),
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'zip' => $request->input('zip'),
+            'country' => $request->input('country'),
+            'url' => $request->input('url'),
+            'facebook' => $request->input('facebook'),
+            'twitter' => $request->input('twitter'),
+        ]);
+        if ($request->hasFile('image')) {
+            $company->image_url = $request->file('image')->store('company-image', 's3');
+            $this->storage->disk('s3')->setVisibility($company->image_url, 'public');
+        }
+        $company->save();
+        return response()->redirectToRoute('company.campaign.index', ['company' => $company->id]);
     }
 
     /**

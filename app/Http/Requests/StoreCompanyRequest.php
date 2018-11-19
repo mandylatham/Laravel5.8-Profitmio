@@ -26,7 +26,6 @@ class StoreCompanyRequest extends FormRequest
         return [
             'name' => 'required',
             'type' => 'required|in:support,agency,dealership',
-            'zip' => 'nullable|integer',
             'url' => 'nullable|url',
             'image_url' => 'nullable|url',
             'facebook' => 'nullable|url',

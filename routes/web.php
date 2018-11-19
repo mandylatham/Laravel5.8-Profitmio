@@ -168,6 +168,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'companies'], function () {
         Route::get('', 'CompanyController@index')->middleware('can:create')->name('company.index');
         Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
+        Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');
+        Route::post('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');
         Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
 
         Route::group(['prefix' => '/{company}/user'], function () {

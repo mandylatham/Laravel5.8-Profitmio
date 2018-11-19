@@ -65,7 +65,7 @@
                                             </td>
                                             <td class="text-capitalize v-center">{{ $company->type }}</td>
                                             <td class="v-center">{{ $company->url }}</td>
-                                            <td class="v-center">{{ $company->phone_number }}</td>
+                                            <td class="v-center">{{ $company->phone }}</td>
                                             <td>
                                                 <a class="btn btn-pure btn-warning btn-round"
                                                    href="{{ route('company.edit', ['company' => $company->id]) }}">

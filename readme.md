@@ -68,3 +68,4 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 All resources should use the singular form.
 - Show list resources view => {resource}.index
 - Show create resource view => {resource}.create
+- Show edit resource view => {resource}.edit
