@@ -167,7 +167,15 @@ Route::group(['middleware' => 'auth'], function () {
     //region COMPANIES
     Route::group(['prefix' => 'companies'], function () {
         Route::get('', 'CompanyController@index')->middleware('can:create')->name('company.index');
-        Route::get('/create', 'CompanyController@create')->middleware('can:create')->name('company.create');
+        Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
+        Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
+
+        Route::group(['prefix' => '/{company}/user'], function () {
+            Route::get('', 'CompanyController@userIndex')->middleware('can:manage,company')->name('company.user.index');
+            Route::get('/create', 'CompanyController@userCreate')->middleware('can:manage,company')->name('company.user.create');
+            Route::post('', 'CompanyController@userStore')->middleware('can:manage,company')->name('company.user.store');
+            Route::get('/{user}/edit', 'CompanyController@userEdit')->middleware('can:manage,company')->name('company.user.edit');
+        });
         Route::get('/{company}/user', 'CompanyController@userIndex')->middleware('can:manage,company')->name('company.user.index');
         Route::get('/{company}/user/create', 'CompanyController@userCreate')->middleware('can:manage,company')->name('company.user.create');
         Route::get('/{company}/user/{user}/edit', 'CompanyController@userEdit')->middleware('can:manage,company')->name('company.user.edit');

@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Filesystem\FilesystemManager;
+use App\Http\Requests\StoreCompanyRequest;
 
 class CompanyController extends Controller
 {
@@ -31,11 +33,14 @@ class CompanyController extends Controller
     /** @var CampaignUserActivityLog  */
     private $campaignUserActivityLog;
 
-    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, CampaignUserActivityLog $campaignUserActivityLog)
+    private $storage;
+
+    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, CampaignUserActivityLog $campaignUserActivityLog, FilesystemManager $storage)
     {
         $this->company = $company;
         $this->companyUserActivityLog = $companyUserActivityLog;
         $this->campaignUserActivityLog = $campaignUserActivityLog;
+        $this->storage = $storage;
     }
 
     public function campaignIndex(Company $company)
@@ -82,10 +87,27 @@ class CompanyController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreCompanyRequest $request)
     {
-        Company::create($request->only(['name', 'type']));
-        return response()->redirectToRoute('companies.index');
+        $company = new $this->company([
+            'name' => $request->input('name'),
+            'type' => $request->input('type'),
+            'address' => $request->input('address'),
+            'address2' => $request->input('address2'),
+            'city' => $request->input('city'),
+            'state' => $request->input('state'),
+            'zip' => $request->input('zip'),
+            'country' => $request->input('country'),
+            'url' => $request->input('url'),
+            'facebook' => $request->input('facebook'),
+            'twitter' => $request->input('twitter'),
+        ]);
+        if ($request->hasFile('image')) {
+            $company->image_url = $request->file('image')->store('company-image', 's3');
+            $this->storage->disk('s3')->setVisibility($company->image_url, 'public');
+        }
+        $company->save();
+        return response()->redirectToRoute('company.campaign.index', ['company' => $company->id]);
     }
 
     /**
