@@ -1,11 +1,5 @@
 <?php
 
-//region DASHBOARD
-Route::get('/dashboard', 'HomeController@index')->name('dashboard');
-Route::get('/', function () {
-    return redirect('/dashboard');
-});
-//endregion
 
 //region OUTSIDE API CALLS
 Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->middleware(null);
@@ -32,6 +26,16 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
+
+    Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
+    Route::get('/', function () {
+        return redirect()->route('dashboard');
+    });
+
+    Route::group(['prefix' => 'selector'], function () {
+        Route::get('', 'SelectorController@show')->name('selector.select-active-company');
+        Route::post('', 'SelectorController@updateActiveCompany')->name('selector.update-active-company');
+    });
 
     /* USERS */
     Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\Models\User')->name('auth.impersonate');
@@ -138,8 +142,8 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     /* DASHBOARDS */
-    Route::get('/dashboard', 'HomeController@index');
-    Route::get('/lightDashboard', 'HomeController@dashboard');
+//    Route::get('/dashboard', 'HomeController@index');
+//    Route::get('/lightDashboard', 'HomeController@dashboard');
 
     /* DEPLOYMENTS */
     /* TODO: change nomenclature to Drops */

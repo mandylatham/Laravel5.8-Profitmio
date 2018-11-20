@@ -73,6 +73,17 @@ class UserController extends Controller
     }
 
     /**
+     * Return the view to select a company
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
+    public function selectActiveCompany(Request $request)
+    {
+        return view('users.select-company');
+    }
+
+    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request

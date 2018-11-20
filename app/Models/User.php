@@ -55,12 +55,12 @@ class User extends Authenticatable
 
     /**
      * Check if user belongs to given company
-     * @param int $companyId
+     * @param Company $company
      * @return bool
      */
-    public function belongsToCompany(int $companyId)
+    public function belongsToCompany(Company $company)
     {
-        return $this->companies()->where('companies.id', $companyId)->count() === 1;
+        return $this->companies()->where('companies.id', $company->id)->count() === 1;
     }
 
     /**
