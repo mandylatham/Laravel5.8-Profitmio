@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Filesystem\FilesystemManager;
 use App\Http\Requests\StoreCompanyRequest;
+use App\Http\Requests\StoreUserRequest;
 
 class CompanyController extends Controller
 {
@@ -35,12 +36,15 @@ class CompanyController extends Controller
 
     private $storage;
 
-    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, CampaignUserActivityLog $campaignUserActivityLog, FilesystemManager $storage)
+    private $user;
+
+    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, CampaignUserActivityLog $campaignUserActivityLog, FilesystemManager $storage, User $user)
     {
         $this->company = $company;
         $this->companyUserActivityLog = $companyUserActivityLog;
         $this->campaignUserActivityLog = $campaignUserActivityLog;
         $this->storage = $storage;
+        $this->user = $user;
     }
 
     public function campaignIndex(Company $company)
@@ -339,31 +343,42 @@ class CompanyController extends Controller
     }
 
     /**
-     * Store a new user in storage
+     * Invite a new user
+     *
      * @param Company $company
-     * @param Request $request
+     * @param StoreUserRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function userStore(Company $company, Request $request)
+    public function userStore(Company $company, StoreUserRequest $request)
     {
-        $user = new User([
-            'first_name' => $request->input('first_name'),
-            'last_name' => $request->input('last_name'),
-            'username' => $request->input('username'),
-            'email' => $request->input('email'),
-            'is_admin' => false,
-            'password' => bcrypt($request->input('password')),
-            'phone_number' => $request->input('phone_number'),
-            'timezone' => $request->input('timezone')
-        ]);
-        $user->save();
-
+        $user = $this->user->where('email', $request->input('email'))
+            ->first();
+        if (!$user) {
+            $user = new $this->user();
+            $user->is_admin = false;
+            $user->password = '';
+            $user->username = $request->input('email');
+            $user->first_name = $request->input('first_name');
+            $user->last_name = $request->input('last_name');
+            $user->email = $request->input('email');
+            $user->save();
+        }
         $user->companies()->attach($company->id, [
-            'role' => $request->input('role')]
+            'role' => $request->input('role')
+        ]);
+
+        $processRegistration = URL::temporarySignedRoute(
+            'registration.complete.show', Carbon::now()->addMinutes(60), [
+                'id' => $user->getKey(),
+                'company' => $company->id
+            ]
         );
+
+        Mail::to($user)->send(new InviteUser($user, $processRegistration));
+
         $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
 
-        return redirect()->route('company.user.edit', ['company' => $company->id]);
+        return redirect()->route('company.user.index', ['company' => $company->id]);
     }
     //endregion
 }

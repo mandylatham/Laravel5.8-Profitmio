@@ -38,7 +38,7 @@
     <!-- Scripts -->
     <script src="{{ secure_url('/vendor/breakpoints/breakpoints.js') }}"></script>
 
-<!-- Scripts -->
+    <!-- Scripts -->
     <script>
         window.Laravel = {!! json_encode([
             'csrfToken' => csrf_token(),
@@ -50,7 +50,7 @@
             height: 100%;
         }
         .page {
-            background: url('images/background-{{ rand(1,6)  }}.jpg') no-repeat center center fixed;
+            background: url('/images/background-{{ rand(1,6)  }}.jpg') no-repeat center center fixed;
             -webkit-background-size: cover;
             -moz-background-size: cover;
             -o-background-size: cover;
@@ -75,31 +75,29 @@
                     <img class="brand-img" src="{{ secure_url('images/favicon.png') }}" alt="...">
                     <h2 class="">PROFITMINER</h2>
                 </div>
-                <p class="text-primary">Sign into your account</p>
+                <p class="text-primary">Join To</p>
                 @if ($errors->count() > 0)
                     @foreach ($errors->all() as $message)
-                <p class="alert text-danger">{{ $message }}</p>
+                        <p class="alert text-danger">{{ $message }}</p>
                     @endforeach
                 @endif
-                <form method="post" action="{{ secure_url('/login') }}">
+                <form method="post" action="{{ $completeRegistrationSignedUrl }}">
                     {{ csrf_field() }}
-                    <div class="form-group form-material floating" data-plugin="formMaterial">
-                        <input type="text" class="form-control" id="inputName" name="login">
-                        <label class="floating-label" for="login">Name</label>
+                    <div class="form-group">
+                        <input type="text" class="form-control empty" name="company" disabled value="{{ $company->name }}">
                     </div>
-                    <div class="form-group form-material floating" data-plugin="formMaterial">
-                        <input type="password" class="form-control" id="inputPassword" name="password">
-                        <label class="floating-label" for="inputPassword">Password</label>
+                    <div class="form-group">
+                        <select name="timezone" class="form-control" data-plugin="select2">
+                            <option disabled {{ (old('timezone') ?? $company->pivot->timezone) == '' ? 'selected' : '' }}>Choose Timezone...
+                            </option>
+                            @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
+                                <option {{ (old('timezone') ?? $company->pivot->timezone) == $timezone ? 'selected' : '' }}>{{ $timezone }}</option>
+                            @endforeach
+                        </select>
                     </div>
-                    <div class="form-group clearfix">
-                        <div class="checkbox-custom checkbox-inline checkbox-primary float-left">
-                            <input type="checkbox" id="inputCheckbox" name="remember">
-                            <label for="inputCheckbox">Remember me</label>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary btn-block waves-effect">Sign in</button>
+                    <button type="submit" class="btn btn-primary btn-block waves-effect">Join</button>
                     <div>
-                        <a class="float-right" href="{{ secure_url('password/reset') }}">Forgot password?</a>
+                        <a class="float-right" href="{{ route('login') }}">Already have an account?</a>
                     </div>
                 </form>
             </div>

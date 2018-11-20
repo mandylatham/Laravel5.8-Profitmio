@@ -35,6 +35,10 @@ class User extends Authenticatable
         'username'
     ];
 
+    protected $casts = [
+        'config' => 'array'
+    ];
+
     /**
      * The attributes that should be hidden for arrays.
      *
@@ -86,10 +90,7 @@ class User extends Authenticatable
             return true;
         }
         $company = $this->companies()->find($companyId);
-        if (empty($company) || $company->pivot->role != self::ROLE_ADMIN) {
-            return false;
-        }
-        return true;
+        return $company && $company->pivot->role == self::ROLE_ADMIN;
     }
 
     public function isCompanyUser(int $companyId): bool
@@ -130,6 +131,11 @@ class User extends Authenticatable
             $userCompanies->where('companies.id', $companyId);
         }
         return $userCompanies->count() > 0;
+    }
+
+    public function isProfileCompleted()
+    {
+        return $this->password !== '' && $this->username !== 'username';
     }
 
     public function getCampaignsForCompany(Company $company)

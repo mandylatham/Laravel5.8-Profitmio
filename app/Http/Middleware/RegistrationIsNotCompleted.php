@@ -17,14 +17,15 @@ class RegistrationIsNotCompleted
     public function handle($request, Closure $next)
     {
         $query = $request->query();
-        if (!isset($query['id'])) {
+        if (!isset($query['id']) || !isset($query['company'])) {
             return redirect('login');
         }
         $user = User::find($query['id']);
         if (empty($user)) {
             return redirect('login');
         }
-        if ($user->password !== '') {
+        $invitation = $user->companies()->where('companies.id', $query['company'])->first();
+        if ($invitation->completed_at) {
             return redirect('login');
         }
         return $next($request);

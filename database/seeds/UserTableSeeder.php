@@ -20,8 +20,6 @@ class UserTableSeeder extends Seeder
         $user->email = 'carauzs@gmail.com';
         $user->username = 'carauzs';
         $user->is_admin = true;
-        $user->email_verified_at = Carbon::now()->toDateTimeString();
-        $user->timezone = 'US/Alaska';
         $user->password = bcrypt('password');
         $user->save();
 
@@ -29,10 +27,14 @@ class UserTableSeeder extends Seeder
         factory(User::class, 50)
             ->create()
             ->each(function ($user) use ($faker) {
-               $company = Company::inRandomOrder()->first();
-               $company->users()->save($user, [
-                   'role'=> $faker->randomElement(['admin', 'user']),
-               ]);
+                $company = Company::inRandomOrder()->first();
+                $company->users()->save($user, [
+                    'completed_at' => Carbon::now()->toDateTimeString(),
+                    'config' => json_encode([
+                        'timezone' => 'US/Alaska'
+                    ]),
+                    'role' => $faker->randomElement(['admin', 'user']),
+                ]);
             });
     }
 }

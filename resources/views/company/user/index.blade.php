@@ -43,7 +43,7 @@
                         <td>
                             {{--<a class="btn btn-pure btn-primary btn-round"--}}
                                {{--href="{{ route('company.impersonate_user', ['company' => $company->id]) }}">--}}
-                                Access
+                                {{--Access--}}
                             {{--</a>--}}
                         </td>
                     </tr>

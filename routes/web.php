@@ -190,12 +190,9 @@ Route::group(['middleware' => 'auth'], function () {
 //endregion
 
 //region NEW ROUTES
-//Auth::routes();
-//
-//Route::get('/home', 'HomeController@index')->name('home');
-Route::middleware('signed', 'justinvited')->group(function() {
-    Route::get('/registration/complete', 'Auth\CompleteController@show')->name('registration.complete');
-    Route::post('/registration/complete', 'Auth\CompleteController@set');
+Route::group(['prefix' => 'registration'], function () {
+    Route::get('/complete', 'Auth\CompleteController@show')->middleware('signed', 'justinvited')->name('registration.complete.show');
+    Route::post('/complete', 'Auth\CompleteController@set')->middleware('signed')->name('registration.complete.store');
 });
 //
 Route::get('/company/{company}', 'HomeController@companytest')->middleware('company');
