@@ -30,7 +30,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users = User::all();
+        $users = auth()->user()->getListOfUsers();
         return view('users.index', ['users' => $users]);
     }
 

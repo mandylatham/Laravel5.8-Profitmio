@@ -37,16 +37,20 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('', 'SelectorController@updateActiveCompany')->name('selector.update-active-company');
     });
 
-    /* USERS */
-    Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\Models\User')->name('auth.impersonate');
-    Route::get('/users', 'UserController@index')->middleware('can:view-users')->name('users.index');
-    Route::get('/users/new', 'UserController@createForm')->middleware('can:change-users');
-    Route::post('/user/create', 'UserController@create')->middleware('can:change-users');
-    Route::group(['prefix' => '/user/{user}'], function () {
-        Route::get('/', 'UserController@show')->middleware('can:view-users');
-        Route::get('/edit', 'UserController@updateForm')->middleware('can:change-users');
-        Route::post('/update', 'UserController@update')->middleware('can:change-users');
+    Route::group(['prefix' => 'user'], function () {
+        Route::get('', 'UserController@index')->name('user.index');
     });
+
+    /* USERS */
+//    Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\Models\User')->name('auth.impersonate');
+//    Route::get('/users', 'UserController@index')->middleware('can:view-users')->name('users.index');
+//    Route::get('/users/new', 'UserController@createForm')->middleware('can:change-users');
+//    Route::post('/user/create', 'UserController@create')->middleware('can:change-users');
+//    Route::group(['prefix' => '/user/{user}'], function () {
+//        Route::get('/', 'UserController@show')->middleware('can:view-users');
+//        Route::get('/edit', 'UserController@updateForm')->middleware('can:change-users');
+//        Route::post('/update', 'UserController@update')->middleware('can:change-users');
+//    });
 
     Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->middleware('can:change-console');
     Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->middleware('can:change-console');
@@ -75,7 +79,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/template-builder/create', 'TemplateBuildController@createTemplate')->middleware('can:admin-only');
 
     /* CAMPAIGNS */
-    Route::get('/campaigns', 'CampaignController@index')->middleware('can:view-campaigns');
+    Route::get('/campaigns', 'CampaignController@index')->middleware('can:view-campaigns')->name('campaign.index');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
@@ -218,5 +222,5 @@ Route::post('/companies/{company}/user/{user}', 'CompanyController@setuseraccess
 Route::resource('/users', 'UserController')->middleware('can:create,App\Models\User');
 Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\Models\User')->name('auth.impersonate');
 Route::get('/leaveimpersonating', 'Auth\ImpersonateController@leave')->name('auth.leaveimpersonate');
-Route::resource('/campaigns', 'CampaignController')->middleware('can:create,App\Models\Campaign');
+//Route::resource('/campaigns', 'CampaignController')->middleware('can:create,App\Models\Campaign');
 //endregion

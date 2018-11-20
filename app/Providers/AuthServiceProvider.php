@@ -7,6 +7,9 @@ use App\Models\Company;
 use App\Policies\CampaignPolicy;
 use App\Policies\CompanyPolicy;
 use App\Models\User;
+use App\Models\CampaignScheduleTemplate;
+use App\Policies\CampaignScheduleTemplatePolicy;
+use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -21,6 +24,8 @@ class AuthServiceProvider extends ServiceProvider
         'App\Model' => 'App\Policies\ModelPolicy',
         Company::class => CompanyPolicy::class,
         Campaign::class => CampaignPolicy::class,
+        CampaignScheduleTemplate::class => CampaignScheduleTemplatePolicy::class,
+        User::class => UserPolicy::class
     ];
 
     /**

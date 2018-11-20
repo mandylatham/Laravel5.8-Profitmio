@@ -319,7 +319,6 @@
     </div>
 </nav>
 
-@if (auth()->user()->isAdmin())
 <div class="site-menubar">
     <div class="site-menubar-body">
         <div>
@@ -334,37 +333,39 @@
                         </a>
                     </li>
                     @endif
-                    @if (\Gate::allows('view-campaigns'))
+                    @can('list', \App\Models\Campaign::class)
                     <li class="site-menu-item">
-                        <a href="{{ secure_url('/campaigns') }}" class=" waves-effect waves-classic">
+                        <a href="{{ route('campaign.index') }}" class=" waves-effect waves-classic">
                             <i class="site-menu-icon icon oi-megaphone" aria-hidden="true"></i>
                             <span class="site-menu-title">Campaigns</span>
                         </a>
                     </li>
-                    @endif
-                    @if (\Gate::allows('view-templates'))
+                    @endcan
+                    @can('list', \App\Models\CampaignScheduleTemplate::class)
                     <li class="site-menu-item">
                         <a href="{{ secure_url('/templates') }}" class=" waves-effect waves-classic">
                             <i class="site-menu-icon icon fa-file-text-o" aria-hidden="true"></i>
                             <span class="site-menu-title">Templates</span>
                         </a>
                     </li>
-                    @endif
-                    @if (\Gate::allows('view-users'))
+                    @endcan
+                    @can('list', \App\Models\User::class)
                     <li class="site-menu-item">
-                        <a href="{{ secure_url('/users') }}" class=" waves-effect waves-classic">
+                        <a href="{{ route('user.index') }}" class=" waves-effect waves-classic">
                             <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
                             <span class="site-menu-title">Users</span>
                         </a>
                     </li>
-                    @endif
+                    @endcan
+                    @if (auth()->user()->isAdmin())
                     <li class="site-menu-item">
                         <a href="{{ route('company.index') }}" class=" waves-effect waves-classic">
                             <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
                             <span class="site-menu-title">Companies</span>
                         </a>
                     </li>
-                    @if (\Gate::allows('admin-only'))
+                    @endif
+                    @if (auth()->user()->isAdmin())
                     <li class="site-menu-category">System</li>
                     <li class="dropdown site-menu-item has-sub">
                         <a data-toggle="dropdown" href="javascript:void(0)" data-dropdown-toggle="false" class="waves-effect waves-classic">
@@ -404,7 +405,6 @@
         </div>
     </div>
 </div>
-@endif
 
 @yield('content')
 

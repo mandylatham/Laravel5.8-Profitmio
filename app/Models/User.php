@@ -79,6 +79,22 @@ class User extends Authenticatable
         return $this->belongsToMany(Campaign::class);
     }
 
+    /**
+     * Return the list of users that logged user can see
+     * Site Admin can see all users, company user can see company's user
+     *
+     * @return User[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getListOfUsers()
+    {
+        if ($this->isAdmin()) {
+            return self::all();
+        } else if ($this->isCompanyAdmin(get_active_company())) {
+            return Company::findOrFail(get_active_company())->users;
+        }
+        return [];
+    }
+
     public function isAdmin(): bool
     {
         return (bool)$this->is_admin;

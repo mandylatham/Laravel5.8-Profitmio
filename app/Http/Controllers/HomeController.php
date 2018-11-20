@@ -24,11 +24,10 @@ class HomeController extends Controller
      */
     public function index()
     {
-        if (auth()->user()->isAdmin()) {
-            return redirect('/campaigns');
-        }
         $user = auth()->user();
-
+        if ($user->isAdmin()) {
+            return redirect()->route('campaign.index');
+        }
         $ids = $this->getCampaignIds();
 
         // Get the Campaigns
@@ -105,7 +104,7 @@ class HomeController extends Controller
         $viewData['appointments'] = $appointments->toJson();
         $viewData['drops'] = $drops->toJson();
 
-        return view('home', $viewData);
+        return view('dashboard.index', $viewData);
     }
 
     public function lightDashboard()

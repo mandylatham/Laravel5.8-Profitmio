@@ -14,6 +14,10 @@ class UpdateActiveCompanyRequest extends FormRequest
      */
     public function authorize()
     {
+        // If company is not passed, return true, so the validation is executed and force to select a company
+        if (!$this->input('company')) {
+            return true;
+        }
         $company = Company::findOrFail($this->input('company'));
         return auth()->user()->belongsToCompany($company);
     }

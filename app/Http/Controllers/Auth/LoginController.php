@@ -54,9 +54,12 @@ class LoginController extends Controller
     {
         $field = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         $request->merge([$field => $request->input('login')]);
-
+        $redirectRoute = 'dashboard';
         if (auth()->attempt($request->only($field, 'password'))) {
-            return redirect()->intended($this->redirectTo);
+            if (auth()->user()->isAdmin()) {
+                $redirectRoute = 'campaign.index';
+            }
+            return redirect()->intended($redirectRoute);
         }
 
         return redirect('/login')->withErrors([

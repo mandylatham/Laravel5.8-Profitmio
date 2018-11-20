@@ -6,27 +6,6 @@
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
 @endsection
 
-@section('manualStyle')
-    #campaigns td {
-    cursor: pointer;
-    }
-    #campaigns > tbody > tr > td > h5 {
-    margin-bottom: -20px;
-    }
-    .round-button {
-    border-radius: 40px;
-    }
-    .btn-circle {
-    width: 30px;
-    height: 30px;
-    text-align: center;
-    padding: 6px 0;
-    font-size: 12px;
-    line-height: 1.428571429;
-    border-radius: 15px;
-    }
-@endsection
-
 @section('content')
     <div class="page">
         <div class="page-header container-fluid">
@@ -55,41 +34,24 @@
                                     <thead>
                                     <tr>
                                         <th>ID</th>
+                                        <th>First Name</th>
+                                        <th>Last Name</th>
                                         <th>Type</th>
-                                        <th>Name</th>
-                                        <th>Org</th>
+                                        <th>Username</th>
                                         <th>Email</th>
-                                        <th>Phone</th>
-                                        <th>Actions</th>
+                                        <th>Phone Number</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     @foreach($users as $user)
-                                        <tr class="user-row" data-user="{{ $user->id }}">
-                                            <td valign="center" class="id-row"><strong>{{ $user->id }}</strong></td>
-                                            <td width="60px">{{ $user->access }}</td>
-                                            <td>
-                                                <a href="{{ secure_url('/user/' . $user->id) }}">{{ $user->name }}</a>
-                                            </td>
-                                            <td>{{ join(',', collect($user->companies)->pluck('name')->toArray()) }}</td>
-                                            <td>
-                                                @if (trim($user->email) != '')
-                                                    <a href="mailto:{{ $user->email }}">{{ $user->email }}</a><br>
-                                                @endif
-                                            </td>
-                                            <td>
-                                                {{ $user->phone_number }}
-                                            </td>
-                                            <td>
-                                                <a class="btn btn-pure btn-warning btn-round"
-                                                   href="{{ secure_url('user/' . $user->id . '/edit') }}">
-                                                    <i class="fa fa-pencil"></i>
-                                                    Edit
-                                                </a>
-                                                <a class="btn btn-pure btn-link btn-round"
-                                                   href="{{route('auth.impersonate', ['user' => $user->id])}}">{{ __('Log in as') }}</a>
-
-                                            </td>
+                                        <tr>
+                                            <td class="id-row v-center"><strong>{{ $user->id }}</strong></td>
+                                            <td class="v-center">{{ $user->first_name }}</td>
+                                            <td class="v-center">{{ $user->last_name }}</td>
+                                            <td class="text-capitalize v-center">{{ $user->pivot->role }}</td>
+                                            <td class="v-center">{{ $user->username }}</td>
+                                            <td class="v-center">{{ $user->email }}</td>
+                                            <td class="v-center">{{ $user->phone_number }}</td>
                                         </tr>
                                     @endforeach
                                     </tbody>

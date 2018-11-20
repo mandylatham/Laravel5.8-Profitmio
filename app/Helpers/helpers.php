@@ -71,3 +71,8 @@ function isValidTimezoneId($timezoneId)
     }
     return true;
 }
+
+function get_active_company()
+{
+    return session()->get('activeCompany');
+}

@@ -10,6 +10,11 @@ class CampaignPolicy
 {
     use HandlesAuthorization;
 
+    public function list(User $user)
+    {
+        return $user->isAdmin();
+    }
+
     /**
      * Determine whether the user can view the campaign.
      *
