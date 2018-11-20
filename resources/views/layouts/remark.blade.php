@@ -326,12 +326,14 @@
             <div>
                 <ul class="site-menu" data-plugin="menu">
                     <li class="site-menu-category">General</li>
+                    @if (!auth()->user()->isAdmin())
                     <li class="site-menu-item">
                         <a href="{{ secure_url('/dashboard') }}" class=" waves-effect waves-classic">
                             <i class="site-menu-icon icon oi-dashboard" aria-hidden="true"></i>
                             <span class="site-menu-title">Dashboard</span>
                         </a>
                     </li>
+                    @endif
                     @if (\Gate::allows('view-campaigns'))
                     <li class="site-menu-item">
                         <a href="{{ secure_url('/campaigns') }}" class=" waves-effect waves-classic">

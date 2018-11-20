@@ -13,7 +13,20 @@ class Company extends Model
     const TYPE_AGENCY = 'agency';
     const TYPE_DEALERSHIP = 'dealership';
 
-    protected $fillable = ['name', 'type'];
+    protected $fillable = [
+        'name',
+        'type',
+        'phone',
+        'address',
+        'address2',
+        'city',
+        'state',
+        'zip',
+        'country',
+        'url',
+        'facebook',
+        'twitter',
+    ];
 
     protected static $logAttributes = ['id', 'name', 'type'];
 
