@@ -85,10 +85,10 @@ class User extends Authenticatable
      *
      * @return User[]|\Illuminate\Database\Eloquent\Collection
      */
-    public function getListOfUsers()
+    public function getListOfUsers($companyId = null)
     {
         if ($this->isAdmin()) {
-            return self::all();
+            return $companyId ? Company::findOrFail($companyId)->users : self::all();
         } else if ($this->isCompanyAdmin(get_active_company())) {
             return Company::findOrFail(get_active_company())->users;
         }

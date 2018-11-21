@@ -32,12 +32,26 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = auth()->user()->getListOfUsers();
-        return view('users.index', ['users' => $users]);
+//        if (auth()->user()->isAdmin() && $request->has('company')) {
+//            $company = $this->company->findOrFail($request->input('company'));
+//            $users = auth()->user()->getListOfUsers($company->id);
+//            return view('users.index', [
+//                'users' => $users,
+//                'company' => $company
+//            ]);
+//        } else {
+            $users = auth()->user()->getListOfUsers($request->input('company'));
+            return view('users.index', [
+                'users' => $users,
+                'companies' => $this->company->orderBy('name', 'desc')->get(),
+                'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
+            ]);
+//        }
     }
 
     public function create()

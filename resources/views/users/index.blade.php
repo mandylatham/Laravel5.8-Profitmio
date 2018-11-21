@@ -29,6 +29,19 @@
                 <div class="col-xxl-8 offset-xxl-2 col-md-12">
                     <div class="panel panel-info">
                         <div class="panel-body">
+                            @if (auth()->user()->isAdmin())
+                                <form method="get" action="{{ route('user.index') }}">
+                                    <div class="form-group floating">
+                                        <label class="floating-label" for="company">Filter By Company</label>
+                                        <select class="form-control" name="company" required onchange="this.form.submit()">
+                                            <option value="" {{ !$selectedCompanyId ? 'selected' : '' }}>All Companies</option>
+                                            @foreach ($companies as $company)
+                                                <option value="{{ $company->id }}" {{ $company->id == $selectedCompanyId ? 'selected' : '' }}>{{ $company->name }}</option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </form>
+                            @endif
                             <div class="table-responsive">
                                 <table id="users" class="table table-striped table-hover datatable">
                                     <thead>
@@ -36,7 +49,7 @@
                                         <th>ID</th>
                                         <th>First Name</th>
                                         <th>Last Name</th>
-                                        <th>Type</th>
+                                        {{--<th>Type</th>--}}
                                         <th>Username</th>
                                         <th>Email</th>
                                         <th>Phone Number</th>
@@ -48,7 +61,7 @@
                                             <td class="id-row v-center"><strong>{{ $user->id }}</strong></td>
                                             <td class="v-center">{{ $user->first_name }}</td>
                                             <td class="v-center">{{ $user->last_name }}</td>
-                                            <td class="text-capitalize v-center">{{ $user->pivot->role }}</td>
+                                            {{--<td class="text-capitalize v-center">{{ $user->pivot->role }}</td>--}}
                                             <td class="v-center">{{ $user->username }}</td>
                                             <td class="v-center">{{ $user->email }}</td>
                                             <td class="v-center">{{ $user->phone_number }}</td>
