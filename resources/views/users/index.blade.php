@@ -49,7 +49,11 @@
                                         <th>ID</th>
                                         <th>First Name</th>
                                         <th>Last Name</th>
-                                        {{--<th>Type</th>--}}
+                                        @if (!auth()->user()->isAdmin() || $selectedCompanyId)
+                                            <th>Type</th>
+                                        @else
+                                            <th>Company / Type</th>
+                                        @endif
                                         <th>Username</th>
                                         <th>Email</th>
                                         <th>Phone Number</th>
@@ -61,7 +65,17 @@
                                             <td class="id-row v-center"><strong>{{ $user->id }}</strong></td>
                                             <td class="v-center">{{ $user->first_name }}</td>
                                             <td class="v-center">{{ $user->last_name }}</td>
-                                            {{--<td class="text-capitalize v-center">{{ $user->pivot->role }}</td>--}}
+                                            @if (!auth()->user()->isAdmin() || $selectedCompanyId)
+                                                <td class="text-capitalize v-center">{{ $user->pivot->role }}</td>
+                                            @else
+                                                <td class="text-capitalize v-center">
+                                                    <ul>
+                                                        @foreach ($user->companies as $company)
+                                                        <li>{{ $company->name }} / {{ $company->pivot->role }}</li>
+                                                        @endforeach
+                                                    </ul>
+                                                </td>
+                                            @endif
                                             <td class="v-center">{{ $user->username }}</td>
                                             <td class="v-center">{{ $user->email }}</td>
                                             <td class="v-center">{{ $user->phone_number }}</td>
