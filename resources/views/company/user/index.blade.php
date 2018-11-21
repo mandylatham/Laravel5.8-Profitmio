@@ -41,6 +41,12 @@
                         <td class="v-center">{{ $user->email }}</td>
                         <td class="v-center">{{ $user->phone_number }}</td>
                         <td>
+                            @if (!$user->isAdmin())
+                            <a class="btn btn-sm btn-success btn-round"
+                               href="{{ route('admin.impersonate', ['user' => $user->id]) }}">
+                                Impersonate
+                            </a>
+                            @endif
                             {{--<a class="btn btn-pure btn-primary btn-round"--}}
                                {{--href="{{ route('company.impersonate_user', ['company' => $company->id]) }}">--}}
                                 {{--Access--}}

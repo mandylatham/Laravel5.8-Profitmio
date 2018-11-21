@@ -32,6 +32,11 @@ Route::group(['middleware' => 'auth'], function () {
         return redirect()->route('dashboard');
     });
 
+    Route::group(['prefix' => 'admin'], function () {
+        Route::get('/impersonate/leave', 'AdminController@impersonateLeave')->name('admin.impersonate-leave');
+        Route::get('/impersonate/{user}', 'AdminController@impersonateUser')->middleware('can:impersonate,App\Models\User')->name('admin.impersonate');
+    });
+
     Route::group(['prefix' => 'selector'], function () {
         Route::get('', 'SelectorController@show')->name('selector.select-active-company');
         Route::post('', 'SelectorController@updateActiveCompany')->name('selector.update-active-company');
@@ -222,7 +227,7 @@ Route::get('/companies/{company}/user/{user}', 'CompanyController@useraccess')->
 Route::post('/companies/{company}/user/{user}', 'CompanyController@setuseraccess')->middleware('can:manage,company')->name('companies.setuseraccess');
 
 //Route::resource('/users', 'UserController')->middleware('can:create,App\Models\User');
-Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\Models\User')->name('auth.impersonate');
-Route::get('/leaveimpersonating', 'Auth\ImpersonateController@leave')->name('auth.leaveimpersonate');
+//Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\Models\User')->name('auth.impersonate');
+//Route::get('/leaveimpersonating', 'Auth\ImpersonateController@leave')->name('auth.leaveimpersonate');
 //Route::resource('/campaigns', 'CampaignController')->middleware('can:create,App\Models\Campaign');
 //endregion

@@ -23,4 +23,9 @@ class UserPolicy
     {
         return $user->isAdmin() || $user->isCompanyAdmin(get_active_company());
     }
+
+    public function impersonate(User $user)
+    {
+        return auth()->user()->isAdmin();
+    }
 }

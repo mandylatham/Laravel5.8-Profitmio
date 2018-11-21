@@ -191,7 +191,10 @@
             <span class="navbar-brand-text hidden-xs-down"> Profit Miner</span>
         </a>
     </div>
-    <div class="navbar-container container-fluid">
+    <div class="navbar-container container-fluid d-flex align-items-center justify-content-end">
+        @impersonating
+        <a class="btn-round btn btn-primary d-none d-md-inline btn-sm" href="{{ route('admin.impersonate-leave') }}">Leave impersonation</a>
+        @endImpersonating
         <!-- Navbar Collapse -->
         <div class="collapse navbar-collapse navbar-collapse-toolbar" id="site-navbar-collapse">
             <!-- Navbar Toolbar -->
@@ -269,7 +272,8 @@
                                     <a class="list-group-item dropdown-item" href="javascript:void(0)" role="menuitem">
                                         <div class="media">
                                             <div class="pr-10">
-                                                <span class="avatar avatar-sm avatar-online"><img src="https://placehold.it/35x35" alt="..." />
+                                                <span class="avatar avatar-sm avatar-online">
+                                                    <img src="https://placehold.it/35x35" alt="..." />
                                                     <i></i>
                                                 </span>
                                             </div>
@@ -304,7 +308,7 @@
                             <img src="{{ secure_url('/images/default-user.png') }}">
                             <i></i>
                         </span>
-                        <span style="margin-left: 8px;">{{ \auth()->user()->name }}</span>
+                        <span style="margin-left: 8px;">{{ auth()->user()->first_name }}</span>
                     </a>
                     <div class="dropdown-menu" role="menu">
                         <a class="dropdown-item" href="{{ secure_url('/logout') }}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
