@@ -15,7 +15,7 @@
                         Users
                     </h3>
                     <div class="page-header-actions">
-                        <a href="{{ secure_url('/users/new') }}"
+                        <a href="{{ route('user.create') }}"
                            class="btn btn-sm btn-success waves-effect">
                             <i class="icon md-plus" aria-hidden="true"></i>
                             New User

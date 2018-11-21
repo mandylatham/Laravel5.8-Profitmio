@@ -14,7 +14,7 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->isAdmin();
+        return auth()->user()->isAdmin() || (get_active_company() && auth()->user()->isCompanyAdmin(get_active_company()));
     }
 
     /**
@@ -31,7 +31,7 @@ class StoreUserRequest extends FormRequest
             'email' => [
                 'required',
                 'email',
-                new UniqueEmailInCompany
+                new UniqueEmailInCompany(request()->route('company')->id ?? get_active_company())
             ]
         ];
     }

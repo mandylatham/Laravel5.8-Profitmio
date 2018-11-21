@@ -39,6 +39,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     Route::group(['prefix' => 'user'], function () {
         Route::get('', 'UserController@index')->name('user.index');
+        Route::get('/create', 'UserController@create')->name('user.create');
+        Route::post('', 'UserController@store')->name('user.store');
     });
 
     /* USERS */
@@ -219,7 +221,7 @@ Route::post('/companies/{company}/campaign/{campaign}', 'CompanyController@setca
 Route::get('/companies/{company}/user/{user}', 'CompanyController@useraccess')->middleware('can:manage,company')->name('companies.useraccess');
 Route::post('/companies/{company}/user/{user}', 'CompanyController@setuseraccess')->middleware('can:manage,company')->name('companies.setuseraccess');
 
-Route::resource('/users', 'UserController')->middleware('can:create,App\Models\User');
+//Route::resource('/users', 'UserController')->middleware('can:create,App\Models\User');
 Route::get('/impersonateas/{user}', 'Auth\ImpersonateController@login')->middleware('can:create,App\Models\User')->name('auth.impersonate');
 Route::get('/leaveimpersonating', 'Auth\ImpersonateController@leave')->name('auth.leaveimpersonate');
 //Route::resource('/campaigns', 'CampaignController')->middleware('can:create,App\Models\Campaign');

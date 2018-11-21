@@ -3,24 +3,30 @@
 namespace App\Http\Controllers;
 
 use App\Classes\CompanyUserActivityLog;
+use App\Http\Requests\StoreUserRequest;
 use App\Models\Company;
 use App\Http\Requests\UserRequest;
 use App\Mail\InviteUser;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Carbon;
 
 class UserController extends Controller
 {
+    private $company;
+
     /** @var CompanyUserActivityLog  */
     private $companyUserActivityLog;
 
-    public function __construct(CompanyUserActivityLog $companyUserActivityLog)
+    private $user;
+
+    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, User $user)
     {
+        $this->company = $company;
         $this->companyUserActivityLog = $companyUserActivityLog;
+        $this->user = $user;
     }
 
     /**
@@ -34,29 +40,47 @@ class UserController extends Controller
         return view('users.index', ['users' => $users]);
     }
 
+    public function create()
+    {
+        return view('users.create', []);
+    }
+
     /**
-     * @param UserRequest $request
+     * @param StoreUserRequest $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      */
-    public function create(UserRequest $request)
+    public function store(StoreUserRequest $request)
     {
-        $user = new User([
-            'first_name' => $request->first_name,
-            'last_name' => $request->last_name,
-            'username' => $request->username,
-            'email' => $request->email,
-            'is_admin' => $request->input('access') === 'admin',
-            'password' => bcrypt($request->password),
-            'phone_number' => $request->phone_number,
-            'timezone' => $request->timezone
+        $user = $this->user
+            ->where('email', $request->input('email'))
+            ->first();
+        if (!$user) {
+            $user = new $this->user();
+            $user->is_admin = false;
+            $user->password = '';
+            $user->username = $request->input('email');
+            $user->first_name = $request->input('first_name');
+            $user->last_name = $request->input('last_name');
+            $user->email = $request->input('email');
+            $user->save();
+        }
+        $user->companies()->attach(get_active_company(), [
+            'role' => $request->input('role')
         ]);
-        $user->save();
-        $user->companies()->attach($request->get('company'), ['role' => $request->get('role')]);
-        $this->companyUserActivityLog->attach($user, (int)$request->get('company'), $request->get('role'));
-//        $processRegistration = URL::temporarySignedRoute('registration.complete', Carbon::now()->addMinutes(60), ['id' => $user->getKey()]);
-//        Mail::to($user)->send(new InviteUser($user, $processRegistration));
+        $company = $this->company->findOrFail(get_active_company());
 
-        return redirect('/user/' . $user->id . '/edit');
+        $processRegistration = URL::temporarySignedRoute(
+            'registration.complete.show', Carbon::now()->addMinutes(60), [
+                'id' => $user->getKey(),
+                'company' => $company->id
+            ]
+        );
+
+        Mail::to($user)->send(new InviteUser($user, $processRegistration));
+
+        $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
+
+        return redirect()->route('user.index');
     }
 
     /**
@@ -81,32 +105,6 @@ class UserController extends Controller
     public function selectActiveCompany(Request $request)
     {
         return view('users.select-company');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        $userParameters = $request->only(['name', 'email']);
-        $userParameters['password'] = '';
-        $user = User::create($userParameters);
-        if ($request->get('company') == 'admin') {
-            $user->is_admin = 1;
-            $user->save();
-        } else {
-            $user->companies()->attach($request->get('company'), ['role' => $request->get('role')]);
-            $this->companyUserActivityLog->attach($user, (int)$request->get('company'), $request->get('role'));
-        }
-
-        $processRegistration = URL::temporarySignedRoute(
-            'registration.complete', Carbon::now()->addMinutes(60), ['id' => $user->getKey()]
-        );
-        Mail::to($user)->send(new InviteUser($user, $processRegistration));
-        return response()->redirectToRoute('users.index');
     }
 
     /**

@@ -7,14 +7,15 @@ use App\Models\User;
 
 class UniqueEmailInCompany implements Rule
 {
+    private $companyId;
+
     /**
-     * Create a new rule instance.
-     *
-     * @return void
+     * UniqueEmailInCompany constructor.
+     * @param $companyId
      */
-    public function __construct()
+    public function __construct($companyId)
     {
-        //
+        $this->companyId = $companyId;
     }
 
     /**
@@ -28,7 +29,7 @@ class UniqueEmailInCompany implements Rule
     {
         $user = User::where('email', $value)->first();
         if ($user) {
-            $userExistsInCompany = $user->companies()->where('companies.id', request()->route('company')->id)->count() > 0;
+            $userExistsInCompany = $user->companies()->where('companies.id', $this->companyId)->count() > 0;
             return !$userExistsInCompany;
         }
         return true;
