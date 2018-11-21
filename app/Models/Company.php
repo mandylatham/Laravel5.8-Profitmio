@@ -45,6 +45,21 @@ class Company extends Model
         return self::where('type', self::TYPE_DEALERSHIP)->whereNull('deleted_at')->get();
     }
 
+    public function isAgency()
+    {
+        return $this->type === self::TYPE_AGENCY;
+    }
+
+    public function isDealership()
+    {
+        return $this->type === self::TYPE_DEALERSHIP;
+    }
+
+    public function isSupport()
+    {
+        return $this->type === self::TYPE_SUPPORT;
+    }
+
     public function getCampaigns()
     {
         return Campaign::where(function ($query) {

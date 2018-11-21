@@ -3,18 +3,22 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appointment;
+use App\Models\Campaign;
+use App\Models\Company;
 use App\Models\Response;
 
 class HomeController extends Controller
 {
-    /**
-     * Create a new controller instance.
-     *
-     * @return void
-     */
-    public function __construct()
+    private $campaign;
+
+    private $company;
+
+    public function __construct(Campaign $campaign, Company $company)
     {
         $this->middleware('auth');
+
+        $this->campaign = $campaign;
+        $this->company = $company;
     }
 
     /**
@@ -29,9 +33,10 @@ class HomeController extends Controller
             return redirect()->route('campaign.index');
         }
         $ids = $this->getCampaignIds();
+        $activeCompany = $this->company->findOrFail(get_active_company());
 
         // Get the Campaigns
-        $allinone = \DB::table('campaigns')
+        $allinone = $this->campaign
             ->leftJoin('responses', 'campaigns.id', '=', 'responses.campaign_id')
             ->leftJoin('companies', 'companies.id', '=', 'campaigns.dealership_id')
             ->selectRaw(
@@ -43,7 +48,6 @@ class HomeController extends Controller
                 count(distinct(case when responses.type = 'email' and responses.incoming = 1 then recipient_id end)) as emails,
                 count(distinct(case when responses.type = 'text' and responses.incoming = 1 then recipient_id end)) as texts
             ")
-            ->whereNull('campaigns.deleted_at')
             ->groupBy('campaigns.id');
 
         // Get Appointment Counts
@@ -58,7 +62,7 @@ class HomeController extends Controller
         $callbacks = Appointment::where('type', 'callback')
             ->where('called_back', false);
 
-        if ($user->isAgencyUser() || $user->isDealershipUser()) {
+        if ($activeCompany->isAgency() || $activeCompany->isDealership()) {
             $callbacks->whereIn('campaign_id', $ids);
 
             $appointmentCounts->whereIn('campaign_id', $ids);
@@ -95,7 +99,6 @@ class HomeController extends Controller
         $drops = $drops->map(function ($item, $key) {
             return ['title' => $item->title, 'start' => $item->send_at->toDateTimeString()];
         });
-
 
         $viewData['campaigns'] = $allinone;
         $viewData['appointmentCounts'] = $appointmentCounts->groupBy('campaign_id')->get()->keyBy('campaign_id');
@@ -137,16 +140,8 @@ class HomeController extends Controller
             'callbacks' => Appointment::where('type', 'callback'),
         ];
 
-        if (\Auth::user()->access == 'Client') {
-            foreach ($stats as &$stat) {
-                $stat->whereIn('campaign_id', $ids);
-            }
-        }
-
-        if (\Auth::user()->access == 'Agency') {
-            foreach ($stats as &$stat) {
-                $stat->whereIn('campaign_id', $ids);
-            }
+        foreach ($stats as &$stat) {
+            $stat->whereIn('campaign_id', $ids);
         }
 
         foreach ($stats as &$stat) {
@@ -158,16 +153,15 @@ class HomeController extends Controller
 
     public function getCampaignIds()
     {
-        $ids = \DB::table('campaigns')->select('id');
+        $ids = $this->campaign->select('id');
+        $company = $this->company->findOrFail(get_active_company());
 
-        if (auth()->user()->isDealershipUser()) {
-            $ids->where('dealership_id', auth()->user()->id);
+        if ($company->isDealership()) {
+            $ids->where('dealership_id', $company->id);
+        } else if ($company->isAgency()) {
+            $ids->where('agency_id', $company->id);
         }
 
-        if (auth()->user()->isAgencyUser()) {
-            $ids->where('agency_id', auth()->user()->id);
-        }
-
-        return result_array_values($ids->get());
+        return $ids->get()->toArray();
     }
 }
