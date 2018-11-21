@@ -16,13 +16,13 @@ class SelectorController extends Controller
     public function show(Request $request)
     {
         return view('selector.select-company', [
-            'companies' => auth()->user()->companies
+            'companies' => auth()->user()->companies()->orderBy('name', 'asc')->get()
         ]);
     }
 
     public function updateActiveCompany(UpdateActiveCompanyRequest $request)
     {
         session(['activeCompany' => $request->input('company')]);
-        return redirect()->route('dashboard');
+        return redirect()->intended('dashboard');
     }
 }

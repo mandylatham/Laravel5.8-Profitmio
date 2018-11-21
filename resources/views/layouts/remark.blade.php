@@ -161,6 +161,18 @@
         .v-center {
             vertical-align: middle !important;
         }
+        .change-company-selector form {
+            display: block;
+            padding: 0 15px;
+            line-height: 3.572rem;
+            white-space: nowrap;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+        }
+        .change-company-selector form select {
+            display: inline-block;
+        }
         @yield('manualStyle')
     </style>
 </head>
@@ -399,6 +411,19 @@
                             </div>
                         </div>
                     </li>
+                    @endif
+                    @if (!auth()->user()->isAdmin())
+                        <li class="site-menu-item float-right change-company-selector">
+                            <form method="post" action="{{ route('selector.update-active-company') }}">
+                                <select class="form-control" name="company" required onchange="this.form.submit()">
+                                    <option selected>Change Company</option>
+                                    @foreach (auth()->user()->companies()->orderBy('name', 'desc')->get() as $company)
+                                        <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
+                                    @endforeach
+                                </select>
+                                {{ csrf_field() }}
+                            </form>
+                        </li>
                     @endif
                 </ul>
             </div>
