@@ -36,7 +36,7 @@ class ResponseController extends Controller
     {
         $rawResponses = \DB::select(\DB::raw("
             SELECT
-                t.id ,
+                t.id as recipient_id,
                 t.first_name ,
                 t.last_name ,
                 t.email ,
@@ -44,7 +44,7 @@ class ResponseController extends Controller
                 t.year ,
                 t.make ,
                 t.model ,
-                r.id ,
+                r.id as response_id,
                 r.type ,
                 r.message ,
                 r.incoming ,
@@ -215,9 +215,9 @@ join (
        select recipient_id, type
        from responses
        where campaign_id = ?
-       order by response_id asc) a
+       order by id asc) a
    group by a.recipient_id, a.type ) as responses
-  on recipients.recipient_id = responses.recipient_id
+  on recipients.id = responses.recipient_id
 where campaign_id = ?
 and deleted_at is null;
         "), [$campaign->id, $campaign->id]);
@@ -251,7 +251,7 @@ and deleted_at is null;
             select recipients.*, replace(recipients.phone, '+1', '') as clean_phone
             from recipients
             where campaign_id = ?
-            and recipient_id not in (select recipient_id from responses where campaign_id = ?)
+            and id not in (select recipient_id from responses where campaign_id = ?)
             and deleted_at is null;
         "), [$campaign->id, $campaign->id]);
 

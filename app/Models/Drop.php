@@ -22,11 +22,11 @@ class Drop extends Model
         'percentage_complete', 'completed_at', 'system_id'
     ];
 
-    protected $primaryKey = 'campaign_schedule_id';
+    protected $primaryKey = 'id';
 
     public function getIdAttribute()
     {
-        return $this->campaign_schedule_id;
+        return $this->id;
     }
 
     public function campaign()

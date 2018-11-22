@@ -61,7 +61,7 @@
                                                 {{ $schedule->status == "Processing" ? 'table-success' : '' }}
                                                 {{ $schedule->status == "Paused" ? 'table-warning' : '' }}
                                                 ">
-                                                <td><a href="{{ secure_url('campaign/' . $schedule->campaign_id . '/drop/' . $schedule->campaign_schedule_id) }}" class="btn btn-primary btn-xs"><strong>#{{ $schedule->campaign_schedule_id }}</strong></a></td>
+                                                <td><a href="{{ secure_url('campaign/' . $schedule->campaign_id . '/drop/' . $schedule->id) }}" class="btn btn-primary btn-xs"><strong>#{{ $schedule->campaign_schedule_id }}</strong></a></td>
                                                 <td>{{ (new \Carbon\Carbon($schedule->send_at))->format('m/d/Y g:i A') }}</td>
                                                 <td><div><a href="{{ secure_url('campaign/' . $schedule->campaign_id . '/') }}" class="btn btn-xs btn-info">Campaign #{{ $schedule->campaign_id }} </a> {{ $schedule->name }} </div></td>
                                                 <td>{{ ucwords($schedule->type) }}</td>
@@ -88,15 +88,15 @@
                                                     <div class="badge badge-outline badge-primary">Completed</div>
                                                     @else
                                                         @if ($schedule->status == "Pending")
-                                                    <button type="button" class="btn btn-xs btn-warning pause-button" data-url="{{ secure_url('drop/' . $schedule->campaign_schedule_id . '/pause') }}" data-toggle="tooltip" data-original-title="Pause Drop">
+                                                    <button type="button" class="btn btn-xs btn-warning pause-button" data-url="{{ secure_url('drop/' . $schedule->id . '/pause') }}" data-toggle="tooltip" data-original-title="Pause Drop">
                                                         <i class="icon md-pause"></i>
                                                     </button>
                                                         @elseif ($schedule->status == "Paused")
-                                                    <button type="button" class="btn btn-xs btn-success resume-button" data-url="{{ secure_url('drop/' . $schedule->campaign_schedule_id . '/resume') }}" data-toggle="tooltip" data-original-title="Resume Drop">
+                                                    <button type="button" class="btn btn-xs btn-success resume-button" data-url="{{ secure_url('drop/' . $schedule->id . '/resume') }}" data-toggle="tooltip" data-original-title="Resume Drop">
                                                         <i class="icon md-play"></i>
                                                     </button>
                                                         @endif
-                                                    <button type="button" class="btn btn-xs btn-danger delete-button" data-url="{{ secure_url('drop/' . $schedule->campaign_schedule_id . '/delete') }}" data-toggle="tooltip" data-original-title="Delete Drop">
+                                                    <button type="button" class="btn btn-xs btn-danger delete-button" data-url="{{ secure_url('drop/' . $schedule->id . '/delete') }}" data-toggle="tooltip" data-original-title="Delete Drop">
                                                         <i class="icon fa-trash"></i>
                                                     </button>
                                                     @endif

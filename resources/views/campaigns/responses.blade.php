@@ -47,7 +47,7 @@
                     @foreach ($responses as $response)
                         <tr>
                             <td>{{ $response['meta']->id }}</td>
-                            <td>{{ $response['meta']->name }} ({{ $response['meta']->target_id }})</td>
+                            <td>{{ $response['meta']->name }} ({{ $response['meta']->recipient_id }})</td>
                             <td>{{ $response['meta']->phone }}</td>
                             <td>{{ $response['meta']->email }}</td>
                             <td>{{ $response['meta']->year }}</td>

@@ -211,7 +211,7 @@ class DropWorker
         \Log::critical($message);
 
         \DB::table('campaign_schedules')
-            ->where('campaign_schedule_id', $drop->id)
+            ->where('id', $drop->id)
             ->update(['status' => 'Aborted']);
 
         dd($e);

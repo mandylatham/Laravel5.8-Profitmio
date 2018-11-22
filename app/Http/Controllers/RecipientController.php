@@ -236,7 +236,7 @@ class RecipientController extends Controller
         $dropped = collect(DB::select("
         select distinct recipient_id as `dropped`
             from deployment_recipients as dt where dt.deployment_id in (
-              select campaign_schedule_id from campaign_schedules where campaign_id = {$campaign->id}
+              select id from campaign_schedules where campaign_id = {$campaign->id}
             )
             and dt.sent_at is not null
         "))->pluck('dropped')->toArray();
@@ -411,7 +411,7 @@ class RecipientController extends Controller
         $dropped = collect(DB::select("
         select distinct recipient_id as `dropped`
             from deployment_recipients as dt where dt.deployment_id in (
-              select campaign_schedule_id from campaign_schedules where campaign_id = {$campaign->id}
+              select id from campaign_schedules where campaign_id = {$campaign->id}
             )
             and dt.sent_at is not null
         "))->pluck('dropped')->toArray();
@@ -602,7 +602,7 @@ class RecipientController extends Controller
         $campaign_id = $campaign->id;
 
         $donotdelete = collect(DB::select("select recipient_id from deployment_recipients
-            where deployment_id in (select campaign_schedule_id from campaign_schedules where campaign_id = $campaign_id)
+            where deployment_id in (select id from campaign_schedules where campaign_id = $campaign_id)
             and deployment_recipients.sent_at is not null"))
             ->pluck('recipient_id')
             ->toArray();
@@ -835,7 +835,7 @@ class RecipientController extends Controller
         $recipient = DB::select("
         select count( distinct recipient_id) as `count`
             from deployment_recipients where deployment_id in (
-              select campaign_schedule_id from campaign_schedules where campaign_id = {$list->campaign_id}
+              select id from campaign_schedules where campaign_id = {$list->campaign_id}
             ) and recipient_id in (
               select recipient_id from recipients where campaign_id = {$list->campaign_id} and recipient_list_id = {$list->id}
             )
@@ -845,7 +845,7 @@ class RecipientController extends Controller
         $recipient = DB::select("
         select count( distinct recipient_id) as `count`
             from deployment_recipients as dt where dt.deployment_id in (
-              select campaign_schedule_id from campaign_schedules where campaign_id = {$list->campaign_id}
+              select id from campaign_schedules where campaign_id = {$list->campaign_id}
             ) and dt.recipient_id in (
               select recipient_id from recipients where campaign_id = {$list->campaign_id} and recipient_list_id = {$list->id}
             )

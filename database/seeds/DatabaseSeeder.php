@@ -15,8 +15,8 @@ class DatabaseSeeder extends Seeder
         $this->call(UserTableSeeder::class);
         $this->call(PhoneNumberSeeder::class);
         $this->call(CampaignTableSeeder::class);
-        $this->call(RecipientListTableSeeder::class);
-        $this->call(RecipientTableSeeder::class);
+//        $this->call(RecipientListTableSeeder::class);
+//        $this->call(RecipientTableSeeder::class);
         $this->call(AppointmentTableSeeder::class);
     }
 }

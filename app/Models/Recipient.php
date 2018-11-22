@@ -8,6 +8,17 @@ class Recipient extends Model
 {
     protected $table = 'recipients';
 
+    protected $dates = [
+        'created_at', 'updated_at', 'deleted_at', 'archived_at',
+    ];
+
+    protected $fillable = [
+        'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state',
+        'zip', 'year', 'make', 'model', 'campaign_id', 'interested', 'not_interested',
+        'service', 'wrong_number', 'car_sold', 'heat', 'appointment', 'notes', 'last_responded_at',
+        'carrier', 'subgroup', 'from_dealer_db',
+    ];
+
     public static $mappable = [
         'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip',
         'make', 'model', 'vin'

@@ -18,9 +18,9 @@ use App\Models\Campaign;
 
 $factory->define(RecipientList::class, function (Faker $faker) {
     return [
-        'campaign_id' => Campaign::inRandomOrder()->first()->id,
         'uploaded_by' => User::inRandomOrder()->first()->id,
         'name' => $faker->name,
+        'recipients_added' => true,
         'fieldmap' => '',
     ];
 });
