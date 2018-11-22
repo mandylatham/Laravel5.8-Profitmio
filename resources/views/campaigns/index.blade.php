@@ -51,7 +51,8 @@
                                     <tr>
                                         <th class="hidden-sm-down">ID</th>
                                         <th>Name</th>
-                                        <th class="hidden-sm-down">Client</th>
+                                        <th class="hidden-sm-down">Agency</th>
+                                        <th class="hidden-sm-down">Dealership</th>
                                         <th class="hidden-md-down"><i class="fa fa-fw fa-user text-primary sr-hidden"></i> <span class="sr-only">Targets</span></th>
                                         <th class="hidden-md-down"><i class="fa fa-fw fa-phone text-primary sr-hidden"></i> <span class="sr-only">Phones</span></th>
                                         <th class="hidden-md-down"><i class="fa fa-fw fa-envelope text-primary sr-hidden"></i> <span class="sr-only">Emails</span></th>
@@ -65,59 +66,9 @@
                                                 <strong>{{ $campaign->id }}
                                                 </strong><br>
                                             </td>
-                                            <td><h5 style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space:nowrap;">
-                                                @if (isset($campaign->order_id))
-                                                <small>Order {{ $campaign->order_id }}</small><br>
-                                                @endif
-                                                {{ ucwords($campaign->name) }}
-                                                @if (! empty($campaign->starts_at) && ! empty($campaign->ends_at))
-                                                <br><small>
-                                                From
-                                                    <code>{{ show_date($campaign->starts_at, 'm/d/Y') }}</code>
-                                                to
-                                                    <code>{{ show_date($campaign->ends_at, 'm/d/Y') }}</code>
-                                                </small><br>
-                                                @else
-                                                <br><small>No Dates</small><br>
-                                                @endif
-                                                <span class="badge badge-outline
-                                                @if ($campaign->status == 'Upcoming')
-                                                badge-primary
-                                                @elseif ($campaign->status == 'Completed' or $campaign->status == 'Expired')
-                                                badge-default
-                                                @else
-                                                badge-success
-                                                @endif
-                                                ">{{ $campaign->status }}</span>
-                                            </h5>
-                                                <div class="campaign-links">
-                                                    <a class="btn btn-pure btn-primary btn-round campaign-view" href="{{ secure_url('campaign' . '/' . $campaign->id) }}">
-                                                        <i class="fa fa-search"></i>
-                                                    </a>
-                                                    <a class="btn btn-pure btn-primary btn-round campaign-drops" href="{{ secure_url('campaign' . '/' . $campaign->id . '/drops') }}">
-                                                        <i class="icon icon-lg wi-raindrops" style="font-size: 28px; margin: -5px"></i>
-                                                    </a>
-                                                    <a class="btn btn-pure btn-primary btn-round campaign-recipients" href="{{ secure_url('campaign' . '/' . $campaign->id . '/recipients') }}">
-                                                        <i class="fa fa-users"></i>
-                                                    </a>
-                                                    <a class="btn btn-pure btn-primary btn-round campaign-console" href="{{ secure_url('campaign' . '/' . $campaign->id . '/response-console') }}">
-                                                        <i class="fa fa-terminal"></i>
-                                                    </a>
-                                                    <a class="btn btn-pure btn-warning btn-round campaign-edit" href="{{ secure_url('campaign' . '/' . $campaign->id) }}/edit">
-                                                        <i class="fa fa-pencil"></i>
-                                                    </a>
-                                                    <button class="btn btn-pure btn-danger btn-round delete-button" data-deleteUrl="{{ secure_url('campaign/' . $campaign->id . '/delete') }}">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </div>
-                                            </td>
-                                            <td class="hidden-sm-down">
-                                                <h5 style="max-width: 250px; overflow: hidden; text-overflow: ellipsis; white-space:nowrap; margin-bottom: 0">{{ $campaign->dealership->organization }}</h5>
-                                                <small>
-                                                    {{ $campaign->dealership->first_name }} {{ $campaign->dealership->last_name }}<br>
-                                                    {{ $campaign->dealership->phone_number }}
-                                                </small>
-                                            </td>
+                                            <td>{!! $campaign->getNameForTemplate() !!}</td>
+                                            <td class="hidden-sm-down">{{ $campaign->agency->name }}</td>
+                                            <td class="hidden-sm-down">{{ $campaign->dealership->name }}</td>
                                             <td class="hidden-md-down">{{ $campaign->recipients_count }}</td>
                                             <td class="hidden-md-down">{{ $campaign->phone_responses_count }}</td>
                                             <td class="hidden-md-down">{{ $campaign->email_responses_count }}</td>

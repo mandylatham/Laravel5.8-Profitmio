@@ -91,14 +91,14 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
     Route::group(['prefix' => '/campaign/{campaign}'], function () {
-        Route::get('/', 'CampaignController@show')->middleware('can:view-campaigns');
+        Route::get('/', 'CampaignController@show')->middleware('can:view-campaigns')->name('campaign.view');
         Route::delete('/', 'CampaignController@delete');
         Route::get('/details', 'CampaignController@details')->middleware('can:view-campaigns');
-        Route::get('/edit', 'CampaignController@edit')->middleware('can:change-campaigns');
-        Route::get('/delete', 'CampaignController@delete')->middleware('can:change-campaigns');
+        Route::get('/edit', 'CampaignController@edit')->middleware('can:change-campaigns')->name('campaign.edit');
+        Route::get('/delete', 'CampaignController@delete')->middleware('can:change-campaigns')->name('campaign.delete');
         Route::post('/update', 'CampaignController@update')->middleware('can:change-campaigns');
         // Recipient list pages
-        Route::get('/recipients', 'RecipientController@show')->name('recipients')->middleware('can:view-campaigns');
+        Route::get('/recipients', 'RecipientController@show')->middleware('can:view-campaigns')->name('campaign.recipient.index');
         Route::post('/recipient-list/upload', 'RecipientController@uploadFile')->name('recipient-list.upload')->middleware('can:change-campaigns');
         Route::get('/recipient-list/{id}', 'RecipientController@showRecipientList')->name('recipient-list.show')->middleware('can:view-campaigns');
         Route::get('/recipient-list/delete/{list}', 'RecipientController@deleteRecipientList')->name('recipient-list.delete')->middleware('can:change-campaigns');
@@ -116,7 +116,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/recipients/delete-all', 'RecipientController@deleteAll')->middleware('can:change-campaigns');
         // End of Recipient list pages
         Route::get('phone-list', 'PhoneController@fromCampaign')->middleware('can:view-campaigns');
-        Route::get('/drops', 'DeploymentController@forCampaign')->middleware('can:view-campaigns');
+        Route::get('/drops', 'DeploymentController@forCampaign')->middleware('can:view-campaigns')->name('campaign.drop.index');
         Route::get('/drop/{drop}', 'DeploymentController@show')->middleware('can:view-campaigns');
         Route::post('/drop/{deployment}/update', 'DeploymentController@update')->middleware('can:change-campaigns');
         Route::get('/drops/new', 'DeploymentController@createNew')->middleware('can:change-campaigns');
@@ -136,7 +136,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/response/{recipient}', 'ResponseController@getResponse')->middleware('can:view-console');
         Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->middleware('can:respond-console');
         Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console');
-        Route::get('/response-console', 'ResponseConsoleController@show')->middleware('can:view-console');
+        Route::get('/response-console', 'ResponseConsoleController@show')->middleware('can:view-console')->name('campaign.response-console.index');;
         Route::get('/response-console/unread', 'ResponseConsoleController@showUnread')->middleware('can:view-console');
         Route::get('/response-console/idle', 'ResponseConsoleController@showIdle')->middleware('can:view-console');
         Route::get('/response-console/archived', 'ResponseConsoleController@showArchived')->middleware('can:view-console');
@@ -186,6 +186,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');
         Route::post('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');
         Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
+        Route::get('/{company}/campaign', 'CompanyController@campaignIndex')->middleware('can:viewForPreferences,company')->name('company.campaign.index');
+        Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:manage,company')->name('company.edit');
 
         Route::group(['prefix' => '/{company}/user'], function () {
             Route::get('', 'CompanyController@userIndex')->middleware('can:manage,company')->name('company.user.index');
@@ -193,12 +195,6 @@ Route::group(['middleware' => 'auth'], function () {
             Route::post('', 'CompanyController@userStore')->middleware('can:manage,company')->name('company.user.store');
             Route::get('/{user}/edit', 'CompanyController@userEdit')->middleware('can:manage,company')->name('company.user.edit');
         });
-        Route::get('/{company}/user', 'CompanyController@userIndex')->middleware('can:manage,company')->name('company.user.index');
-        Route::get('/{company}/user/create', 'CompanyController@userCreate')->middleware('can:manage,company')->name('company.user.create');
-        Route::get('/{company}/user/{user}/edit', 'CompanyController@userEdit')->middleware('can:manage,company')->name('company.user.edit');
-        Route::post('/{company}/user', 'CompanyController@userStore')->middleware('can:manage,company')->name('company.user.store');
-        Route::get('/{company}/campaign', 'CompanyController@campaignIndex')->middleware('can:viewForPreferences,company')->name('company.campaign.index');
-        Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:manage,company')->name('company.edit');
     });
     //endregion
 });

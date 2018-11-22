@@ -47,18 +47,16 @@ class CompanyController extends Controller
         $this->user = $user;
     }
 
-    public function campaignIndex(Company $company)
+    public function campaignIndex(Company $company, Request $request)
     {
         /** @var User $user */
         $user = auth()->user();
-        $templateSuffix = '';
-        if ($user->isCompanyAdmin($company->id)) {
-            $campaigns = $company->getCampaigns();
-            $templateSuffix = '-manager';
-        } else {
-            $campaigns = $user->getCampaignsForCompany($company);
+        if (!$user->isAdmin()) {
+            abort(401);
         }
-        return view('company.campaign.index' . $templateSuffix, [
+        $campaigns = $company->getCampaigns($request->input('q'))
+            ->paginate(15);
+        return view('company.campaign.index', [
             'campaigns' => $campaigns,
             'company' => $company
         ]);

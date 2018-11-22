@@ -60,11 +60,32 @@ class Company extends Model
         return $this->type === self::TYPE_SUPPORT;
     }
 
-    public function getCampaigns()
+    public function getCampaigns($q = null)
     {
-        return Campaign::where(function ($query) {
-            $query->where('agency_id', $this->id)
-                ->orWhere('dealership_id', $this->id);
-        })->get();
+        $campaigns = Campaign::with(['dealership', 'agency'])
+            ->where(function ($query) {
+                if ($this->isAgency()) {
+                    $query->where('agency_id', $this->id);
+                } else if ($this->Dealership()) {
+                    $query->where('dealership_id', $this->id);
+                }
+            })
+            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
+            ->with(['dealership', 'agency'])
+            ->whereNull('deleted_at')
+            ->whereIn('status', ['Active', 'Completed', 'Upcoming']);
+
+        if ($q) {
+            $likeQ = '%' . $q . '%';
+            $campaigns->where('name', 'like', $likeQ)
+                ->orWhere('id', 'like', $likeQ)
+                ->orWhere('starts_at', 'like', $likeQ)
+                ->orWhere('ends_at', 'like', $likeQ)
+                ->orWhere('order_id', 'like', $likeQ);
+        }
+
+        $campaigns->orderBy('campaigns.id', 'desc');
+
+        return $campaigns;
     }
 }

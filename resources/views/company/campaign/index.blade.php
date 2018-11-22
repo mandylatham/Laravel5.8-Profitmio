@@ -1,103 +1,98 @@
-@extends('layouts.remark')
+@extends('layouts.remark_company-manager')
 
 @section('header')
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.13/css/jquery.dataTables.min.css">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
+    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.css') }}">
 @endsection
 
-@section('manualStyle')
-    .company-image {
-        width: 40px;
-        height: 40px;
-        background-size: cover;
-        background-position: 50% 50%;
-        background-color: #dadada;
-        border-radius: 50%;
-    }
-@endsection
-
-@section('content')
-    <div class="page">
-        <div class="page-header container-fluid">
-            <div class="row-fluid">
-                <div class="col-xxl-8 offset-xxl-2 col-md-12">
-                    <h3 class="page-title text-default">
-                        Companies
-                    </h3>
-                    <div class="page-header-actions">
-                        <a href="{{ route('company.create') }}"
-                           class="btn btn-sm btn-success waves-effect">
-                            <i class="icon md-plus" aria-hidden="true"></i>
-                            Create new company
-                        </a>
+@section('company_content')
+    <div class="col-xs-12">
+        <div class="row">
+            <div class="col-md-6 offset-md-6">
+                <form action="{{ route('company.campaign.index', ['company' => $company->id]) }}" method="get">
+                    <div class="input-search">
+                        <i class="input-search-icon md-search" aria-hidden="true"></i>
+                        <input type="text" class="form-control" name="q" placeholder="Search..." value="{{ request('q') }}">
+                        <button type="button"
+                                @if (request('q'))
+                                onClick="window.location.href = ' {{ route('company.campaign.index', ['company' => $company->id, 'q' => '']) }}'"
+                                @endif
+                                class="input-search-close icon md-close" aria-label="Close"></button>
                     </div>
-                </div>
+                </form>
             </div>
         </div>
-        <div class="page-content container-fluid">
-            <div class="row-fluid" data-plugin="matchHeight" data-by-row="true">
-                <div class="col-xxl-8 offset-xxl-2 col-md-12">
-                    <div class="panel panel-info">
-                        <div class="panel-body">
-                            <div class="table-responsive">
-                                <table id="users" class="table table-striped table-hover datatable">
-                                    <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Image</th>
-                                        <th>Name</th>
-                                        <th>Type</th>
-                                        <th>Url</th>
-                                        <th>Phone</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($companies as $company)
-                                        <tr class="user-row" data-company="{{ $company->id }}">
-                                            <td class="id-row v-center"><strong>{{ $company->id }}</strong></td>
-                                            <td width="60px" class="text-center">
-                                                <div class="company-image" style="background-image: url('{{ $company->image_url }}')"></div>
-                                            </td>
-                                            <td class="v-center">
-                                                <a href="{{ route('company.dashboard', ['company' => $company->id]) }}">{{ $company->name }}</a>
-                                            </td>
-                                            <td class="text-capitalize v-center">{{ $company->type }}</td>
-                                            <td class="v-center">{{ $company->url }}</td>
-                                            <td class="v-center">{{ $company->phone_number }}</td>
-                                            <td>
-                                                <a class="btn btn-pure btn-warning btn-round"
-                                                   href="{{ route('company.edit', ['company' => $company->id]) }}">
-                                                    <i class="fa fa-pencil"></i>
-                                                    Edit
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        @if (count($campaigns) > 0)
+            <div class="table-responsive">
+                <table class="table table-striped table-hover datatable">
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Agency</th>
+                        <th>Dealership</th>
+                        <th><i class="fa fa-fw fa-user text-primary sr-hidden"></i> <span class="sr-only">Targets</span>
+                        </th>
+                        <th><i class="fa fa-fw fa-phone text-primary sr-hidden"></i> <span class="sr-only">Phones</span>
+                        </th>
+                        <th><i class="fa fa-fw fa-envelope text-primary sr-hidden"></i> <span
+                                class="sr-only">Emails</span>
+                        </th>
+                        <th><i class="fa fa-fw fa-commenting text-primary sr-hidden"></i> <span
+                                class="sr-only">SMS/MMS</span></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($campaigns as $campaign)
+                        <tr>
+                            <td class="id-row v-center"><strong>{{ $campaign->id }}</strong></td>
+                            <td class="v-center">{!! $campaign->getNameForTemplate() !!}</td>
+                            <td class="v-center">{{ $campaign->agency->name }}</td>
+                            <td class="v-center">{{ $campaign->dealership->name }}</td>
+                            <td class="hidden-md-down">{{ $campaign->recipients_count }}</td>
+                            <td class="hidden-md-down">{{ $campaign->phone_responses_count }}</td>
+                            <td class="hidden-md-down">{{ $campaign->email_responses_count }}</td>
+                            <td class="hidden-md-down">{{ $campaign->text_responses_count }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+                <div class="links">{{ $campaigns->links() }}</div>
             </div>
-        </div>
+        @else
+            <div class="alert alert-info mt-20"><p>No campaigns to show</p></div>
+        @endif
     </div>
 @endsection
 
 @section('scriptTags')
-    <script src="{{ secure_url('js/Plugin/material.js') }}"></script>
-    <script src="{{ secure_url('js/Plugin/sweetalert.min.js') }}"></script>
-
-    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
-
+    <script type="text/javascript" src="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.js') }}"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            $(".datatable").DataTable({"order": [[0, "asc"]]});
+            $(".delete-button").click(function () {
+                var url = $(this).data('deleteurl');
+
+                swal({
+                        title: "Are you sure?",
+                        text: "You will not be able to recover this campaign!",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonColor: "#DD6B55",
+                        confirmButtonText: "Yes",
+                        cancelButtonText: "No",
+                        showLoaderOnConfirm: true,
+                        closeOnConfirm: false,
+                        customClass: "deleteBox"
+                    },
+                    function () {
+                        $.get(
+                            url,
+                            function (data) {
+                                swal("All Done", "Campaign Deleted!", "success");
+                                location.reload();
+                            }
+                        );
+                    });
+            });
         });
     </script>
-@endsection
-
-@section('scripts')
 @endsection

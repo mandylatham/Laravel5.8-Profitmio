@@ -77,6 +77,24 @@ class Campaign extends Model
         } else {
             $template = "<br><small>No Dates</small><br>";
         }
+        $template .= '<span class="badge badge-outline';
+        if ($this->status === 'Upcoming') {
+            $template .= ' badge-primary';
+        } else if ($this->status == 'Completed' || $this->status == 'Expired') {
+            $template .= ' badge-default';
+        } else {
+            $template .= ' badge-success';
+        }
+        $template .= '">' . $this->status . '</span>';
+        $template .= '</h5>';
+        $template .= '<div class="campaign-links">';
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-view" href="' . route('campaign.view', ['campaign' => $this->id]) . '"><i class="fa fa-search"></i></a>';
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-drops" href="' . route('campaign.drop.index', ['campaign' => $this->id]) . '"><i class="icon icon-lg wi-raindrops" style="font-size: 28px; margin: -5px"></i></a>';
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-recipients" href="' . route('campaign.recipient.index', ['campaign' => $this->id]) . '"><i class="fa fa-users"></i></a>';
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-console" href="' . route('campaign.response-console.index', ['campaign' => $this->id]) . '"><i class="fa fa-terminal"></i></a>';
+        $template .= '<a class="btn btn-pure btn-warning btn-round campaign-edit" href="' . route('campaign.edit', ['campaign' => $this->id]) . '"><i class="fa fa-pencil"></i></a>';
+        $template .= '<button class="btn btn-pure btn-danger btn-round delete-button" data-deleteUrl="' . route('campaign.delete', ['campaign' => $this->id]) . '"><i class="fa fa-trash"></i></button>';
+        $template .= '</div>';
         return $template;
     }
 
