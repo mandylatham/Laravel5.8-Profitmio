@@ -66,7 +66,7 @@ class Company extends Model
             ->where(function ($query) {
                 if ($this->isAgency()) {
                     $query->where('agency_id', $this->id);
-                } else if ($this->Dealership()) {
+                } else if ($this->isDealership()) {
                     $query->where('dealership_id', $this->id);
                 }
             })

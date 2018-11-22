@@ -18,6 +18,7 @@ class AdminController extends Controller
         if (auth()->user()->isAdmin()) {
             abort(403);
         }
+        session()->forget('activeCompany');
         auth()->user()->leaveImpersonation();
         return redirect()->route('campaign.index');
     }

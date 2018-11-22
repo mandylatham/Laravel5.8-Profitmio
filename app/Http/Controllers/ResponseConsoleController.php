@@ -43,7 +43,7 @@ class ResponseConsoleController extends Controller
         }
         if ($filter == 'email') {
             $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.recipient_id',
+                'recipients.id',
                 result_array_values(
                     \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
                 )
@@ -51,7 +51,7 @@ class ResponseConsoleController extends Controller
         }
         if ($filter == 'text') {
             $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.recipient_id',
+                'recipients.id',
                 result_array_values(
                     \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
                 )
@@ -59,7 +59,7 @@ class ResponseConsoleController extends Controller
         }
         if ($filter == 'calls') {
             $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.recipient_id',
+                'recipients.id',
                 result_array_values(
                     \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
                 )

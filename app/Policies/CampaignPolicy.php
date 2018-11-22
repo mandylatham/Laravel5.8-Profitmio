@@ -10,6 +10,13 @@ class CampaignPolicy
 {
     use HandlesAuthorization;
 
+    public function before($user, $ability)
+    {
+        if ($user->isAdmin()) {
+            return true;
+        };
+    }
+
     public function list(User $user)
     {
         return $user->isAdmin();
@@ -24,7 +31,13 @@ class CampaignPolicy
      */
     public function view(User $user, Campaign $campaign)
     {
-        //
+        $activeCompany = $user->getActiveCompany();
+        if ($activeCompany->isAgency()) {
+            return $campaign->agency_id == $activeCompany->id;
+        } else if ($activeCompany->isDealership()) {
+            return $campaign->agency_id == $activeCompany->id;
+        }
+        return false;
     }
 
     /**

@@ -4,11 +4,13 @@ namespace App\Providers;
 
 use App\Models\Campaign;
 use App\Models\Company;
+use App\Models\Recipient;
 use App\Policies\CampaignPolicy;
 use App\Policies\CompanyPolicy;
 use App\Models\User;
 use App\Models\CampaignScheduleTemplate;
 use App\Policies\CampaignScheduleTemplatePolicy;
+use App\Policies\RecipientPolicy;
 use App\Policies\UserPolicy;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
@@ -21,9 +23,9 @@ class AuthServiceProvider extends ServiceProvider
      * @var array
      */
     protected $policies = [
-        'App\Model' => 'App\Policies\ModelPolicy',
         Company::class => CompanyPolicy::class,
         Campaign::class => CampaignPolicy::class,
+        Recipient::class => RecipientPolicy::class,
         CampaignScheduleTemplate::class => CampaignScheduleTemplatePolicy::class,
         User::class => UserPolicy::class
     ];

@@ -31,7 +31,7 @@ class Recipient extends Model
 
     public function campaign()
     {
-        return $this->belongsTo(Campaign::class, 'campaign_id', 'campaign_id');
+        return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
     }
 
     public function appointments()

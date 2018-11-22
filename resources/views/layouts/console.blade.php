@@ -171,6 +171,18 @@
         .page, .page-aside {
             background: transparent url('{{ secure_url('images/debut_light.png') }}') repeat;
         }
+        .change-company-selector form {
+            display: block;
+            padding: 0 15px;
+            line-height: 3.572rem;
+            white-space: nowrap;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+        }
+        .change-company-selector form select {
+            display: inline-block;
+        }
 
         @yield('manualStyle')
     </style>
@@ -191,7 +203,10 @@
             <span class="navbar-brand-text hidden-xs-down"> Profit Miner</span>
         </a>
     </div>
-    <div class="navbar-container container-fluid">
+    <div class="navbar-container container-fluid d-flex align-items-center justify-content-end">
+        @impersonating
+        <a class="btn-round btn btn-primary d-none d-md-inline btn-sm" href="{{ route('admin.impersonate-leave') }}">Leave impersonation</a>
+        @endImpersonating
         <!-- Navbar Collapse -->
         <div class="collapse navbar-collapse navbar-collapse-toolbar" id="site-navbar-collapse">
             <!-- Navbar Toolbar -->
@@ -304,7 +319,7 @@
                             <img src="{{ secure_url('/images/default-user.png') }}">
                             <i></i>
                         </span>
-                        <span style="margin-left: 8px;">{{ \Auth::user()->name }}</span>
+                        <span style="margin-left: 8px;">{{ auth()->user()->first_name }}</span>
                     </a>
                     <div class="dropdown-menu" role="menu">
                         <a class="dropdown-item" href="{{ secure_url('/logout') }}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
@@ -331,84 +346,105 @@
     </div>
 </nav>
 
-@if (auth()->user()->isAdmin())
 <div class="site-menubar">
     <div class="site-menubar-body">
         <div>
             <div>
                 <ul class="site-menu" data-plugin="menu">
                     <li class="site-menu-category">General</li>
-                    <li class="site-menu-item">
-                        <a href="{{ secure_url('/dashboard') }}" class=" waves-effect waves-classic">
-                            <i class="site-menu-icon icon oi-dashboard" aria-hidden="true"></i>
-                            <span class="site-menu-title">Dashboard</span>
-                        </a>
-                    </li>
-                    @if (\Gate::allows('view-campaigns'))
-                    <li class="site-menu-item">
-                        <a href="{{ secure_url('/campaigns') }}" class=" waves-effect waves-classic">
-                            <i class="site-menu-icon icon oi-megaphone" aria-hidden="true"></i>
-                            <span class="site-menu-title">Campaigns</span>
-                        </a>
-                    </li>
+                    @if (!auth()->user()->isAdmin())
+                        <li class="site-menu-item">
+                            <a href="{{ secure_url('/dashboard') }}" class=" waves-effect waves-classic">
+                                <i class="site-menu-icon icon oi-dashboard" aria-hidden="true"></i>
+                                <span class="site-menu-title">Dashboard</span>
+                            </a>
+                        </li>
                     @endif
-                    @if (\Gate::allows('view-templates'))
-                    <li class="site-menu-item">
-                        <a href="{{ secure_url('/templates') }}" class=" waves-effect waves-classic">
-                            <i class="site-menu-icon icon fa-file-text-o" aria-hidden="true"></i>
-                            <span class="site-menu-title">Templates</span>
-                        </a>
-                    </li>
+                    @can('list', \App\Models\Campaign::class)
+                        <li class="site-menu-item">
+                            <a href="{{ route('campaign.index') }}" class=" waves-effect waves-classic">
+                                <i class="site-menu-icon icon oi-megaphone" aria-hidden="true"></i>
+                                <span class="site-menu-title">Campaigns</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('list', \App\Models\CampaignScheduleTemplate::class)
+                        <li class="site-menu-item">
+                            <a href="{{ secure_url('/templates') }}" class=" waves-effect waves-classic">
+                                <i class="site-menu-icon icon fa-file-text-o" aria-hidden="true"></i>
+                                <span class="site-menu-title">Templates</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @can('list', \App\Models\User::class)
+                        <li class="site-menu-item">
+                            <a href="{{ route('user.index') }}" class=" waves-effect waves-classic">
+                                <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
+                                <span class="site-menu-title">Users</span>
+                            </a>
+                        </li>
+                    @endcan
+                    @if (auth()->user()->isAdmin())
+                        <li class="site-menu-item">
+                            <a href="{{ route('company.index') }}" class=" waves-effect waves-classic">
+                                <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
+                                <span class="site-menu-title">Companies</span>
+                            </a>
+                        </li>
                     @endif
-                    @if (\Gate::allows('view-users'))
-                    <li class="site-menu-item">
-                        <a href="{{ secure_url('/users') }}" class=" waves-effect waves-classic">
-                            <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
-                            <span class="site-menu-title">Users</span>
-                        </a>
-                    </li>
-                    @endif
-                    @if (\Gate::allows('admin-only'))
-                    <li class="site-menu-category">System</li>
-                    <li class="dropdown site-menu-item has-sub">
-                        <a data-toggle="dropdown" href="javascript:void(0)" data-dropdown-toggle="false" class="waves-effect waves-classic">
-                            <i class="site-menu-icon icon fa-server" aria-hidden="true"></i>
-                            <span class="site-menu-title">System</span>
-                            <span class="site-menu-arrow"></span>
-                        </a>
-                        <div class="dropdown-menu">
-                            <div class="site-menu-scroll-wrap is-list scrollable is_enabled scrollable-vertical" style="position: relative">
-                                <div class="scrollable-container" style="max-height: 420px; width: 232px;">
-                                    <div class="scrollable-content" style="width: 217px;">
-                                        <ul class="site-menu-sub site-menu-normal-list">
-                                            <li class="site-menu-item">
-                                                <a href="{{ secure_url('/system/drops') }}" class=" waves-effect waves-classic">
-                                                    <i class="site-menu-icon icon fa-paper-plane" aria-hidden="true"></i>
-                                                    <span class="site-menu-title">Drop Management</span>
-                                                </a>
-                                            </li>
-                                            <li class="site-menu-item">
-                                                <a href="{{ secure_url('/system/reports') }}" class=" waves-effect waves-classic">
-                                                    <i class="site-menu-icon icon fa-bar-chart" aria-hidden="true"></i>
-                                                    <span class="site-menu-title">Reports</span>
-                                                </a>
-                                            </li>
-                                        </ul>
+                    @if (auth()->user()->isAdmin())
+                        <li class="site-menu-category">System</li>
+                        <li class="dropdown site-menu-item has-sub">
+                            <a data-toggle="dropdown" href="javascript:void(0)" data-dropdown-toggle="false" class="waves-effect waves-classic">
+                                <i class="site-menu-icon icon fa-server" aria-hidden="true"></i>
+                                <span class="site-menu-title">System</span>
+                                <span class="site-menu-arrow"></span>
+                            </a>
+                            <div class="dropdown-menu">
+                                <div class="site-menu-scroll-wrap is-list scrollable is_enabled scrollable-vertical" style="position: relative">
+                                    <div class="scrollable-container" style="max-height: 420px; width: 232px;">
+                                        <div class="scrollable-content" style="width: 217px;">
+                                            <ul class="site-menu-sub site-menu-normal-list">
+                                                <li class="site-menu-item">
+                                                    <a href="{{ secure_url('/system/drops') }}" class=" waves-effect waves-classic">
+                                                        <i class="site-menu-icon icon fa-paper-plane" aria-hidden="true"></i>
+                                                        <span class="site-menu-title">Drop Management</span>
+                                                    </a>
+                                                </li>
+                                                <li class="site-menu-item">
+                                                    <a href="{{ secure_url('/system/reports') }}" class=" waves-effect waves-classic">
+                                                        <i class="site-menu-icon icon fa-bar-chart" aria-hidden="true"></i>
+                                                        <span class="site-menu-title">Reports</span>
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide" draggable="false">
+                                        <div class="scrollable-bar-handle" style="height: 350.283px;"></div>
                                     </div>
                                 </div>
-                                <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide" draggable="false">
-                                    <div class="scrollable-bar-handle" style="height: 350.283px;"></div>
-                                </div>
                             </div>
-                        </div>
-                    </li>
+                        </li>
+                    @endif
+                    @if (!auth()->user()->isAdmin())
+                        <li class="site-menu-item float-right change-company-selector">
+                            <form method="post" action="{{ route('selector.update-active-company') }}">
+                                <select class="form-control" name="company" required onchange="this.form.submit()">
+                                    <option selected>Change Company</option>
+                                    @foreach (auth()->user()->companies()->orderBy('name', 'desc')->get() as $company)
+                                        <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
+                                    @endforeach
+                                </select>
+                                {{ csrf_field() }}
+                            </form>
+                        </li>
                     @endif
                 </ul>
             </div>
         </div>
     </div>
 </div>
-@endif
 
 @yield('content')
 

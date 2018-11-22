@@ -48,6 +48,18 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    /**
+     * Return the company that is selected by the logged user
+     *
+     * This method verify that the user belongs to selected company (prevents data leak)
+     *
+     * @return mixed
+     */
+    public function getActiveCompany()
+    {
+        return $this->companies()->where('companies.id', get_active_company())->first();
+    }
+
     public function agencyCampaigns()
     {
         return $this->hasMany(Campaign::class, 'agency_id', 'id');

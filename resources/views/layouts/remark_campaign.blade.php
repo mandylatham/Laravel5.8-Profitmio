@@ -16,6 +16,7 @@
                         <span class="hidden-md-down">Open Console</span>
                     </button>
                     <div style="display: flex">
+                        @if(auth()->user()->isAdmin())
                         <button type="button"
                                 role="button"
                                 data-url="{{ secure_url('/campaigns') }}"
@@ -25,6 +26,7 @@
                                 style="margin-right: 15px; background: rgba(255, 255, 255, 0.2); border-size: 0.5px;">
                             <i class="icon fa-angle-left" style="color: #efefef" aria-hidden="true"></i>
                         </button>
+                        @endif
                         <h3 class="page-title text-default" style="
                                 padding: 3px 12px;
                                 margin-right: 12px;
