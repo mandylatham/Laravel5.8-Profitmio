@@ -24,14 +24,9 @@ class Drop extends Model
 
     protected $primaryKey = 'id';
 
-    public function getIdAttribute()
-    {
-        return $this->id;
-    }
-
     public function campaign()
     {
-        return $this->belongsTo(Campaign::class, 'campaign_id', 'campaign_id');
+        return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
     }
 
 //    public function recipients()
