@@ -17,14 +17,14 @@
     <!-- Plugins -->
     <link rel="stylesheet" href="{{ secure_url('/vendor/animsition/animsition.css') }}">
     <link rel="stylesheet" href="{{ secure_url('/vendor/asscrollable/asScrollable.css') }}">
-    <link rel="stylesheet" href="{{ secure_url('/vendor/switchery/switchery.css') }}">
-    <link rel="stylesheet" href="{{ secure_url('/vendor/intro-js/introjs.css') }}">
-    <link rel="stylesheet" href="{{ secure_url('/vendor/slidepanel/slidePanel.css') }}">
+{{--    <link rel="stylesheet" href="{{ secure_url('/vendor/switchery/switchery.css') }}">--}}
+{{--    <link rel="stylesheet" href="{{ secure_url('/vendor/intro-js/introjs.css') }}">--}}
+{{--    <link rel="stylesheet" href="{{ secure_url('/vendor/slidepanel/slidePanel.css') }}">--}}
     <link rel="stylesheet" href="{{ secure_url('/vendor/flag-icon-css/flag-icon.css') }}">
     <link rel="stylesheet" href="{{ secure_url('/vendor/waves/waves.css') }}">
-    <link rel="stylesheet" href="{{ secure_url('/vendor/chartist/chartist.css') }}">
-    <link rel="stylesheet" href="{{ secure_url('/vendor/jvectormap/jquery-jvectormap.css') }}">
-    <link rel="stylesheet" href="{{ secure_url('/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.css') }}">
+{{--    <link rel="stylesheet" href="{{ secure_url('/vendor/chartist/chartist.css') }}">--}}
+{{--    <link rel="stylesheet" href="{{ secure_url('/vendor/jvectormap/jquery-jvectormap.css') }}">--}}
+{{--    <link rel="stylesheet" href="{{ secure_url('/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.css') }}">--}}
     <link rel="stylesheet" href="{{ secure_asset('css/v1.css') }}">
     <!-- Fonts -->
     <link rel="stylesheet" href="{{ secure_url('/fonts/material-design/material-design.min.css') }}">
@@ -52,127 +52,6 @@
         Breakpoints();
     </script>
     <style type="text/css">
-        html,body {
-            height: 100%;
-        }
-        body.animsition,
-        body.site-navbar-small
-        {
-            padding-top: 4.3rem;
-        }
-        @media(min-width: 767px) {
-            .site-navbar-small .site-navbar .navbar-brand {
-                min-width: 180px;
-            }
-        }
-        .site-navbar {
-            border-bottom: 1px solid #878787;
-        }
-        .nav-link > i {
-            padding-right: 5px;
-        }
-        .site-footer {
-            background: #083756;
-            border-top: 1px solid #cdcdcd;
-        }
-        .site-footer a {
-            color: rgb(123, 163, 193);
-        }
-        @media(min-width: 767px) {
-            @if (\Auth::user()->access != 'Client')
-            .page {
-                padding-top: 50px;
-            }
-            @endif
-            .site-navbar {
-                border-bottom: 1px solid #969696;
-            }
-        }
-
-		a#drops-nav-link {
-			padding-top: 19px;
-			padding-bottom: 19px;
-		}
-		@media (max-width: 768px) {
-			a#drops-nav-link {
-				padding-top: 6px;
-				padding-bottom: 10px;
-			}
-		}
-
-        .page {
-            /* Background pattern from Subtle Patterns
-                (https://www.toptal.com/designers/subtlepatterns/) */
-            background: #333 url('/images/triangular.png') center center repeat;
-        }
-        .page-title {
-            font-family: "Archivo Narrow", "Open Sans", sans-serif;
-            color: #fff;
-            text-shadow: 2px 2px 8px #202020;
-        }
-        .page-header {
-            padding: 15px 30px;
-        }
-        .site-menubar {
-            background: #083756;
-            border-bottom: 1px solid #e5e5e5;
-        }
-        .panel {
-            box-shadow: 2px 2px 10px #555;
-        }
-        .site-menu-item > .dropdown-menu {
-            border: 0.5px solid #ddd;
-            border-top: 0px;
-            border-radius: 0 0 4px 4px;
-            background-color: #083756;
-            color: #efefef;
-            margin-top: -1px;
-            box-shadow: 1px 1px 3px #333;
-        }
-        table.dataTable thead .sorting:after,
-        table.dataTable thead .sorting_desc:after,
-        table.dataTable thead .sorting_asc:after {
-            display: none
-        }
-        .deleteBox .sa-button-container {
-            display: flex;
-            justify-content: space-around;
-        }
-        .deleteBox .confirm.btn-primary {
-            background-color: #a93f30;
-            border-color: #893829;
-        }
-        .deleteBox .cancel {
-            background-color: #418551;
-            border-color: #33663a;
-            color: #fff;
-        }
-        .select2-container .select2-selection--single {
-            height: inherit;
-            padding: 6px 0;
-            border-color: #e0e0e0;
-        }
-        .select2-container--default .select2-selection--single .select2-selection__arrow {
-            min-height: 40px;
-        }
-        .dropdown-menu {
-            z-index: 9000;
-        }
-        .v-center {
-            vertical-align: middle !important;
-        }
-        .change-company-selector form {
-            display: block;
-            padding: 0 15px;
-            line-height: 3.572rem;
-            white-space: nowrap;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-        }
-        .change-company-selector form select {
-            display: inline-block;
-        }
         @yield('manualStyle')
     </style>
 </head>
@@ -456,16 +335,16 @@
 <script src="{{ secure_url('/vendor/asscrollable/jquery-asScrollable.js') }}"></script>
 <script src="{{ secure_url('/vendor/waves/waves.js') }}"></script>
 <!-- Plugins -->
-<script src="{{ secure_url('/vendor/switchery/switchery.min.js') }}"></script>
-<script src="{{ secure_url('/vendor/intro-js/intro.js') }}"></script>
-<script src="{{ secure_url('/vendor/screenfull/screenfull.js') }}"></script>
-<script src="{{ secure_url('/vendor/slidepanel/jquery-slidePanel.js') }}"></script>
-<script src="{{ secure_url('/vendor/chartist/chartist.min.js') }}"></script>
-<script src="{{ secure_url('/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.min.js') }}"></script>
-<script src="{{ secure_url('/vendor/jvectormap/jquery-jvectormap.min.js') }}"></script>
-<script src="{{ secure_url('/vendor/jvectormap/maps/jquery-jvectormap-world-mill-en.js') }}"></script>
+{{--<script src="{{ secure_url('/vendor/switchery/switchery.min.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/vendor/intro-js/intro.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/vendor/screenfull/screenfull.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/vendor/slidepanel/jquery-slidePanel.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/vendor/chartist/chartist.min.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.min.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/vendor/jvectormap/jquery-jvectormap.min.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/vendor/jvectormap/maps/jquery-jvectormap-world-mill-en.js') }}"></script>--}}
 <script src="{{ secure_url('/vendor/matchheight/jquery.matchHeight-min.js') }}"></script>
-<script src="{{ secure_url('/vendor/peity/jquery.peity.min.js') }}"></script>
+{{--<script src="{{ secure_url('/vendor/peity/jquery.peity.min.js') }}"></script>--}}
 <!-- Scripts -->
 <script src="{{ secure_url('/js/State.js') }}"></script>
 <script src="{{ secure_url('/js/Component.js') }}"></script>
@@ -485,35 +364,15 @@
 <!-- Page -->
 <script src="{{ secure_asset('js/Site.js') }}"></script>
 <script src="{{ secure_url('/js/Plugin/asscrollable.js') }}"></script>
-<script src="{{ secure_url('/js/Plugin/slidepanel.js') }}"></script>
-<script src="{{ secure_url('/js/Plugin/switchery.js') }}"></script>
+{{--<script src="{{ secure_url('/js/Plugin/slidepanel.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/js/Plugin/switchery.js') }}"></script>--}}
 <script src="{{ secure_url('/js/Plugin/matchheight.js') }}"></script>
-<script src="{{ secure_url('/js/Plugin/jvectormap.js') }}"></script>
-<script src="{{ secure_url('/js/Plugin/peity.js') }}"></script>
+{{--<script src="{{ secure_url('/js/Plugin/jvectormap.js') }}"></script>--}}
+{{--<script src="{{ secure_url('/js/Plugin/peity.js') }}"></script>--}}
 <script src="{{ secure_url('/js/v1.js') }}"></script>
-
-
 @yield('scriptTags')
 
 <script type="text/javascript">
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
-    $("button.button-link").click(function(ev) {
-        ev.preventDefault();
-
-        if ($(this).data('url')) {
-            window.location.href = $(this).data('url');
-        }
-    });
-
-    $(".campaign-edit-button").click(function() {
-        var url = $(this).data("url");
-        window.location.href = url;
-    });
 @yield('scripts')
 </script>
 </body>
