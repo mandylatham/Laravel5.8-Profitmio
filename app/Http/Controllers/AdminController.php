@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use Illuminate\Http\Request;
 use App\Mail\InviteUser;
 use Carbon\Carbon;
 use Illuminate\Routing\UrlGenerator;
@@ -29,8 +30,11 @@ class AdminController extends Controller
         $this->user = $user;
     }
 
-    public function impersonateUser(User $user)
+    public function impersonateUser(Request $request, User $user)
     {
+        if ($request->has('company')) {
+            session(['activeCompany' => $request->input('company')]);
+        }
         auth()->user()->impersonate($user);
         return redirect()->route('dashboard');
     }

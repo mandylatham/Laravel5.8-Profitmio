@@ -43,7 +43,7 @@
                         <td>
                             @if (!$user->isAdmin())
                             <a class="btn btn-sm btn-success btn-round"
-                               href="{{ route('admin.impersonate', ['user' => $user->id]) }}">
+                               href="{{ route('admin.impersonate', ['user' => $user->id, 'company' => $company->id]) }}">
                                 Impersonate
                             </a>
                             @endif
