@@ -36,26 +36,19 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-//        if (auth()->user()->isAdmin() && $request->has('company')) {
-//            $company = $this->company->findOrFail($request->input('company'));
-//            $users = auth()->user()->getListOfUsers($company->id);
-//            return view('users.index', [
-//                'users' => $users,
-//                'company' => $company
-//            ]);
-//        } else {
-            $users = auth()->user()->getListOfUsers($request->input('company'));
-            return view('users.index', [
-                'users' => $users,
-                'companies' => $this->company->orderBy('name', 'desc')->get(),
-                'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
-            ]);
-//        }
+        $users = auth()->user()->getListOfUsers($request->input('company'));
+        return view('users.index', [
+            'users' => $users,
+            'companies' => $this->company->orderBy('name', 'desc')->get(),
+            'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
+        ]);
     }
 
     public function create()
     {
-        return view('users.create', []);
+        return view('users.create', [
+            'companies' => $this->company->all()
+        ]);
     }
 
     /**
@@ -67,9 +60,13 @@ class UserController extends Controller
         $user = $this->user
             ->where('email', $request->input('email'))
             ->first();
+
+        if (($request->input('role') == 'site_admin' && !is_null($user)) || ($user && $user->isAdmin())) {
+            return redirect()->back()->withErrors('The email has already been taken.');
+        }
         if (!$user) {
             $user = new $this->user();
-            $user->is_admin = false;
+            $user->is_admin = $request->input('role') == 'site_admin' ? true : false;
             $user->password = '';
             $user->username = $request->input('email');
             $user->first_name = $request->input('first_name');
@@ -77,21 +74,35 @@ class UserController extends Controller
             $user->email = $request->input('email');
             $user->save();
         }
-        $user->companies()->attach(get_active_company(), [
-            'role' => $request->input('role')
-        ]);
-        $company = $this->company->findOrFail(get_active_company());
+        if ($user->isAdmin()) {
+            $processRegistration = URL::temporarySignedRoute(
+                'registration.complete.show', Carbon::now()->addMinutes(60), [
+                    'id' => $user->getKey()
+                ]
+            );
+        } else {
+            // Attach to company if user is not admin
+            if (auth()->user()->isAdmin()) {
+                $company = $this->company->findOrFail($request->input('company'));
+            } else {
+                $company = $this->company->findOrFail(get_active_company());
+            }
 
-        $processRegistration = URL::temporarySignedRoute(
-            'registration.complete.show', Carbon::now()->addMinutes(60), [
-                'id' => $user->getKey(),
-                'company' => $company->id
-            ]
-        );
+            $user->companies()->attach(get_active_company(), [
+                'role' => $request->input('role')
+            ]);
+
+            $processRegistration = URL::temporarySignedRoute(
+                'registration.complete.show', Carbon::now()->addMinutes(60), [
+                    'id' => $user->getKey(),
+                    'company' => $company->id
+                ]
+            );
+
+            $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
+        }
 
         Mail::to($user)->send(new InviteUser($user, $processRegistration));
-
-        $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
 
         return redirect()->route('user.index');
     }

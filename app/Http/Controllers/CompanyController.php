@@ -367,6 +367,8 @@ class CompanyController extends Controller
     /**
      * Invite a new user
      *
+     * Admin users can register another Admin Users
+     *
      * @param Company $company
      * @param StoreUserRequest $request
      * @return \Illuminate\Http\RedirectResponse
@@ -375,9 +377,12 @@ class CompanyController extends Controller
     {
         $user = $this->user->where('email', $request->input('email'))
             ->first();
+        if (($request->input('role') == 'site_admin' && !is_null($user)) || ($user && $user->isAdmin())) {
+            return redirect()->back()->withErrors('The email has already been taken.');
+        }
         if (!$user) {
             $user = new $this->user();
-            $user->is_admin = false;
+            $user->is_admin = $request->input('role') == 'site_admin' ? true : false;
             $user->password = '';
             $user->username = $request->input('email');
             $user->first_name = $request->input('first_name');
@@ -385,20 +390,29 @@ class CompanyController extends Controller
             $user->email = $request->input('email');
             $user->save();
         }
-        $user->companies()->attach($company->id, [
-            'role' => $request->input('role')
-        ]);
+        if ($user->isAdmin()) {
+            $processRegistration = URL::temporarySignedRoute(
+                'registration.complete.show', Carbon::now()->addMinutes(60), [
+                    'id' => $user->getKey()
+                ]
+            );
+        } else {
+            // Attach to company if user is not admin
+            $user->companies()->attach($company->id, [
+                'role' => $request->input('role')
+            ]);
 
-        $processRegistration = URL::temporarySignedRoute(
-            'registration.complete.show', Carbon::now()->addMinutes(60), [
-                'id' => $user->getKey(),
-                'company' => $company->id
-            ]
-        );
+            $processRegistration = URL::temporarySignedRoute(
+                'registration.complete.show', Carbon::now()->addMinutes(60), [
+                    'id' => $user->getKey(),
+                    'company' => $company->id
+                ]
+            );
+
+            $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
+        }
 
         Mail::to($user)->send(new InviteUser($user, $processRegistration));
-
-        $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
 
         return redirect()->route('company.user.index', ['company' => $company->id]);
     }
