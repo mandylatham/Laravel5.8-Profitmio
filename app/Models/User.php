@@ -107,6 +107,11 @@ class User extends Authenticatable
         return [];
     }
 
+    public function invitations()
+    {
+        return $this->hasMany(CompanyUser::class, 'user_id', 'id');
+    }
+
     public function isAdmin(): bool
     {
         return (bool)$this->is_admin;
@@ -164,6 +169,11 @@ class User extends Authenticatable
     public function isProfileCompleted()
     {
         return $this->password !== '' && $this->username !== 'username';
+    }
+
+    public function isCompanyProfileReady(Company $company)
+    {
+        return $this->invitations()->where('company_id', $company->id)->whereNotNull('completed_at')->count() > 0;
     }
 
     public function getCampaignsForCompany(Company $company)

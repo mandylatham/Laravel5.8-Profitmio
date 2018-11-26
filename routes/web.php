@@ -33,6 +33,7 @@ Route::group(['middleware' => 'auth'], function () {
     });
 
     Route::group(['prefix' => 'admin'], function () {
+        Route::get('/resend-invitation', 'AdminController@resendInvitation')->middleware('can:resend-invitation,user')->name('admin.resend-invitation');
         Route::get('/impersonate/leave', 'AdminController@impersonateLeave')->name('admin.impersonate-leave');
         Route::get('/impersonate/{user}', 'AdminController@impersonateUser')->middleware('can:impersonate,App\Models\User')->name('admin.impersonate');
     });

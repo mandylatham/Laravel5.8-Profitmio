@@ -45,6 +45,9 @@ class AuthServiceProvider extends ServiceProvider
             }
         });
 
+        Gate::define('only-admin', function (User $user) {
+            return $user->isAdmin();
+        });
         Gate::define('company.viewforpreferences', 'App\Policies\CompanyPolicy@viewForPreferences');
         Gate::define('company.view', 'App\Policies\CompanyPolicy@view');
         Gate::define('company.create', 'App\Policies\CompanyPolicy@create');

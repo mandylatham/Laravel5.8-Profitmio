@@ -24,6 +24,11 @@ class UserPolicy
         return $user->isAdmin() || $user->isCompanyAdmin(get_active_company());
     }
 
+    public function resendInvitation(User $user)
+    {
+        return $user->isAdmin || $user->isCompanyAdmin(get_active_company());
+    }
+
     public function createUser(User $user)
     {
         return $user->isAdmin() || $user->isCompanyAdmin(get_active_company());

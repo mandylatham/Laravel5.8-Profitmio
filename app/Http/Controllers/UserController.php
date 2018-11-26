@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Classes\CompanyUserActivityLog;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\Company;
-use App\Http\Requests\UserRequest;
 use App\Mail\InviteUser;
 use App\Models\User;
 use Illuminate\Http\Request;

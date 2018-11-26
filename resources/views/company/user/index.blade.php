@@ -47,10 +47,12 @@
                                 Impersonate
                             </a>
                             @endif
-                            {{--<a class="btn btn-pure btn-primary btn-round"--}}
-                               {{--href="{{ route('company.impersonate_user', ['company' => $company->id]) }}">--}}
-                                {{--Access--}}
-                            {{--</a>--}}
+                            @if (!$user->isCompanyProfileReady($company))
+                                <a class="btn btn-sm btn-primary btn-round"
+                                   href="{{ route('admin.resend-invitation', ['user' => $user->id, 'company' => $company->id ]) }}">
+                                    Re-send Invitation
+                                </a>
+                            @endif
                         </td>
                     </tr>
                 @endforeach
