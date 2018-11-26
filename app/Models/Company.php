@@ -4,14 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Sofa\Eloquence\Eloquence;
 
 class Company extends Model
 {
-    use LogsActivity;
+    use LogsActivity, Eloquence;
 
     const TYPE_SUPPORT = 'support';
     const TYPE_AGENCY = 'agency';
     const TYPE_DEALERSHIP = 'dealership';
+
+    protected $searchableColumns = ['name', 'type', 'phone', 'id', 'address'];
 
     protected $fillable = [
         'name',
