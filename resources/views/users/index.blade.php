@@ -65,13 +65,15 @@
                                             <td class="id-row v-center"><strong>{{ $user->id }}</strong></td>
                                             <td class="v-center">{{ $user->first_name }}</td>
                                             <td class="v-center">{{ $user->last_name }}</td>
-                                            @if (!auth()->user()->isAdmin() || $selectedCompanyId)
-                                                <td class="text-capitalize v-center">{{ $user->pivot->role }}</td>
+                                            @if ($user->isAdmin())
+                                                <td class="text-capitalize v-center">@role('site_admin')</td>
+                                            @elseif (!auth()->user()->isAdmin() || $selectedCompanyId)
+                                                <td class="text-capitalize v-center">@role($user->pivot->role)</td>
                                             @else
                                                 <td class="text-capitalize v-center">
                                                     <ul>
                                                         @foreach ($user->companies as $company)
-                                                        <li>{{ $company->name }} / {{ $company->pivot->role }}</li>
+                                                        <li>{{ $company->name }} @role($user->getRole($company))</li>
                                                         @endforeach
                                                     </ul>
                                                 </td>

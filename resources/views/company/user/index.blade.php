@@ -36,7 +36,7 @@
                         <td class="id-row v-center"><strong>{{ $user->id }}</strong></td>
                         <td class="v-center">{{ $user->first_name }}</td>
                         <td class="v-center">{{ $user->last_name }}</td>
-                        <td class="text-capitalize v-center">{{ $user->pivot->role }}</td>
+                        <td class="text-capitalize v-center">@role($user->getRole($company))</td>
                         <td class="v-center">{{ $user->username }}</td>
                         <td class="v-center">{{ $user->email }}</td>
                         <td class="v-center">{{ $user->phone_number }}</td>

@@ -160,6 +160,7 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
         App\Providers\TwilioClientProvider::class,
+        App\Providers\BladeServiceProvider::class,
         Lab404\Impersonate\ImpersonateServiceProvider::class,
         Spatie\Activitylog\ActivitylogServiceProvider::class,
 

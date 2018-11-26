@@ -107,6 +107,15 @@ class User extends Authenticatable
         return [];
     }
 
+    public function getRole(Company $company)
+    {
+        if ($this->isAdmin()) {
+            return 'site_admin';
+        } else {
+            return $this->invitations()->where('company_id', $company->id)->firstOrFail()->role;
+        }
+    }
+
     public function invitations()
     {
         return $this->hasMany(CompanyUser::class, 'user_id', 'id');
