@@ -65,12 +65,27 @@ class CompanyController extends Controller
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
-        $companies = $this->company->all();
-        return view('company.index', ['companies' => $companies]);
+        $companies = $this->company->orderBy('id', 'desc');
+        if ($request->has('q')) {
+            $companies->search($request->input('q'));
+        }
+
+        return view('company.index', ['companies' => $companies->paginate(15)]);
+    }
+
+    /**
+     * Check if this model can be deleted
+     * @return bool
+     */
+    public function canBeDeleted()
+    {
+        // TODO: Add code to verify if this model can be deleted
+        return false;
     }
 
     /**
@@ -81,6 +96,14 @@ class CompanyController extends Controller
     public function create()
     {
         return view('company.create');
+    }
+
+    public function delete(Company $company)
+    {
+        if ($this->canBeDeleted()) {
+            $company->delete();
+        }
+        return response()->json('Imposible delete this company', 403);
     }
 
     /**

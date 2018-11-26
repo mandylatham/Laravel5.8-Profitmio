@@ -173,6 +173,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
         Route::get('/{company}/campaign', 'CompanyController@campaignIndex')->middleware('can:viewForPreferences,company')->name('company.campaign.index');
         Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:manage,company')->name('company.edit');
+        Route::delete('/{company}', 'CompanyController@delete')->middleware('can:manage,company')->name('company.delete');
 
         Route::group(['prefix' => '/{company}/user'], function () {
             Route::get('', 'CompanyController@userIndex')->middleware('can:manage,company')->name('company.user.index');
