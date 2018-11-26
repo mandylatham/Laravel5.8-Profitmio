@@ -432,9 +432,9 @@
                         <li class="site-menu-item float-right change-company-selector">
                             <form method="post" action="{{ route('selector.update-active-company') }}">
                                 <select class="form-control" name="company" required onchange="this.form.submit()">
-                                    <option selected>Change Company</option>
+                                    <option disabled>Change Company</option>
                                     @foreach (auth()->user()->companies()->orderBy('name', 'desc')->get() as $company)
-                                        <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
+                                        <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled enabled' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
                                     @endforeach
                                 </select>
                                 {{ csrf_field() }}
