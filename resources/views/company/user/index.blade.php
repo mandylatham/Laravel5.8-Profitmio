@@ -41,6 +41,10 @@
                         <td class="v-center">{{ $user->email }}</td>
                         <td class="v-center">{{ $user->phone_number }}</td>
                         <td>
+                            <a class="btn btn-sm btn-warning btn-round"
+                               href="{{ route('company.user.edit', ['user' => $user->id, 'company' => $company->id]) }}">
+                                Edit
+                            </a>
                             @if (!$user->isAdmin())
                             <a class="btn btn-sm btn-success btn-round"
                                href="{{ route('admin.impersonate', ['user' => $user->id, 'company' => $company->id]) }}">
@@ -64,7 +68,6 @@
 
 @section('scriptTags')
     <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
-
     <script type="text/javascript">
         $(document).ready(function () {
             $(".datatable").DataTable({

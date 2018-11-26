@@ -47,6 +47,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('', 'UserController@index')->name('user.index')->middleware(['check.active.company', 'can:list,App\Models\User']);
         Route::get('/create', 'UserController@create')->name('user.create')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
         Route::post('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::delete('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
     });
 
     Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->middleware('can:change-console');
@@ -181,6 +182,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/create', 'CompanyController@userCreate')->middleware('can:manage,company')->name('company.user.create');
             Route::post('', 'CompanyController@userStore')->middleware('can:manage,company')->name('company.user.store');
             Route::get('/{user}/edit', 'CompanyController@userEdit')->middleware('can:manage,company')->name('company.user.edit');
+            Route::post('/{user}', 'CompanyController@userUpdate')->middleware('can:manage,company')->name('company.user.update');
         });
     });
     //endregion

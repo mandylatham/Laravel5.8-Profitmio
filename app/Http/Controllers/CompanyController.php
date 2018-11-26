@@ -3,22 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\Models\Campaign;
-use App\Models\CampaignUser;
 use App\Classes\CampaignUserActivityLog;
 use App\Classes\CompanyUserActivityLog;
 use App\Models\Company;
-use App\Models\CompanyUser;
 use App\Mail\InviteUser;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Filesystem\FilesystemManager;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
 class CompanyController extends Controller
 {
@@ -357,9 +355,12 @@ class CompanyController extends Controller
      */
     public function userEdit(Company $company, User $user)
     {
+        $invitation = $user->invitations()->where('company_id', $company->id)->firstOrFail();
         return view('company.user.edit', [
             'company' => $company,
-            'user' => $user
+            'user' => $user,
+            'userCompanyTimezone' => $invitation->config['timezone'],
+            'userCompanyRole' => $invitation->role
         ]);
     }
 
@@ -398,6 +399,25 @@ class CompanyController extends Controller
         Mail::to($user)->send(new InviteUser($user, $processRegistration));
 
         $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
+
+        return redirect()->route('company.user.index', ['company' => $company->id]);
+    }
+
+    public function userUpdate(Company $company, User $user, UpdateUserRequest $request)
+    {
+        $user->first_name = $request->input('first_name');
+        $user->last_name = $request->input('last_name');
+        $user->email = $request->input('email');
+        $user->save();
+
+        $invitation = $user->invitations()->where('company_id', $company->id)->firstOrFail();
+
+        $config = $invitation->config;
+        $config['timezone'] = $request->input('timezone');
+
+        $invitation->config = $config;
+        $invitation->role = $request->input('role');
+        $invitation->save();
 
         return redirect()->route('company.user.index', ['company' => $company->id]);
     }
