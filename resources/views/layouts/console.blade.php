@@ -322,7 +322,8 @@
                         <span style="margin-left: 8px;">{{ auth()->user()->first_name }}</span>
                     </a>
                     <div class="dropdown-menu" role="menu">
-                        <a class="dropdown-item" href="{{ secure_url('/logout') }}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
+                        <a class="dropdown-item" href="{{ route('profile.index') }}" role="menuitem"><i class="icon md-account" aria-hidden="true"></i> Setting</a>
+                        <a class="dropdown-item" href="{{ route('logout') }}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
                     </div>
                 </li>
             </ul>

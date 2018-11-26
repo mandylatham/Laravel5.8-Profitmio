@@ -31,6 +31,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
+    Route::get('profile', 'ProfileController@index')->name('profile.index');
+    Route::post('profile', 'ProfileController@update')->name('profile.update');
+    Route::post('profile/password', 'ProfileController@updatePassword')->name('profile.update-password');
 
     Route::group(['prefix' => 'admin'], function () {
         Route::get('/resend-invitation', 'AdminController@resendInvitation')->middleware('can:resend-invitation,user')->name('admin.resend-invitation');
