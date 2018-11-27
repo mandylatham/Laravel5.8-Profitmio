@@ -36,6 +36,8 @@ class CompleteController extends Controller
     public function show(Request $request)
     {
         if (auth()->check()) {
+            session()->forget('activeCompany');
+            auth()->user()->leaveImpersonation();
             auth()->logout();
         }
         $user = $this->user->find($request->get('id'));
