@@ -29,6 +29,13 @@ class UserController extends Controller
         $this->user = $user;
     }
 
+    public function activate(User $user, Request $request)
+    {
+        $user->activate($request->input('company'));
+
+        return redirect()->back();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -51,6 +58,13 @@ class UserController extends Controller
         return view('users.create', [
             'companies' => $this->company->all()
         ]);
+    }
+
+    public function deactivate(User $user, Request $request)
+    {
+        $user->deactivate($request->input('company'));
+
+        return redirect()->back();
     }
 
     /**

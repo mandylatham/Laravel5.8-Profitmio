@@ -48,6 +48,22 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function activate($companyId)
+    {
+        $rel = $this->invitations()->where('company_id', $companyId)->firstOrFail();
+        $rel->is_active = true;
+
+        $rel->save();
+    }
+
+    public function deactivate($companyId)
+    {
+        $rel = $this->invitations()->where('company_id', $companyId)->firstOrFail();
+        $rel->is_active = false;
+
+        $rel->save();
+    }
+
     /**
      * Return the company that is selected by the logged user
      *
@@ -137,6 +153,11 @@ class User extends Authenticatable
     public function invitations()
     {
         return $this->hasMany(CompanyUser::class, 'user_id', 'id');
+    }
+
+    public function isActive($companyId)
+    {
+        return $this->invitations()->where('company_id', $companyId)->firstOrFail()->is_active;
     }
 
     public function isAdmin(): bool

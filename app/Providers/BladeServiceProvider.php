@@ -25,6 +25,15 @@ class BladeServiceProvider extends ServiceProvider {
                 }
             ?>";
         });
+        Blade::directive('status', function ($expression) {
+            return "<?php
+                if ($expression) {
+                    echo '<span class=\"badge badge-success\" style=\"font-size: 85%;\">ACTIVE</span>';
+                } else {
+                    echo '<span class=\"badge badge-danger\" style=\"font-size: 85%;\">INACTIVE</span>';
+                }
+            ?>";
+        });
     }
 
     /**

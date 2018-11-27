@@ -57,6 +57,9 @@
                                         <th>Username</th>
                                         <th>Email</th>
                                         <th>Phone Number</th>
+                                        @if(!auth()->user()->isAdmin() || (auth()->user()->isAdmin() && $selectedCompanyId))
+                                            <th>Status</th>
+                                        @endif
                                         <th>Actions</th>
                                     </tr>
                                     </thead>
@@ -82,6 +85,11 @@
                                             <td class="v-center">{{ $user->username }}</td>
                                             <td class="v-center">{{ $user->email }}</td>
                                             <td class="v-center">{{ $user->phone_number }}</td>
+                                            @if(!auth()->user()->isAdmin())
+                                                <td class="v-center text-center">@status($user->isActive($company))</td>
+                                            @elseif(auth()->user()->isAdmin() && $selectedCompanyId)
+                                                <td class="v-center text-center">@status($user->isActive($selectedCompanyId))</td>
+                                            @endif
                                             <td>
                                                 @if (auth()->user()->isAdmin() || !$user->isAdmin())
                                                 <a class="btn btn-sm btn-warning btn-round mb-5"
@@ -106,6 +114,22 @@
                                                        href="{{ route('admin.resend-invitation', ['user' => $user->id, 'company' => $company->id ]) }}">
                                                         Re-send Invitation
                                                     </a>
+                                                @endif
+                                                @if((!auth()->user()->isAdmin() || (auth()->user()->isAdmin() && $selectedCompanyId)) && !$user->isAdmin())
+                                                    @php
+                                                        $companyIdToUser = auth()->user()->isAdmin() && $selectedCompanyId ? $selectedCompanyId : $company->id;
+                                                    @endphp
+                                                    @if($user->isActive($companyIdToUser))
+                                                        <a class="btn btn-sm btn-danger btn-round mb-5"
+                                                           href="{{ route('user.deactivate', ['user' => $user->id, 'company' => $companyIdToUser]) }}">
+                                                            Deactivate
+                                                        </a>
+                                                    @else
+                                                        <a class="btn btn-sm btn-success btn-round mb-5"
+                                                           href="{{ route('user.activate', ['user' => $user->id, 'company' => $companyIdToUser]) }}">
+                                                            Activate
+                                                        </a>
+                                                    @endif
                                                 @endif
                                             </td>
                                         </tr>
