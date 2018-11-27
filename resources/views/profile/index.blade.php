@@ -1,5 +1,20 @@
 @extends('layouts.remark')
 
+@section('header')
+    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.css') }}">
+@endsection
+
+@section('manualStyle')
+    .company-image {
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-color: #dadada;
+    border-radius: 50%;
+    }
+@endsection
+
 @section('content')
     <div class="page">
         <div class="page-header container-fluid">
@@ -72,7 +87,112 @@
                         </div>
                     </div>
                 </div>
+                @if (!auth()->user()->isAdmin())
+                <div class="col-xxl-8 offset-xxl-2 col-md-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            @if ($errors->count() > 0)
+                                <div class="alert alert-danger">
+                                    <h3>There were some errors:</h3>
+                                    <ul>
+                                        @foreach ($errors->all() as $message)
+                                            <li>{{ $message }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Role</th>
+                                        <th>Timezone</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($companies as $company)
+                                        <tr class="user-row">
+                                            <td class="id-row v-center"><strong>{{ $company->id }}</strong></td>
+                                            <td width="60px" class="text-center">
+                                                <div class="company-image" style="background-image: url('{{ $company->image_url }}')"></div>
+                                            </td>
+                                            <td class="v-center">{{ $company->name }}</td>
+                                            <td class="text-capitalize v-center">{{ $company->type }}</td>
+                                            <td class="v-center">@role($user->getRole($company))</td>
+                                            <td class="v-center">
+                                                @php
+                                                    $timezones = $timezones ?? [];
+                                                    $timezones[$company->id] = $user->getTimezone($company);
+                                                @endphp
+                                                <select value="{{ $timezones[$company->id] }}" name="timezone" id="timezone_{{ $company->id }}" required class="form-control" data-plugin="select2">
+                                                    <option disabled {{ $timezones[$company->id] == '' ? 'selected' : '' }}>Choose Timezone...
+                                                    </option>
+                                                    @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
+                                                        <option {{ $timezones[$company->id] == $timezone ? 'selected' : '' }}>{{ $timezone }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td>
+                                                <a href="javascript:;" class="btn btn-sm btn-primary btn-round mb-5 btn-edit-timezone" data-company="{{ $company->id }}">
+                                                    Save
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>
+@endsection
+@section('scriptTags')
+    <script src="{{ secure_url('js/Plugin/material.js') }}"></script>
+    <script src="{{ secure_url('js/Plugin/formatter.js') }}"></script>
+    <script src="{{ secure_url('vendor/formatter/jquery.formatter.js') }}"></script>
+    <script type="text/javascript" src="{{ secure_url('js/Plugin/bootstrap-select.js') }}"></script>
+    <script type="text/javascript" src="{{ secure_url('vendor/bootstrap-select/bootstrap-select.js') }}"></script>
+    <script type="text/javascript" src="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.btn-edit-timezone').on('click', function () {
+                var companyId = $(this).data('company');
+                var role = $('#role_' + companyId).val();
+                var timezone = $('#timezone_' + companyId).val();
+
+                $.ajax({
+                    url: '{{ route('profile.update-company-data', ['user' => $user->id]) }}',
+                    method: 'post',
+                    data: {
+                        role: role,
+                        timezone: timezone,
+                        company: companyId
+                    },
+                    success: function () {
+                        swal("All Done", "Company Updated!", "success");
+                    },
+                    error: function (error) {
+                        var errors = error.responseJSON.errors;
+                        var errorMsg = '';
+                        $.each(errors, function (idx1, messages) {
+                            $.each(messages, function (idx2, message) {
+                                errorMsg += message + '\n';
+                            })
+                        });
+                        swal(errorMsg);
+                    }
+                })
+            })
+        });
+    </script>
 @endsection

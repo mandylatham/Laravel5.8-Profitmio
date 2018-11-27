@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\UpdatePasswordRequest;
 use App\Http\Requests\UpdateProfileRequest;
 use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Http\Request;
 
 class ProfileController extends Controller
 {
@@ -17,7 +18,8 @@ class ProfileController extends Controller
     public function index()
     {
         return view('profile.index', [
-            'user' => auth()->user()
+            'user' => auth()->user(),
+            'companies' => auth()->user()->companies()->orderBy('companies.name', 'asc')->get()
         ]);
     }
 
@@ -49,5 +51,18 @@ class ProfileController extends Controller
         }
 
         return redirect()->back();
+    }
+
+    public function updateCompanyData(Request $request)
+    {
+        $invitation = auth()->user()->invitations()->where('company_id', $request->input('company'))->firstOrFail();
+
+        $config = $invitation->config;
+        $config['timezone'] = $request->input('timezone');
+
+        $invitation->config = $config;
+        $invitation->save();
+
+        return response()->json('Resource updated.');
     }
 }
