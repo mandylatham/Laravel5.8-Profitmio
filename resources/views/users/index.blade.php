@@ -86,7 +86,7 @@
                                             <td class="v-center">{{ $user->email }}</td>
                                             <td class="v-center">{{ $user->phone_number }}</td>
                                             @if(!auth()->user()->isAdmin())
-                                                <td class="v-center text-center">@status($user->isActive($company))</td>
+                                                <td class="v-center text-center">@status($user->isActive($company->id))</td>
                                             @elseif(auth()->user()->isAdmin() && $selectedCompanyId)
                                                 <td class="v-center text-center">@status($user->isActive($selectedCompanyId))</td>
                                             @endif

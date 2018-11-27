@@ -141,6 +141,11 @@ class User extends Authenticatable
         }
     }
 
+    public function hasActiveCompanies()
+    {
+        return $this->invitations()->where('is_active', 1)->count() > 0;
+    }
+
     public function hasPendingInvitations()
     {
         if ($this->isAdmin()) {
