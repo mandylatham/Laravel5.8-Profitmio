@@ -105,6 +105,7 @@
                                         <th>Type</th>
                                         <th>Role</th>
                                         <th>Timezone</th>
+                                        <th>Status</th>
                                         <th>Actions</th>
                                     </tr>
                                     </thead>
@@ -138,6 +139,7 @@
                                                     @endforeach
                                                 </select>
                                             </td>
+                                            <td class="text-center v-center">@status($user->isActive($company->id))</td>
                                             <td>
                                                 <a href="javascript:;"class="btn btn-sm btn-primary btn-round mb-5 btn-edit-timezone" data-company="{{ $company->id }}">
                                                     Save
@@ -152,6 +154,17 @@
                                                     <a class="btn btn-sm btn-primary btn-round mb-5"
                                                        href="{{ route('admin.resend-invitation', ['user' => $user->id, 'company' => $company->id ]) }}">
                                                         Re-send Invitation
+                                                    </a>
+                                                @endif
+                                                @if($user->isActive($company->id))
+                                                    <a class="btn btn-sm btn-danger btn-round mb-5"
+                                                       href="{{ route('user.deactivate', ['user' => $user->id, 'company' => $company->id]) }}">
+                                                        Deactivate
+                                                    </a>
+                                                @else
+                                                    <a class="btn btn-sm btn-success btn-round mb-5"
+                                                       href="{{ route('user.activate', ['user' => $user->id, 'company' => $company->id]) }}">
+                                                        Activate
                                                     </a>
                                                 @endif
                                             </td>
