@@ -116,6 +116,24 @@ class User extends Authenticatable
         }
     }
 
+    public function getTimezone(Company $company)
+    {
+        if ($this->isAdmin()) {
+            return null;
+        } else {
+            return $this->invitations()->where('company_id', $company->id)->firstOrFail()->config['timezone'];
+        }
+    }
+
+    public function hasPendingInvitations()
+    {
+        if ($this->isAdmin()) {
+            return false;
+        } else {
+            return $this->invitations()->whereNull('completed_at')->count() > 0;
+        }
+    }
+
     public function invitations()
     {
         return $this->hasMany(CompanyUser::class, 'user_id', 'id');

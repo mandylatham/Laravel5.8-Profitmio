@@ -52,7 +52,7 @@
                             </a>
                             @endif
                             @if (!$user->isCompanyProfileReady($company))
-                                <a class="btn btn-sm btn-primary btn-round"
+                                <a class="btn btn-sm btn-primary btn-round mt-10"
                                    href="{{ route('admin.resend-invitation', ['user' => $user->id, 'company' => $company->id ]) }}">
                                     Re-send Invitation
                                 </a>

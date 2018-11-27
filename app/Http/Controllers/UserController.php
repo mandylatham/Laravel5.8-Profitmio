@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\CompanyUserActivityLog;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateCompanyDataRequest;
 use App\Models\Company;
 use App\Mail\InviteUser;
 use App\Models\User;
@@ -39,6 +40,7 @@ class UserController extends Controller
         $users = auth()->user()->getListOfUsers($request->input('company'));
         return view('users.index', [
             'users' => $users,
+            'company' => !auth()->user()->isAdmin() ? $this->company->findOrFail(get_active_company()) : null,
             'companies' => $this->company->orderBy('name', 'desc')->get(),
             'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
         ]);
@@ -88,7 +90,7 @@ class UserController extends Controller
                 $company = $this->company->findOrFail(get_active_company());
             }
 
-            $user->companies()->attach(get_active_company(), [
+            $user->companies()->attach($company->id, [
                 'role' => $request->input('role')
             ]);
 
@@ -160,8 +162,10 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        $companies = Company::all();
-        return view('user/edit', ['user' => $user, 'companies' => $companies]);
+        return view('users.edit', [
+            'user' => $user,
+            'companies' => $user->companies()->orderBy('name', 'asc')->get()
+        ]);
     }
 
     /**
@@ -173,29 +177,9 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        if ($request->filled('password')) {
-            $user->password = bcrypt($request->get('password'));
-        }
         $user->update($request->except(['password']));
-//        if ($request->get('is_admin', false)) {
-//            $user->is_admin = 1;
-//            $user->save();
-//        } else {
-//            $permissions = [];
-//            $oldPermissions = [];
-//            foreach ($request->get('role', []) as $companyId => $role) {
-//                $permissions[$companyId] = ['role' => $role];
-//                $userCompany = $user->companies()->find($companyId);
-//                if (!empty($userCompany)) {
-//                    $oldPermissions[$companyId] = ['role' => $userCompany->pivot->role];
-//                }
-//            }
-//
-//            $changes = $user->companies()->sync($permissions);
-//            $this->companyUserActivityLog->sync($user, $changes, $permissions, $oldPermissions);
-//        }
 
-        return response()->redirectToRoute('users.index');
+        return response()->redirectToRoute('user.edit', ['user' => $user->id]);
     }
 
     public function updateForm(User $user)
@@ -204,6 +188,20 @@ class UserController extends Controller
         $viewData['companies'] = Company::all();
 
         return view('users.edit', $viewData);
+    }
+
+    public function updateCompanyData(User $user, UpdateCompanyDataRequest $request)
+    {
+        $invitation = $user->invitations()->where('company_id', $request->input('company'))->firstOrFail();
+
+        $config = $invitation->config;
+        $config['timezone'] = $request->input('timezone');
+
+        $invitation->config = $config;
+        $invitation->role = $request->input('role');
+        $invitation->save();
+
+        return response()->json('Resource updated.');
     }
 
     /**

@@ -83,6 +83,9 @@
                 @endif
                 <form method="post" action="{{ $completeRegistrationSignedUrl }}">
                     {{ csrf_field() }}
+                    @if ($user->isAdmin())
+                        <h3>Welcome to Profit Miner!</h3>
+                    @else
                     <div class="form-group">
                         <input type="text" class="form-control empty" name="company" disabled value="{{ $company->name }}">
                     </div>
@@ -95,6 +98,7 @@
                             @endforeach
                         </select>
                     </div>
+                    @endif
                     <button type="submit" class="btn btn-primary btn-block waves-effect">Join</button>
                     <div>
                         <a class="float-right" href="{{ route('login') }}">Already have an account?</a>

@@ -112,7 +112,9 @@
                 @endif
                 <form id="user-form" method="post" action="{{ $completeRegistrationSignedUrl }}">
                     {{ csrf_field() }}
+                    @if (!$user->isAdmin())
                     <input type="hidden" name="company" value="{{ $company->id }}">
+                    @endif
                     <div class="pearls row">
                         <div class="pearl col-4">
                             <div class="pearl-icon"><i class="icon md-format-list-bulleted" aria-hidden="true"></i>
@@ -166,6 +168,7 @@
                                        required>
                                 <label for="phone" class="floating-label">Phone Number</label>
                             </div>
+                            @if(!$user->isAdmin())
                             <div class="form-group">
                                 <select name="timezone" class="form-control" data-plugin="select2">
                                     <option disabled {{ (old('timezone') ?? $user->timezone) == '' ? 'selected' : '' }}>Choose Timezone...
@@ -175,6 +178,7 @@
                                     @endforeach
                                 </select>
                             </div>
+                            @endif
                         </div>
                         <div id="user-auth" class="wizard-pane" role="tabpanel" aria-expanded="true">
                             <h4>Authentication</h4>

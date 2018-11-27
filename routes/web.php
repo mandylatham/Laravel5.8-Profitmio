@@ -36,7 +36,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('profile/password', 'ProfileController@updatePassword')->name('profile.update-password');
 
     Route::group(['prefix' => 'admin'], function () {
-        Route::get('/resend-invitation', 'AdminController@resendInvitation')->middleware('can:resend-invitation,user')->name('admin.resend-invitation');
+        Route::get('/resend-invitation', 'AdminController@resendInvitation')->middleware('can:resend-invitation,App\Models\User')->name('admin.resend-invitation');
         Route::get('/impersonate/leave', 'AdminController@impersonateLeave')->name('admin.impersonate-leave');
         Route::get('/impersonate/{user}', 'AdminController@impersonateUser')->middleware('can:impersonate,App\Models\User')->name('admin.impersonate');
     });
@@ -49,7 +49,10 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'user'], function () {
         Route::get('', 'UserController@index')->name('user.index')->middleware(['check.active.company', 'can:list,App\Models\User']);
         Route::get('/create', 'UserController@create')->name('user.create')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::get('/{user}/edit', 'UserController@edit')->name('user.edit')->middleware(['check.active.company', 'can:edit-user,user']);
         Route::post('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::post('{user}', 'UserController@update')->name('user.update')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::post('{user}/company-data', 'UserController@updateCompanyData')->name('user.update-company-data')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
         Route::delete('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
     });
 

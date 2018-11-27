@@ -39,13 +39,17 @@ class CompleteController extends Controller
             auth()->logout();
         }
         $user = $this->user->find($request->get('id'));
-        $company = $user->companies()->where('companies.id', $request->get('company'))->first();
+        $company = null;
+        if (!$user->isAdmin()) {
+            $company = $user->companies()->where('companies.id', $request->get('company'))->first();
+        }
+
         $sufix = $user->isProfileCompleted() ? '-full' : '';
         return view('auth.complete' . $sufix, [
             'user' => $user,
             'completeRegistrationSignedUrl' => $this->url->temporarySignedRoute('registration.complete.store', $this->carbon::now()->addMinutes(5), [
                 'user' => $user->id,
-                'company' => $company->id
+                'company' => $company ? $company->id : null
             ]),
             'company' => $company
         ]);
@@ -55,8 +59,7 @@ class CompleteController extends Controller
     {
         /** @var User $user */
         $user = $this->user->find($request->input('user'));
-
-        if (!$user->isProfileCompleted()) {
+        if ($user->isAdmin() || !$user->isProfileCompleted()) {
             $user->first_name = $request->input('first_name');
             $user->last_name = $request->input('last_name');
             $user->username = $request->input('username');
@@ -65,15 +68,17 @@ class CompleteController extends Controller
             $user->save();
         }
 
-        $data = [
-            'config' => [
-                'timezone' => $request->input('timezone')
-            ],
-            'completed_at' => $this->carbon->now()->toDateTimeString()
-        ];
+        if (!$user->isAdmin()) {
+            $data = [
+                'config' => [
+                    'timezone' => $request->input('timezone')
+                ],
+                'completed_at' => $this->carbon->now()->toDateTimeString()
+            ];
 
-        $user->companies()->updateExistingPivot($request->input('company'), $data);
-        $this->companyUserActivityLog->updatePreferences($user, $request->get('company'), $data);
+            $user->companies()->updateExistingPivot($request->input('company'), $data);
+            $this->companyUserActivityLog->updatePreferences($user, $request->get('company'), $data);
+        }
 
         return response()->redirectToRoute('login');
     }

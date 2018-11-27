@@ -57,6 +57,7 @@
                                         <th>Username</th>
                                         <th>Email</th>
                                         <th>Phone Number</th>
+                                        <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -81,6 +82,32 @@
                                             <td class="v-center">{{ $user->username }}</td>
                                             <td class="v-center">{{ $user->email }}</td>
                                             <td class="v-center">{{ $user->phone_number }}</td>
+                                            <td>
+                                                @if (auth()->user()->isAdmin() || !$user->isAdmin())
+                                                <a class="btn btn-sm btn-warning btn-round mb-5"
+                                                   href="{{ route('user.edit', ['user' => $user->id]) }}">
+                                                    Edit
+                                                </a>
+                                                @endif
+                                                @if (auth()->user()->isAdmin() && !$user->isAdmin())
+                                                    <a class="btn btn-sm btn-success btn-round mb-5"
+                                                       href="{{ route('admin.impersonate', ['user' => $user->id]) }}">
+                                                        Impersonate
+                                                    </a>
+                                                @endif
+                                                @if(auth()->user()->isAdmin() && !$user->isAdmin() && $user->hasPendingInvitations())
+                                                    <a class="btn btn-link mb-5"
+                                                       href="{{ route('user.edit', ['user' => $user->id]) }}">
+                                                        Has Pending Invitations
+                                                    </a>
+                                                @endif
+                                                @if (!auth()->user()->isAdmin() && !$user->isCompanyProfileReady($company))
+                                                    <a class="btn btn-sm btn-primary btn-round mb-5"
+                                                       href="{{ route('admin.resend-invitation', ['user' => $user->id, 'company' => $company->id ]) }}">
+                                                        Re-send Invitation
+                                                    </a>
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                     </tbody>

@@ -59,7 +59,7 @@ class LoginController extends Controller
             if (auth()->user()->isAdmin()) {
                 $redirectRoute = 'campaign.index';
             }
-            return redirect()->intended($redirectRoute);
+            return redirect()->route($redirectRoute);
         }
 
         return redirect('/login')->withErrors([
