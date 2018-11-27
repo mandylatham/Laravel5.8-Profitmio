@@ -48,7 +48,7 @@ class UserController extends Controller
         return view('users.index', [
             'users' => $users,
             'company' => !auth()->user()->isAdmin() ? $this->company->findOrFail(get_active_company()) : null,
-            'companies' => $this->company->orderBy('name', 'desc')->get(),
+            'companies' => $this->company->orderBy('name', 'asc')->get(),
             'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
         ]);
     }

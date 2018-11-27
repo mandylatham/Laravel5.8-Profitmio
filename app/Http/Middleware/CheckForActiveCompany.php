@@ -21,8 +21,8 @@ class CheckForActiveCompany
         }
         if (!$user->isAdmin() && !session()->get('activeCompany')) {
             // If user has only 1 company, select that company by default
-            if ($user->companies()->count() == 1) {
-                session(['activeCompany' => $user->companies()->first()->id]);
+            if (count($user->getActiveCompanies()) == 1) {
+                session(['activeCompany' => $user->getActiveCompanies()[0]->id]);
             } else {
                 return redirect()->route('selector.select-active-company');
             }

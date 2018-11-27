@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->companies()->where('companies.id', get_active_company())->first();
     }
 
+    public function getActiveCompanies()
+    {
+        return $this->companies()->where('company_user.is_active', true)->orderBy('companies.name', 'asc')->get();
+    }
+
     public function agencyCampaigns()
     {
         return $this->hasMany(Campaign::class, 'agency_id', 'id');

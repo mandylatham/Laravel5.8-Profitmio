@@ -15,9 +15,7 @@ class SelectorController extends Controller
      */
     public function show(Request $request)
     {
-        return view('selector.select-company', [
-            'companies' => auth()->user()->companies()->orderBy('name', 'asc')->get()
-        ]);
+        return view('selector.select-company');
     }
 
     public function updateActiveCompany(UpdateActiveCompanyRequest $request)

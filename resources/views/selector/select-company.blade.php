@@ -86,7 +86,7 @@
                     <div class="form-group floating">
                         <select name="company" required class="form-control" data-plugin="select2">
                             <option disabled {{ old('company') == '' ? 'selected' : '' }}>Choose a Company...</option>
-                            @foreach ($companies as $company)
+                            @foreach (auth()->user()->getActiveCompanies() as $company)
                                 <option value="{{ $company->id }}" {{ $company->id === old('company') ? 'selected' : '' }}>{{ $company->name }}</option>
                             @endforeach
                         </select>

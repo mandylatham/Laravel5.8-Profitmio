@@ -433,7 +433,7 @@
                             <form method="post" action="{{ route('selector.update-active-company') }}">
                                 <select class="form-control" name="company" required onchange="this.form.submit()">
                                     <option disabled>Change Company</option>
-                                    @foreach (auth()->user()->companies()->orderBy('name', 'desc')->get() as $company)
+                                    @foreach (auth()->user()->getActiveCompanies() as $company)
                                         <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled enabled' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
                                     @endforeach
                                 </select>
