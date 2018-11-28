@@ -35,15 +35,21 @@ class CompleteController extends Controller
 
     public function show(Request $request)
     {
+        $user = $this->user->find($request->get('id'));
         if (auth()->check()) {
             session()->forget('activeCompany');
             auth()->user()->leaveImpersonation();
             auth()->logout();
         }
-        $user = $this->user->find($request->get('id'));
         $company = null;
+        if ($user->isAdmin() && $user->isProfileCompleted()) {
+            abort(403);
+        }
         if (!$user->isAdmin()) {
             $company = $user->companies()->where('companies.id', $request->get('company'))->first();
+            if ($user->isCompanyProfileReady($company)) {
+                abort(403);
+            }
         }
 
         $sufix = $user->isProfileCompleted() ? '-full' : '';
