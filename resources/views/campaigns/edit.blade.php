@@ -260,7 +260,7 @@
     <div class="modal fade show" id="addPhoneModal" aria-labelledby="addPhoneModalLabel" role="dialog" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="phone-search-form" class="form" action="{{ secure_url('/phones/search') }}" method="post">
+                <form id="phone-search-form" class="form" action="{{ route('phone.search') }}" method="post">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">×</span>
@@ -381,7 +381,7 @@
 
             $("#phone-search-button").click(function() {
                 $.post(
-                    "{{ secure_url('/phones/search') }}",
+                    "{{ route('phone.search') }}",
                     $("#phone-search-form").serialize(),
                     function (data) {
                         var html = '<form id="phone-form"><table class="table table-hover table-striped table-bordered">' +
@@ -401,7 +401,7 @@
 
                         $("#add-phone").click(function() {
                             $.post(
-                                "{{ secure_url('/phones/provision') }}",
+                                "{{ route('phone.provision') }}",
                                 {
                                     phone_number: $("input[name=phone_number]").val(),
                                     campaign_id: $("input[name=campaign_id]").val(),

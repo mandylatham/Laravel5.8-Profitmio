@@ -182,8 +182,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     /* PHONES */
     Route::group(['prefix' => '/phones', 'middleware' => 'can:change-campaigns'], function () {
-        Route::post('search', 'PhoneController@searchAvailable');
-        Route::post('provision', 'PhoneController@provision');
+        Route::post('search', 'PhoneController@searchAvailable')->name('phone.search');
+        Route::post('provision', 'PhoneController@provision')->name('phone.provision');
         // Route::get('list-unused', 'PhoneController@showUnused'); // Future improvement
         // Route::post('release', 'PhoneController@releaseNumber'); // Future improvement
     });
