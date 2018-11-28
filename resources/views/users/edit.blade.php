@@ -144,7 +144,7 @@
                                                 <a href="javascript:;"class="btn btn-sm btn-primary btn-round mb-5 btn-edit-timezone" data-company="{{ $company->id }}">
                                                     Save
                                                 </a>
-                                                @if (auth()->user()->isAdmin() && !$user->isAdmin())
+                                                @if (auth()->user()->isAdmin() && !$user->isAdmin() && $user->isActive($company->id))
                                                     <a class="btn btn-sm btn-success btn-round mb-5"
                                                        href="{{ route('admin.impersonate', ['user' => $user->id, 'company' => $company->id]) }}">
                                                         Impersonate

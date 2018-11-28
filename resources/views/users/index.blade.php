@@ -97,7 +97,7 @@
                                                     Edit
                                                 </a>
                                                 @endif
-                                                @if (auth()->user()->isAdmin() && !$user->isAdmin())
+                                                @if (auth()->user()->isAdmin() && !$user->isAdmin() && $user->hasActiveCompanies())
                                                     <a class="btn btn-sm btn-success btn-round mb-5"
                                                        href="{{ route('admin.impersonate', ['user' => $user->id]) }}">
                                                         Impersonate

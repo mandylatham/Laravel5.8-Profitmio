@@ -27,6 +27,7 @@
                     <th>Username</th>
                     <th>Email</th>
                     <th>Phone Number</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
                 </thead>
@@ -40,22 +41,36 @@
                         <td class="v-center">{{ $user->username }}</td>
                         <td class="v-center">{{ $user->email }}</td>
                         <td class="v-center">{{ $user->phone_number }}</td>
+                        <td class="v-center text-center">@status($user->isActive($company->id))</td>
                         <td>
-                            <a class="btn btn-sm btn-warning btn-round"
+                            <a class="btn btn-sm btn-warning btn-round mb-5"
                                href="{{ route('company.user.edit', ['user' => $user->id, 'company' => $company->id]) }}">
                                 Edit
                             </a>
-                            @if (!$user->isAdmin())
-                            <a class="btn btn-sm btn-success btn-round"
+                                    @if (!$user->isAdmin() && $user->isActive($company->id))
+                            <a class="btn btn-sm btn-success btn-round mb-5"
                                href="{{ route('admin.impersonate', ['user' => $user->id, 'company' => $company->id]) }}">
                                 Impersonate
                             </a>
                             @endif
                             @if (!$user->isCompanyProfileReady($company))
-                                <a class="btn btn-sm btn-primary btn-round mt-10"
+                                <a class="btn btn-sm btn-primary btn-round mb-5"
                                    href="{{ route('admin.resend-invitation', ['user' => $user->id, 'company' => $company->id ]) }}">
                                     Re-send Invitation
                                 </a>
+                            @endif
+                            @if(!$user->isAdmin())
+                                @if($user->isActive($company->id))
+                                    <a class="btn btn-sm btn-danger btn-round mb-5"
+                                       href="{{ route('user.deactivate', ['user' => $user->id, 'company' => $company->id]) }}">
+                                        Deactivate
+                                    </a>
+                                @else
+                                    <a class="btn btn-sm btn-success btn-round mb-5"
+                                       href="{{ route('user.activate', ['user' => $user->id, 'company' => $company->id]) }}">
+                                        Activate
+                                    </a>
+                                @endif
                             @endif
                         </td>
                     </tr>
