@@ -170,7 +170,7 @@ class DeploymentController extends Controller
 
         \DB::table('deployment_recipients')->insert($batches);
 
-        return redirect('/campaign/' . $campaign->id . '/drops');
+        return redirect()->route('campaign.drop.index', ['campaign' => $campaign->id]);
     }
 
     public function forCampaign(Campaign $campaign)
@@ -285,7 +285,7 @@ class DeploymentController extends Controller
 
         $deployment->save();
 
-        return redirect('/campaign/' . $campaign->id . '/drops');
+        return redirect()->route('campaign.drop.index', ['campaign' => $campaign->id]);
     }
 
     public function updateForm(Campaign $campaign, CampaignSchedule $drop)

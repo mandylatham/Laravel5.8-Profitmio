@@ -195,7 +195,7 @@
             <span class="sr-only">Toggle navigation</span>
             <span class="hamburger-bar"></span>
         </button>
-        <a class="navbar-brand navbar-brand-center" href="{{ secure_url('/dashboard') }}">
+        <a class="navbar-brand navbar-brand-center" href="{{ route('dashboard') }}">
             <img class="navbar-brand-logo navbar-brand-logo-normal" src="{{ secure_asset('images/favicon.png') }}"
                  title="Profit Miner">
             <img class="navbar-brand-logo navbar-brand-logo-special" src="{{ secure_asset('images/favicon.png') }}"

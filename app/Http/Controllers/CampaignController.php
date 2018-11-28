@@ -150,7 +150,7 @@ class CampaignController extends Controller
 
         $campaign->save();
 
-        return redirect('campaigns/');
+        return redirect()->route('campaign.index');
     }
 
 
@@ -199,13 +199,13 @@ class CampaignController extends Controller
 
         $campaign->save();
 
-        return redirect('/campaign/' . $campaign->id . '/edit');
+        return redirect()->route('campaign.edit', ['campaign' => $campaign->id]);
     }
 
     public function delete(Campaign $campaign)
     {
         $campaign->delete();
-        return redirect('/campaigns');
+        return redirect()->route('campaign.index');
     }
 //
 //    /**

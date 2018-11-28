@@ -56,7 +56,7 @@ class AgencyController extends Controller
 
         $agency->save();
 
-        return redirect('/agency/' . $agency->id . '/edit');
+        return redirect()->route('agency.edit', ['agency' => $agency->id]);
     }
 
     public function updateForm(User $agency)

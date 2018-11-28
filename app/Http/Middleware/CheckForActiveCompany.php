@@ -17,7 +17,7 @@ class CheckForActiveCompany
     {
         $user = auth()->user();
         if (!$user) {
-            return redirect('login');
+            return redirect()->route('login');
         }
         if (!$user->isAdmin() && !session()->get('activeCompany')) {
             // If user has only 1 company, select that company by default

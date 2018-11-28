@@ -18,18 +18,18 @@ class RegistrationIsNotCompleted
     {
         $query = $request->query();
         if (!isset($query['id'])) {
-            return redirect('login');
+            return redirect()->route('login');
         }
         $user = User::find($query['id']);
         if (empty($user)) {
-            return redirect('login');
+            return redirect()->route('login');
         }
         if ($user->isAdmin()) {
             return $next($request);
         }
         $invitation = $user->companies()->where('companies.id', $query['company'])->first();
         if ($invitation->completed_at) {
-            return redirect('login');
+            return redirect()->route('login');
         }
         return $next($request);
     }

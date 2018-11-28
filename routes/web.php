@@ -105,7 +105,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region CAMPAIGN
     Route::get('/campaigns', 'CampaignController@index')->name('campaign.index')->middleware('can:view-campaigns');
-    Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->middleware('can:view-campaigns');
+    Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['check.active.company','can:view,campaign']], function () {
@@ -154,14 +154,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/response/{recipient}', 'ResponseController@getResponse');
         Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply');
         Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console');
-        Route::get('/response-console', 'ResponseConsoleController@show')->name('campaign.response-console.index');;
-        Route::get('/response-console/unread', 'ResponseConsoleController@showUnread');
-        Route::get('/response-console/idle', 'ResponseConsoleController@showIdle');
-        Route::get('/response-console/archived', 'ResponseConsoleController@showArchived');
-        Route::get('/response-console/labelled/{label}', 'ResponseConsoleController@showLabelled');
-        Route::get('/response-console/calls', 'ResponseConsoleController@showCalls');
-        Route::get('/response-console/sms', 'ResponseConsoleController@showTexts');
-        Route::get('/response-console/email', 'ResponseConsoleController@showEmails');
+        Route::get('/response-console', 'ResponseConsoleController@show')->name('campaign.response-console.index');
+        Route::get('/response-console/unread', 'ResponseConsoleController@showUnread')->name('campaign.response-console.index.unread');
+        Route::get('/response-console/idle', 'ResponseConsoleController@showIdle')->name('campaign.response-console.index.idle');
+        Route::get('/response-console/archived', 'ResponseConsoleController@showArchived')->name('campaign.response-console.index.archived');
+        Route::get('/response-console/labelled/{label}', 'ResponseConsoleController@showLabelled')->name('campaign.response-console.index.labelled');
+        Route::get('/response-console/calls', 'ResponseConsoleController@showCalls')->name('campaign.response-console.index.call');
+        Route::get('/response-console/sms', 'ResponseConsoleController@showTexts')->name('campaign.response-console.index.sms');
+        Route::get('/response-console/email', 'ResponseConsoleController@showEmails')->name('campaign.response-console.index.email');
     });
     //endregion
 

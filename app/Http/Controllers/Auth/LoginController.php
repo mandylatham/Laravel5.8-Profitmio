@@ -65,7 +65,7 @@ class LoginController extends Controller
             }
         }
 
-        return redirect('/login')->withErrors([
+        return redirect()->route('login')->withErrors([
             'error' => 'These credentials do not match our records.',
         ]);
     }
@@ -81,6 +81,6 @@ class LoginController extends Controller
         $this->guard()->logout();
         $request->session()->flush();
         $request->session()->regenerate();
-        return redirect('/');
+        return redirect()->route('login');
     }
 }
