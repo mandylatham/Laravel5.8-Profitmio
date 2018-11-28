@@ -15,10 +15,13 @@ class CampaignController extends Controller
 {
     private $emailLog;
 
+    private $campaign;
+
     private $recipient;
 
-    public function __construct(EmailLog $emailLog, Recipient $recipient)
+    public function __construct(Campaign $campaign, EmailLog $emailLog, Recipient $recipient)
     {
+        $this->campaign = $campaign;
         $this->emailLog = $emailLog;
         $this->recipient = $recipient;
     }
@@ -48,15 +51,14 @@ class CampaignController extends Controller
 
     public function getList(Request $request)
     {
-        $valid_filters = ['first_name', 'last_name', 'email', 'phone', 'year', 'make', 'model', 'vin', 'address1', 'city', 'state', 'zip'];
-        $filters = [];
-
-        $campaigns = Campaign::with('client')
-            ->select(\DB::raw("(select count(distinct(recipient_id)) from recipients where campaign_id = campaigns.id) as recipientCount,)"))
-            ->select(\DB::raw("(select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='phone' and recording_sid is not null) as phoneCount,"))
-            ->select(\DB::raw("(select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='email') as emailCount,"))
-            ->select(\DB::raw("(select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='text') as textCount,"))
-            ->select(\DB::raw("users.id as client_id"))
+        $campaigns = $this->campaign->with('client')
+            ->selectRaw("
+                (select count(distinct(recipient_id)) from recipients where campaign_id = campaigns.id) as recipientCount),
+                (select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='phone' and recording_sid is not null) as phoneCount,
+                (select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='email') as emailCount,
+                (select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='text') as textCount,
+                users.id as client_id
+            ")
             ->get();
 
         return $campaigns->toJson();
@@ -88,12 +90,9 @@ class CampaignController extends Controller
 
     public function details(Campaign $campaign)
     {
-        $allCampaignData = Campaign::where('campaign_id', $campaign->id)
-            ->with('client', 'agency', 'schedules', 'phone_number')
-            ->get();
-        $viewData['campaign'] = $allCampaignData->first();
-
-        return view('campaigns.details', $viewData);
+        return view('campaigns.details', [
+            'campaign' => $campaign->load('client', 'agency', 'schedules', 'phone_number')
+        ]);
     }
 
     public function createNew()
@@ -110,7 +109,7 @@ class CampaignController extends Controller
 
     public function create(NewCampaignRequest $request)
     {
-        $campaign = new Campaign([
+        $campaign = new $this->campaign([
             'name' => $request->input('name'),
             'status' => $request->input('status'),
             'order_id' => $request->input('order'),
@@ -159,8 +158,8 @@ class CampaignController extends Controller
             'name' => $request->name,
             'status' => $request->status,
             'order_id' => $request->order,
-            'starts_at' => (new Carbon($request->start, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString(),
-            'ends_at' => (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString(),
+            'starts_at' => (new Carbon($request->start, auth()->user()->timezone))->timezone('UTC')->toDateTimeString(),
+            'ends_at' => (new Carbon($request->end, auth()->user()->timezone))->timezone('UTC')->toDateTimeString(),
             'agency_id' => $request->agency,
             'dealership_id' => $request->client,
             'adf_crm_export' => (bool) $request->adf_crm_export,
