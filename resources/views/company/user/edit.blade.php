@@ -41,8 +41,8 @@
                                     <label for="role" class="floating-label">Role</label>
                                     <select name="role" value="{{ $userCompanyRole }}" class="form-control" required>
                                         <option selected disabled>Choose role...</option>
-                                        <option value="admin" {{ $userCompanyRole === 'admin' ? 'selected' : '' }}>Admin</option>
-                                        <option value="user" {{ $userCompanyRole === 'user' ? 'selected' : '' }}>User</option>
+                                        <option value="admin" {{ $userCompanyRole === 'admin' ? 'selected' : '' }}>@role('admin')</option>
+                                        <option value="user" {{ $userCompanyRole === 'user' ? 'selected' : '' }}>@role('user')</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
