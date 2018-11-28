@@ -88,15 +88,15 @@
                                                     <div class="badge badge-outline badge-primary">Completed</div>
                                                     @else
                                                         @if ($schedule->status == "Pending")
-                                                    <button type="button" class="btn btn-xs btn-warning pause-button" data-url="{{ secure_url('drop/' . $schedule->id . '/pause') }}" data-toggle="tooltip" data-original-title="Pause Drop">
+                                                    <button type="button" class="btn btn-xs btn-warning pause-button" data-url="{{ route('deployment.pause', ['deployment' => $schedule->id]) }}" data-toggle="tooltip" data-original-title="Pause Drop">
                                                         <i class="icon md-pause"></i>
                                                     </button>
                                                         @elseif ($schedule->status == "Paused")
-                                                    <button type="button" class="btn btn-xs btn-success resume-button" data-url="{{ secure_url('drop/' . $schedule->id . '/resume') }}" data-toggle="tooltip" data-original-title="Resume Drop">
+                                                    <button type="button" class="btn btn-xs btn-success resume-button" data-url="{{ route('deployment.resume', ['deployment' => $schedule->id]) }}" data-toggle="tooltip" data-original-title="Resume Drop">
                                                         <i class="icon md-play"></i>
                                                     </button>
                                                         @endif
-                                                    <button type="button" class="btn btn-xs btn-danger delete-button" data-url="{{ secure_url('drop/' . $schedule->id . '/delete') }}" data-toggle="tooltip" data-original-title="Delete Drop">
+                                                    <button type="button" class="btn btn-xs btn-danger delete-button" data-url="{{ route('deployment.delete', ['deployment' => $schedule->id]) }}" data-toggle="tooltip" data-original-title="Delete Drop">
                                                         <i class="icon fa-trash"></i>
                                                     </button>
                                                     @endif

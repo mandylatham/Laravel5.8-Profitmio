@@ -127,7 +127,7 @@
                                 <i class="icon fa-fw fa-pencil"></i>
                                 Edit
                             </a>
-                            <button data-url="{{ secure_url('/drop/' . $drop->id . '/delete') }}"
+                            <button data-url="{{ route('deployment.delete', ['deployment' => $drop->id]) }}"
                                     class="btn btn-xs btn-danger waves-effect card-button delete-button">
                                 <i class="icon fa-trash"></i>
                                 Delete
@@ -202,7 +202,7 @@
                         <i class="icon fa-fw fa-pencil"></i>
                         <span class="sr-only">Edit</span>
                     </a>
-                    <button data-url="{{ secure_url('/drop/' . $drop->id . '/delete') }}"
+                    <button data-url="{{ route('deployment.delete', ['deployment' => $drop->id]) }}"
                             class="btn btn-danger waves-effect card-button delete-button">
                         <i class="icon fa-trash"></i>
                         <span class="sr-only">Delete</span>

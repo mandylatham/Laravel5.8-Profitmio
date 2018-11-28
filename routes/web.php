@@ -32,25 +32,34 @@ Route::group(['middleware' => 'auth'], function () {
         return redirect()->route('dashboard');
     });
 
+    Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('appointment.update-called-status')->middleware('can:change-console');
+    Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('callback.update-called-status')->middleware('can:change-console');
+
+    //region PROFILE
     Route::group(['prefix' => 'profile'], function () {
         Route::get('', 'ProfileController@index')->name('profile.index');
         Route::post('', 'ProfileController@update')->name('profile.update');
         Route::post('password', 'ProfileController@updatePassword')->name('profile.update-password');
         Route::post('/company-data', 'ProfileController@updateCompanyData')->name('profile.update-company-data');
     });
+    //endregion
 
-
+    //region ADMIN
     Route::group(['prefix' => 'admin'], function () {
         Route::get('/resend-invitation', 'AdminController@resendInvitation')->name('admin.resend-invitation')->middleware('can:resend-invitation,App\Models\User');
         Route::get('/impersonate/leave', 'AdminController@impersonateLeave')->name('admin.impersonate-leave');
         Route::get('/impersonate/{user}', 'AdminController@impersonateUser')->name('admin.impersonate')->middleware('can:impersonate,App\Models\User');
     });
+    //endregion
 
+    //region SELECTOR
     Route::group(['prefix' => 'selector'], function () {
         Route::get('', 'SelectorController@show')->name('selector.select-active-company');
         Route::post('', 'SelectorController@updateActiveCompany')->name('selector.update-active-company');
     });
+    //endregion
 
+    //region USER
     Route::group(['prefix' => 'user'], function () {
         Route::get('', 'UserController@index')->name('user.index')->middleware(['check.active.company', 'can:list,App\Models\User']);
         Route::get('/create', 'UserController@create')->name('user.create')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
@@ -62,11 +71,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('{user}/company-data', 'UserController@updateCompanyData')->name('user.update-company-data')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
         Route::delete('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
     });
+    //endregion
 
-    Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('appointment.update-called-status')->middleware('can:change-console');
-    Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('callback.update-called-status')->middleware('can:change-console');
-
-    /* TEMPLATES */
+    //region TEMPLATES
     Route::group(['prefix' => 'template'], function () {
         Route::get('', 'TemplateController@index')->name('template.index')->middleware('can:view-templates');
         Route::get('/new', 'TemplateController@newForm')->name('template.create')->middleware('can:change-templates');
@@ -79,7 +86,9 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/delete', 'TemplateController@delete')->name('template.delete')->middleware('can:change-templates');
         });
     });
+    //endregion
 
+    //region TEMPLATE BUILDER
     Route::group(['prefix' => 'template-builder', 'middleware' => 'can:admin-only'], function () {
         Route::get('', 'TemplateBuildController@index')->name('template-builder.index');
         Route::get('editor', 'TemplateBuildController@showEditor')->name('template-builder.show-editor');
@@ -92,20 +101,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('dl', 'TemplateBuildController@download')->name('template-builder.download-get');
         Route::post('create', 'TemplateBuildController@createTemplate')->name('template-builder.store');
     });
-//
-//    Route::get('/template-builder', 'TemplateBuildController@index')->name('template-builder.index')->middleware('can:admin-only');
-//    Route::get('/template-builder/editor', 'TemplateBuildController@showEditor')->name('template-builder.show-editor')->middleware('can:admin-only');
-//    Route::get('/template-builder/templates/{template}/{templateName}', 'TemplateBuildController@getTemplate')->name('template-builder.get-template')->middleware('can:admin-only');
-//    Route::get('/template-builder/upload', 'TemplateBuildController@getImageList')->name('template-builder.get-image-list')->middleware('can:admin-only');
-//    Route::post('/template-builder/upload', 'TemplateBuildController@uploadImage')->name('template-builder.upload-image')->middleware('can:admin-only');
-//    Route::get('/template-builder/img', 'TemplateBuildController@getImage')->name('template-builder.get-image')->middleware('can:admin-only');
-//    Route::get('/template-builder/templates/{template}/edres/{file}', 'TemplateBuildController@getEdresFile')->name('template-builder.get-edres-file')->middleware('can:admin-only');
-//    Route::post('/template-builder/dl', 'TemplateBuildController@download')->name('template-builder.download-post')->middleware('can:admin-only');
-//    Route::get('/template-builder/dl', 'TemplateBuildController@download')->name('template-builder.download-get')->middleware('can:admin-only');
-//    Route::post('/template-builder/create', 'TemplateBuildController@createTemplate')->name('template-builder.store')->middleware('can:admin-only');
+    //endregion
 
-    /* CAMPAIGNS */
-    Route::get('/campaigns', 'CampaignController@index')->middleware('can:view-campaigns')->name('campaign.index');
+    //region CAMPAIGN
+    Route::get('/campaigns', 'CampaignController@index')->name('campaign.index')->middleware('can:view-campaigns');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
@@ -164,6 +163,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/response-console/sms', 'ResponseConsoleController@showTexts');
         Route::get('/response-console/email', 'ResponseConsoleController@showEmails');
     });
+    //endregion
 
     Route::group(['prefix' => '/recipient/{recipient}', 'middleware' => ['check.active.company','can:update,recipient']], function () {
         Route::post('/add-label', 'RecipientController@addLabel');
@@ -171,13 +171,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/update-notes', 'RecipientController@updateNotes');
     });
 
-    /* DEPLOYMENTS */
+    //region DEPLOYMENT
     /* TODO: change nomenclature to Drops */
     Route::group(['prefix' => '/drop/{deployment}', 'middleware' => 'can:change-campaigns'], function () {
-        Route::get('/pause', 'DeploymentController@pause');
-        Route::get('/resume', 'DeploymentController@resume');
-        Route::post('/delete', 'DeploymentController@delete');
+        Route::get('/pause', 'DeploymentController@pause')->name('deployment.pause');
+        Route::get('/resume', 'DeploymentController@resume')->name('deployment.resume');
+        Route::post('/delete', 'DeploymentController@delete')->name('deployment.delete');
     });
+    //endregion
 
     /* PHONES */
     Route::group(['prefix' => '/phones', 'middleware' => 'can:change-campaigns'], function () {
