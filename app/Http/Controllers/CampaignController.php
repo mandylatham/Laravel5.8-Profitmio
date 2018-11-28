@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Campaign;
 use App\Models\Company;
+use App\Models\EmailLog;
+use App\Models\Recipient;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\NewCampaignRequest;
@@ -11,6 +13,16 @@ use Carbon\Carbon;
 
 class CampaignController extends Controller
 {
+    private $emailLog;
+
+    private $recipient;
+
+    public function __construct(EmailLog $emailLog, Recipient $recipient)
+    {
+        $this->emailLog = $emailLog;
+        $this->recipient = $recipient;
+    }
+
     public function index(Request $request)
     {
         $campaigns = Campaign::query()
@@ -63,41 +75,8 @@ class CampaignController extends Controller
 
         $viewData['campaign'] = $campaign;
 
-        $emailStats = DB::table('email_logs')
-            ->select(
-                DB::raw("sum(if(event = 'sent', 1, 0)) as sent"),
-                DB::raw("sum(if(event = 'delivered', 1, 0)) as delivered"),
-                DB::raw("sum(if(event = 'opened', 1, 0)) as opened"),
-                DB::raw("sum(if(event = 'clicked', 1, 0)) as clicked"),
-                DB::raw("sum(if(event = 'bounced', 1, 0)) as bounced"),
-                DB::raw("sum(if(event = 'dropped', 1, 0)) as dropped"),
-                DB::raw("sum(if(event = 'unsubscribed', 1, 0)) as unsubscribed"),
-                DB::raw("count(*) as total"))
-            ->where('campaign_id', $campaign->id)
-            ->get();
-
-        if ($emailStats->count() > 0 && $emailStats->first()->sent > 0) {
-            $emailObject = $emailStats->first();
-            $emailObject->droppedPercent = round(abs((($emailObject->sent -
-                        ($emailObject->dropped)) / $emailObject->sent * 100) - 100), 2);
-
-            $emailObject->bouncedPercent = round(abs((($emailObject->sent -
-                        $emailObject->bounced) / $emailObject->sent * 100) - 100), 2);
-            $emailStats = new Collection([$emailObject]);
-        }
-
-        $responseStats = DB::table('recipients')
-            ->select(
-                DB::raw("sum(service) as service"),
-                DB::raw("sum(appointment) as appointment"),
-                DB::raw("sum(heat) as heat"),
-                DB::raw("sum(interested) as interested"),
-                DB::raw("sum(not_interested) as not_interested"),
-                DB::raw("sum(wrong_number) as wrong_number"),
-                DB::raw("sum(car_sold) as car_sold"),
-                DB::raw("count(*) as total"))
-            ->where('campaign_id', $campaign->id)
-            ->get();
+        $emailStats = $campaign->getEmailLogsStats();
+        $responseStats = $campaign->getRecipientStats();
 
         $viewData['emailCount'] = $emailStats->count();
         $viewData['emailStats'] = $emailStats->first();
@@ -207,84 +186,4 @@ class CampaignController extends Controller
         $campaign->delete();
         return redirect()->route('campaign.index');
     }
-//
-//    /**
-//     * Display a listing of the resource.
-//     *
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function index()
-//    {
-//        $campaigns = Campaign::all();
-//        return view('campaign/index', ['campaigns' => $campaigns]);
-//    }
-//
-//    /**
-//     * Show the form for creating a new resource.
-//     *
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function create()
-//    {
-//        $agencies = Company::getAgencies();
-//        $dealerships = Company::getDealerships();
-//        return view('campaign/create', ['agencies' => $agencies, 'dealerships' => $dealerships]);
-//    }
-//
-//    /**
-//     * Store a newly created resource in storage.
-//     *
-//     * @param  \Illuminate\Http\Request  $request
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function store(Request $request)
-//    {
-//        Campaign::create($request->only(['name', 'agency_id', 'dealership_id']));
-//        return response()->redirectToRoute('campaigns.index');
-//    }
-//
-//    /**
-//     * Display the specified resource.
-//     *
-//     * @param  \App\Models\Company  $company
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function show(Company $company)
-//    {
-//    }
-//
-//    /**
-//     * Show the form for editing the specified resource.
-//     *
-//     * @param  \App\Models\Company  $company
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function edit(Company $company)
-//    {
-//        return view('company/edit', ['company' => $company]);
-//    }
-//
-//    /**
-//     * Update the specified resource in storage.
-//     *
-//     * @param  \Illuminate\Http\Request  $request
-//     * @param  \App\Models\Company  $company
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function update(Request $request, Company $company)
-//    {
-//        $company->update($request->only(['name', 'type']));
-//        return response()->redirectToRoute('companies.index');
-//    }
-//
-//    /**
-//     * Remove the specified resource from storage.
-//     *
-//     * @param  \App\Models\Company  $company
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function destroy(Company $company)
-//    {
-//        //
-//    }
 }
