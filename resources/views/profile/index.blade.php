@@ -33,12 +33,14 @@
                 <div class="col-md-6 offset-md-3">
                     <div class="panel">
                         <div class="panel-body" data-fv-live="enabled">
-                            @if ($errors->count() > 0)
+                            @if ($errors->hasAny(['first_name', 'last_name', 'email']))
                                 <div class="alert alert-danger">
                                     <h3>There were some errors:</h3>
                                     <ul>
-                                        @foreach ($errors->all() as $message)
-                                            <li>{{ $message }}</li>
+                                        @foreach (['first_name', 'last_name', 'email'] as $field)
+                                            @foreach ($errors->get($field) as $message)
+                                                <li>{{ $message }}</li>
+                                            @endforeach
                                         @endforeach
                                     </ul>
                                 </div>
@@ -68,6 +70,25 @@
                     </div>
                     <div class="panel mt-30">
                         <div class="panel-body" data-fv-live="enabled">
+                            @if ($errors->hasAny(['password', 'new_password', 'new_password_confirmation']))
+                                <div class="alert alert-danger">
+                                    <h3>There were some errors:</h3>
+                                    <ul>
+                                        @foreach (['password', 'new_password', 'new_password_confirmation'] as $field)
+                                            @foreach ($errors->get($field) as $message)
+                                                <li>{{ $message }}</li>
+                                            @endforeach
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            @if (session('success_message'))
+                                <div class="alert alert-success">
+                                    <ul>
+                                        <li>{{ session('success_message') }}</li>
+                                    </ul>
+                                </div>
+                            @endif
                             <form class="form" method="post" action="{{ route('profile.update-password') }}">
                                 {{ csrf_field() }}
                                 <div class="form-group">

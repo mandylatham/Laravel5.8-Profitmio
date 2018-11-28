@@ -44,13 +44,12 @@ class ProfileController extends Controller
     {
         $user = auth()->user();
         if ($this->hash->check($request->input('password'), $user->password)) {
-            $user->password = bcrypt($request->input('password'));
+            $user->password = bcrypt($request->input('new_password'));
             $user->save();
+            return redirect()->back()->with(['success_message' => 'Password updated!']);
         } else {
-            return redirect()->back()->withErrors(['Current password doesn\'t match password stored in database.']);
+            return redirect()->back()->withErrors(['password' => 'Current password doesn\'t match password stored in database.']);
         }
-
-        return redirect()->back();
     }
 
     public function updateCompanyData(Request $request)
