@@ -676,8 +676,9 @@
             });
 
             $(".callback-button").change(function() {
+                var url = '{{ route("appointment.update-called-status", ['appointment' => '0.0']) }}';
                 $.post(
-                    "{{ secure_url('appointment/') }}" + "/" + $(this).data('callback_id') + "/update-called-status",
+                    url.replace('0.0', $(this).data('callback_id')),
                     { "called_back": $(this).prop('checked') },
                     'json'
                 );

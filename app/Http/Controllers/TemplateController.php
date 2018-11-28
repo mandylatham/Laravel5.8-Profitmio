@@ -35,7 +35,7 @@ class TemplateController extends Controller
 
         $template->save();
 
-        return redirect('/templates');
+        return redirect()->route('template.index');
     }
 
     public function editForm(CampaignScheduleTemplate $template)
@@ -51,7 +51,7 @@ class TemplateController extends Controller
 
         $template->save();
 
-        return redirect('/template/' . $template->id . '/edit');
+        return redirect()->route('template.edit', ['template' => $template->id]);
     }
 
     public function show(CampaignScheduleTemplate $template)
@@ -76,7 +76,6 @@ class TemplateController extends Controller
     public function delete(CampaignScheduleTemplate $template)
     {
         $template->delete();
-
-        return redirect('/templates');
+        return redirect()->route('template.index');
     }
 }

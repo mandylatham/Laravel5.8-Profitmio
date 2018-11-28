@@ -81,7 +81,7 @@
             $.post('{{ secure_url('template-builder/create') }}', postData)
                 .done(function () {
                     viewModel.notifier.success(viewModel.t('Successfully saved.'));
-                    setTimeout(function(){ window.location = '{{ secure_url('templates/new') }}'; }, 2000);
+                    setTimeout(function(){ window.location = '{{ route('template.create') }}'; }, 2000);
                 })
                 .fail(function (jqXHR, textStatus, error) {
                     console.log(textStatus);
@@ -109,7 +109,7 @@
                 .done(function (data) {
 
                     viewModel.notifier.success(viewModel.t('Successfully saved.'));
-                    setTimeout(function(){ window.location = '{{ secure_url('templates/new') }}'; }, 2000);
+                    setTimeout(function(){ window.location = '{{ route('template.create') }}'; }, 2000);
                 })
                 .fail(function (jqXHR, textStatus, error) {
                     console.log(textStatus);

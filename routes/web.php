@@ -2,15 +2,15 @@
 
 
 //region OUTSIDE API CALLS
-Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->middleware(null);
-Route::any('/email-responses/inbound', 'ResponseConsoleController@inboundEmail')->middleware(null);
-Route::any('/email-responses/log', 'ResponseConsoleController@logEmail')->middleware(null);
-Route::any('/phone-responses/inbound', 'ResponseConsoleController@inboundPhone')->middleware(null);
-Route::any('/phone-responses/status', 'ResponseConsoleController@inboundPhoneStatus')->middleware(null);
+Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->name('pub-api.text-response-inbound')->middleware(null);
+Route::any('/email-responses/inbound', 'ResponseConsoleController@inboundEmail')->name('pub-api.email-response-inbound')->middleware(null);
+Route::any('/email-responses/log', 'ResponseConsoleController@logEmail')->name('pub-api.email-response-log')->middleware(null);
+Route::any('/phone-responses/inbound', 'ResponseConsoleController@inboundPhone')->name('pub-api.phone-response-inbound')->middleware(null);
+Route::any('/phone-responses/status', 'ResponseConsoleController@inboundPhoneStatus')->name('pub-api.phone-response-status')->middleware(null);
 
-Route::any('/appointments/insert', 'AppointmentController@insert')->middleware(null);
-Route::any('/appointments/save', 'AppointmentController@save')->middleware(null);
-Route::any('/appointments/get', 'AppointmentController@get')->middleware(null);
+Route::any('/appointments/insert', 'AppointmentController@insert')->name('pub-api.appointment-insert')->middleware(null);
+Route::any('/appointments/save', 'AppointmentController@save')->name('pub-api.appointment-save')->middleware(null);
+Route::any('/appointments/get', 'AppointmentController@get')->name('pub-api.appointment-get')->middleware(null);
 //endregion
 
 //region AUTH
@@ -21,7 +21,7 @@ Route::post('logout', 'Auth\LoginController@logout')->name('logout');
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
 Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
-Route::post('password/reset', 'Auth\ResetPasswordController@reset');
+Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.restore');
 //endregion
 
 //region AUTHENTICATED REQUESTS ONLY
@@ -41,9 +41,9 @@ Route::group(['middleware' => 'auth'], function () {
 
 
     Route::group(['prefix' => 'admin'], function () {
-        Route::get('/resend-invitation', 'AdminController@resendInvitation')->middleware('can:resend-invitation,App\Models\User')->name('admin.resend-invitation');
+        Route::get('/resend-invitation', 'AdminController@resendInvitation')->name('admin.resend-invitation')->middleware('can:resend-invitation,App\Models\User');
         Route::get('/impersonate/leave', 'AdminController@impersonateLeave')->name('admin.impersonate-leave');
-        Route::get('/impersonate/{user}', 'AdminController@impersonateUser')->middleware('can:impersonate,App\Models\User')->name('admin.impersonate');
+        Route::get('/impersonate/{user}', 'AdminController@impersonateUser')->name('admin.impersonate')->middleware('can:impersonate,App\Models\User');
     });
 
     Route::group(['prefix' => 'selector'], function () {
@@ -63,19 +63,21 @@ Route::group(['middleware' => 'auth'], function () {
         Route::delete('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
     });
 
-    Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->middleware('can:change-console');
-    Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->middleware('can:change-console');
+    Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('appointment.update-called-status')->middleware('can:change-console');
+    Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('callback.update-called-status')->middleware('can:change-console');
 
     /* TEMPLATES */
-    Route::get('/templates', 'TemplateController@index')->middleware('can:view-templates');
-    Route::get('/templates/new', 'TemplateController@newForm')->middleware('can:change-templates');
-    Route::post('/template/create', 'TemplateController@create')->middleware('can:change-templates');
-    Route::group(['prefix' => '/template/{template}', 'middleware' => 'can:view-templates'], function () {
-        Route::get('/', 'TemplateController@show');
-        Route::post('/json', 'TemplateController@showJson');
-        Route::get('/edit', 'TemplateController@editForm')->middleware('can:change-templates');
-        Route::post('/update', 'TemplateController@update')->middleware('can:change-templates');
-        Route::get('/delete', 'TemplateController@delete')->middleware('can:change-templates');
+    Route::group(['prefix' => 'template'], function () {
+        Route::get('', 'TemplateController@index')->name('template.index')->middleware('can:view-templates');
+        Route::get('/new', 'TemplateController@newForm')->name('template.create')->middleware('can:change-templates');
+        Route::post('', 'TemplateController@create')->name('template.store')->middleware('can:change-templates');
+        Route::group(['prefix' => '{template}', 'middleware' => 'can:view-templates'], function () {
+            Route::get('/', 'TemplateController@show')->name('template.show');
+            Route::post('/json', 'TemplateController@showJson')->name('template.show-json');
+            Route::get('/edit', 'TemplateController@editForm')->name('template.edit')->middleware('can:change-templates');
+            Route::post('/update', 'TemplateController@update')->name('template.update')->middleware('can:change-templates');
+            Route::get('/delete', 'TemplateController@delete')->name('template.delete')->middleware('can:change-templates');
+        });
     });
 
     Route::get('/template-builder', 'TemplateBuildController@index')->middleware('can:admin-only');

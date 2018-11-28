@@ -42,7 +42,7 @@
                     Templates
                 </h3>
                 <div class="page-header-actions">
-                    <a href="{{ secure_url('/templates/new') }}"
+                    <a href="{{ route('template.create') }}"
                        class="btn btn-sm btn-success waves-effect">
                         <i class="icon md-plus" aria-hidden="true"></i>
                         New
@@ -94,7 +94,7 @@
                                                 <i class="icon fa-exclamation-triangle" aria-hidden="true"></i>
                                                 <span class="sr-only">INVALID TYPE</span>
                                             @endif
-                                            <a href="{{ secure_url('/template/' . $template->id . '/edit') }}"
+                                            <a href="{{ route('template.edit', ['template' => $template->id]) }}"
                                                 style="margin-left: 15px;">
                                                 {{ $template->name }}
                                             </a>
@@ -102,7 +102,7 @@
                                         <td>{{ show_date($template->created_at) }}</td>
                                         <td>
                                             <button class="btn btn-pure btn-danger btn-round delete-button"
-                                                    data-deleteUrl="{{ secure_url('template/' . $template->id . '/delete') }}">
+                                                    data-deleteUrl="{{ route('template.delete', ['template' => $template->id]) }}">
                                                 <i class="fa fa-trash"></i>
                                             </button>
                                         </td>
@@ -112,7 +112,7 @@
                             </table>
                         </div>
                         @else
-                        <div class="alert alert=info">There don't appear to be any templates!  <a href="{{ secure_url('templates/new') }}">Create one now</a></div>
+                        <div class="alert alert=info">There don't appear to be any templates!  <a href="{{ route('template.create') }}">Create one now</a></div>
                         @endif
                     </div>
                 </div>

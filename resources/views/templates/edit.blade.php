@@ -54,7 +54,7 @@
                     <div style="display: flex">
                         <button type="button"
                                 role="button"
-                                data-url="{{ secure_url('/templates') }}"
+                                data-url="{{ route('template.index') }}"
                                 class="btn btn-sm btn-default waves-effect campaign-edit-button"
                                 data-toggle="tooltip"
                                 data-original-title="Go Back"
@@ -85,7 +85,7 @@
                                 </ul>
                             </div>
                             @endif
-                            <form class="form" method="post" action="{{ secure_url('/template/' . $template->id . '/update') }}">
+                            <form class="form" method="post" action="{{ route('template.update', ['template' => $template->id]) }}">
                                 {{ csrf_field() }}
                                 <h4>Template Details</h4>
                                 <div class="form-group">

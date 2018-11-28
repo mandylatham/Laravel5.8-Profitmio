@@ -57,11 +57,11 @@ class PhoneController extends Controller
                 'SMS' => true,
                 'MMS' => true,
                 'phoneNumber' => $phoneNumber,
-                'StatusCallback' => secure_url('/phone-responses/status'),
+                'StatusCallback' => route('pub-api.phone-response-status'),
                 'StatusCallbackMethod' => 'post',
-                'VoiceUrl' => secure_url('/phone-responses/inbound'),
+                'VoiceUrl' => route('pub-api.phone-response-inbound'),
                 'VoiceMethod' => 'post',
-                'SmsUrl' => secure_url('/text-responses/inbound'),
+                'SmsUrl' => route('pub-api.text-response-inbound'),
                 'SmsMethod' => 'post',
             ];
 

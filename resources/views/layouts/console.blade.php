@@ -371,7 +371,7 @@
                     @endcan
                     @can('list', \App\Models\CampaignScheduleTemplate::class)
                         <li class="site-menu-item">
-                            <a href="{{ secure_url('/templates') }}" class=" waves-effect waves-classic">
+                            <a href="{{ route('template.index') }}" class=" waves-effect waves-classic">
                                 <i class="site-menu-icon icon fa-file-text-o" aria-hidden="true"></i>
                                 <span class="site-menu-title">Templates</span>
                             </a>

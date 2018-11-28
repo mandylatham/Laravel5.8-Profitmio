@@ -135,7 +135,7 @@
                                 <input type="checkbox"
                                        data-appointment_id="{{ $appointment->id }}"
                                        data-phone="{{ $appointment->phone_number }}"
-                                       data-postback='{{ secure_url("appointment/{$appointment->id}/update-called-status") }}'
+                                       data-postback='{{ route("appointment.update-called-status", ['appointment' => $appointment->id]) }}'
                                        class="toggle_called"
                                         {{ $appointment->called_back ? 'checked="checked"' : '' }}>
                                 Called
