@@ -78,7 +78,7 @@
                 html: viewModel.exportHTML()
             };
 
-            $.post('{{ secure_url('template-builder/create') }}', postData)
+            $.post('{{ route('template-builder.store') }}', postData)
                 .done(function () {
                     viewModel.notifier.success(viewModel.t('Successfully saved.'));
                     setTimeout(function(){ window.location = '{{ route('template.create') }}'; }, 2000);
@@ -105,7 +105,7 @@
                 html: viewModel.exportHTML()
             };
 
-            $.post('{{ secure_url('template-builder/dl') }}', postData)
+            $.post('{{ route('template-builder.download-post') }}', postData)
                 .done(function (data) {
 
                     viewModel.notifier.success(viewModel.t('Successfully saved.'));

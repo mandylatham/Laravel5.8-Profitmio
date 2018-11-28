@@ -47,7 +47,7 @@
                         <i class="icon md-plus" aria-hidden="true"></i>
                         New
                     </a>
-                    <a href="{{ secure_url('/template-builder/editor') }}"
+                    <a href="{{ route('template-builder.show-editor') }}"
                        class="btn btn-sm btn-primary waves-effect">
                         <i class="icon md-group" aria-hidden="true"></i>
                         Builder

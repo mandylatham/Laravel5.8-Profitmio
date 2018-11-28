@@ -80,16 +80,29 @@ Route::group(['middleware' => 'auth'], function () {
         });
     });
 
-    Route::get('/template-builder', 'TemplateBuildController@index')->middleware('can:admin-only');
-    Route::get('/template-builder/editor', 'TemplateBuildController@showEditor')->middleware('can:admin-only');
-    Route::get('/template-builder/templates/{template}/{templateName}', 'TemplateBuildController@getTemplate')->middleware('can:admin-only');
-    Route::get('/template-builder/upload', 'TemplateBuildController@getImageList')->middleware('can:admin-only');
-    Route::post('/template-builder/upload', 'TemplateBuildController@uploadImage')->middleware('can:admin-only');
-    Route::get('/template-builder/img', 'TemplateBuildController@getImage')->middleware('can:admin-only');
-    Route::get('/template-builder/templates/{template}/edres/{file}', 'TemplateBuildController@getEdresFile')->middleware('can:admin-only');
-    Route::post('/template-builder/dl', 'TemplateBuildController@download')->middleware('can:admin-only');
-    Route::get('/template-builder/dl', 'TemplateBuildController@download')->middleware('can:admin-only');
-    Route::post('/template-builder/create', 'TemplateBuildController@createTemplate')->middleware('can:admin-only');
+    Route::group(['prefix' => 'template-builder', 'middleware' => 'can:admin-only'], function () {
+        Route::get('', 'TemplateBuildController@index')->name('template-builder.index');
+        Route::get('editor', 'TemplateBuildController@showEditor')->name('template-builder.show-editor');
+        Route::get('templates/{template}/{templateName}', 'TemplateBuildController@getTemplate')->name('template-builder.get-template');
+        Route::get('upload', 'TemplateBuildController@getImageList')->name('template-builder.get-image-list');
+        Route::post('upload', 'TemplateBuildController@uploadImage')->name('template-builder.upload-image');
+        Route::get('img', 'TemplateBuildController@getImage')->name('template-builder.get-image');
+        Route::get('templates/{template}/edres/{file}', 'TemplateBuildController@getEdresFile')->name('template-builder.get-edres-file');
+        Route::post('dl', 'TemplateBuildController@download')->name('template-builder.download-post');
+        Route::get('dl', 'TemplateBuildController@download')->name('template-builder.download-get');
+        Route::post('create', 'TemplateBuildController@createTemplate')->name('template-builder.store');
+    });
+//
+//    Route::get('/template-builder', 'TemplateBuildController@index')->name('template-builder.index')->middleware('can:admin-only');
+//    Route::get('/template-builder/editor', 'TemplateBuildController@showEditor')->name('template-builder.show-editor')->middleware('can:admin-only');
+//    Route::get('/template-builder/templates/{template}/{templateName}', 'TemplateBuildController@getTemplate')->name('template-builder.get-template')->middleware('can:admin-only');
+//    Route::get('/template-builder/upload', 'TemplateBuildController@getImageList')->name('template-builder.get-image-list')->middleware('can:admin-only');
+//    Route::post('/template-builder/upload', 'TemplateBuildController@uploadImage')->name('template-builder.upload-image')->middleware('can:admin-only');
+//    Route::get('/template-builder/img', 'TemplateBuildController@getImage')->name('template-builder.get-image')->middleware('can:admin-only');
+//    Route::get('/template-builder/templates/{template}/edres/{file}', 'TemplateBuildController@getEdresFile')->name('template-builder.get-edres-file')->middleware('can:admin-only');
+//    Route::post('/template-builder/dl', 'TemplateBuildController@download')->name('template-builder.download-post')->middleware('can:admin-only');
+//    Route::get('/template-builder/dl', 'TemplateBuildController@download')->name('template-builder.download-get')->middleware('can:admin-only');
+//    Route::post('/template-builder/create', 'TemplateBuildController@createTemplate')->name('template-builder.store')->middleware('can:admin-only');
 
     /* CAMPAIGNS */
     Route::get('/campaigns', 'CampaignController@index')->middleware('can:view-campaigns')->name('campaign.index');

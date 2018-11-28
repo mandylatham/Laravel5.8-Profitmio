@@ -314,12 +314,12 @@
         </tr></thead>
         <tbody data-bind="foreach: edits">
         <tr>
-            <td align="left"><a href="#" data-bind="attr: { href: 'template-builder/editor?key='+key }"><code>#<span data-bind="text: key">key</span></code></a></td>
-            <td style="font-weight: bold" align="left"><a href="#" data-bind="attr: { href: 'template-builder/editor?key='+key }"><span data-bind="text: name">versamix</span></a></td>
+            <td align="left"><a href="#" data-bind="attr: { href: '{{ route('template-builder.show-editor') }}?key='+key }"><code>#<span data-bind="text: key">key</span></code></a></td>
+            <td style="font-weight: bold" align="left"><a href="#" data-bind="attr: { href: '{{ route('template-builder.show-editor') }}?key='+key }"><span data-bind="text: name">versamix</span></a></td>
             <td><span data-bind="text: typeof created !== 'undefined' ? $root.dateFormat(created) : '-'">YYYY-MM-DD</span></td>
             <td><span style="font-weight: bold" data-bind="text: typeof changed !== 'undefined' ? $root.dateFormat(changed) : '-'">YYYY-MM-DD</span></td>
             <td>
-                <a class="operationButton" href="#" data-bind="attr: { href: 'template-builder/editor?key='+key }" title="edit"><i class="fa fa-pencil"></i></a>
+                <a class="operationButton" href="#" data-bind="attr: { href: '{{ route('template-builder.show-editor') }}?key='+key }" title="edit"><i class="fa fa-pencil"></i></a>
                 <!--(<a href="#" data-bind="click: $root.renameEdit.bind(undefined, $index())" title="rinomina"><i class="fa fa-trash-o"></i></a>)-->
                 <a class="operationButton" href="#" data-bind="click: $root.deleteEdit.bind(undefined, $index())" title="delete"><i class="fa fa-trash-o"></i></a>
             </td>
