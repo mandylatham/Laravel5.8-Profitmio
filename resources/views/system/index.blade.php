@@ -196,7 +196,7 @@ $(document).ready(function() {
 
     $('#deployment-date').datepicker();
     $("#deployment-date").on('changeDate', function(event) {
-        window.location.href = "{{ secure_url('/system/drops/?date=') }}" + $("#deployment-date").datepicker('getFormattedDate');
+        window.location.href = "{{ route('system.drop.index') }}?date=" + $("#deployment-date").datepicker('getFormattedDate');
     });
 });
 </script>

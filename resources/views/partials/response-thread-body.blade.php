@@ -7,7 +7,7 @@
         <label>
             <input type="checkbox"
                 class="message-read"
-                data-postback='{{ secure_url("response/{$message->id}/update-read-status") }}'
+                data-postback='{{ response('response.update-read-status', ['response' => $message->id]) }}'
                 data-response_id="{{ $message->id }}"
                 data-response_time="{{ $message->created_at->format('m/d/Y g:i A') }}"
             {{ $message->read ? 'checked="checked"' : '' }}>

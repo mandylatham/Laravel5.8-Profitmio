@@ -165,11 +165,13 @@ Route::group(['middleware' => 'auth'], function () {
     });
     //endregion
 
+    //region RECIPIENT
     Route::group(['prefix' => '/recipient/{recipient}', 'middleware' => ['check.active.company','can:update,recipient']], function () {
-        Route::post('/add-label', 'RecipientController@addLabel');
-        Route::post('/remove-label', 'RecipientController@removeLabel');
-        Route::post('/update-notes', 'RecipientController@updateNotes');
+        Route::post('/add-label', 'RecipientController@addLabel')->name('recipient.add-label');
+        Route::post('/remove-label', 'RecipientController@removeLabel')->name('recipient.remove-label');
+        Route::post('/update-notes', 'RecipientController@updateNotes')->name('recipient.update-notes');
     });
+    //endregion
 
     //region DEPLOYMENT
     /* TODO: change nomenclature to Drops */
@@ -180,20 +182,25 @@ Route::group(['middleware' => 'auth'], function () {
     });
     //endregion
 
-    /* PHONES */
+    //region PHONES
     Route::group(['prefix' => '/phones', 'middleware' => 'can:change-campaigns'], function () {
         Route::post('search', 'PhoneController@searchAvailable')->name('phone.search');
         Route::post('provision', 'PhoneController@provision')->name('phone.provision');
         // Route::get('list-unused', 'PhoneController@showUnused'); // Future improvement
         // Route::post('release', 'PhoneController@releaseNumber'); // Future improvement
     });
+    //endregion
 
-    /* RESPONSES */
-    Route::post('/response/{response}/update-read-status', 'ResponseController@updateReadStatus')->middleware('can:change-console');
+    //region RESPONSE
+    Route::post('/response/{response}/update-read-status', 'ResponseController@updateReadStatus')->name('response.update-read-status')->middleware('can:change-console');
+    //endregion
 
-    /* SYSTEM */
-    Route::get('/system/drops', 'SystemController@index')->middleware('can:admin-only');
-    Route::get('/system/reports', 'SystemController@index')->middleware('can:admin-only');
+    //region SYSTEM
+    Route::group(['prefix' => 'system', 'middleware' => 'can:admin-only'], function () {
+        Route::get('drops', 'SystemController@index')->name('system.drop.index');
+        Route::get('reports', 'SystemController@index')->name('system.report.index');
+    });
+    //endregion
 
     //region COMPANIES
     Route::group(['prefix' => 'companies'], function () {

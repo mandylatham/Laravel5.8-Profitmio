@@ -407,13 +407,13 @@
                                         <div class="scrollable-content" style="width: 217px;">
                                             <ul class="site-menu-sub site-menu-normal-list">
                                                 <li class="site-menu-item">
-                                                    <a href="{{ secure_url('/system/drops') }}" class=" waves-effect waves-classic">
+                                                    <a href="{{ route('system.drop.index') }}" class=" waves-effect waves-classic">
                                                         <i class="site-menu-icon icon fa-paper-plane" aria-hidden="true"></i>
                                                         <span class="site-menu-title">Drop Management</span>
                                                     </a>
                                                 </li>
                                                 <li class="site-menu-item">
-                                                    <a href="{{ secure_url('/system/reports') }}" class=" waves-effect waves-classic">
+                                                    <a href="{{ route('system.report.index') }}" class=" waves-effect waves-classic">
                                                         <i class="site-menu-icon icon fa-bar-chart" aria-hidden="true"></i>
                                                         <span class="site-menu-title">Reports</span>
                                                     </a>

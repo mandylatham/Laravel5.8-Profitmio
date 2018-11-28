@@ -37,7 +37,7 @@
                         Add Label
                         <span class="icon md-chevron-down" aria-hidden="true"></span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-right animation-scale-up animation-top-right animation-duration-250" role="menu" data-postback="{{ secure_url('recipient/' . $recipient->id . '/add-label') }}">
+                    <div class="dropdown-menu dropdown-menu-right animation-scale-up animation-top-right animation-duration-250" role="menu" data-postback="{{ route('recipient.add-label', ['recipient' => $recipient->id]) }}">
                         <button class="dropdown-item add-label" data-label="interested">
                             <i class="md-circle green-600" aria-hidden="true"></i>
                             Interested
@@ -73,43 +73,43 @@
                 @if ($recipient->interested)
                     <span class="badge badge-success">
                         Interested
-                        <button class="btn btn-pure btn-xs icon fa-close remove-label" data-postback="{{ secure_url('recipient/' . $recipient->id . '/remove-label') }}" data-label="interested"></button>
+                        <button class="btn btn-pure btn-xs icon fa-close remove-label" data-postback="{{ route('recipient.remove-label', ['recipient' => $recipient->id]) }}" data-label="interested"></button>
                     </span>
                 @endif
                 @if ($recipient->appointment)
                     <span class="badge badge-success">
                     Appointment
-                    <button class="btn btn-pure btn-xs icon fa-close remove-label" data-postback="{{ secure_url('recipient/' . $recipient->id . '/remove-label') }}" data-label="appointment"></button>
+                    <button class="btn btn-pure btn-xs icon fa-close remove-label" data-postback="{{ route('recipient.remove-label', ['recipient' => $recipient->id]) }}" data-label="appointment"></button>
                 </span>
                 @endif
                 @if ($recipient->not_interested)
                     <span class="badge badge-danger">
                         Not Interested
-                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ secure_url('recipient/' . $recipient->id . '/remove-label') }}" data-label="not_interested"></button>
+                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ route('recipient.remove-label', ['recipient' => $recipient->id]) }}" data-label="not_interested"></button>
                     </span>
                 @endif
                 @if ($recipient->wrong_number)
                     <span class="badge badge-danger">
                         Wrong Number
-                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ secure_url('recipient/' . $recipient->id . '/remove-label') }}" data-label="wrong_number"></button>
+                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ route('recipient.remove-label', ['recipient' => $recipient->id]) }}" data-label="wrong_number"></button>
                     </span>
                 @endif
                 @if ($recipient->service)
                     <span class="badge badge-success">
                         Service Department
-                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ secure_url('recipient/' . $recipient->id . '/remove-label') }}" data-label="service"></button>
+                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ route('recipient.remove-label', ['recipient' => $recipient->id]) }}" data-label="service"></button>
                     </span>
                 @endif
                 @if ($recipient->heat)
                     <span class="badge badge-danger">
                         Heat Case
-                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ secure_url('recipient/' . $recipient->id . '/remove-label') }}" data-label="heat"></button>
+                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ route('recipient.remove-label', ['recipient' => $recipient->id]) }}" data-label="heat"></button>
                     </span>
                 @endif
                 @if ($recipient->car_sold)
                     <span class="badge badge-danger">
                         Car Sold
-                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ secure_url('recipient/' . $recipient->id . '/remove-label') }}" data-label="car_sold"></button>
+                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-postback="{{ route('recipient.remove-label', ['recipient' => $recipient->id]) }}" data-label="car_sold"></button>
                     </span>
                 @endif
                 </div>
@@ -117,7 +117,7 @@
         </div>
         <div class="mail-content">
             <div class="form-group">
-                <textarea class="form-control" placeholder="Notes..." data-postback="{{ secure_url('recipient/' . $recipient->id . '/update-notes') }}" name="notes">{{ $recipient->notes }}</textarea>
+                <textarea class="form-control" placeholder="Notes..." data-postback="{{ route('recipient.update-notes', ['recipient' => $recipient->id]) }}" name="notes">{{ $recipient->notes }}</textarea>
             </div>
         </div>
         @if ($appointments->count() > 0)
@@ -272,7 +272,7 @@
                                 <label>
                                     <input type="checkbox"
                                            class="message-read"
-                                           data-postback='{{ secure_url("response/{$text->id}/update-read-status") }}'
+                                           data-postback='{{ response('response.update-read-status', ['response' => $text->id]) }}'
                                            data-response_id="{{ $text->id }}"
                                            data-response_time="{{ $text->created_at->format('m/d/Y g:i A') }}"
                                             {{ $text->read ? 'checked="checked"' : '' }}>
@@ -319,7 +319,7 @@
                             <label>
                                 <input type="checkbox"
                                        class="message-read"
-                                       data-postback='{{ secure_url("response/{$email->id}/update-read-status") }}'
+                                       data-postback='{{ response('response.update-read-status', ['response' => $email->id]) }}'
                                        data-response_id="{{ $email->id }}"
                                        data-response_time="{{ $email->created_at->format('m/d/Y g:i A') }}"
                                         {{ $email->read ? 'checked="checked"' : '' }}>
