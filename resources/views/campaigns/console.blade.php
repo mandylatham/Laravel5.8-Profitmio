@@ -422,7 +422,7 @@ $(function() {
         current_recipient = 0;
     });
 
-    @if ($campaign->isNotExpired)
+    @if (!$campaign->isExpired())
     var refresh_email_messages = function() {
         if (debug) console.log('Updating emails for ' + current_recipient);
         $.post(

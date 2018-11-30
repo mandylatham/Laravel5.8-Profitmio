@@ -228,7 +228,7 @@
                                                         data-field_value="{{ $phone->call_source_name }}">{{ ucwords($phone->call_source_name) }}</td>
                                                     <td class="form-buttons">
                                                         <button type="button" class="btn btn-sm btn-default edit-number" onClick="edit_number($(this))">Edit</button>
-                                                        @if ($campaign->isExpired)
+                                                        @if ($campaign->isExpired())
                                                             <button type="button" class="btn btn-sm btn-danger release-number" onClick="release_number($(this))">Release</button>
                                                         @endif
                                                     </td>
@@ -384,7 +384,7 @@
             data-field_value="__CALL_SOURCE__">__CALL_SOURCE__</td>
         <td class="form-buttons">
             <button type="button" class="btn btn-sm btn-default edit-number" onClick="edit_number($(this))">Edit</button>
-            @if ($campaign->isExpired)
+            @if ($campaign->isExpired())
                 <button type="button" class="btn btn-sm btn-danger release-number" onClick="release_number($(this))">Release</button>
             @endif
         </td>

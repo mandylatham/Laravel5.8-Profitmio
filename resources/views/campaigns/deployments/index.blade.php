@@ -41,8 +41,8 @@
         <a class="badge badge-outline text-default" href="#" id="show-cards" style="font-size: 24px; color: #666">
             <i class="icon fa-3x fa-th"></i>
         </a>
-        @if ($campaign->isNotExpired)
-            <a href="{{ secure_url('campaign/' . $campaign->campaign_id . '/drops/new') }}"
+        @if (!$campaign->isExpired())
+            <a href="{{ route('campaign.drop.create', ['campaign' => $campaign->id]) }}"
                class="btn btn-success waves-effect float-right">
                 <i class="icon md-plus" aria-hidden="true"></i>
                 New
@@ -89,7 +89,7 @@
                             @else
                                 btn-primary
                             @endif
-                           @if ($drop->send_at > \Carbon\Carbon::now() || $campaign->isExpired)
+                           @if ($drop->send_at > \Carbon\Carbon::now() || $campaign->isExpired())
                                disabled
                             @endif
                                        ">

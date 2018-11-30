@@ -14,8 +14,8 @@ class MigrateCampaignIdIntoExistingPhoneNumbers extends Migration
     public function up()
     {
         DB::select("update campaigns 
-            join phone_numbers on campaigns.phone_number_id = phone_numbers.phone_number_id 
-            set phone_numbers.campaign_id = campaigns.campaign_id 
+            join phone_numbers on campaigns.phone_number_id = phone_numbers.id 
+            set phone_numbers.campaign_id = campaigns.id 
             where campaigns.phone_number_id <> ''");
     }
 

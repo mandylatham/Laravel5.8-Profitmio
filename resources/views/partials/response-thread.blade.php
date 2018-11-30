@@ -321,7 +321,7 @@
                             </div>
                         @endforeach
                     </div>
-                    @if ($campaign->isNotExpired)
+                    @if (!$campaign->isExpired())
                         <form id="sms-form"
                               style="margin-top: 20px;">
                             {{ csrf_field() }}
@@ -370,7 +370,7 @@
                             </div>
                         @endforeach
                     </div>
-                    @if ($campaign->isNotExpired)
+                    @if (!$campaign->isExpired())
                         <form id="email-form"
                               style="margin-top: 20px;">
                             {{ csrf_field() }}

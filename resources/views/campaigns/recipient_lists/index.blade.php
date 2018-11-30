@@ -63,7 +63,7 @@
 
 @section('campaign_content')
         <div class="col-md-12">
-            @if ($campaign->isNotExpired)
+            @if (!$campaign->isExpired())
             <button class="pull-right btn btn-success upload-list-button mb-3" style="margin-top: -10px;">Upload New List</button>
             @endif
             <div style="margin-bottom: 20px;">
@@ -71,7 +71,7 @@
                     Recipient Lists
                 </p>
             </div>
-            @if ($campaign->isNotExpired)
+            @if (!$campaign->isExpired())
             <div class="card border border-primary upload-form-card">
                 <div class="card-block">
                     <h4 class="card-title">New Recipient List</h4>

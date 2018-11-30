@@ -14,7 +14,7 @@ class AddCallbackLabelToRecipientsWhoNeedIt extends Migration
      */
     public function up()
     {
-        DB::select("update targets set callback=1 where target_id in (select target_id from appointments where type='callback')");
+        DB::select("update recipients set callback=1 where id in (select recipient_id from appointments where type='callback')");
     }
 
     /**

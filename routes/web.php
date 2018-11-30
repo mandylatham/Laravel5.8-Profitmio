@@ -141,7 +141,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/drops', 'DeploymentController@forCampaign')->name('campaign.drop.index');
         Route::get('/drop/{drop}', 'DeploymentController@show');
         Route::post('/drop/{deployment}/update', 'DeploymentController@update');
-        Route::get('/drops/new', 'DeploymentController@createNew');
+        Route::get('/drops/new', 'DeploymentController@createNew')->name('campaign.drop.create');
         Route::post('/drops/create', 'DeploymentController@create');
         Route::post('/drops/add-groups', 'DeploymentController@saveGroups');
         Route::post('/drop/{drop}/send-sms/{recipient}', 'DeploymentController@deploySms');
@@ -151,6 +151,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/responses/export-nonresponders', 'ResponseController@getNonResponders');
         Route::any('/get-responses-hash', 'ResponseController@getResponsesHash');
         Route::any('/responses/{recipient}/get-text-hash', 'ResponseController@getTextHash');
+        Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
         Route::any('/responses/{recipient}/get-email-hash', 'ResponseController@getEmailHash');
         Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
         Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');

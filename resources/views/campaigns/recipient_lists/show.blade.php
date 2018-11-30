@@ -38,7 +38,7 @@
                 <form action="{{ route("recipient.delete", [$campaign->id, $list->id]) }}" method="post">
                     {{ csrf_field() }}
                     <input type="hidden" name="_method" value="delete" />
-                    @if ($campaign->isNotExpired)
+                    @if (!$campaign->isExpired())
                         <div class="">
                             <button class="btn btn-danger mb-3 pull-right">
                                 <i class="fa icon fa-trash-o"></i>

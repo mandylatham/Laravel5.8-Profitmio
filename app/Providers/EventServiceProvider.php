@@ -14,9 +14,6 @@ class EventServiceProvider extends ServiceProvider
      * @var array
      */
     protected $listen = [
-        'Illuminate\Auth\Events\Attempting' => [
-            'App\Listeners\MigratePasswordToNewHash',
-        ],
         'App\Events\CampaignDropQueued' => [
             'App\Listeners\SendClientDropEmail',
         ],

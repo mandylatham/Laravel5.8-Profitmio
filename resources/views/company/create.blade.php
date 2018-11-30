@@ -137,6 +137,7 @@
 @section('scriptTags')
     <script src="{{ secure_url('vendor/dropify/dropify.js') }}"></script>
     <script src="{{ secure_url('js/Plugin/formatter.js') }}"></script>
+    <script src="{{ secure_url('vendor/formatter/jquery.formatter.js') }}"></script>
 @endsection
 
 @section('scripts')

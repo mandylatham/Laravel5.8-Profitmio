@@ -234,8 +234,8 @@ class AppointmentController extends Controller
         $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'), \Auth::user()->timezone);
 
         $appointment = Appointment::create([
-            'target_id' => $recipient->id,
-            'campaign_id' => $campaign->campaign_id,
+            'recipient_id' => $recipient->id,
+            'campaign_id' => $campaign->id,
             'appointment_at' => $appointment_at->timezone('UTC'),
             'auto_year' => intval($recipient->year),
             'auto_make' => $recipient->make,

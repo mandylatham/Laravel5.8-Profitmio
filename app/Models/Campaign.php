@@ -189,6 +189,11 @@ class Campaign extends Model
         return $this->hasMany(Drop::class, 'campaign_id', 'id');
     }
 
+    public function isExpired()
+    {
+        return $this->expires_at && $this->expires_at <= \Carbon\Carbon::now('UTC');
+    }
+
     public function schedules()
     {
         return $this->hasMany(CampaignSchedule::class, 'campaign_id', 'id');
