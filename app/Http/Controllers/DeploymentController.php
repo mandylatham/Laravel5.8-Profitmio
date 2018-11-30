@@ -29,6 +29,9 @@ class DeploymentController extends Controller
      */
     public function deploySms(Campaign $campaign, Drop $drop, Recipient $recipient)
     {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
         if ($drop->system_id == 2) {
             $unsent = \DB::table('deployment_recipients')
                     ->where('deployment_id', $drop->id)
@@ -147,6 +150,10 @@ class DeploymentController extends Controller
 
     public function createNew(Campaign $campaign, Request $request)
     {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
         $viewData['recipient_info'] = [];
         $viewData['campaign'] = $campaign;
         $viewData['templates'] = CampaignScheduleTemplate::all();
@@ -162,6 +169,10 @@ class DeploymentController extends Controller
 
     public function create(Campaign $campaign, BulkDeploymentRequest $request)
     {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
         $info = $request->session()->get($campaign->id . '_recipient_info');
 
         $deployments = collect($this->createBulkDeployments($campaign, $request));
@@ -290,6 +301,9 @@ class DeploymentController extends Controller
 
     public function updateForm(Campaign $campaign, CampaignSchedule $drop)
     {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
         $viewData['campaign'] = $campaign;
         $viewData['drop'] = $drop;
 

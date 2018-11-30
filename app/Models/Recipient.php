@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Recipient extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'recipients';
 
     protected $dates = [
@@ -16,13 +19,19 @@ class Recipient extends Model
         'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state',
         'zip', 'year', 'make', 'model', 'campaign_id', 'interested', 'not_interested',
         'service', 'wrong_number', 'car_sold', 'heat', 'appointment', 'notes', 'last_responded_at',
-        'carrier', 'subgroup', 'from_dealer_db',
+        'carrier', 'subgroup', 'from_dealer_db', 'callback'
     ];
 
     public static $mappable = [
         'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip',
         'make', 'model', 'vin'
     ];
+
+
+    public function list()
+    {
+        return $this->belongsTo(RecipientList::class, 'recipient_list_id');
+    }
 
     public function getVehicleAttribute()
     {
@@ -42,11 +51,6 @@ class Recipient extends Model
     public function drops()
     {
         return $this->belongsToMany(Drop::class, 'deployment_recipients', 'recipient_id', 'deployment_id');
-    }
-
-    public function list()
-    {
-        return $this->belongsTo(RecipientList::class, 'recipient_list_id');
     }
 
     public function responses()
@@ -110,7 +114,7 @@ class Recipient extends Model
         if ($label == 'none') {
             return $query->where('recipients.campaign_id', $campaignId)->where([
                 'interested' => 0, 'not_interested' => 0, 'service' => 0, 'heat' => 0,
-                'appointment' => 0, 'car_sold' => 0, 'wrong_number' => 0,
+                'appointment' => 0, 'car_sold' => 0, 'wrong_number' => 0, 'callback' => 0.
             ]);
         }
 

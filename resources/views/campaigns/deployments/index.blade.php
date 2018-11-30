@@ -29,7 +29,7 @@
         height: inherit;
     }
     .card-button {
-        z-index: 8000;
+        z-index: 1000;
     }
 @endsection
 
@@ -41,11 +41,13 @@
         <a class="badge badge-outline text-default" href="#" id="show-cards" style="font-size: 24px; color: #666">
             <i class="icon fa-3x fa-th"></i>
         </a>
-        <a href="{{ secure_url('campaign/' . $campaign->id . '/drops/new') }}"
-           class="btn btn-success waves-effect float-right">
-            <i class="icon md-plus" aria-hidden="true"></i>
-            New
-        </a>
+        @if ($campaign->isNotExpired)
+            <a href="{{ secure_url('campaign/' . $campaign->campaign_id . '/drops/new') }}"
+               class="btn btn-success waves-effect float-right">
+                <i class="icon md-plus" aria-hidden="true"></i>
+                New
+            </a>
+        @endif
     </div>
     @if ($drops->count() > 0)
     <div class="drops-table">
@@ -87,16 +89,16 @@
                             @else
                                 btn-primary
                             @endif
-                            @if ($drop->send_at > \Carbon\Carbon::now())
-                                disabled
+                           @if ($drop->send_at > \Carbon\Carbon::now() || $campaign->isExpired)
+                               disabled
                             @endif
-                                ">
+                                       ">
                                 @if ($drop->status == 'Completed')
-                                Open
+                                    Open
                                 @elseif ($drop->status == 'Paused')
-                                Paused
+                                    Paused
                                 @else
-                                Run
+                                    Run
                                 @endif
                             </a>
                         @endif

@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Builders\RecipientBuilder;
 use App\Http\Requests\AddRecipientRequest;
+use App\Events\ServiceDeptLabelAdded;
 use App\Models\Recipient;
 use App\Models\RecipientList;
 use App\Jobs\ProcessList;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
 use App\Jobs\LoadListRecipients;
@@ -136,14 +135,14 @@ class RecipientController extends Controller
     public function removeLabel(Recipient $recipient, Request $request)
     {
         if ($request->label && in_array($request->label, ['interested', 'not_interested',
-                'appointment', 'service', 'wrong_number', 'car_sold', 'heat'])) {
+                'appointment', 'service', 'wrong_number', 'car_sold', 'heat', 'callback'])) {
             $recipient->fill([
                 $request->label => 0,
             ]);
             $recipient->save();
 
             $class = 'badge-danger';
-            if (in_array($request->label, ['interested', 'appointment', 'service'])) {
+            if (in_array($request->label, ['interested', 'appointment', 'service', 'callback'])) {
                 $class = 'badge-success';
             }
         }
@@ -156,8 +155,12 @@ class RecipientController extends Controller
      */
     public function addLabel(Recipient $recipient, Request $request)
     {
+        $sendNotifications = false;
         if ($request->label && in_array($request->label, ['interested', 'not_interested',
-                'appointment', 'service', 'wrong_number', 'car_sold', 'heat'])) {
+                'appointment', 'service', 'wrong_number', 'car_sold', 'heat', 'callback'])) {
+            if (($request->label == 'service') && ($recipient->service != 1)) {
+                $sendNotifications = true;
+            }
             $recipient->fill([
                 $request->label => 1
             ]);
@@ -169,6 +172,9 @@ class RecipientController extends Controller
                 $class = 'badge-success';
             }
 
+            if ($sendNotifications) {
+                event(new ServiceDeptLabelAdded($recipient));
+            }
 
             return '
                     <span class="badge ' . $class . '">
@@ -423,7 +429,7 @@ class RecipientController extends Controller
             return redirect()->back()->withErrors($errors);
         }
 
-        $recipient = Recipient::whereIn('campaign_id', $campaign->id)
+         Recipient::whereIn('campaign_id', $campaign->id)
             ->whereIn('recipient_id', $request->input('recipient_ids'))
             ->whereNotIn('recipient_id', $dropped)
             ->delete();

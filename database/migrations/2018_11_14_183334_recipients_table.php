@@ -41,6 +41,7 @@ class RecipientsTable extends Migration
             $table->boolean('not_interested')->default(0);
             $table->boolean('wrong_number')->default(0);
             $table->boolean('car_sold')->default(0);
+            $table->boolean('callback')->default(false);
             $table->boolean('email_valid')->nullable();
             $table->boolean('phone_valid')->default(false);
             $table->boolean('from_dealer_db')->default(false);

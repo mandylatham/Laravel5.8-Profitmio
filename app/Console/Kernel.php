@@ -13,7 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
+        Commands\SendDropNotifications::class,
+        Commands\SendDrops::class,
+        Commands\ExpireCampaigns::class,
     ];
 
     /**
@@ -24,8 +26,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')
-        //          ->hourly();
+        $schedule->command('drops:notify')->everyMinute();
+        $schedule->command('drops:send')->everyMinute();
+        $schedule->command('campaigns:expire')->daily();
     }
 
     /**

@@ -3,10 +3,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Campaign;
 use App\Classes\MailgunService;
-use App\EmailLog;
-use App\PhoneNumber;
+use App\Models\EmailLog;
+use App\Models\PhoneNumber;
 use App\Models\Recipient;
-use App\Response;
+use App\Models\≈Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
@@ -305,6 +305,10 @@ class ResponseConsoleController extends Controller
      */
     public function emailReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
         $request->request->set('message', nl2br($request->get('message')));
 
         $lastMessage = Response::where('type', 'email')
@@ -364,6 +368,10 @@ class ResponseConsoleController extends Controller
      */
     public function smsReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
+        if (! $campaign->isExpired()) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
         $reply = \Twilio::sendSms($campaign->phone->phone_number, $recipient->phone, $request->get('message'));
 
         // Mark all previous messages as read
@@ -399,12 +407,22 @@ class ResponseConsoleController extends Controller
 
             $response = Response::where('call_sid', $request->get('CallSid'))->first();
 
+            $calling_to = PHoneNumber::wherePhoneNumber($request->get('To'))->first();
+            $phone_number_id = null;
+            if ($calling_to) {
+                $phone_number_id = $calling_to->phone_number_id;
+            }
+
             if (!$response) {
                 $response = new Response([
                     'call_sid' => $request->get('CallSid'),
+                    'call_phone_number_id' => $phone_number_id,
                     'incoming' => 1,
                     'type' => 'phone',
+                    'duration' => $request->get('CallDuration'),
                     'campaign_id' => $campaign->id,
+                    'response_source' => $request->get('From'),
+                    'response_destination' => $request->get('To'),
                 ]);
             }
 
@@ -437,7 +455,7 @@ class ResponseConsoleController extends Controller
 
         $response = Response::where('call_sid', $request->get('CallSid'))->firstOrFail();
 
-        $response->duration = $recording->duration;
+        $response->duration = $request->get('CallDuration');
         $response->recording_uri = $recording->uri;
         $response->recording_sid = $recording->sid;
 

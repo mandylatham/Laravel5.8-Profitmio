@@ -3,6 +3,7 @@
 @section('header')
     <link type="text/css" rel="stylesheet" href="{{ secure_url('fonts/octicons/octicons.css') }}">
     <link type="text/css" rel="stylesheet" href="{{ secure_url('fonts/font-awesome/font-awesome.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-datepicker/bootstrap-datepicker.css') }}">
     <style type="text/css">
         .list-group-item > i.md-circle {
             padding-right: 10px;
@@ -99,6 +100,13 @@
                                 <i class="md-circle green-600" aria-hidden="true"></i>
                                 Appointment
                                 <span class="badge badge-pill badge-success">{{ $recipients->labelCounts->appointment }}</span>
+                            </a>
+                            <a class="list-group-item
+                                {{ $label == 'callback' ? 'active' : '' }}"
+                               href="{{ secure_url('campaign/' . $campaign->id . '/response-console/labelled/callback') }}">
+                                <i class="md-circle green-600" aria-hidden="true"></i>
+                                Callback
+                                <span class="badge badge-pill badge-success">{{ $recipients->labelCounts->callback }}</span>
                             </a>
                             <a class="list-group-item
                                 {{ $label == 'service' ? 'active' : '' }}"
@@ -210,6 +218,7 @@
                                 <a class="dropdown-item" href="{{ secure_url('campaign/' . $campaign->id . '/response-console/labelled/none') }}">No Label</a>
                                 <a class="dropdown-item" href="{{ secure_url('campaign/' . $campaign->id . '/response-console/labelled/interested') }}">Interested</a>
                                 <a class="dropdown-item" href="{{ secure_url('campaign/' . $campaign->id . '/response-console/labelled/appointment') }}">Appointment</a>
+                                <a class="dropdown-item" href="{{ secure_url('campaign/' . $campaign->id . '/response-console/labelled/callback') }}">Callback</a>
                                 <a class="dropdown-item" href="{{ secure_url('campaign/' . $campaign->id . '/response-console/labelled/service') }}">Service Department</a>
                                 <a class="dropdown-item" href="{{ secure_url('campaign/' . $campaign->id . '/response-console/labelled/not_interested') }}">Not Interested</a>
                                 <a class="dropdown-item" href="{{ secure_url('campaign/' . $campaign->id . '/response-console/labelled/wrong_number') }}">Wrong Number</a>
@@ -262,6 +271,13 @@
                                     <div class="identity">
                                     <span class="badge badge-success">
                                         Appointment
+                                    </span>
+                                    </div>
+                                @endif
+                                @if ($recipient->appointment)
+                                    <div class="identity">
+                                    <span class="badge badge-success">
+                                        Callback
                                     </span>
                                     </div>
                                 @endif
@@ -380,6 +396,14 @@
 @endsection
 
 @section('scriptTags')
+    <!-- <link href="https://cdn.jsdelivr.net/bootstrap.timepicker/0.2.6/css/bootstrap-timepicker.min.css" rel="stylesheet" /> -->
+    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/jt-timepicker/jquery-timepicker.min.css') }}">
+    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-datepicker/bootstrap-datepicker.css') }}">
+    <!-- <script src="https://cdn.jsdelivr.net/bootstrap.timepicker/0.2.6/js/bootstrap-timepicker.min.js"></script> -->
+    <script src="{{ secure_url('js/Plugin/jt-timepicker.min.js') }}"></script>
+    <script src="{{ secure_url('vendor/jt-timepicker/jquery.timepicker.min.js') }}"></script>
+    <script src="{{ secure_url('js/Plugin/bootstrap-datepicker.js') }}"></script>
+    <script src="{{ secure_url('vendor/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
 <script type="text/javascript">
 var debug = false;
 var current_recipient = 0;
@@ -398,6 +422,7 @@ $(function() {
         current_recipient = 0;
     });
 
+    @if ($campaign->isNotExpired)
     var refresh_email_messages = function() {
         if (debug) console.log('Updating emails for ' + current_recipient);
         $.post(
@@ -457,6 +482,7 @@ $(function() {
             }
         }
     }, 2000);
+    @endif
 
 /** Handle Communication Forms **/
 

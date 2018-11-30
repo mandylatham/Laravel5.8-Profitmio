@@ -75,7 +75,6 @@
                                             <option {{ old('status') == 'Active' ? 'selected' : '' }}>Active</option>
                                             <option {{ old('status') == 'Archived' ? 'selected' : '' }}>Archived</option>
                                             <option {{ old('status') == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                            <option {{ old('status') == 'Expired' ? 'selected' : '' }}>Expired</option>
                                             <option {{ old('status') == 'Upcoming' ? 'selected' : '' }}>Upcoming</option>
                                         </select>
                                     </div>
@@ -91,6 +90,14 @@
                                                 <span class="input-group-addon">to</span>
                                                 <input type="text" class="form-control" name="end" placeholder="Ends on">
                                             </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group" style="padding-top: 40px">
+                                        <div class="input-group">
+                                            <span class="input-group-addon">
+                                                <i class="icon md-calendar" aria-hidden="true"></i>
+                                            </span>
+                                            <input type="text" class="form-control datepicker" value="{{ old('expires') }}" name="expires" placeholder="Expires on" data-plugin="datepicker">
                                         </div>
                                     </div>
                                 </div>
@@ -150,6 +157,28 @@
                                             <input name="client_passthrough" type="checkbox" class="icheckbox-primary"> Enable Client Passthrough
                                         </label>
                                     </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input name="service_dept" type="checkbox" class="icheckbox-primary"> Service Dept Notifications
+                                        </label>
+                                    </div>
+                                    <div id="adf_crm_service_dept_form" class="col-md-11 col-md-offset-1">
+                                        <div class="form-group form-material floating multi-email">
+                                            <input type="text" class="form-control  multi-email-tokens" name="service_dept_email">
+                                            <label for="service_dept_email" class="floating-label">Service Dept Email(s)</label>
+                                        </div>
+                                    </div>
+                                    <div class="checkbox">
+                                        <label>
+                                            <input name="sms_on_callback" type="checkbox" class="icheckbox-primary"> SMS On Callback
+                                        </label>
+                                    </div>
+                                    <div id="adf_crm_sms_on_callback_form" class="col-md-11 col-md-offset-1">
+                                        <div class="form-group form-material floating multi-email">
+                                            <input type="text" class="form-control" name="sms_on_callback_number">
+                                            <label for="sms_on_callback_number" class="floating-label">SMS On Callback Number</label>
+                                        </div>
+                                    </div>
                                     <div id="adf_crm_client_passthrough_form" class="col-md-11 col-md-offset-1">
                                         <div class="form-group form-material floating multi-email">
                                             <input type="text" class="form-control  multi-email-tokens" name="client_passthrough_email">
@@ -157,9 +186,20 @@
                                         </div>
                                     </div>
                                     <div class="form-group">
+                                        <h4 class="mt-20">Phone Numbers</h4>
                                         <button id="generate-phone" class="btn btn-primary waves-effect" data-target="#addPhoneModal" data-toggle="modal" type="button">Generate Phone Number</button>
                                         <input style="display:none;" type="text" class="hide hidden" name="phone_number_id" value="{{ old('phone_number_id') }}">
-                                        <ul class="list-group" id="phone-numbers"></ul>
+                                        <table class="table table-hover" id="campaign_phone_number_table">
+                                            <thead>
+                                            <tr>
+                                                <th>Number</th>
+                                                <th>Forward</th>
+                                                <th>Call Source</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -173,14 +213,14 @@
 <div class="modal fade show" id="addPhoneModal" aria-labelledby="addPhoneModalLabel" role="dialog" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <form id="phone-search-form" class="form" action="{{ route('phone.search') }}" method="post">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                    <h4 class="modal-title" id="addPhoneModalLabel">Add a new Phone Number</h4>
-                </div>
-                <div class="modal-body">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+                <h4 class="modal-title" id="addPhoneModalLabel">Add a new Phone Number</h4>
+            </div>
+            <div class="modal-body">
+                <form id="phone-search-form" class="form" action="{{ secure_url('/phones/search') }}" method="post">
                     <div class="row">
                         <div class="col-md-3 form-group">
                             <label class="radio-inline ">
@@ -206,8 +246,8 @@
                         </div>
                         <ul class="list-group" id="phone_numbers"></ul>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -239,11 +279,13 @@
             var enable_adf = false;
             var enable_alerts = false;
             var enable_client_passthrough = false;
+            var enable_service_dept = false;
             var schedules = 1;
 
             $("#adf_crm_integration_form").toggle();
             $("#adf_crm_lead_alert_email_form").toggle();
             $("#adf_crm_client_passthrough_form").toggle();
+            $("#adf_crm_service_dept_form").toggle();
 
             $("input.multi-email-token").tokenfield()
                 .on('tokenfield:createtoken', function (e) {
@@ -410,41 +452,93 @@
                 enable_client_passthrough = !enable_client_passthrough;
                 $("#adf_crm_client_passthrough_form").toggle();
             });
+            $("input[name=service_dept]").change(function() {
+                enable_service_dept = !enable_service_dept;
+                $("#adf_crm_service_dept_form").toggle();
+            });
 
             $('.select2').select2();
 
+            var formatPhone = function (phone) {
+                phone = phone.replace('+1', '').trim();
+
+                if (phone.length == 10) {
+                    console.log('phone number is 10 long');
+                    var areaCode = phone.substring(0, 3);
+                    var prefix = phone.substring(3, 6);
+                    var lastFour = phone.substring(6,10);
+
+                    return '('+areaCode+') '+prefix+'-'+lastFour;
+                }
+
+                return false;
+            };
+
+            var refreshPhones = function (phone) {
+                $("#campaign_phone_number_table > tbody").remove();
+                var html = '<tbody>';
+                var phone_number, forward, source = '';
+                if (phone.phone_number) {
+                    phone_number = (phone.phone_number.length > 0 ? formatPhone(phone.phone_number) : '');
+                }
+                if (phone.forward) {
+                    forward = (phone.forward.length > 0 ? formatPhone(phone.forward) : '');
+                }
+
+                if (phone.call_source_name) {
+                    source = (phone.call_source_name.length > 0 ? phone.call_source_name : '');
+                }
+                html += '<tr data-phone_number_id="' + phone.phone_number_id + '"><td>' + phone_number +
+                    '</td><td>' + forward + '</td><td>' + source + '</td></tr>';
+                html += '</tbody>';
+
+                $("#campaign_phone_number_table").append(html);
+            };
+
             $("#phone-search-button").click(function() {
                 $.post(
-                    "{{ route('phone.search') }}",
+                    "{{ secure_url('/phones/search') }}",
                     $("#phone-search-form").serialize(),
                     function (data) {
                         var html = '<form id="phone-form"><table class="table table-hover table-striped table-bordered">' +
-                                '<input type="hidden" style="display: none;" name="client_id" value="' + $("select[name=client]").val() + '">' +
-                            '<thead><tr><th></th><th>Phone</th><th>Region</th></tr></thead>' +
-                            '<tbody>';
+                            '<input type="hidden" style="display: none;" name="client_id" value="' + $("select[name=client]").val() + '">' +
+                            '<input type="hidden" style="display: none;" name="campaign_id" value="0">' +
+                            '<div class="form-group"><label for="phone_number" class="form-label">Phone Number</label><select name="phone_number" class="form-control" required="required"><option disabled="disabled" selected="selected">Choose a number</option>';
                         $(data.numbers).each(function (phone) {
-                            html += '<tr><td><input type="radio" name="phone_number" value="' + $(this)[0].phoneNumber + '"></td><td>' + $(this)[0].phone + '</td><td>' + $(this)[0].location + '</td></tr>';
+                            html += '<option value="' + $(this)[0].phoneNumber + '">' + $(this)[0].phone + ': ' + $(this)[0].location + '</option>';
                         });
-                        html += '</tbody>' +
-                            '</table>' +
-                        '<div class="col-md-12 float-right">' +
-                        '    <button id="add-phone" class="btn btn-success waves-effect" data-dismiss="modal" type="button">$ Purchase Number</button>' +
-                        '</div></form>';
+                        html += '</select></div>' +
+                            '<div class="form-group"><label for="forward" class="form-label">Forward Number</label><input type="text" name="forward" class="form-control" required="required"></div>' +
+                            '<div class="form-group"><label for="call_source_name" class="form-label">Call Source</label><input type="text" name="call_source_name" class="form-control" required="required"></div>' +
+                            '<div class="col-md-12 float-right">' +
+                            '    <button id="add-phone" class="btn btn-success waves-effect" data-dismiss="modal" type="button">$ Purchase Number</button>' +
+                            '</div></form>';
 
                         $("#phone-search-results").html(html);
 
                         $("#add-phone").click(function() {
                             $.post(
-                                "{{ route('phone.provision') }}",
-                                { phone_number: $("input[name=phone_number]").val(), client_id: 999999 },
+                                "{{ secure_url('/phones/provision') }}",
+                                {
+                                    phone_number: $("select[name=phone_number]").val(),
+                                    call_source_name: $("input[name=call_source_name]").val(),
+                                    forward: $("input[name=forward]").val(),
+                                    campaign_id: $("input[name=campaign_id]").val(),
+                                    client_id: $("select[name=client] option:selected").val()
+                                },
                                 function (data) {
-                                    console.log(data, data.id, data.number);
-                                    $("input[name=phone_number_id]").val(data.id);
-                                    $("ul#phone-numbers").append('<li class="list-group-item">' + data.number + '</li>');
+                                    if (! data) {
+                                        swal("Oh no!", "Unable to add phone number.  Try creating the campaign first, then adding the phone number afterwards.", "error");
+                                        return;
+                                    }
+
+                                    refreshPhones(data);
+
                                     $("#generate-phone").addClass("disabled");
                                     $("#generate-phone").removeAttr("data-toggle");
                                     $("#generate-phone").removeAttr("data-target");
                                     $("#generate-phone").removeData();
+                                    $("#generate-phone").hide();
                                 },
                                 'json'
                             );
