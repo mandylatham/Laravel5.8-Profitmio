@@ -98,9 +98,6 @@
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block waves-effect">Sign in</button>
-                    <div>
-                        <a class="float-right" href="{{ route('password.request') }}">Forgot password?</a>
-                    </div>
                 </form>
             </div>
         </div>

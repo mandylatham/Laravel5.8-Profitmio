@@ -134,10 +134,14 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/recipients/delete-all', 'RecipientController@deleteAll');
         // End of Recipient list pages
         Route::get('phone-list', 'PhoneController@fromCampaign');
+        Route::get('phone-list-json', 'PhoneController@fromCampaignAsJson')->middleware('can:view-campaigns');
+        Route::post('phone/{phone}/edit', 'PhoneController@edit')->middleware('can:change-campaigns')->name('phone-number.edit');
+        Route::post('phone/{phone}/release', 'PhoneController@release')->middleware('can:change-campaigns')->name('phone-number.release');
+        Route::get('/drops', 'DeploymentController@forCampaign')->middleware('can:view-campaigns');
         Route::get('/drops', 'DeploymentController@forCampaign')->name('campaign.drop.index');
         Route::get('/drop/{drop}', 'DeploymentController@show');
         Route::post('/drop/{deployment}/update', 'DeploymentController@update');
-        Route::get('/drops/new', 'DeploymentController@createNew');
+        Route::get('/drops/new', 'DeploymentController@createNew')->name('campaign.drop.create');
         Route::post('/drops/create', 'DeploymentController@create');
         Route::post('/drops/add-groups', 'DeploymentController@saveGroups');
         Route::post('/drop/{drop}/send-sms/{recipient}', 'DeploymentController@deploySms');
@@ -147,6 +151,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/responses/export-nonresponders', 'ResponseController@getNonResponders');
         Route::any('/get-responses-hash', 'ResponseController@getResponsesHash');
         Route::any('/responses/{recipient}/get-text-hash', 'ResponseController@getTextHash');
+        Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
         Route::any('/responses/{recipient}/get-email-hash', 'ResponseController@getEmailHash');
         Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
         Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');

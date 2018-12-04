@@ -142,7 +142,6 @@
                                         <option {{ old('status') ?: $campaign->status == 'Active' ? 'selected' : '' }}>Active</option>
                                         <option {{ old('status') ?: $campaign->status == 'Archived' ? 'selected' : '' }}>Archived</option>
                                         <option {{ old('status') ?: $campaign->status == 'Completed' ? 'selected' : '' }}>Completed</option>
-                                        <option {{ old('status') ?: $campaign->status == 'Expired' ? 'selected' : '' }}>Expired</option>
                                         <option {{ old('status') ?: $campaign->status == 'Upcoming' ? 'selected' : '' }}>Upcoming</option>
                                     </select>
                                 </div>
@@ -158,6 +157,14 @@
                                             <span class="input-group-addon">to</span>
                                             <input type="text" class="form-control {{ empty(old('end')) && empty($campaign->ends_at) ? 'empty' : ''  }}" name="end" placeholder="Ends on" value="{{ old('end') ?: ! empty($campaign->ends_at) ? $campaign->ends_at->format("m/d/Y") : '' }}">
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="padding-top: 10px">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <i class="icon md-calendar" aria-hidden="true"></i>
+                                        </span>
+                                        <input type="text" class="form-control datepicker" value="{{ old('expires') ?: ! empty($campaign->expires_at) ? $campaign->expires_at->format("m/d/Y") : '' }}" name="expires" placeholder="Expires on" data-plugin="datepicker">
                                     </div>
                                 </div>
                             </div>
@@ -186,33 +193,51 @@
                                 </div>
                             </div>
                             <div class="tab-pane" id="exampleTabsReverseThree" role="tabpanel">
-                                @if ($campaign->phone)
-                                <div class="checkbox floating">
-                                    <label for="phone_number" class="floating-label">Phone Number</label>
-                                    <input type="text" name="phone_number" class="form-control" value="{{ $campaign->phone->phone_number }}" disabled>
+                                <button id="#phone-search-button"
+                                        type="button"
+                                        role="button"
+                                        class="btn btn-round btn-sm btn-success pull-right"
+                                        data-toggle="modal"
+                                        data-target="#addPhoneModal"
+                                >
+                                    <i class="icon md-plus" aria-label="Add a new phone number"></i>
+                                    Add Phone Number
+                                </button>
+                                <div style="margin-top: 10px;">
+                                    @if ($campaign->phones)
+                                        <table class="table table-hover" id="campaign_phone_number_table">
+                                            <thead>
+                                            <tr>
+                                                <th>Number</th>
+                                                <th>Forward</th>
+                                                <th>Call Source</th>
+                                                <th>Actions</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach ($campaign->phones as $phone)
+                                                <tr data-phone_number_id="{{ $phone->phone_number_id }}">
+                                                    <td class="form-item"
+                                                        data-field_name="phone_number_id"
+                                                        data-field_value="{{ $phone->phone_number_id }}">{{ $phone->phone_number }}</td>
+                                                    <td class="form-item"
+                                                        data-field_name="forward"
+                                                        data-field_value="{{ $phone->forward }}">{{ $phone->forward }}</td>
+                                                    <td class="form-item"
+                                                        data-field_name="call_source_name"
+                                                        data-field_value="{{ $phone->call_source_name }}">{{ ucwords($phone->call_source_name) }}</td>
+                                                    <td class="form-buttons">
+                                                        <button type="button" class="btn btn-sm btn-default edit-number" onClick="edit_number($(this))">Edit</button>
+                                                        @if ($campaign->isExpired())
+                                                            <button type="button" class="btn btn-sm btn-danger release-number" onClick="release_number($(this))">Release</button>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    @endif
                                 </div>
-                                <div class="checkbox floating">
-                                    <label for="forward" class="floating-label">Forward Number</label>
-                                    <input type="text" name="forward"
-                                           id="wtf"
-                                           class="form-control {{ ! empty(old('forward') ?: $campaign->phone->forward) ?: "empty"  }}"
-                                           value="{{ old('forward') ?: $campaign->phone->forward }}"
-                                    >
-                                </div>
-                                @else
-                                    <h3>Phone
-                                        <button id="#phone-search-button"
-                                                type="button"
-                                                role="button"
-                                                class="btn btn-round btn-sm btn-success"
-                                                data-toggle="modal"
-                                                data-target="#addPhoneModal"
-                                        >
-                                            <i class="icon md-plus" aria-label="Add a new phone number"></i>
-                                            Add
-                                        </button>
-                                    </h3>
-                                @endif
                             </div>
                             <div class="tab-pane" id="exampleTabsReverseFour" role="tabpanel">
                                 <div class="checkbox floating">
@@ -249,6 +274,28 @@
                                         <input type="text" class="form-control multi-email" name="client_passthrough_email" value="{{ old('client_passthrough_email') ?: $campaign->client_passthrough_email }}">
                                     </div>
                                 </div>
+                                <div class="checkbox floating">
+                                    <label>
+                                        <input name="service_dept" type="checkbox" class="icheckbox-primary" {{ $campaign->service_dept ? 'checked="checked"' : '' }}> Enable Service Dept Notifications
+                                    </label>
+                                </div>
+                                <div id="adf_crm_service_dept_email_form" class="col-md-11 col-md-offset-1">
+                                    <div class="form-group floating">
+                                        <label for="service_dept_email" class="floating-label">Service Dept Email(s)</label>
+                                        <input type="text" class="form-control multi-email" name="service_dept_email" value="{{ old('service_dept_email') ?: $campaign->service_dept_email }}">
+                                    </div>
+                                </div>
+                                <div class="checkbox floating">
+                                    <label>
+                                        <input name="sms_on_callback" type="checkbox" class="icheckbox-primary" {{ $campaign->sms_on_callback ? 'checked="checked"' : '' }}> Enable SMS On Callback
+                                    </label>
+                                </div>
+                                <div id="adf_crm_sms_on_callback_form" class="col-md-11 col-md-offset-1">
+                                    <div class="form-group floating">
+                                        <label for="sms_on_callback_number" class="floating-label">SMS On Callback Number</label>
+                                        <input type="text" class="form-control" name="sms_on_callback_number" value="{{ old('sms_on_callback_number') ?: $campaign->sms_on_callback_number }}">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <button id="save-campaign-button" class="btn btn-success float-right">Save</button>
@@ -260,14 +307,14 @@
     <div class="modal fade show" id="addPhoneModal" aria-labelledby="addPhoneModalLabel" role="dialog" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
-                <form id="phone-search-form" class="form" action="{{ route('phone.search') }}" method="post">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">×</span>
-                        </button>
-                        <h4 class="modal-title" id="addPhoneModalLabel">Add a new Phone Number</h4>
-                    </div>
-                    <div class="modal-body">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                    <h4 class="modal-title" id="addPhoneModalLabel">Add a new Phone Number</h4>
+                </div>
+                <div class="modal-body">
+                    <form id="phone-search-form" class="form" action="{{ secure_url('/phones/search') }}" method="post">
                         <div class="row">
                             <div class="col-md-3 form-group">
                                 <label class="radio-inline ">
@@ -293,8 +340,8 @@
                             </div>
                             <ul class="list-group" id="phone_numbers"></ul>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -325,7 +372,29 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script type="text/javascript" src="{{ secure_url('vendor/jsgrid/jsgrid.min.js') }}"></script>
 
+    <script type="text/html" id="phone_number_row">
+        <td class="form-item"
+            data-field_name="phone_number_id"
+            data-field_value="__PHONE_ID__">__PHONE_NUMBER__</td>
+        <td class="form-item"
+            data-field_name="forward"
+            data-field_value="__FORWARD__">__FORWARD__</td>
+        <td class="form-item"
+            data-field_name="call_source_name"
+            data-field_value="__CALL_SOURCE__">__CALL_SOURCE__</td>
+        <td class="form-buttons">
+            <button type="button" class="btn btn-sm btn-default edit-number" onClick="edit_number($(this))">Edit</button>
+            @if ($campaign->isExpired())
+                <button type="button" class="btn btn-sm btn-danger release-number" onClick="release_number($(this))">Release</button>
+            @endif
+        </td>
+    </script>
+
     <script type="text/javascript">
+        var edit_number = function () { console.log('in edit_number function')};
+        var reset_phone_form = function () { console.log('in reset_phone_form function')};
+        var release_number = function () { console.log('in release_number function')};
+
         $(document).keypress(function(event) {
             if (event.which == '13') {
                 event.preventDefault();
@@ -336,6 +405,8 @@
             var enable_adf = false;
             var enable_alerts = false;
             var enable_client_passthrough = false;
+            var enable_service_dept = false;
+            var enable_sms_on_callback = false;
             var schedules = 1;
 
             $("#wtf").change(function() {
@@ -355,6 +426,12 @@
             if (! $("input[name=client_passthrough]").prop("checked")) {
                 $("#adf_crm_client_passthrough_form").toggle();
             }
+            if (! $("input[name=service_dept]").prop("checked")) {
+                $("#adf_crm_service_dept_email_form").toggle();
+            }
+            if (! $("input[name=sms_on_callback]").prop("checked")) {
+                $("#adf_crm_sms_on_callback_form").toggle();
+            }
 
             $("#add-new-client").click(function() {
                 sweetAlert("New Client", "Added a new client", "success");
@@ -372,6 +449,14 @@
                 enable_client_passthrough = !enable_client_passthrough;
                 $("#adf_crm_client_passthrough_form").toggle();
             });
+            $("input[name=service_dept]").change(function() {
+                enable_service_dept = !enable_service_dept;
+                $("#adf_crm_service_dept_email_form").toggle();
+            });
+            $("input[name=sms_on_callback]").change(function() {
+                enable_sms_on_callback = !enable_sms_on_callback;
+                $("#adf_crm_sms_on_callback_form").toggle();
+            });
 
             $(".multi-email").tokenfield({
                 "inputType": "email"
@@ -379,20 +464,65 @@
 
             $('.select2').select2();
 
+            var formatPhone = function (phone) {
+                phone = phone.replace('+1', '').trim();
+
+                if (phone.length == 10) {
+                    console.log('phone number is 10 long');
+                    var areaCode = phone.substring(0, 3);
+                    var prefix = phone.substring(3, 6);
+                    var lastFour = phone.substring(6,10);
+
+                    return '('+areaCode+') '+prefix+'-'+lastFour;
+                }
+
+                return false;
+            };
+
+            var refreshPhones = function () {
+                $.get("{{ secure_url('/campaign/'.$campaign->id.'/phone-list-json') }}",
+                    function (data) {
+                        $("#campaign_phone_number_table > tbody").remove();
+
+                        var html = '<tbody>';
+                        $(data).each(function (id, phone) {
+                            var phone_number, forward, source = '';
+                            if (phone.phone_number) {
+                                phone_number = (phone.phone_number.length > 0 ? formatPhone(phone.phone_number) : '');
+                            }
+                            if (phone.forward) {
+                                forward = (phone.forward.length > 0 ? formatPhone(phone.forward) : '');
+                            }
+
+                            if (phone.call_source_name) {
+                                source = (phone.call_source_name.length > 0 ? phone.call_source_name : '');
+                            }
+                            html += '<tr data-phone_number_id="' + phone.phone_number_id + '"><td>' + phone_number +
+                                '</td><td>' + forward + '</td><td>' + source +
+                                '</td><td><button class="btn btn-default btn-sm">Edit</button><button class="btn btn-danger btn-sm">Disable</button></td></tr>';
+                        });
+                        html += '</tbody>';
+
+                        $("#campaign_phone_number_table").append(html);
+                    }, 'json');
+            };
+
             $("#phone-search-button").click(function() {
                 $.post(
-                    "{{ route('phone.search') }}",
+                    "{{ secure_url('/phones/search') }}",
                     $("#phone-search-form").serialize(),
                     function (data) {
                         var html = '<form id="phone-form"><table class="table table-hover table-striped table-bordered">' +
                             '<input type="hidden" style="display: none;" name="client_id" value="' + $("select[name=client]").val() + '">' +
-                            '<thead><tr><th></th><th>Phone</th><th>Region</th></tr></thead>' +
-                            '<tbody>';
+                            '<input type="hidden" style="display: none;" name="campaign_id" value="{{ $campaign->id }}">' +
+                            '<div class="form-group"><label for="phone_number" class="form-label">Phone Number</label><select name="phone_number" class="form-control" required="required"><option disabled="disabled" selected="selected">Choose a number</option>';
                         $(data.numbers).each(function (phone) {
-                            html += '<tr><td><input type="radio" name="phone_number" value="' + $(this)[0].phoneNumber + '"></td><td>' + $(this)[0].phone + '</td><td>' + $(this)[0].location + '</td></tr>';
+                            html += '<option value="' + $(this)[0].phoneNumber + '">' + $(this)[0].phone + ': ' + $(this)[0].location + '</option>';
                         });
-                        html += '</tbody>' +
-                            '</table>' +
+                        html += '</select></div>' +
+                            '<div class="form-group"><label for="forward" class="form-label">Forward Number</label><input type="text" name="forward" class="form-control" required="required"></div>' +
+                            '<div class="form-group"><label for="call_source_name" class="form-label">Call Source</label>' +
+                            '<select name="call_source_name" class="form-control" required="required"><option>Email</option><option>Mailer</option><option>SMS</option></select></div>' +
                             '<div class="col-md-12 float-right">' +
                             '    <button id="add-phone" class="btn btn-success waves-effect" data-dismiss="modal" type="button">$ Purchase Number</button>' +
                             '</div></form>';
@@ -401,34 +531,18 @@
 
                         $("#add-phone").click(function() {
                             $.post(
-                                "{{ route('phone.provision') }}",
+                                "{{ secure_url('/phones/provision') }}",
                                 {
-                                    phone_number: $("input[name=phone_number]").val(),
+                                    phone_number: $("select[name=phone_number]").val(),
+                                    call_source_name: $("select[name=call_source_name] option:selected").val(),
+                                    forward: $("input[name=forward]").val(),
                                     campaign_id: $("input[name=campaign_id]").val(),
                                     client_id: $("select[name=client] option:selected").val()
                                 },
                                 function (data) {
-                                    console.log(data, data.id, data.number);
-                                    $("input[name=phone_number_id]").val(data.id);
-                                    var phone_html = '<div class="checkbox form-material floating">' +
-                                    '    <input type="text" name="phone_number" class="form-control" value="' + data.number + '" disabled>' +
-                                    '    <label for="phone_number" class="floating-label">Phone Number</label>' +
-                                    '</div>' +
-                                    '<div class="checkbox form-material floating">' +
-                                    '    <input type="text" name="forward" ' +
-                                    '           id="forward_number"' +
-                                    '           class="form-control"' +
-                                    '           value="">' +
-                                    '    <label for="forward" class="floating-label">Forward Number</label>' +
-                                    '</div>';
-
-                                    $(".tab-pane.active").append(phone_html);
-
-                                    $("#generate-phone").addClass("disabled");
-                                    $("#generate-phone").removeAttr("data-toggle");
-                                    $("#generate-phone").removeAttr("data-target");
-                                    $("#generate-phone").removeData();
-                                    $("#generate-phone").hide();
+                                    refreshPhones();
+                                    $("#phone-search-results").empty();
+                                    $("#phone-search-form")[0].reset();
                                 },
                                 'json'
                             );
@@ -444,6 +558,70 @@
                 $(this).parent().closest('form').submit();
             });
 
+            release_number = function (btn) {
+                var $td_id = btn.parent().parent().children('td[data-field_name=phone_number_id]').first();
+                var phone_id = $td_id.data('field_value');
+
+                var form = $.ajax({
+                    url: "{{ env('APP_URL') }}/campaign/{{ $campaign->id }}/phone/" + phone_id + "/release",
+                    method: "post",
+                });
+                form.fail(function (response) {
+                    reset_phone_form(phone_id, phone_number, forward, call_source, element);
+                    alert("Unable to release phone number");
+                });
+                form.done(function (response) {
+                    btn.parent().parent().slideUp();
+                });
+            };
+
+            edit_number = function (btn) {
+                if ($("#save-phone-number-btn").lenth > 0)
+                {
+                    return;
+                }
+
+                var $buttons = btn.parent();
+                var $td_id = btn.parent().parent().children('td[data-field_name=phone_number_id]').first();
+                var phone_id = $td_id.data('field_value');
+                var phone_number = $td_id.html();
+                var $td_forward = btn.parent().parent().children('td[data-field_name=forward]').first();
+                var forward = $td_forward.data('field_value');
+                var $td_call_source = btn.parent().parent().children('td[data-field_name=call_source_name]').first();
+                var call_source = $td_call_source.data('field_value') || '';
+                $td_id.html('<p class="form-control disabled">'+phone_number+'</p>');
+                $td_forward.html('<input type="text" class="input-sm form-control" size="11" name="forward" value="'+forward+'">');
+                $td_call_source.html('<select class="input-sm form-control" name="call_source_name" value="'+call_source+'"><option>Email</option><option>Mailer</option><option>SMS</option></select>');
+                $buttons.html('<button id="save-phone-number-btn" class="btn btn-success" type="button" role="button" onClick="submit_phone_form(\''+phone_id+'\',\''+phone_number+'\',\''+forward+'\',\''+call_source+'\',$(this))">Save</button> ' +
+                    '<button id="cancel-phone-number-btn" class="btn btn-default" type="button" role="button" onClick="reset_phone_form(\''+phone_id+'\',\''+phone_number+'\',\''+forward+'\',\''+call_source+'\',$(this))">Cancel</button>');
+            };
+
+            reset_phone_form = function (phone_id, phone_number, forward, call_source, element) {
+                var html_block = $("#phone_number_row").html()
+                    .replace(/__PHONE_ID__/g, phone_id)
+                    .replace(/__PHONE_NUMBER__/g, phone_number)
+                    .replace(/__FORWARD__/g, forward)
+                    .replace(/__CALL_SOURCE__/g, call_source);
+                element.parent().parent().html(html_block);
+            };
+
+            submit_phone_form = function (phone_id, phone_number, forward, call_source, element) {
+                var form = $.ajax({
+                    url: "{{ env('APP_URL') }}/campaign/{{ $campaign->id }}/phone/" + phone_id + "/edit",
+                    method: "post",
+                    data: {
+                        forward: $("[name=forward]").val(),
+                        call_source_name: $("select[name=call_source_name] option:selected").val()
+                    }
+                });
+                form.fail(function (response) {
+                    reset_phone_form(phone_id, phone_number, forward, call_source, element);
+                    alert("Unable to process form");
+                });
+                form.done(function (response) {
+                    reset_phone_form(phone_id, phone_number, $("[name=forward]").val(), $("[name=call_source_name] option:selected").val(), element);
+                });
+            };
         });
     </script>
 @endsection

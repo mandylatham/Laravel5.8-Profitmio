@@ -18,6 +18,8 @@ use Illuminate\Mail\Mailer;
  */
 class AppointmentController extends Controller
 {
+    private const CALLBACK_MESSAGE = 'Profit Miner callback requested for %s at %s';
+
     private $appointment;
 
     private $carbon;
@@ -116,13 +118,21 @@ class AppointmentController extends Controller
 
         if (!$appointment->save()) {
             $this->log->error("AppointmentController@insert: unable to save appointment for new request, " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
+
             abort(406);
         }
 
+        if ($appointment->type == 'appointment') {
+            $recipient->appointment = true;
+        }
+        if ($appointment->type == 'callback') {
+            $recipient->callback = true;
+        }
         $recipient->save();
 
-        if (in_array($appointment->type, ['appointment', 'callback'])) {
+        if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT, Appointment::TYPE_CALLBACK])) {
             if ($campaign->adf_crm_export) {
                 $alert_emails = explode(',', $campaign->lead_alert_email);
                 foreach ($alert_emails as $email) {
@@ -162,7 +172,19 @@ class AppointmentController extends Controller
                 }
 
             }
+            if (($appointment->type == Appointment::TYPE_CALLBACK) && ($campaign->sms_on_callback == 1)) {
+                $from = $campaign->phone->phone_number;
+                $to = $campaign->sms_on_callback_number;
+                try {
+                    $message = $this->getCallbackMessage($appointment);
+                    Twilio::sendSms($from, $to, $message);
+                } catch (\Exception $exception){
+                    \Log::error("Unable to send callback SMS: " . $e->getMessage());
+                }
+            }
+
         }
+
         return response()->json(['error' => 0, 'message' => 'The appointment has been saved.']);
     }
 
@@ -205,5 +227,33 @@ class AppointmentController extends Controller
         $appointment->save();
 
         return $appointment->called_back;
+    }
+
+    public function addAppointmentFromConsole(Campaign $campaign, Recipient $recipient, Request $request)
+    {
+        $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'), \Auth::user()->timezone);
+
+        $appointment = Appointment::create([
+            'recipient_id' => $recipient->id,
+            'campaign_id' => $campaign->id,
+            'appointment_at' => $appointment_at->timezone('UTC'),
+            'auto_year' => intval($recipient->year),
+            'auto_make' => $recipient->make,
+            'auto_model' => $recipient->model,
+            'phone_number' => $recipient->phone,
+            'email' => $recipient->email,
+        ]);
+
+        $recipient->update(['appointment' => true]);
+
+        return response()->json([
+            'appointment_at' => $appointment_at->timezone(\Auth::user()->timezone)->format("m/d/Y h:i A T"),
+        ]);
+    }
+
+    private function getCallbackMessage(Appointment $appointment): string
+    {
+        $name = $appointment->first_name.' '.$appointment->last_name;
+        return sprintf(self::CALLBACK_MESSAGE, $name, $appointment->phone_number);
     }
 }

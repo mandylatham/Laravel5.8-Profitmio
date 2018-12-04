@@ -26,8 +26,9 @@ class NewCampaignRequest extends FormRequest
         return [
             'name' => 'required',
             'order' => 'required|numeric',
-            'start' => 'required_with:end|date|nullable',
-            'end' => 'required_with:start|date|nullable',
+            'start' => 'required|date|nullable',
+            'end' => 'required|date|nullable',
+            'expires' => 'nullable',
             'status' => 'alpha|required',
             'agency' => 'required',
             'client' => 'required',
@@ -37,6 +38,10 @@ class NewCampaignRequest extends FormRequest
             'lead_alert_emails' => 'required_with:enable_lead_alerts',
             'enable_client_passthrough' => 'alpha|size:2,3',
             'passthrough_email' => 'required_with:enable_client_passthrough',
+            'enable_service_dept' => 'alpha|size:2,3',
+            'service_dept_email' => 'required_with:enable_service_dept',
+            'enable_sms_on_callback' => 'alpha|size:2,3',
+            'sms_on_callback_number' => 'required_with:enable_service_dept',
             'phone_number_id' => 'nullable',
         ];
     }

@@ -31,8 +31,7 @@ class CampaignController extends Controller
         $campaigns = Campaign::query()
             ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
-            ->whereNull('deleted_at')
-            ->whereIn('status', ['Active', 'Completed', 'Upcoming']);
+            ->whereNull('deleted_at');
 
         if ($request->has('q')) {
             $likeQ = '%' . $request->get('q') . '%';
@@ -109,12 +108,29 @@ class CampaignController extends Controller
 
     public function create(NewCampaignRequest $request)
     {
+        $expires_at = null;
+        $starts_at = (new Carbon($request->start, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        $ends_at = (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+
+        if (! empty($request->input('expires'))) {
+            $expires_at = (new Carbon($request->expires, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        } else {
+            $expires_at = (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->addWeeks(2);
+        }
+
+        $status = $request->status;
+        if ($expires_at <= \Carbon\Carbon::now('UTC')) {
+            $status = 'Expired';
+        }
         $campaign = new $this->campaign([
             'name' => $request->input('name'),
-            'status' => $request->input('status'),
+            'status' => $status,
             'order_id' => $request->input('order'),
-            'starts_at' => (new Carbon($request->input('start'), auth()->user()->timezone))->timezone('UTC')->toDateTimeString(),
-            'ends_at' => (new Carbon($request->input('end'), auth()->user()->timezone))->timezone('UTC')->toDateTimeString(),
+            /**
+             * TODO: Get correct timezone (now user doesn't have a timezone, timezone is stored in company_user table)
+             */
+            'starts_at' => $starts_at,
+            'ends_at' => $ends_at,
             'agency_id' => $request->input('agency'),
             'dealership_id' => $request->input('client'),
             'adf_crm_export' => (bool) $request->input('adf_crm_export'),
@@ -126,7 +142,17 @@ class CampaignController extends Controller
             'phone_number_id' => $request->input('phone_number_id'),
         ]);
 
+        if (! $campaign->expires_at) {
+            $campaign->expires_at = $campaign->ends_at->addMonth();
+        }
+
         $campaign->save();
+
+        if ($campaign->phone) {
+            $phone = $campaign->phone;
+            $phone->campaign_id = $campaign->id;
+            $phone->save();
+        }
 
         return redirect()->route('campaign.index');
     }
@@ -154,12 +180,28 @@ class CampaignController extends Controller
             $phone->save();
         }
 
+        $expires_at = null;
+        $starts_at = (new Carbon($request->start, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        $ends_at = (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+
+        if (! empty($request->input('expires'))) {
+            $expires_at = (new Carbon($request->expires, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        } else {
+            $expires_at = (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->addWeeks(2);
+        }
+
+        $status = $request->status;
+        if (! $expires_at || ($expires_at && $expires_at <= \Carbon\Carbon::now('UTC'))) {
+            $status = 'Expired';
+        }
+
         $campaign->fill([
             'name' => $request->name,
-            'status' => $request->status,
+            'status' => $status,
             'order_id' => $request->order,
-            'starts_at' => (new Carbon($request->start, auth()->user()->timezone))->timezone('UTC')->toDateTimeString(),
-            'ends_at' => (new Carbon($request->end, auth()->user()->timezone))->timezone('UTC')->toDateTimeString(),
+            'starts_at' => $starts_at,
+            'ends_at' => $ends_at,
+            'expires_at' => $expires_at,
             'agency_id' => $request->agency,
             'dealership_id' => $request->client,
             'adf_crm_export' => (bool) $request->adf_crm_export,
@@ -168,6 +210,10 @@ class CampaignController extends Controller
             'lead_alert_email' => $request->lead_alert_email,
             'client_passthrough' => (bool) $request->client_passthrough,
             'client_passthrough_email' => $request->client_passthrough_email,
+            'service_dept' => (bool) $request->service_dept,
+            'service_dept_email' => $request->service_dept_email,
+            'sms_on_callback' => (bool) $request->sms_on_callback,
+            'sms_on_callback_number' => $request->sms_on_callback_number,
             'phone_number_id' => $request->phone_number_id,
         ]);
 
@@ -183,6 +229,7 @@ class CampaignController extends Controller
     public function delete(Campaign $campaign)
     {
         $campaign->delete();
+
         return redirect()->route('campaign.index');
     }
 }

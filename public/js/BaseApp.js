@@ -55,11 +55,13 @@
           afterShow: function afterShow() {
             var _this2 = this;
 
-            (0, _jquery2.default)(document).on('click.slidePanelShow', function (e) {
-              if ((0, _jquery2.default)(e.target).closest('.slidePanel').length === 0 && (0, _jquery2.default)(e.target).closest('body').length === 1) {
-                _this2.hide();
-              }
-            });
+              (0, _jquery2.default)(document).on('click.slidePanelShow', function (e) {
+                  if ((0, _jquery2.default)(e.target).closest('.slidePanel').length === 0
+                      && (0, _jquery2.default)(e.target).closest('body').length === 1
+                      && (0, _jquery2.default)(e.target).closest('.sweet-overlay').length !== 1) {
+                      _this2.hide();
+                  }
+              });
           },
           afterHide: function afterHide() {
             (0, _jquery2.default)(document).off('click.slidePanelShow');

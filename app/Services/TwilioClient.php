@@ -11,20 +11,14 @@ class TwilioClient
     public function __construct()
     {
         $credentials = [
-            'development'=>[
-                'accountSid'=>'AC03161de6106ecfe58f6dddba73c74cd3',
-                'authToken'=>'1663e705b7ce7d34d3e061322a2c64ac'
-            ],
-            'production' => [
-                'accountSid'=>'AC54df136d44c9dce58f480665c4d22094',
-                'authToken'=>'42c8a09653961391287ea54359aba573'
-            ]
+            'accountSid' => env('TWILIO_ACCOUNT_SID'),
+            'authToken' => env('TWILIO_AUTHTOKEN'),
         ];
 
         $this->client = new Twilio(
-            $credentials['production']['accountSid'],
-            $credentials['production']['authToken'],
-            $credentials['production']['accountSid'],
+            $credentials['accountSid'],
+            $credentials['authToken'],
+            $credentials['accountSid'],
             null,
             new CurlClient([CURLOPT_SSL_VERIFYHOST => false])
         );
@@ -51,9 +45,9 @@ class TwilioClient
         return $this->client->incomingPhoneNumbers->create($phoneData);
     }
 
-    public function releaseNumber(array $phoneData)
+    public function releaseNumber($phoneSid)
     {
-        # This was not a part of the old system
+        return $this->client->incomingPhoneNumbers($phoneSid)->delete();
     }
 
     public function getRecordingFromSid($sid = null)

@@ -56,6 +56,10 @@ class Drop extends Model
     public function scopeEmailDue($query)
     {
         return $query->where('send_at', '<=', Carbon::now())
+            ->with(['campaign' => function ($q) {
+                $q->whereRaw("expires_at >= current_timestamp");
+            }])
+            ->has('campaign')
             ->where('status', 'Pending')
             ->whereNotNull('system_id')
             ->whereIn('type', ['email', 'legacy']);
