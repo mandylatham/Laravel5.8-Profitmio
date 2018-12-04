@@ -70,7 +70,10 @@ class AuthServiceProvider extends ServiceProvider
     {
         Auth::viaRequest('impersonuser', function () {
             /** @var User $user */
-            $user = Auth::user();
+            if (! $user = Auth::user()) {
+                return;
+            }
+
             if ($user->isImpersonated()) {
                 return ImpersonatedUser::findOrCreateImpersonatedUser($user->id, $user->getImpersonatorId());
             } else {
