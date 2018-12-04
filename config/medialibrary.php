@@ -7,6 +7,7 @@ return [
      * one or more of the filesystems you configured in app/config/filesystems.php
      */
     'defaultFilesystem' => 'media',
+    'disk_name' => 'media',
 
     /*
      * The maximum file size of an item in bytes. Adding a file
