@@ -5,13 +5,15 @@ namespace App\Providers;
 use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\Recipient;
+use App\Models\ImpersonatedUser;
 use App\Policies\CampaignPolicy;
 use App\Policies\CompanyPolicy;
-use App\Models\User;
 use App\Models\CampaignScheduleTemplate;
 use App\Policies\CampaignScheduleTemplatePolicy;
 use App\Policies\RecipientPolicy;
 use App\Policies\UserPolicy;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
@@ -38,16 +40,19 @@ class AuthServiceProvider extends ServiceProvider
     public function boot()
     {
         $this->registerPolicies();
+        $this->defineGates();
 
+        $this->defineImpersonateAuthGate();
+    }
+
+    private function defineGates(): void
+    {
         Gate::before(function (User $user, $ability) {
             if ($user->isAdmin()) {
                 return true;
             }
         });
 
-        Gate::define('only-admin', function (User $user) {
-            return $user->isAdmin();
-        });
         Gate::define('company.viewforpreferences', 'App\Policies\CompanyPolicy@viewForPreferences');
         Gate::define('company.view', 'App\Policies\CompanyPolicy@view');
         Gate::define('company.create', 'App\Policies\CompanyPolicy@create');
@@ -59,6 +64,19 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('campaign.create', 'App\Policies\CampaignPolicy@create');
         Gate::define('campaign.manage', 'App\Policies\CampaignPolicy@manage');
+    }
+
+    private function defineImpersonateAuthGate(): void
+    {
+        Auth::viaRequest('impersonuser', function () {
+            /** @var User $user */
+            $user = Auth::user();
+            if ($user->isImpersonated()) {
+                return ImpersonatedUser::findOrCreateImpersonatedUser($user->id, $user->getImpersonatorId());
+            } else {
+                return $user;
+            }
+        });
     }
 
 
