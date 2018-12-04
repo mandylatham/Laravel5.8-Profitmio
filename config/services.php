@@ -30,9 +30,15 @@ return [
     ],
 
     'stripe' => [
-        'model' => App\User::class,
+        'model' => App\Models\User::class,
         'key' => env('STRIPE_KEY'),
         'secret' => env('STRIPE_SECRET'),
+    ],
+
+    'twilio' => [
+        'accountSid' => env('twilio_account_sid', 'AC03161de6106ecfe58f6dddba73c74cd3'),
+        'apiKey' => env('twilio_api_key', '1663e705b7ce7d34d3e061322a2c64ac'),
+        'apiSecret' => env('twilio_api_secret', ''),
     ],
 
 ];

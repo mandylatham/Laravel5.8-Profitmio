@@ -159,6 +159,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
+        App\Providers\TwilioClientProvider::class,
+        App\Providers\BladeServiceProvider::class,
         Lab404\Impersonate\ImpersonateServiceProvider::class,
         Spatie\Activitylog\ActivitylogServiceProvider::class,
 
@@ -210,6 +212,7 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'Twilio' => App\Facades\TwilioClient::class,
 
     ],
 

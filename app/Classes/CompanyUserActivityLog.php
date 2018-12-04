@@ -2,9 +2,9 @@
 
 namespace App\Classes;
 
-use App\Company;
-use App\CompanyUser;
-use App\User;
+use App\Models\Company;
+use App\Models\CompanyUser;
+use App\Models\User;
 
 class CompanyUserActivityLog
 {

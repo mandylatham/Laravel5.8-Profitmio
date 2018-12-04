@@ -63,3 +63,9 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Convention used to name routes
+All resources should use the singular form.
+- Show list resources view => {resource}.index
+- Show create resource view => {resource}.create
+- Show edit resource view => {resource}.edit

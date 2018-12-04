@@ -3,8 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\User;
-use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class ImpersonateController extends Controller
 {
@@ -13,17 +12,17 @@ class ImpersonateController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/dashboard';
 
     public function login(User $user)
     {
-        Auth::user()->impersonate($user);
+        auth()->user()->impersonate($user);
         return redirect($this->redirectTo);
     }
 
     public function leave()
     {
-        Auth::user()->leaveImpersonation();
+        auth()->user()->leaveImpersonation();
         return redirect($this->redirectTo);
     }
 

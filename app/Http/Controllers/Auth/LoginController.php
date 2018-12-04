@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\User;
+use App\Http\Requests\LoginRequest;
+use App\Models\User;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 
@@ -27,7 +28,7 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/dashboard';
 
     /**
      * Create a new controller instance.
@@ -47,5 +48,39 @@ class LoginController extends Controller
         }
 
         return redirect($this->redirectTo);
+    }
+
+    public function login(LoginRequest $request)
+    {
+        $field = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+        $request->merge([$field => $request->input('login')]);
+        if (auth()->attempt($request->only($field, 'password'))) {
+            if (auth()->user()->isAdmin()) {
+                return redirect()->route('campaign.index');
+            } else if (auth()->user()->hasActiveCompanies()) {
+                return redirect()->route('dashboard');
+            } else {
+                auth()->logout();
+                return redirect()->route('login')->withErrors('Your account does not have any available company.');
+            }
+        }
+
+        return redirect()->route('login')->withErrors([
+            'error' => 'These credentials do not match our records.',
+        ]);
+    }
+
+    /**
+     * Log the user out of the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function logout(Request $request)
+    {
+        $this->guard()->logout();
+        $request->session()->flush();
+        $request->session()->regenerate();
+        return redirect()->route('login');
     }
 }
