@@ -54,15 +54,18 @@ class LoginController extends Controller
     {
         $field = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
         $request->merge([$field => $request->input('login')]);
-        $redirectRoute = 'dashboard';
         if (auth()->attempt($request->only($field, 'password'))) {
             if (auth()->user()->isAdmin()) {
-                $redirectRoute = 'campaign.index';
+                return redirect()->route('campaign.index');
+            } else if (auth()->user()->hasActiveCompanies()) {
+                return redirect()->route('dashboard');
+            } else {
+                auth()->logout();
+                return redirect()->route('login')->withErrors('Your account does not have any available company.');
             }
-            return redirect()->intended($redirectRoute);
         }
 
-        return redirect('/login')->withErrors([
+        return redirect()->route('login')->withErrors([
             'error' => 'These credentials do not match our records.',
         ]);
     }
@@ -78,6 +81,6 @@ class LoginController extends Controller
         $this->guard()->logout();
         $request->session()->flush();
         $request->session()->regenerate();
-        return redirect('/');
+        return redirect()->route('login');
     }
 }

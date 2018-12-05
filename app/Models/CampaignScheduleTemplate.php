@@ -9,7 +9,7 @@ class CampaignScheduleTemplate extends Model
 {
     use SoftDeletes;
 
-    protected $primaryKey = "campaign_schedule_template_id";
+    protected $primaryKey = "id";
 
     protected $fillable = [
         'name', 'type', 'email_subject', 'email_text', 'email_html',

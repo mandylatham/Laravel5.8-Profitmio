@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Models\Company;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -24,9 +25,20 @@ class UserPolicy
         return $user->isAdmin() || $user->isCompanyAdmin(get_active_company());
     }
 
+    public function resendInvitation(User $user)
+    {
+        return $user->isAdmin() || $user->isCompanyAdmin(get_active_company());
+    }
+
     public function createUser(User $user)
     {
         return $user->isAdmin() || $user->isCompanyAdmin(get_active_company());
+    }
+
+    public function editUser(User $loggedUser, User $userToEdit)
+    {
+        $company = Company::find(get_active_company());
+        return $loggedUser->isAdmin() || ($loggedUser->isCompanyAdmin(get_active_company()) && $userToEdit->belongsToCompany($company));
     }
 
     public function impersonate(User $user)

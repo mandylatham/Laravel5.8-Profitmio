@@ -7,34 +7,59 @@ use App\Models\Campaign;
 use App\Classes\MailgunService;
 use App\Mail\CrmNotification;
 use App\Mail\LeadNotification;
-use App\Recipient;
+use App\Models\Recipient;
 use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Log\Logger;
+use Illuminate\Mail\Mailer;
 
 /**
  * Appointment Controller
  */
 class AppointmentController extends Controller
 {
+    private const CALLBACK_MESSAGE = 'Profit Miner callback requested for %s at %s';
+
+    private $appointment;
+
+    private $carbon;
+
+    private $campaign;
+
+    private $log;
+
+    private $recipient;
+
+    private $mail;
+
+    public function __construct(Appointment $appointment, Carbon $carbon, Campaign $campaign, Recipient $recipient, Logger $log, Mailer $mail)
+    {
+        $this->appointment = $appointment;
+        $this->carbon = $carbon;
+        $this->campaign = $campaign;
+        $this->log = $log;
+        $this->recipient = $recipient;
+        $this->mail = $mail;
+    }
+
     /**
      * Unauthenticated API call to insert Appointments
      *
-     * @param App\Classes\MailgunService
-     * @param Illuminate\Http\Request
-     *
-     * @return JSON
+     * @param MailgunService $mailgun
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
      */
     public function insert(MailgunService $mailgun, Request $request)
     {
         if (!$request->json()->get('campaign_id')) {
-            \Log::error("appointment failed to save, no campaign_id present: " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
-
+            $this->log->error("appointment failed to save, no campaign_id present: " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
         }
 
-        $campaign = Campaign::find($request->json()->get('campaign_id'));
+        $campaign = $this->campaign->find($request->json()->get('campaign_id'));
 
-        if (! $campaign) {
-            \Log::error("appointment failed to save, no campaign_id present: " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+        if (!$campaign) {
+            $this->log->error("appointment failed to save, no campaign_id present: " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
 
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
         }
@@ -48,12 +73,12 @@ class AppointmentController extends Controller
             $alt_phone_number = $alt_phone_number->phoneNumber;
         }
 
-        $recipient = Recipient::where('campaign_id', $campaign->id)
+        $recipient = $this->recipient->where('campaign_id', $campaign->id)
             ->where('phone', $phone_number ?: $request->json()->get('phone_number'))
             ->first();
 
         if (!$recipient) {
-            $recipient = new Recipient([
+            $recipient = new $this->recipient([
                 'first_name' => $request->json()->get('first_name'),
                 'last_name' => $request->json()->get('last_name'),
                 'phone' => $phone_number ?: $request->json()->get('phone_number'),
@@ -64,17 +89,17 @@ class AppointmentController extends Controller
             $recipient->save();
         }
 
-        $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
+        $recipient->last_responded_at = $this->carbon->now('UTC');
         if ($request->json()->get('type') == 'appointment') {
             $recipient->appointment = 1;
         }
 
         $appointment_at = null;
-        if ( strlen($request->json()->get('appointment_at'))) {
-            $appointment_at = \Carbon\Carbon::createFromFormat('Y-m-d G:i:s', $request->json()->get('appointment_at'), $campaign->client->timezone);
+        if (strlen($request->json()->get('appointment_at'))) {
+            $appointment_at = $this->carbon->createFromFormat('Y-m-d G:i:s', $request->json()->get('appointment_at'), $campaign->client->timezone);
         }
 
-        $appointment = new Appointment([
+        $appointment = new $this->appointment([
             'recipient_id' => $recipient->id,
             'campaign_id' => $campaign->id,
             'appointment_at' => $appointment_at,
@@ -92,60 +117,73 @@ class AppointmentController extends Controller
         }
 
         if (!$appointment->save()) {
-            \Log::error("AppointmentController@insert: unable to save appointment for new request, " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+            $this->log->error("AppointmentController@insert: unable to save appointment for new request, " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
 
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
 
             abort(406);
         }
 
+        if ($appointment->type == 'appointment') {
+            $recipient->appointment = true;
+        }
+        if ($appointment->type == 'callback') {
+            $recipient->callback = true;
+        }
         $recipient->save();
 
-	if (in_array($appointment->type, ['appointment', 'callback'])) {
+        if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT, Appointment::TYPE_CALLBACK])) {
+            if ($campaign->adf_crm_export) {
+                $alert_emails = explode(',', $campaign->lead_alert_email);
+                foreach ($alert_emails as $email) {
+                    $email = trim($email);
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $this->log->error("AppointmentController@insert (line 82): Skipping crm notification to invalid email, $email");
+                        continue;
+                    }
+                    try {
+                        $this->mail->to($email)->send(new CrmNotification($campaign, $appointment));
+                        $this->log->debug("AppointmentController@insert: Sent crm alerts for appointment #{$appointment->id}");
+                    } catch (\Exception $e) {
+                        $this->log->error("Unable to send crm notification: " . $e->getMessage());
+                    }
+                }
 
-		if ($campaign->adf_crm_export) {
-		    $alert_emails = explode(',', $campaign->lead_alert_email);
-		    foreach ($alert_emails as $email) {
-			$email = trim($email);
-			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			    \Log::error("AppointmentController@insert (line 82): Skipping crm notification to invalid email, $email");
+            }
 
-			    continue;
-			}
+            if ($campaign->lead_alerts) {
+                $alert_emails = explode(',', $campaign->lead_alert_email);
 
-			try {
-			    \Mail::to($email)->send(new CrmNotification($campaign, $appointment));
-			    \Log::debug("AppointmentController@insert: Sent crm alerts for appointment #{$appointment->id}");
-			} catch (\Exception $e) {
-			    \Log::error("Unable to send crm notification: " . $e->getMessage());
-			}
-		    }
+                foreach ($alert_emails as $email) {
+                    $email = trim($email);
 
-		}
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $this->log->error("AppointmentController@insert (line 82): Skipping lead notification to invalid email, $email");
 
-		if ($campaign->lead_alerts) {
-		    $alert_emails = explode(',', $campaign->lead_alert_email);
+                        continue;
+                    }
 
-		    foreach ($alert_emails as $email) {
-			$email = trim($email);
+                    try {
+                        $this->mail->to($email)->send(new LeadNotification($campaign, $appointment));
+                        $this->log->debug("AppointmentController@insert: Sent lead alerts for appointment #{$appointment->id}");
+                    } catch (\Exception $e) {
+                        $this->log->error("Unable to send lead notification: " . $e->getMessage());
+                    }
+                }
 
-			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-			    \Log::error("AppointmentController@insert (line 82): Skipping lead notification to invalid email, $email");
+            }
+            if (($appointment->type == Appointment::TYPE_CALLBACK) && ($campaign->sms_on_callback == 1)) {
+                $from = $campaign->phone->phone_number;
+                $to = $campaign->sms_on_callback_number;
+                try {
+                    $message = $this->getCallbackMessage($appointment);
+                    Twilio::sendSms($from, $to, $message);
+                } catch (\Exception $exception){
+                    \Log::error("Unable to send callback SMS: " . $e->getMessage());
+                }
+            }
 
-			    continue;
-			}
-
-			try {
-			    \Mail::to($email)->send(new LeadNotification($campaign, $appointment));
-			    \Log::debug("AppointmentController@insert: Sent lead alerts for appointment #{$appointment->id}");
-			} catch (\Exception $e) {
-			    \Log::error("Unable to send lead notification: " . $e->getMessage());
-			}
-		    }
-
-		}
-
-	}
+        }
 
         return response()->json(['error' => 0, 'message' => 'The appointment has been saved.']);
     }
@@ -158,9 +196,9 @@ class AppointmentController extends Controller
         unset($data['updated_at']);
 
         if (isset($data['appointment_id']) && !empty($data['appointment_id'])) {
-            $appt = Appointment::find($data['appointment_id']);
+            $appt = $this->appointment->find($data['appointment_id']);
         } else {
-            $appt = new Appointment;
+            $appt = new $this->appointment();
         }
 
         foreach ($data as $field => $val) {
@@ -189,5 +227,33 @@ class AppointmentController extends Controller
         $appointment->save();
 
         return $appointment->called_back;
+    }
+
+    public function addAppointmentFromConsole(Campaign $campaign, Recipient $recipient, Request $request)
+    {
+        $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'), \Auth::user()->timezone);
+
+        $appointment = Appointment::create([
+            'recipient_id' => $recipient->id,
+            'campaign_id' => $campaign->id,
+            'appointment_at' => $appointment_at->timezone('UTC'),
+            'auto_year' => intval($recipient->year),
+            'auto_make' => $recipient->make,
+            'auto_model' => $recipient->model,
+            'phone_number' => $recipient->phone,
+            'email' => $recipient->email,
+        ]);
+
+        $recipient->update(['appointment' => true]);
+
+        return response()->json([
+            'appointment_at' => $appointment_at->timezone(\Auth::user()->timezone)->format("m/d/Y h:i A T"),
+        ]);
+    }
+
+    private function getCallbackMessage(Appointment $appointment): string
+    {
+        $name = $appointment->first_name.' '.$appointment->last_name;
+        return sprintf(self::CALLBACK_MESSAGE, $name, $appointment->phone_number);
     }
 }

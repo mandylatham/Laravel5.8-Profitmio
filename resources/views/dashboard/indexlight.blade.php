@@ -331,11 +331,11 @@
                                       <div class="panel-body">
                                           <div class="row">
                                               <div class="col-lg-6">
-                                                  <button class="panel-action btn btn-info form-control data-link bg-blue-500" data-url="{{ secure_url('campaign/' . $campaign->id . '/response-console') }}">
+                                                  <button class="panel-action btn btn-info form-control data-link bg-blue-500" data-url="{{ route('campaign.response-console.index', ['campaign' => $campaign->id]) }}">
                                                       <i class=" icon fa-terminal" style="" aria-hidden="true"></i>
                                                       <span style="">Go To Console</span>
                                                   </button>
-                                                  <a href="{{ secure_url('campaign/' . $campaign->id . '/response-console/unread') }}"
+                                                  <a href="{{ route('campaign.response-console.index.unread', ['campaign' => $campaign->id]) }}"
                                                      class="card card-block card-bordered p-300 mt-10
                                     @if ($campaign->unread >= 0 and $campaign->unread < 50)
                                                              bg-light-green-600
@@ -363,15 +363,15 @@
                                               <div class="col-lg-6">
                                                   <table class="table table-condensed font-size-10 table-hover">
                                                       <tbody>
-                                                      <tr class="data-link" data-url="{{ secure_url('campaign/' . $campaign->id . '/response-console/calls') }}">
+                                                      <tr class="data-link" data-url="{{ route('campaign.response-console.index.call', ['campaign' => $campaign->id]) }}">
                                                           <th>Calls</th>
                                                           <td>{{ number_format($campaign->phones) }}</td>
                                                       </tr>
-                                                      <tr class="data-link" data-url="{{ secure_url('campaign/' . $campaign->id . '/response-console/email') }}">
+                                                      <tr class="data-link" data-url="{{ route('campaign.response-console.index.email', ['campaign' => $campaign->id]) }}">
                                                           <th>Emails</th>
                                                           <td>{{ number_format($campaign->emails) }}</td>
                                                       </tr>
-                                                      <tr class="data-link" data-url="{{ secure_url('campaign/' . $campaign->id . '/response-console/sms') }}">
+                                                      <tr class="data-link" data-url="{{ route('campaign.response-console.index.sms', ['campaign' => $campaign->id]) }}">
                                                           <th>SMS</th>
                                                           <td>{{ number_format($campaign->texts) }}</td>
                                                       </tr>
@@ -676,8 +676,9 @@
             });
 
             $(".callback-button").change(function() {
+                var url = '{{ route("appointment.update-called-status", ['appointment' => '0.0']) }}';
                 $.post(
-                    "{{ secure_url('appointment/') }}" + "/" + $(this).data('callback_id') + "/update-called-status",
+                    url.replace('0.0', $(this).data('callback_id')),
                     { "called_back": $(this).prop('checked') },
                     'json'
                 );

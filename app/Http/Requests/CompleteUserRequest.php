@@ -25,6 +25,9 @@ class CompleteUserRequest extends FormRequest
     public function rules()
     {
         $user = User::find($this->input('user'));
+        if ($user->isAdmin()) {
+            return [];
+        }
         if (!$user->isProfileCompleted()) {
             return [
                 'first_name' => 'required|string|max:255',

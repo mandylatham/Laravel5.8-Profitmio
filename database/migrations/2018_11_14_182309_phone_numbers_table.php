@@ -17,6 +17,8 @@ class PhoneNumbersTable extends Migration
             $table->increments('id');
             $table->unsignedInteger('dealership_id');
             $table->string('phone_number');
+            $table->integer('campaign_id')->nullable();
+            $table->string('call_source_name', 50)->nullable();
             $table->string('forward');
             $table->string('sid');
             $table->string('region');

@@ -63,12 +63,15 @@
 
 @section('campaign_content')
         <div class="col-md-12">
+            @if (!$campaign->isExpired())
             <button class="pull-right btn btn-success upload-list-button mb-3" style="margin-top: -10px;">Upload New List</button>
+            @endif
             <div style="margin-bottom: 20px;">
                 <p class="h3">
                     Recipient Lists
                 </p>
             </div>
+            @if (!$campaign->isExpired())
             <div class="card border border-primary upload-form-card">
                 <div class="card-block">
                     <h4 class="card-title">New Recipient List</h4>
@@ -211,6 +214,7 @@
                     </div>
                 </div>
             </div>
+            @endif
             @if ($lists->count() > 0)
                 @foreach ($lists as $list)
                 <div class="panel" style="margin-top: 4px;">

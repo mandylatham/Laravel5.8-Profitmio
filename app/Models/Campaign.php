@@ -23,7 +23,10 @@ class Campaign extends Model
         'lead_alert_email',
         'client_passthrough',
         'client_passthrough_email',
-        'phone_number_id'
+        'phone_number_id',
+        'expires_at',
+        'sms_on_callback',
+        'sms_on_callback_number'
     ];
 
     protected $dates = [
@@ -31,7 +34,8 @@ class Campaign extends Model
         'updated_at',
         'deleted_at',
         'starts_at',
-        'ends_at'
+        'ends_at',
+        'expires_at'
     ];
 
     protected static $logAttributes = ['id', 'agency_id', 'dealership_id', 'name'];
@@ -44,6 +48,48 @@ class Campaign extends Model
     public function dealership()
     {
         return $this->hasOne(Company::class, 'id', 'dealership_id');
+    }
+
+    public function emailLogs()
+    {
+        return $this->hasMany(EmailLog::class, 'campaign_id', 'id');
+    }
+
+    public function getEmailLogsStats()
+    {
+        $stats = $this->emailLogs()
+            ->selectRaw("sum(if(event = 'sent', 1, 0)) as sent,
+                sum(if(event = 'delivered', 1, 0)) as delivered,
+                sum(if(event = 'opened', 1, 0)) as opened,
+                sum(if(event = 'clicked', 1, 0)) as clicked,
+                sum(if(event = 'bounced', 1, 0)) as bounced,
+                sum(if(event = 'dropped', 1, 0)) as dropped,
+                sum(if(event = 'unsubscribed', 1, 0)) as unsubscribed,
+                count(*) as total");
+        if ($stats->count() > 0 && $stats->first()->sent > 0) {
+            $emailObject = $stats->first();
+            $emailObject->droppedPercent = round(abs((($emailObject->sent -
+                        ($emailObject->dropped)) / $emailObject->sent * 100) - 100), 2);
+
+            $emailObject->bouncedPercent = round(abs((($emailObject->sent -
+                        $emailObject->bounced) / $emailObject->sent * 100) - 100), 2);
+            $stats = collect([$emailObject]);
+        }
+        return $stats;
+    }
+
+    public function getRecipientStats()
+    {
+        $stats = $this->recipients()
+            ->selectRaw("sum(service) as service,
+                sum(appointment) as appointment,
+                sum(heat) as heat,
+                sum(interested) as interested,
+                sum(not_interested) as not_interested,
+                sum(wrong_number) as wrong_number,
+                sum(car_sold) as car_sold,
+                count(*) as total");
+        return $stats->get();
     }
 
     public function users()
@@ -103,6 +149,11 @@ class Campaign extends Model
         return $this->hasOne(PhoneNumber::class, 'id', 'phone_number_id');
     }
 
+    public function phones()
+    {
+        return $this->hasMany(PhoneNumber::class, 'campaign_id', 'campaign_id');
+    }
+
     public function responses()
     {
         return $this->hasMany(Response::class, 'campaign_id', 'id');
@@ -138,8 +189,23 @@ class Campaign extends Model
         return $this->hasMany(Drop::class, 'campaign_id', 'id');
     }
 
+    public function isExpired()
+    {
+        return $this->expires_at && $this->expires_at <= \Carbon\Carbon::now('UTC');
+    }
+
     public function schedules()
     {
         return $this->hasMany(CampaignSchedule::class, 'campaign_id', 'id');
+    }
+
+    public function getIsExpiredAttribute()
+    {
+        return $this->expires_at && $this->expires_at <= \Carbon\Carbon::now('UTC');
+    }
+
+    public function getIsNotExpiredAttribute()
+    {
+        return $this->expires_at && ! $this->isExpired;
     }
 }

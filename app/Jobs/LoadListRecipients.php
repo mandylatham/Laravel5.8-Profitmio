@@ -3,10 +3,8 @@
 namespace App\Jobs;
 
 use App\Builders\RecipientBuilder;
-use App\Campaign;
-use App\RecipientList;
+use App\Models\RecipientList;
 use Illuminate\Bus\Queueable;
-use Illuminate\Http\Request;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;

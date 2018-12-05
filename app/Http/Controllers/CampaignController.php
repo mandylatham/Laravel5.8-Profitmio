@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Campaign;
 use App\Models\Company;
+use App\Models\EmailLog;
+use App\Models\Recipient;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\NewCampaignRequest;
@@ -11,13 +13,25 @@ use Carbon\Carbon;
 
 class CampaignController extends Controller
 {
+    private $emailLog;
+
+    private $campaign;
+
+    private $recipient;
+
+    public function __construct(Campaign $campaign, EmailLog $emailLog, Recipient $recipient)
+    {
+        $this->campaign = $campaign;
+        $this->emailLog = $emailLog;
+        $this->recipient = $recipient;
+    }
+
     public function index(Request $request)
     {
         $campaigns = Campaign::query()
             ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
-            ->whereNull('deleted_at')
-            ->whereIn('status', ['Active', 'Completed', 'Upcoming']);
+            ->whereNull('deleted_at');
 
         if ($request->has('q')) {
             $likeQ = '%' . $request->get('q') . '%';
@@ -36,15 +50,14 @@ class CampaignController extends Controller
 
     public function getList(Request $request)
     {
-        $valid_filters = ['first_name', 'last_name', 'email', 'phone', 'year', 'make', 'model', 'vin', 'address1', 'city', 'state', 'zip'];
-        $filters = [];
-
-        $campaigns = Campaign::with('client')
-            ->select(\DB::raw("(select count(distinct(recipient_id)) from recipients where campaign_id = campaigns.id) as recipientCount,)"))
-            ->select(\DB::raw("(select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='phone' and recording_sid is not null) as phoneCount,"))
-            ->select(\DB::raw("(select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='email') as emailCount,"))
-            ->select(\DB::raw("(select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='text') as textCount,"))
-            ->select(\DB::raw("users.id as client_id"))
+        $campaigns = $this->campaign->with('client')
+            ->selectRaw("
+                (select count(distinct(recipient_id)) from recipients where campaign_id = campaigns.id) as recipientCount),
+                (select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='phone' and recording_sid is not null) as phoneCount,
+                (select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='email') as emailCount,
+                (select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='text') as textCount,
+                users.id as client_id
+            ")
             ->get();
 
         return $campaigns->toJson();
@@ -63,41 +76,8 @@ class CampaignController extends Controller
 
         $viewData['campaign'] = $campaign;
 
-        $emailStats = DB::table('email_logs')
-            ->select(
-                DB::raw("sum(if(event = 'sent', 1, 0)) as sent"),
-                DB::raw("sum(if(event = 'delivered', 1, 0)) as delivered"),
-                DB::raw("sum(if(event = 'opened', 1, 0)) as opened"),
-                DB::raw("sum(if(event = 'clicked', 1, 0)) as clicked"),
-                DB::raw("sum(if(event = 'bounced', 1, 0)) as bounced"),
-                DB::raw("sum(if(event = 'dropped', 1, 0)) as dropped"),
-                DB::raw("sum(if(event = 'unsubscribed', 1, 0)) as unsubscribed"),
-                DB::raw("count(*) as total"))
-            ->where('campaign_id', $campaign->id)
-            ->get();
-
-        if ($emailStats->count() > 0 && $emailStats->first()->sent > 0) {
-            $emailObject = $emailStats->first();
-            $emailObject->droppedPercent = round(abs((($emailObject->sent -
-                        ($emailObject->dropped)) / $emailObject->sent * 100) - 100), 2);
-
-            $emailObject->bouncedPercent = round(abs((($emailObject->sent -
-                        $emailObject->bounced) / $emailObject->sent * 100) - 100), 2);
-            $emailStats = new Collection([$emailObject]);
-        }
-
-        $responseStats = DB::table('recipients')
-            ->select(
-                DB::raw("sum(service) as service"),
-                DB::raw("sum(appointment) as appointment"),
-                DB::raw("sum(heat) as heat"),
-                DB::raw("sum(interested) as interested"),
-                DB::raw("sum(not_interested) as not_interested"),
-                DB::raw("sum(wrong_number) as wrong_number"),
-                DB::raw("sum(car_sold) as car_sold"),
-                DB::raw("count(*) as total"))
-            ->where('campaign_id', $campaign->id)
-            ->get();
+        $emailStats = $campaign->getEmailLogsStats();
+        $responseStats = $campaign->getRecipientStats();
 
         $viewData['emailCount'] = $emailStats->count();
         $viewData['emailStats'] = $emailStats->first();
@@ -109,12 +89,9 @@ class CampaignController extends Controller
 
     public function details(Campaign $campaign)
     {
-        $allCampaignData = Campaign::where('campaign_id', $campaign->id)
-            ->with('client', 'agency', 'schedules', 'phone_number')
-            ->get();
-        $viewData['campaign'] = $allCampaignData->first();
-
-        return view('campaigns.details', $viewData);
+        return view('campaigns.details', [
+            'campaign' => $campaign->load('client', 'agency', 'schedules', 'phone_number')
+        ]);
     }
 
     public function createNew()
@@ -131,12 +108,29 @@ class CampaignController extends Controller
 
     public function create(NewCampaignRequest $request)
     {
-        $campaign = new Campaign([
+        $expires_at = null;
+        $starts_at = (new Carbon($request->start, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        $ends_at = (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+
+        if (! empty($request->input('expires'))) {
+            $expires_at = (new Carbon($request->expires, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        } else {
+            $expires_at = (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->addWeeks(2);
+        }
+
+        $status = $request->status;
+        if ($expires_at <= \Carbon\Carbon::now('UTC')) {
+            $status = 'Expired';
+        }
+        $campaign = new $this->campaign([
             'name' => $request->input('name'),
-            'status' => $request->input('status'),
+            'status' => $status,
             'order_id' => $request->input('order'),
-            'starts_at' => (new Carbon($request->input('start'), auth()->user()->timezone))->timezone('UTC')->toDateTimeString(),
-            'ends_at' => (new Carbon($request->input('end'), auth()->user()->timezone))->timezone('UTC')->toDateTimeString(),
+            /**
+             * TODO: Get correct timezone (now user doesn't have a timezone, timezone is stored in company_user table)
+             */
+            'starts_at' => $starts_at,
+            'ends_at' => $ends_at,
             'agency_id' => $request->input('agency'),
             'dealership_id' => $request->input('client'),
             'adf_crm_export' => (bool) $request->input('adf_crm_export'),
@@ -148,9 +142,19 @@ class CampaignController extends Controller
             'phone_number_id' => $request->input('phone_number_id'),
         ]);
 
+        if (! $campaign->expires_at) {
+            $campaign->expires_at = $campaign->ends_at->addMonth();
+        }
+
         $campaign->save();
 
-        return redirect('campaigns/');
+        if ($campaign->phone) {
+            $phone = $campaign->phone;
+            $phone->campaign_id = $campaign->id;
+            $phone->save();
+        }
+
+        return redirect()->route('campaign.index');
     }
 
 
@@ -176,12 +180,28 @@ class CampaignController extends Controller
             $phone->save();
         }
 
+        $expires_at = null;
+        $starts_at = (new Carbon($request->start, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        $ends_at = (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+
+        if (! empty($request->input('expires'))) {
+            $expires_at = (new Carbon($request->expires, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        } else {
+            $expires_at = (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->addWeeks(2);
+        }
+
+        $status = $request->status;
+        if (! $expires_at || ($expires_at && $expires_at <= \Carbon\Carbon::now('UTC'))) {
+            $status = 'Expired';
+        }
+
         $campaign->fill([
             'name' => $request->name,
-            'status' => $request->status,
+            'status' => $status,
             'order_id' => $request->order,
-            'starts_at' => (new Carbon($request->start, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString(),
-            'ends_at' => (new Carbon($request->end, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString(),
+            'starts_at' => $starts_at,
+            'ends_at' => $ends_at,
+            'expires_at' => $expires_at,
             'agency_id' => $request->agency,
             'dealership_id' => $request->client,
             'adf_crm_export' => (bool) $request->adf_crm_export,
@@ -190,6 +210,10 @@ class CampaignController extends Controller
             'lead_alert_email' => $request->lead_alert_email,
             'client_passthrough' => (bool) $request->client_passthrough,
             'client_passthrough_email' => $request->client_passthrough_email,
+            'service_dept' => (bool) $request->service_dept,
+            'service_dept_email' => $request->service_dept_email,
+            'sms_on_callback' => (bool) $request->sms_on_callback,
+            'sms_on_callback_number' => $request->sms_on_callback_number,
             'phone_number_id' => $request->phone_number_id,
         ]);
 
@@ -199,92 +223,13 @@ class CampaignController extends Controller
 
         $campaign->save();
 
-        return redirect('/campaign/' . $campaign->id . '/edit');
+        return redirect()->route('campaign.edit', ['campaign' => $campaign->id]);
     }
 
     public function delete(Campaign $campaign)
     {
         $campaign->delete();
-        return redirect('/campaigns');
+
+        return redirect()->route('campaign.index');
     }
-//
-//    /**
-//     * Display a listing of the resource.
-//     *
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function index()
-//    {
-//        $campaigns = Campaign::all();
-//        return view('campaign/index', ['campaigns' => $campaigns]);
-//    }
-//
-//    /**
-//     * Show the form for creating a new resource.
-//     *
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function create()
-//    {
-//        $agencies = Company::getAgencies();
-//        $dealerships = Company::getDealerships();
-//        return view('campaign/create', ['agencies' => $agencies, 'dealerships' => $dealerships]);
-//    }
-//
-//    /**
-//     * Store a newly created resource in storage.
-//     *
-//     * @param  \Illuminate\Http\Request  $request
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function store(Request $request)
-//    {
-//        Campaign::create($request->only(['name', 'agency_id', 'dealership_id']));
-//        return response()->redirectToRoute('campaigns.index');
-//    }
-//
-//    /**
-//     * Display the specified resource.
-//     *
-//     * @param  \App\Models\Company  $company
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function show(Company $company)
-//    {
-//    }
-//
-//    /**
-//     * Show the form for editing the specified resource.
-//     *
-//     * @param  \App\Models\Company  $company
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function edit(Company $company)
-//    {
-//        return view('company/edit', ['company' => $company]);
-//    }
-//
-//    /**
-//     * Update the specified resource in storage.
-//     *
-//     * @param  \Illuminate\Http\Request  $request
-//     * @param  \App\Models\Company  $company
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function update(Request $request, Company $company)
-//    {
-//        $company->update($request->only(['name', 'type']));
-//        return response()->redirectToRoute('companies.index');
-//    }
-//
-//    /**
-//     * Remove the specified resource from storage.
-//     *
-//     * @param  \App\Models\Company  $company
-//     * @return \Illuminate\Http\Response
-//     */
-//    public function destroy(Company $company)
-//    {
-//        //
-//    }
 }

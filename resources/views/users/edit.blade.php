@@ -1,250 +1,228 @@
-@extends('layouts.users')
+@extends('layouts.remark')
 
 @section('header')
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('fonts/octicons/octicons.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('fonts/font-awesome/font-awesome.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/jquery-wizard/jquery-wizard.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/icheck/icheck.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/typeahead-js/typeahead.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-tokenfield/bootstrap-tokenfield.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-datepicker/bootstrap-datepicker.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/formvalidation/formValidation.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('css/sweetalert.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-select/bootstrap-select.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('css/jsgrid.css') }}">
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('css/jsgrid-theme.css') }}">
-    <style type="text/css" media="all">
-        form > h4 {
-            margin-top: 20px;
-        }
-        .btn.dropdown-toggle.btn-default,
-        select.form-control {
-            margin-top: 8px;
-        }
-        .wizard-buttons {
-            padding-top: 50px;
-        }
-    </style>
+    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.css') }}">
 @endsection
 
-@section('user_content')
-    <div class="container-fluid">
-        <form data-fv-live="enabled" id="user-form" class="form form-horizontal" action="{{ secure_url('/user/' . $user->id . '/update') }}" method="post">
-            {{ csrf_field() }}
-            <input type="hidden" name="id" value="{{ $user->id }}">
-            @if ($errors->count() > 0)
-                <div class="row-fluid">
-                    <div class="col-md-12">
-                        <div class="alert alert-danger">
-                            <h3>There were some errors:</h3>
-                            <ul>
-                                @foreach ($errors->all() as $message)
-                                    <li>{{ $message }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            @endif
+@section('manualStyle')
+    .company-image {
+    width: 40px;
+    height: 40px;
+    background-size: cover;
+    background-position: 50% 50%;
+    background-color: #dadada;
+    border-radius: 50%;
+    }
+@endsection
+
+@section('content')
+    <div class="page">
+        <div class="page-header container-fluid">
             <div class="row-fluid">
-                <div class="col-lg-6 offset-lg-3 col-md-8 offset-md-2">
-                    <h2>Edit User</h2>
-                    <div class="nav-tabs-horizontal" data-plugin="tabs">
-                        <ul class="nav nav-tabs nav-tabs-reverse" role="tablist">
-                            <li class="nav-item" role="presentation" style="display: list-item;">
-                                <a class="nav-link active"
-                                   data-toggle="tab"
-                                   href="#exampleTabsReverseOne"
-                                   aria-controls="exampleTabsReverseOne"
-                                   role="tab">
-                                    Details
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation" style="display: list-item;">
-                                <a class="nav-link"
-                                   data-toggle="tab"
-                                   href="#exampleTabsReverseTwo"
-                                   aria-controls="exampleTabsReverseTwo"
-                                   role="tab">
-                                    Contact
-                                </a>
-                            </li>
-                            <li class="nav-item" role="presentation" style="display: list-item;">
-                                <a class="nav-link"
-                                   data-toggle="tab"
-                                   href="#exampleTabsReverseThree"
-                                   aria-controls="exampleTabsReverseThree"
-                                   role="tab">
-                                    Auth
-                                </a>
-                            </li>
-                            <li class="dropdown nav-item" role="presentation" style="display: none;">
-                                <a class="dropdown-toggle nav-link" data-toggle="dropdown" href="#" aria-expanded="false">Dropdown </a>
-                                <div class="dropdown-menu" role="menu">
-                                    <a class="dropdown-item"
-                                       data-toggle="tab"
-                                       href="exampleTabsReverseOne"
-                                       aria-controls="exampleTabsReverseOne"
-                                       role="tab"
-                                       style="display: none;">
-                                        Details
-                                    </a>
-                                    <a class="dropdown-item"
-                                       data-toggle="tab"
-                                       href="#exampleTabsReverseTwo"
-                                       aria-controls="exampleTabsReverseTwo"
-                                       role="tab"
-                                       style="display: none;">
-                                        Accounts
-                                    </a>
-                                    <a class="dropdown-item"
-                                       data-toggle="tab"
-                                       href="#exampleTabsReverseThree"
-                                       aria-controls="exampleTabsReverseThree"
-                                       role="tab">
-                                        Auth
-                                    </a>
-                                </div>
-                            </li>
-                        </ul>
-                        <div class="tab-content pt-20">
-                            <div class="tab-pane active" id="exampleTabsReverseOne" role="tabpanel">
-                                <div class="form-group form-material floating">
-                                    <select name="access" class="form-control" required>
-                                        <option selected disabled>Choose access level...</option>
-                                        <option value="admin" {{ $user->isAdmin() ? 'selected' : '' }}>Admin</option>
-                                        <option value="company_user" {{ !$user->isAdmin() ? 'selected' : '' }}>Company User</option>
-                                    </select>
-                                    <label for="access" class="floating-label">User Type</label>
-                                </div>
-                                <div class="form-group form-material floating">
-                                    <select name="company" class="form-control" required>
-                                        <option selected disabled>Select a Company</option>
-                                        @foreach ($companies as $company)
-                                            <option {{ $user->belongsToCompany($company->id) ? 'selected' : '' }} value="{{ $company->id }}">{{ $company->name }}</option>
-                                        @endforeach
-                                    </select>
-                                    <label for="access" class="floating-label">Company</label>
-                                </div>
-                                <div class="form-group form-material floating">
-                                    <select name="role" class="form-control" required>
-                                        <option selected disabled>Choose role...</option>
-                                        <option value="admin">Admin</option>
-                                        <option value="user">User</option>
-                                    </select>
-                                    <label for="role" class="floating-label">Role</label>
-                                </div>
-                                <div class="form-group form-material floating">
-                                    <input type="text" class="form-control" name="first_name" autocomplete="off" data-fv-field="first_name" value="{{ old('first_name') ?: $user->first_name }}" required>
-                                    <label for="first_name" class="floating-label">First Name</label>
-                                </div>
-                                <div class="form-group form-material floating">
-                                    <input type="text" class="form-control" name="last_name" autocomplete="off" data-fv-field="last_name" value="{{ old('last_name') ?: $user->last_name }}" required>
-                                    <label for="last_name" class="floating-label">Last Name</label>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="exampleTabsReverseTwo" rsole="tabpanel">
-                                <div class="form-group form-material floating">
-                                    <select name="timezone" class="form-control selectpicker" style="margin-top: 10px; padding-top: 10px;">
-                                        <option disabled {{ old('timezone') ?: $user->timezone == '' ? 'selected' : '' }}>Choose Timezone...</option>
-                                        @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
-                                            <option {{ old('timezone') ?: $user->timezone == $timezone ? 'selected' : '' }}>{{ $timezone }}</option>
-                                        @endforeach
-                                    </select>
-                                    <label for="timezone" class="floating-label" style="margin-bottom: 10px; padding-bottom: 10px">Timezone</label>
-                                </div>
-                                <div class="form-group form-material floating">
-                                    <input type="email"
-                                           class="form-control {{ ! empty(old('email') ?: $user->email) ?: 'empty' }}"
-                                           name="email"
-                                           autocomplete="off"
-                                           data-fv-field="email"
-                                           value="{{ old('email') ?: $user->email }}"
-                                           required>
-                                    <label for="email" class="floating-label">Email Address</label>
-                                </div>
-                                <div class="form-group form-material floating">
-                                    <input type="text"
-                                           class="form-control {{ ! empty(old('email') ?: $user->phone_number) ?: 'empty' }}"
-                                           name="phone_number"
-                                           autocomplete="off"
-                                           value="{{ old('phone_number') ?: $user->phone_number }}"
-                                           data-plugin="formatter"
-                                           data-pattern="([[999]]) [[999]]-[[9999]]"
-                                           required>
-                                    <label for="phone" class="floating-label">Phone Number</label>
-                                </div>
-                            </div>
-                            <div class="tab-pane" id="exampleTabsReverseThree" role="tabpanel">
-                                <div class="form-group">
-                                    Username: <p class="form-control-static">{{ $user->username }}</p>
-                                </div>
-                                <button class="btn btn-info update-password">Update Password</button>
-                                <div class="password-fields">
-                                    <div class="form-group">
-                                        <label for="password" class="form-control-label">Password</label>
-                                        <input type="password" name="password" class="form-control" value="">
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="verify_password" class="form-control-label">Verify Password</label>
-                                        <input type="password" name="verify_password" class="form-control" value="">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button id="save-user-button" class="btn btn-success float-right">Save</button>
+                <div class="col-md-6 offset-md-3">
+                    <button type="button" role="button"
+                            data-url="{{ route('user.index') }}"
+                            class="btn btn-sm float-left btn-default waves-effect campaign-edit-button"
+                            data-toggle="tooltip" data-original-title="Go Back"
+                            style="margin-right: 15px; background: rgba(255, 255, 255, 0.2); border-size: 0.5px;">
+                        <i class="icon fa-angle-left" style="color: #efefef" aria-hidden="true"></i>
+                    </button>
+                    <h3 class="page-title text-default d-flex align-items-center">
+                        #{{ $user->id}} {{ $user->first_name }} {{ $user->last_name }}
+                    </h3>
+                    <div class="page-header-actions">
                     </div>
                 </div>
             </div>
-        </form>
+        </div>
+        <div class="page-content container-fluid">
+            <div class="row-fluid" data-plugin="matchHeight" data-by-row="true">
+                <div class="col-md-6 offset-md-3">
+                    <div class="panel">
+                        <div class="panel-body" data-fv-live="enabled">
+                            @if ($errors->count() > 0)
+                                <div class="alert alert-danger">
+                                    <h3>There were some errors:</h3>
+                                    <ul>
+                                        @foreach ($errors->all() as $message)
+                                            <li>{{ $message }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            <form class="form" method="post" action="{{ route('user.update', ['user' => $user->id]) }}">
+                                {{ csrf_field() }}
+                                <div class="form-group">
+                                    <label for="first_name" class="floating-label">First Name</label>
+                                    <input type="text" class="form-control empty" name="first_name" placeholder="First Name"
+                                           value="{{ old('first_name') ?? $user->first_name }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="last_name" class="floating-label">Last Name</label>
+                                    <input type="text" class="form-control empty" name="last_name" placeholder="Last Name"
+                                           value="{{ old('last_name') ?? $user->last_name }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="username" class="floating-label">Username</label>
+                                    <input type="text" class="form-control empty" name="username" placeholder="Username"
+                                           value="{{ old('username') ?? $user->username }}" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="email" class="floating-label">Phone Number</label>
+                                    <input type="text"
+                                           class="form-control {{ old('phone_number') ?? $user->phone_number ?? 'empty' }}"
+                                           name="phone_number" autocomplete="off"
+                                           value="{{ old('phone_number') ?? $user->phone_number }}"
+                                           data-plugin="formatter" data-pattern="([[999]]) [[999]]-[[9999]]"
+                                           required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Update User</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                @if (auth()->user()->isAdmin() && !$user->isAdmin())
+                <div class="col-xxl-8 offset-xxl-2 col-md-12">
+                    <div class="panel panel-primary">
+                        <div class="panel-body">
+                            @if ($errors->count() > 0)
+                                <div class="alert alert-danger">
+                                    <h3>There were some errors:</h3>
+                                    <ul>
+                                        @foreach ($errors->all() as $message)
+                                            <li>{{ $message }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Image</th>
+                                        <th>Name</th>
+                                        <th>Type</th>
+                                        <th>Role</th>
+                                        <th>Timezone</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach($companies as $company)
+                                        <tr class="user-row">
+                                            <td class="id-row v-center"><strong>{{ $company->id }}</strong></td>
+                                            <td width="60px" class="text-center">
+                                                <div class="company-image" style="background-image: url('{{ $company->image_url }}')"></div>
+                                            </td>
+                                            <td class="v-center">{{ $company->name }}</td>
+                                            <td class="text-capitalize v-center">{{ $company->type }}</td>
+                                            <td class="v-center">
+                                                <select name="role" value="{{ old('role') ?? $user->getRole($company) }}" id="role_{{ $company->id }}" class="form-control" required>
+                                                    <option selected disabled>Choose role...</option>
+                                                    <option value="admin" {{ $user->getRole($company) === 'admin' ? 'selected' : '' }}>@role('admin')</option>
+                                                    <option value="user" {{ $user->getRole($company) === 'user' ? 'selected' : '' }}>@role('user')</option>
+                                                </select>
+                                            </td>
+                                            <td class="v-center">
+                                                @php
+                                                    $timezones = $timezones ?? [];
+                                                    $timezones = $timezones[$user->id] ?? [];
+                                                    $timezones[$user->id][$company->id] = $user->getTimezone($company);
+                                                @endphp
+                                                <select value="{{ $timezones[$user->id][$company->id] }}" name="timezone" id="timezone_{{ $company->id }}" required class="form-control" data-plugin="select2">
+                                                    <option disabled {{ $timezones[$user->id][$company->id] == '' ? 'selected' : '' }}>Choose Timezone...
+                                                    </option>
+                                                    @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
+                                                        <option {{ $timezones[$user->id][$company->id] == $timezone ? 'selected' : '' }}>{{ $timezone }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td class="text-center v-center">@status($user->isActive($company->id))</td>
+                                            <td>
+                                                <a href="javascript:;"class="btn btn-sm btn-primary btn-round mb-5 btn-edit-timezone" data-company="{{ $company->id }}">
+                                                    Save
+                                                </a>
+                                                @if (auth()->user()->isAdmin() && !$user->isAdmin() && $user->isActive($company->id))
+                                                    <a class="btn btn-sm btn-success btn-round mb-5"
+                                                       href="{{ route('admin.impersonate', ['user' => $user->id, 'company' => $company->id]) }}">
+                                                        Impersonate
+                                                    </a>
+                                                @endif
+                                                @if (!$user->isCompanyProfileReady($company))
+                                                    <a class="btn btn-sm btn-primary btn-round mb-5"
+                                                       href="{{ route('admin.resend-invitation', ['user' => $user->id, 'company' => $company->id ]) }}">
+                                                        Re-send Invitation
+                                                    </a>
+                                                @endif
+                                                @if($user->isActive($company->id))
+                                                    <a class="btn btn-sm btn-danger btn-round mb-5"
+                                                       href="{{ route('user.deactivate', ['user' => $user->id, 'company' => $company->id]) }}">
+                                                        Deactivate
+                                                    </a>
+                                                @else
+                                                    <a class="btn btn-sm btn-success btn-round mb-5"
+                                                       href="{{ route('user.activate', ['user' => $user->id, 'company' => $company->id]) }}">
+                                                        Activate
+                                                    </a>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+            </div>
+        </div>
     </div>
 @endsection
 
+
 @section('scriptTags')
     <script src="{{ secure_url('js/Plugin/material.js') }}"></script>
-    <script src="{{ secure_url('js/Plugin/jquery-wizard.js') }}"></script>
-    <script src="{{ secure_url('vendor/jquery-wizard/jquery-wizard.js') }}"></script>
-
-    <script src="{{ secure_url('js/Plugin/icheck.js') }}"></script>
-    <script src="{{ secure_url('vendor/icheck/icheck.js') }}"></script>
-
-    <script src="{{ secure_url('js/Plugin/bootstrap-tokenfield.js') }}"></script>
-    <script src="{{ secure_url('vendor/bootstrap-tokenfield/bootstrap-tokenfield.js') }}"></script>
-
-    <script src="{{ secure_url('js/Plugin/bootstrap-datepicker.js') }}"></script>
-    <script src="{{ secure_url('vendor/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
-
-    <script src="{{ secure_url('vendor/typeahead-js/typeahead.bundle.min.js') }}"></script>
-    <script src="{{ secure_url('vendor/formvalidation/formValidation.js') }}"></script>
-    <script src="{{ secure_url('vendor/formvalidation/framework/bootstrap.js') }}"></script>
-    <script src="{{ secure_url('js/Plugin/sweetalert.min.js') }}"></script>
-
     <script src="{{ secure_url('js/Plugin/formatter.js') }}"></script>
     <script src="{{ secure_url('vendor/formatter/jquery.formatter.js') }}"></script>
-
     <script type="text/javascript" src="{{ secure_url('js/Plugin/bootstrap-select.js') }}"></script>
     <script type="text/javascript" src="{{ secure_url('vendor/bootstrap-select/bootstrap-select.js') }}"></script>
-
-    <script type="text/javascript" src="{{ secure_url('vendor/jsgrid/jsgrid.min.js') }}"></script>
+    <script type="text/javascript" src="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.js') }}"></script>
 
     <script type="text/javascript">
         $(document).ready(function() {
-            $(".password-fields").hide();
+            $('.btn-edit-timezone').on('click', function () {
+                var companyId = $(this).data('company');
+                var role = $('#role_' + companyId).val();
+                var timezone = $('#timezone_' + companyId).val();
 
-            $(".update-password").click(function(ev){
-                ev.preventDefault();
-
-                $(".password-fields").toggle();
-            });
-
-            $(".selectpicker").selectpicker();
-
-            $("#save-user-button").click(function() {
-                $("#save-user-button").attr('disabled', 'disabled').addClass('disabled');
-
-                $(this).parent().closest('form').submit();
-            });
-
+                $.ajax({
+                    url: '{{ route('user.update-company-data', ['user' => $user->id]) }}',
+                    method: 'post',
+                    data: {
+                        role: role,
+                        timezone: timezone,
+                        company: companyId
+                    },
+                    success: function () {
+                        swal("All Done", "Company Updated!", "success");
+                    },
+                    error: function (error) {
+                        var errors = error.responseJSON.errors;
+                        var errorMsg = '';
+                        $.each(errors, function (idx1, messages) {
+                            console.log('messages', messages);
+                            $.each(messages, function (idx2, message) {
+                                console.log('message', message);
+                                errorMsg += message + '\n';
+                            })
+                        });
+                        swal(errorMsg);
+                    }
+                })
+            })
         });
     </script>
 @endsection

@@ -39,10 +39,13 @@
                                 {{ csrf_field() }}
                                 <div class="form-group">
                                     <label for="role" class="floating-label">Role</label>
-                                    <select name="role" value="{{ old('role') }}" class="form-control" required>
+                                    <select name="role" value="{{ old('role') }}" class="form-control" required id="js-role">
                                         <option selected disabled>Choose role...</option>
-                                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin</option>
-                                        <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>User</option>
+                                        @if (auth()->user()->isAdmin())
+                                        <option value="site_admin" {{ old('role') === 'site_admin' ? 'selected' : '' }}>@role('site_admin')</option>
+                                        @endif
+                                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>@role('admin')</option>
+                                        <option value="user" {{ old('role') === 'user' ? 'selected' : '' }}>@role('user')</option>
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -62,6 +65,17 @@
                                     <input type="email" class="form-control empty" name="email" placeholder="Email"
                                            value="{{ old('email') }}" required>
                                 </div>
+                                @if (auth()->user()->isAdmin())
+                                <div class="form-group" id="js-company-select">
+                                    <label for="company" class="floating-label">Company</label>
+                                    <select name="company" value="{{ old('company') }}" class="form-control" required>
+                                        <option selected disabled>Choose a Company...</option>
+                                        @foreach ($companies as $company)
+                                        <option value="{{ $company->id }}" {{ old('company') == $company->id ? 'selected' : '' }}>{{ $company->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @endif
                                 <button type="submit" class="btn btn-success">Add User</button>
                             </form>
                         </div>
@@ -70,4 +84,18 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('scriptTags')
+<script type="text/javascript">
+$(function () {
+    $('#js-role').on('change', function () {
+        if (this.value === 'site_admin') {
+            $('#js-company-select').hide();
+        } else {
+            $('#js-company-select').show();
+        }
+    });
+});
+</script>
 @endsection

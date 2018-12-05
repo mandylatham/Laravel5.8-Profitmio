@@ -4,6 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Rules\UniqueEmailInCompany;
+use Illuminate\Validation\Rule;
 
 class StoreUserRequest extends FormRequest
 {
@@ -14,7 +15,11 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->isAdmin() || (get_active_company() && auth()->user()->isCompanyAdmin(get_active_company()));
+        if (request()->input('role') == 'site_admin') {
+            return auth()->user()->isAdmin();
+        } else {
+            return auth()->user()->isAdmin() || (get_active_company() && auth()->user()->isCompanyAdmin(get_active_company()));
+        }
     }
 
     /**
@@ -24,10 +29,18 @@ class StoreUserRequest extends FormRequest
      */
     public function rules()
     {
+        if (auth()->user()->isAdmin()) {
+            $possibleRoles = ['site_admin', 'admin', 'user'];
+        } else {
+            $possibleRoles = ['admin', 'user'];
+        }
         return [
             'first_name' => 'required',
             'last_name' => 'required',
-            'role' => 'required|in:admin,user',
+            'role' => [
+                'required',
+                Rule::in($possibleRoles)
+            ],
             'email' => [
                 'required',
                 'email',

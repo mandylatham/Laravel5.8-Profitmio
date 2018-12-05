@@ -17,10 +17,15 @@ class CheckForActiveCompany
     {
         $user = auth()->user();
         if (!$user) {
-            return redirect('login');
+            return redirect()->route('login');
         }
         if (!$user->isAdmin() && !session()->get('activeCompany')) {
-            return redirect()->route('selector.select-active-company');
+            // If user has only 1 company, select that company by default
+            if (count($user->getActiveCompanies()) == 1) {
+                session(['activeCompany' => $user->getActiveCompanies()[0]->id]);
+            } else {
+                return redirect()->route('selector.select-active-company');
+            }
         }
         return $next($request);
     }

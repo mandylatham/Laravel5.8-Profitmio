@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Lab404\Impersonate\Models\Impersonate;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -48,6 +49,22 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    public function activate($companyId)
+    {
+        $rel = $this->invitations()->where('company_id', $companyId)->firstOrFail();
+        $rel->is_active = true;
+
+        $rel->save();
+    }
+
+    public function deactivate($companyId)
+    {
+        $rel = $this->invitations()->where('company_id', $companyId)->firstOrFail();
+        $rel->is_active = false;
+
+        $rel->save();
+    }
+
     /**
      * Return the company that is selected by the logged user
      *
@@ -58,6 +75,11 @@ class User extends Authenticatable
     public function getActiveCompany()
     {
         return $this->companies()->where('companies.id', get_active_company())->first();
+    }
+
+    public function getActiveCompanies()
+    {
+        return $this->companies()->where('company_user.is_active', true)->orderBy('companies.name', 'asc')->get();
     }
 
     public function agencyCampaigns()
@@ -105,6 +127,48 @@ class User extends Authenticatable
             return Company::findOrFail(get_active_company())->users;
         }
         return [];
+    }
+
+    public function getRole(Company $company)
+    {
+        if ($this->isAdmin()) {
+            return 'site_admin';
+        } else {
+            return $this->invitations()->where('company_id', $company->id)->firstOrFail()->role;
+        }
+    }
+
+    public function getTimezone(Company $company)
+    {
+        if ($this->isAdmin()) {
+            return null;
+        } else {
+            return $this->invitations()->where('company_id', $company->id)->firstOrFail()->config['timezone'];
+        }
+    }
+
+    public function hasActiveCompanies()
+    {
+        return $this->invitations()->where('is_active', 1)->count() > 0;
+    }
+
+    public function hasPendingInvitations()
+    {
+        if ($this->isAdmin()) {
+            return false;
+        } else {
+            return $this->invitations()->whereNull('completed_at')->count() > 0;
+        }
+    }
+
+    public function invitations()
+    {
+        return $this->hasMany(CompanyUser::class, 'user_id', 'id');
+    }
+
+    public function isActive($companyId)
+    {
+        return $this->invitations()->where('company_id', $companyId)->firstOrFail()->is_active;
     }
 
     public function isAdmin(): bool
@@ -166,6 +230,11 @@ class User extends Authenticatable
         return $this->password !== '' && $this->username !== 'username';
     }
 
+    public function isCompanyProfileReady(Company $company)
+    {
+        return $this->invitations()->where('company_id', $company->id)->whereNotNull('completed_at')->count() > 0;
+    }
+
     public function getCampaignsForCompany(Company $company)
     {
         return $this->campaigns()
@@ -189,6 +258,11 @@ class User extends Authenticatable
     public function getPossibleTimezones()
     {
         return self::getPossibleTimezonesForUser();
+    }
+
+    public function getNameAttribute()
+    {
+        return ucwords(Str::lower($this->first_name).' ' . Str::lower($this->last_name));
     }
 
     static function getPossibleTimezonesForUser()

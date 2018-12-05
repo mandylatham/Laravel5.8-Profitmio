@@ -18,7 +18,7 @@ class MailgunService
      * TODO: refactor this into campaign settings/setup
      * @var string
      */
-    public $domain = 'mg.automotive-alerts.com';
+    public $domain = '';
 
     /**
      * Mailgun API Client
@@ -30,7 +30,7 @@ class MailgunService
      * Mailgun API Key
      * @var string
      */
-    private $key = 'key-27990c192ff8d74ab73ca90771fc8908';
+    private $key = '';
 
     /**
      * MailgunService constructor.
@@ -45,6 +45,8 @@ class MailgunService
         $this->mailgun = new Mailgun($this->key, $adapter);
         */
 
+        $this->domain = env('MAILGUN_DOMAIN');
+        $this->key = env('MAILGUN_KEY');
         $this->mailgun = Mailgun::create($this->key);
     }
 

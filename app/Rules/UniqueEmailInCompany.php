@@ -9,13 +9,16 @@ class UniqueEmailInCompany implements Rule
 {
     private $companyId;
 
+    private $skipId;
+
     /**
      * UniqueEmailInCompany constructor.
      * @param $companyId
      */
-    public function __construct($companyId)
+    public function __construct($companyId, $skipId = null)
     {
         $this->companyId = $companyId;
+        $this->skipId = $skipId;
     }
 
     /**
@@ -27,7 +30,11 @@ class UniqueEmailInCompany implements Rule
      */
     public function passes($attribute, $value)
     {
-        $user = User::where('email', $value)->first();
+        $user = User::where('email', $value);
+        if ($this->skipId) {
+            $user->where('id', '<>', $this->skipId)->first();
+        }
+        $user = $user->first();
         if ($user) {
             $userExistsInCompany = $user->companies()->where('companies.id', $this->companyId)->count() > 0;
             return !$userExistsInCompany;

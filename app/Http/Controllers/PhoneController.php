@@ -7,7 +7,8 @@ use App\Http\Requests\PhoneProvisionRequest;
 use App\Http\Requests\PhoneSearchRequest;
 use App\Models\PhoneNumber;
 use Illuminate\Http\Request;
-use Twilio;
+use Illuminate\Support\Str;
+use App\Facades\TwilioClient as Twilio;
 
 class PhoneController extends Controller
 {
@@ -57,11 +58,11 @@ class PhoneController extends Controller
                 'SMS' => true,
                 'MMS' => true,
                 'phoneNumber' => $phoneNumber,
-                'StatusCallback' => secure_url('/phone-responses/status'),
+                'StatusCallback' => route('pub-api.phone-response-status'),
                 'StatusCallbackMethod' => 'post',
-                'VoiceUrl' => secure_url('/phone-responses/inbound'),
+                'VoiceUrl' => route('pub-api.phone-response-inbound'),
                 'VoiceMethod' => 'post',
-                'SmsUrl' => secure_url('/text-responses/inbound'),
+                'SmsUrl' => route('pub-api.text-response-inbound'),
                 'SmsMethod' => 'post',
             ];
 
@@ -74,12 +75,15 @@ class PhoneController extends Controller
         }
 
         $record = new PhoneNumber;
+        $record->campaign_id = $request->campaign_id;
         $record->client_id = $client_id;
         $record->phone_number = $phoneNumber;
+        $record->call_source_name = $request->call_source_name;
+        $record->forward = $request->forward;
         $record->sid = $provision->sid;
         $record->save();
 
-        return json_encode(['id' => $record->phone_number_id, 'number' => $record->phone_number]);
+        return $record;
     }
 
     /**
@@ -121,5 +125,37 @@ class PhoneController extends Controller
         }
 
         return $phones->get()->toJson();
+    }
+
+    /**
+     * Get all campaign phones as Json string
+     *
+     * @param Campaign $campaign
+     * @return void
+     */
+    public function fromCampaignAsJson(Campaign $campaign)
+    {
+        return $campaign->phones->toJson();
+    }
+
+    public function edit(Request $request, Campaign $campaign, PhoneNumber $phone)
+    {
+        $csn = Str::lower($request->input('call_source_name'));
+        $csn = in_array($csn, ['mailer', 'email', 'sms']) ? $csn : '';
+        $phone->update([
+            'forward' => $request->input('forward'),
+            'call_source_name' => $csn,
+        ]);
+
+        return $phone->fresh();
+    }
+
+    public function release(Campaign $campaign, PhoneNumber $phone)
+    {
+        if (Twilio::releaseNumber($phone->sid)) {
+            $phone->delete();
+        }
+
+        return $phone;
     }
 }

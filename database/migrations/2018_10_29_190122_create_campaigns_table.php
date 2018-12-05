@@ -15,11 +15,16 @@ class CreateCampaignsTable extends Migration
     {
         Schema::create('campaigns', function (Blueprint $table) {
             $table->increments('id');
+            $table->boolean('sms_on_callback')->default(false);
+            $table->string('sms_on_callback_number')->nullable();
             $table->unsignedInteger('agency_id');
             $table->unsignedInteger('dealership_id');
             $table->unsignedInteger('phone_number_id')->nullable();
             $table->string('name', 255);
+            $table->dateTime('expires_at')->nullable();
             $table->integer('order_id');
+            $table->boolean('service_dept')->default(false);
+            $table->string('service_dept_email')->nullable();
             $table->boolean('adf_crm_export')->default(false);
             $table->string('adf_crm_export_email')->nullable();
             $table->boolean('lead_alerts')->default(false);

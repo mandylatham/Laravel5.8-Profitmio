@@ -195,7 +195,7 @@
             <span class="sr-only">Toggle navigation</span>
             <span class="hamburger-bar"></span>
         </button>
-        <a class="navbar-brand navbar-brand-center" href="{{ secure_url('/dashboard') }}">
+        <a class="navbar-brand navbar-brand-center" href="{{ route('dashboard') }}">
             <img class="navbar-brand-logo navbar-brand-logo-normal" src="{{ secure_asset('images/favicon.png') }}"
                  title="Profit Miner">
             <img class="navbar-brand-logo navbar-brand-logo-special" src="{{ secure_asset('images/favicon.png') }}"
@@ -322,7 +322,8 @@
                         <span style="margin-left: 8px;">{{ auth()->user()->first_name }}</span>
                     </a>
                     <div class="dropdown-menu" role="menu">
-                        <a class="dropdown-item" href="{{ secure_url('/logout') }}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
+                        <a class="dropdown-item" href="{{ route('profile.index') }}" role="menuitem"><i class="icon md-account" aria-hidden="true"></i> Setting</a>
+                        <a class="dropdown-item" href="{{ route('logout') }}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
                     </div>
                 </li>
             </ul>
@@ -370,7 +371,7 @@
                     @endcan
                     @can('list', \App\Models\CampaignScheduleTemplate::class)
                         <li class="site-menu-item">
-                            <a href="{{ secure_url('/templates') }}" class=" waves-effect waves-classic">
+                            <a href="{{ route('template.index') }}" class=" waves-effect waves-classic">
                                 <i class="site-menu-icon icon fa-file-text-o" aria-hidden="true"></i>
                                 <span class="site-menu-title">Templates</span>
                             </a>
@@ -406,13 +407,13 @@
                                         <div class="scrollable-content" style="width: 217px;">
                                             <ul class="site-menu-sub site-menu-normal-list">
                                                 <li class="site-menu-item">
-                                                    <a href="{{ secure_url('/system/drops') }}" class=" waves-effect waves-classic">
+                                                    <a href="{{ route('system.drop.index') }}" class=" waves-effect waves-classic">
                                                         <i class="site-menu-icon icon fa-paper-plane" aria-hidden="true"></i>
                                                         <span class="site-menu-title">Drop Management</span>
                                                     </a>
                                                 </li>
                                                 <li class="site-menu-item">
-                                                    <a href="{{ secure_url('/system/reports') }}" class=" waves-effect waves-classic">
+                                                    <a href="{{ route('system.report.index') }}" class=" waves-effect waves-classic">
                                                         <i class="site-menu-icon icon fa-bar-chart" aria-hidden="true"></i>
                                                         <span class="site-menu-title">Reports</span>
                                                     </a>
@@ -431,9 +432,9 @@
                         <li class="site-menu-item float-right change-company-selector">
                             <form method="post" action="{{ route('selector.update-active-company') }}">
                                 <select class="form-control" name="company" required onchange="this.form.submit()">
-                                    <option selected>Change Company</option>
-                                    @foreach (auth()->user()->companies()->orderBy('name', 'desc')->get() as $company)
-                                        <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
+                                    <option disabled>Change Company</option>
+                                    @foreach (auth()->user()->getActiveCompanies() as $company)
+                                        <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled enabled' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
                                     @endforeach
                                 </select>
                                 {{ csrf_field() }}

@@ -21,6 +21,9 @@ class Responses extends Migration
             $table->longText('message');
             $table->string('call_sid')->nullable();
             $table->string('recording_sid')->nullable();
+            $table->integer('call_phone_number_id')->nullable();
+            $table->string('response_source')->nullable();
+            $table->string('response_destination')->nullable();
             $table->string('recording_url')->nullable();
             $table->smallInteger('duration');
             $table->string('message_id')->nullable();

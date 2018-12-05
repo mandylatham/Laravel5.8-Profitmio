@@ -57,6 +57,10 @@
                                         <th>Username</th>
                                         <th>Email</th>
                                         <th>Phone Number</th>
+                                        @if(!auth()->user()->isAdmin() || (auth()->user()->isAdmin() && $selectedCompanyId))
+                                            <th>Status</th>
+                                        @endif
+                                        <th>Actions</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -65,13 +69,15 @@
                                             <td class="id-row v-center"><strong>{{ $user->id }}</strong></td>
                                             <td class="v-center">{{ $user->first_name }}</td>
                                             <td class="v-center">{{ $user->last_name }}</td>
-                                            @if (!auth()->user()->isAdmin() || $selectedCompanyId)
-                                                <td class="text-capitalize v-center">{{ $user->pivot->role }}</td>
+                                            @if ($user->isAdmin())
+                                                <td class="text-capitalize v-center">@role('site_admin')</td>
+                                            @elseif (!auth()->user()->isAdmin() || $selectedCompanyId)
+                                                <td class="text-capitalize v-center">@role($user->pivot->role)</td>
                                             @else
                                                 <td class="text-capitalize v-center">
                                                     <ul>
                                                         @foreach ($user->companies as $company)
-                                                        <li>{{ $company->name }} / {{ $company->pivot->role }}</li>
+                                                        <li>{{ $company->name }} @role($user->getRole($company))</li>
                                                         @endforeach
                                                     </ul>
                                                 </td>
@@ -79,6 +85,53 @@
                                             <td class="v-center">{{ $user->username }}</td>
                                             <td class="v-center">{{ $user->email }}</td>
                                             <td class="v-center">{{ $user->phone_number }}</td>
+                                            @if(!auth()->user()->isAdmin())
+                                                <td class="v-center text-center">@status($user->isActive($company->id))</td>
+                                            @elseif(auth()->user()->isAdmin() && $selectedCompanyId)
+                                                <td class="v-center text-center">@status($user->isActive($selectedCompanyId))</td>
+                                            @endif
+                                            <td>
+                                                @if (auth()->user()->isAdmin() || !$user->isAdmin())
+                                                <a class="btn btn-sm btn-warning btn-round mb-5"
+                                                   href="{{ route('user.edit', ['user' => $user->id]) }}">
+                                                    Edit
+                                                </a>
+                                                @endif
+                                                @if (auth()->user()->isAdmin() && !$user->isAdmin() && $user->hasActiveCompanies())
+                                                    <a class="btn btn-sm btn-success btn-round mb-5"
+                                                       href="{{ route('admin.impersonate', ['user' => $user->id]) }}">
+                                                        Impersonate
+                                                    </a>
+                                                @endif
+                                                @if(auth()->user()->isAdmin() && !$user->isAdmin() && $user->hasPendingInvitations())
+                                                    <a class="btn btn-link mb-5"
+                                                       href="{{ route('user.edit', ['user' => $user->id]) }}">
+                                                        Has Pending Invitations
+                                                    </a>
+                                                @endif
+                                                @if (!auth()->user()->isAdmin() && !$user->isCompanyProfileReady($company))
+                                                    <a class="btn btn-sm btn-primary btn-round mb-5"
+                                                       href="{{ route('admin.resend-invitation', ['user' => $user->id, 'company' => $company->id ]) }}">
+                                                        Re-send Invitation
+                                                    </a>
+                                                @endif
+                                                @if((!auth()->user()->isAdmin() || (auth()->user()->isAdmin() && $selectedCompanyId)) && !$user->isAdmin())
+                                                    @php
+                                                        $companyIdToUser = auth()->user()->isAdmin() && $selectedCompanyId ? $selectedCompanyId : $company->id;
+                                                    @endphp
+                                                    @if($user->isActive($companyIdToUser))
+                                                        <a class="btn btn-sm btn-danger btn-round mb-5"
+                                                           href="{{ route('user.deactivate', ['user' => $user->id, 'company' => $companyIdToUser]) }}">
+                                                            Deactivate
+                                                        </a>
+                                                    @else
+                                                        <a class="btn btn-sm btn-success btn-round mb-5"
+                                                           href="{{ route('user.activate', ['user' => $user->id, 'company' => $companyIdToUser]) }}">
+                                                            Activate
+                                                        </a>
+                                                    @endif
+                                                @endif
+                                            </td>
                                         </tr>
                                     @endforeach
                                     </tbody>

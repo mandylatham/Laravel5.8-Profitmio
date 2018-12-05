@@ -71,7 +71,7 @@
                                 </ul>
                             </div>
                             @endif
-                            <form class="form" method="post" action="{{ secure_url('/template/create') }}">
+                            <form class="form" method="post" action="{{ route('template.store') }}">
                                 {{ csrf_field() }}
                                 <h4>Template Details</h4>
                                 <div class="form-group">
