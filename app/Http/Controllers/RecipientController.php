@@ -410,7 +410,7 @@ class RecipientController extends Controller
             abort(422, "Invalid Parameters");
         }
 
-        if ( Recipient::whereIn('recipient_id', $request->input('recipient_ids'))->count() != count($request->input('recipient_ids'))) {
+        if ( Recipient::whereIn('id', $request->input('recipient_ids'))->count() != count($request->input('recipient_ids'))) {
             abort(422, "Not all recipients exist, please try again");
         }
 
@@ -429,9 +429,9 @@ class RecipientController extends Controller
             return redirect()->back()->withErrors($errors);
         }
 
-         Recipient::whereIn('campaign_id', $campaign->id)
-            ->whereIn('recipient_id', $request->input('recipient_ids'))
-            ->whereNotIn('recipient_id', $dropped)
+         Recipient::where('campaign_id', $campaign->id)
+            ->whereIn('id', (array)$request->input('recipient_ids'))
+            ->whereNotIn('id', $dropped)
             ->delete();
 
         return redirect()->back();
