@@ -494,7 +494,7 @@ class DeploymentController extends Controller
                     if ( ! isset($deployments[$batch])) {
                         Throw new \Exception("More recipients than batches");
                     }
-                    $batches[] = ['deployment_id' => $deployments[$batch]->campaign_schedule_id, 'recipient_id' => $recipient->recipient_id];
+                    $batches[] = ['deployment_id' => $deployments[$batch]->campaign_schedule_id, 'recipient_id' => $recipient->id];
 
                     if ($i != 0 && $i % $info['max'] == 0) {
                         $batch++;
@@ -503,7 +503,7 @@ class DeploymentController extends Controller
                 }
             } else {
                 $batches = $recipients->map(function ($recip) use ($deployments) {
-                    return ['deployment_id' => $deployments->first()->id, 'recipient_id' => $recip->recipient_id];
+                    return ['deployment_id' => $deployments->first()->id, 'recipient_id' => $recip->id];
                 })->toArray();
             }
         } catch (\Exception $e) {
