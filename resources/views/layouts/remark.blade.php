@@ -308,7 +308,7 @@
                             <img src="{{ secure_url('/images/default-user.png') }}">
                             <i></i>
                         </span>
-                        <span style="margin-left: 8px;">{{ auth()->user()->first_name }}</span>
+                        <span style="margin-left: 8px;">{{ auth()->user()->name }}</span>
                     </a>
                     <div class="dropdown-menu" role="menu">
                         <a class="dropdown-item" href="{{ route('profile.index') }}" role="menuitem"><i class="icon md-account" aria-hidden="true"></i> Setting</a>
