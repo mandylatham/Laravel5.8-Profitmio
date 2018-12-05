@@ -75,7 +75,7 @@
                                 @if (! in_array($recipient->id, $dropped))
                                 <div class="checkbox">
                                     <label>
-                                        <input type="checkbox" name="target_ids[]" value="{{ $recipient->id }}">
+                                        <input type="checkbox" name="recipient_ids[]" value="{{ $recipient->id }}">
                                     </label>
                                 </div>
                                 @else
@@ -115,9 +115,9 @@
 @section('scripts')
     $("#all_or_none").on('change', function () {
         if ($("#all_or_none").prop('checked')) {
-            $("input[name='target_ids[]']").prop('checked', true);
+            $("input[name='recipient_ids[]']").prop('checked', true);
         } else {
-            $("input[name='target_ids[]']").prop('checked', false);
+            $("input[name='recipient_ids[]']").prop('checked', false);
         }
     });
 @endsection
