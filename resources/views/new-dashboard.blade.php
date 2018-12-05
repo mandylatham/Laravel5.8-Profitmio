@@ -17,23 +17,39 @@
         <img src="/img/logo.png">
     </a>
     <nav class="navbar">
+        <a href="javascript:;" class="sidebar-toggle"></a>
         <div class="navbar-menu-extra">
             <ul class="nav">
                 <li class="menu-item">
-                    <a href="">
-                        <img src="/img/help.png" alt="Help">
-                    </a>
+                    <b-dropdown variant="link" no-caret>
+                        <template slot="button-content">
+                            <img src="/img/help.png" alt="Help">
+                        </template>
+                        <b-dropdown-item href="#">Action</b-dropdown-item>
+                        <b-dropdown-item href="#">Another action</b-dropdown-item>
+                        <b-dropdown-item href="#">Something else here...</b-dropdown-item>
+                    </b-dropdown>
                 </li>
                 <li class="menu-item">
-                    <a href="">
-                        <img src="/img/notification.png" alt="Notifications">
-                    </a>
+                    <b-dropdown variant="link" no-caret>
+                        <template slot="button-content">
+                            <img src="/img/notification.png" alt="Notifications">
+                        </template>
+                        <b-dropdown-item href="#">Action</b-dropdown-item>
+                        <b-dropdown-item href="#">Another action</b-dropdown-item>
+                        <b-dropdown-item href="#">Something else here...</b-dropdown-item>
+                    </b-dropdown>
                 </li>
-                <li class="menu-item-profile">
-                    <a href="">
-                        <span>Jhon Doe</span>
-                        <img src="http://lorempixel.com/60/60/" alt="Avatar">
-                    </a>
+                <li class="menu-item menu-item-profile">
+                    <b-dropdown variant="link" no-caret>
+                        <template slot="button-content">
+                            <span>Jhon Doe</span>
+                            <img src="http://lorempixel.com/60/60/" alt="Avatar">
+                        </template>
+                        <b-dropdown-item href="#">Profile</b-dropdown-item>
+                        <b-dropdown-item href="#">Another action</b-dropdown-item>
+                        <b-dropdown-item href="#">Something else here...</b-dropdown-item>
+                    </b-dropdown>
                 </li>
             </ul>
         </div>
@@ -42,9 +58,9 @@
 <!-- End Navigation Bar-->
 
 <div id="wrapper">
-    <div class="row no-gutters">
-        <div class="d-none d-lg-block col-lg-4 col-xl-3 wrapper-aside">
-            <div class="wrapper-aside--content">
+    {{--<div class="row no-gutters">--}}
+        {{--<div class="d-none d-lg-block col-lg-4 col-xl-3 wrapper-aside">--}}
+            <div class="wrapper-aside">
                 <div class="calendar-filters">
                     <div class="form-check">
                         <input class="form-check-input" type="radio" value="option2" checked>
@@ -66,8 +82,9 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-8 col-xl-9 wrapper-content">
+            {{--</div>--}}
+        {{--</div>--}}
+        <div class="wrapper-content">
             <div class="campaign">
                 <div class="row no-gutters">
                     <div class="col-12 col-xl-6 campaign-resume">
@@ -146,7 +163,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    {{--</div>--}}
 </div>
 </body>
 </html>
