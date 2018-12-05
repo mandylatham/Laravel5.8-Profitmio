@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 use Lab404\Impersonate\Models\Impersonate;
 use Spatie\Activitylog\Traits\LogsActivity;
 
@@ -257,6 +258,11 @@ class User extends Authenticatable
     public function getPossibleTimezones()
     {
         return self::getPossibleTimezonesForUser();
+    }
+
+    public function getNameAttribute()
+    {
+        return ucwords(Str::lower($this->first_name).' ' . Str::lower($this->last_name));
     }
 
     static function getPossibleTimezonesForUser()
