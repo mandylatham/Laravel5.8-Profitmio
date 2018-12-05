@@ -1,14 +1,326 @@
-
-// Fonts
-@import url('https://fonts.googleapis.com/css?family=Nunito');
-
-// Variables
-@import 'variables';
-
 // Bootstrap
-@import '~bootstrap/scss/bootstrap';
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/forms";
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
 
-.navbar-laravel {
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+$gray: rgb(76, 83, 91);
+$red: rgb(248, 66, 88);
+$gray-light: rgb(225, 229, 232);
+
+
+body, html {
+  height: 100%;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 14px;
+  color: $gray;
+}
+body {
+  display: flex;
+  flex-flow: column;
+}
+
+#main-header {
+  background-color: #ddd;
+  .logo {
+    display: block;
+    float: left;
+    text-align: center;
+    height: 60px;
+    width: 200px;
+    line-height: 60px;
+    img {
+      height: 40px;
+    }
+  }
+  .navbar {
+    margin-left: 200px;
+    &-menu-extra {
+      float: right;
+      margin-right: 20px;
+    }
+    .nav {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      li {
+        float: left;
+        a {
+          height: 60px;
+          position: relative;
+          display: block;
+          padding: 10px 15px;
+          line-height: 38px;
+          text-decoration: none;
+          color: $gray;
+        }
+        &.menu-item {
+          padding-right: 40px;
+          padding-left: 40px;
+        }
+        &.menu-item-profile {
+          font-weight: 300;
+          a {
+            padding-top: 12px;
+            padding-bottom: 12px;
+          }
+          img {
+            float: right;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-left: 10px;
+            margin-top: 3px;
+          }
+        }
+      }
+    }
+  }
+}
+#wrapper {
+  height: 100%;
+  .wrapper-aside {
+    background: $gray;
+    min-height: calc(100vh - 60px);
+    color: #fff;
+    &--content {
+      padding: 20px 0;
+    }
+    .calendar-filters {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+      color: #fff;
+      font-size: 14px;
+    }
+  }
+  .wrapper-content {
+    padding: 10px;
+    @include media-breakpoint-up(md) {
+      padding: 20px 30px;
+    }
+  }
+  .campaign {
+    margin-bottom:3rem;
+    .campaign-resume {
+      display: flex;
+      flex-flow: column;
+      header {
+        background-color: $gray;
+        padding: 30px;
+        display: flex;
+        flex-flow: row;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        border-bottom: 4px solid #fff;
+        @include media-breakpoint-down(lg) {
+          border-bottom: 4px solid #fff;
+        }
+      }
+      &--status {
+        position: relative;
+        flex-grow: 1;
+        width: 40px;
+        &::after {
+          content: '';
+          position: absolute;
+          background-color: rgb(116, 220, 59);
+          border: 2px solid #fff;
+          border-radius: 50%;
+          width: 17px;
+          height: 17px;
+          top: 50%;
+          margin-top: -10px;
+          left: 50%;
+          margin-left: -10px;
+        }
+      }
+      &--title {
+        display: flex;
+        flex-flow: column;
+        flex-grow: 3;
+        span {
+          font-weight: 300;
+        }
+      }
+      &--data {
+        padding: 20px;
+        background-color: $gray-light;
+        flex-grow: 1;
+        &-info p {
+          margin: 0;
+        }
+        &-assets {
+          text-align: center;
+          img {
+            height: 60px;
+          }
+          p {
+            margin: 0;
+          }
+        }
+        @include media-breakpoint-down(lg) {
+          border-bottom: 4px solid #fff;
+        }
+      }
+    }
+    .campaign-date {
+      background-color: $gray-light;
+      padding: 20px 30px 10px 30px;
+      border-bottom: 4px solid #fff;
+      border-left: none;
+      &--date {
+        display: flex;
+        font-size: 13px;
+        &-label {
+          width: 40%;
+          font-weight: 300;
+        }
+        &-value {
+          width: 60%;
+          font-weight: 600;
+        }
+      }
+      .day-left {
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        .date-label {
+          text-align: center;
+          font-size: 13px;
+          margin-top: 1.5rem;
+          line-height: 1rem;
+        }
+        .date-value {
+          text-align: center;
+          font-size: 7rem;
+          font-weight: 300;
+          line-height: 1em;
+        }
+      }
+      @include media-breakpoint-up(md) {
+        border-bottom: none;
+        border-right: 2px solid #fff;
+      }
+      @include media-breakpoint-up(xl) {
+        border-left: 4px solid #fff;
+      }
+    }
+    .campaign-chart {
+      background-color: $gray-light;
+      padding: 10px;
+      border-left: none;
+      &--charts {
+        text-align: center;
+        img {
+          height: 55px;
+        }
+      }
+      &--labels {
+        padding-left: 10px;
+        span {
+          position: relative;
+          display: block;
+          padding-left: 10px;
+          font-size: 13px;
+          &::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            left: -10px;
+            top: 50%;
+            margin-top: -5px;
+          }
+          &.sms::after {
+            background-color: rgb(76, 83, 91);
+          }
+          &.call::after {
+            background-color: #fff;
+          }
+          &.email::after {
+            background-color: rgb(101, 108, 116);
+          }
+        }
+      }
+      @include media-breakpoint-up(md) {
+        border-left: 2px solid #fff;
+      }
+    }
+    &.inactive {
+      margin-bottom: 1.5rem;
+      font-size: 13px;
+      .campaign-resume {
+        header {
+          padding: 20px;
+          border-bottom: none;
+          @include media-breakpoint-down(lg) {
+            border-bottom: 4px solid #fff;
+          }
+        }
+        &--status {
+          &::after {
+            background-color: $red;
+          }
+        }
+      }
+      .campaign-date {
+        padding: 0;
+        > .row {
+          height: 100%;
+        }
+        &--asset {
+          border-right: 2px solid #fff;
+          height: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          img {
+            height: 50px;
+          }
+          @include media-breakpoint-down(md) {
+            padding: 20px;
+          }
+        }
+        &--date {
+          border-left: 2px solid #fff;
+          flex-flow: column;
+          align-items: center;
+          justify-content: center;
+          &-label {
+            text-align: center;
+            font-size: 1.2rem;
+          }
+          &-value {
+            text-align: center;
+            font-size: 1rem;
+          }
+          @include media-breakpoint-down(md) {
+            padding: 20px;
+          }
+        }
+        @include media-breakpoint-up(md) {
+          border-right: none;
+        }
+      }
+      .campaign-chart {
+        border-left: none;
+        @include media-breakpoint-up(md) {
+          border-top: 4px solid #fff;
+        }
+        @include media-breakpoint-up(lg) {
+          border-top: none;
+          border-left: 4px solid #fff;
+        }
+      }
+    }
+  }
 }

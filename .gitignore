@@ -2,6 +2,9 @@
 /public/hot
 /public/storage
 /storage/*.key
+/public/js
+/public/css
+/public/img
 /vendor
 /.idea
 /.vscode
