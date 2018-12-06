@@ -102,8 +102,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 __WEBPACK_IMPORTED_MODULE_1_vue___default.a.use(__WEBPACK_IMPORTED_MODULE_2_bootstrap_vue_es_components__["a" /* Dropdown */]);
 
-var mainHeader = new __WEBPACK_IMPORTED_MODULE_1_vue___default.a({
+new __WEBPACK_IMPORTED_MODULE_1_vue___default.a({
     el: '#main-header'
+});
+
+new __WEBPACK_IMPORTED_MODULE_1_vue___default.a({
+    el: '#campaign-list',
+    data: {
+        open: {}
+    },
+    methods: {
+        toggle: function toggle(idx) {
+            __WEBPACK_IMPORTED_MODULE_1_vue___default.a.set(this.open, idx, !this.open[idx]);
+            // this.open = merge(this.open, {[idx]: !this.open[idx]});
+            // console.log(this, idx);
+            // this.open[idx] = !this.open[idx];
+        }
+    }
 });
 
 /***/ }),

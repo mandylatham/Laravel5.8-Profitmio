@@ -6305,7 +6305,32 @@ body.open #wrapper .wrapper-content {
 }
 
 #wrapper .campaign {
-  margin-bottom: 3rem;
+  margin-bottom: 20px;
+}
+
+#wrapper .campaign .campaign-collapsable {
+  max-height: 0;
+  width: 100%;
+  -webkit-transition: max-height 200ms, opacity 150ms;
+  transition: max-height 200ms, opacity 150ms;
+  overflow: hidden;
+  opacity: 0;
+}
+
+#wrapper .campaign .campaign-collapsable > .row {
+  height: 100%;
+}
+
+@media (min-width: 1200px) {
+  #wrapper .campaign .campaign-collapsable {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+#wrapper .campaign.open .campaign-collapsable {
+  max-height: 500px;
+  opacity: 1;
 }
 
 #wrapper .campaign .campaign-resume {
@@ -6336,6 +6361,7 @@ body.open #wrapper .wrapper-content {
           justify-content: center;
   color: #fff;
   border-bottom: 4px solid #fff;
+  cursor: pointer;
 }
 
 @media (max-width: 1199.98px) {
@@ -6532,7 +6558,6 @@ body.open #wrapper .wrapper-content {
 }
 
 #wrapper .campaign.inactive {
-  margin-bottom: 1.5rem;
   font-size: 13px;
 }
 

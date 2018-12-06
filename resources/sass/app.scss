@@ -165,7 +165,25 @@ body {
     }
   }
   .campaign {
-    margin-bottom:3rem;
+    margin-bottom:20px;
+    .campaign-collapsable {
+      max-height: 0;
+      width: 100%;
+      transition: max-height 200ms, opacity 150ms;
+      overflow: hidden;
+      opacity: 0;
+      > .row {
+        height: 100%;
+      }
+      @include media-breakpoint-up(xl) {
+        max-height: 500px;
+        opacity: 1;
+      }
+    }
+    &.open .campaign-collapsable {
+      max-height: 500px;
+      opacity: 1;
+    }
     .campaign-resume {
       display: flex;
       flex-flow: column;
@@ -178,6 +196,7 @@ body {
         justify-content: center;
         color: #fff;
         border-bottom: 4px solid #fff;
+        cursor: pointer;
         @include media-breakpoint-down(lg) {
           border-bottom: 4px solid #fff;
         }
@@ -314,7 +333,6 @@ body {
       }
     }
     &.inactive {
-      margin-bottom: 1.5rem;
       font-size: 13px;
       .campaign-resume {
         header {

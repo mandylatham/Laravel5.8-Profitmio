@@ -18,6 +18,21 @@ import { Dropdown } from 'bootstrap-vue/es/components';
 
 Vue.use(Dropdown);
 
-const mainHeader = new Vue({
+new Vue({
     el: '#main-header'
+});
+
+new Vue({
+    el: '#campaign-list',
+    data: {
+        open: {}
+    },
+    methods: {
+        toggle: function (idx) {
+            Vue.set(this.open, idx, !this.open[idx]);
+            // this.open = merge(this.open, {[idx]: !this.open[idx]});
+            // console.log(this, idx);
+            // this.open[idx] = !this.open[idx];
+        }
+    }
 });
