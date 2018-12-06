@@ -67,13 +67,15 @@
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option1" checked>
+                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option1"
+                       checked>
                 <label class="form-check-label" for="exampleRadios2">
                     Filter
                 </label>
             </div>
             <div class="form-check">
-                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1" checked>
+                <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"
+                       checked>
                 <label class="form-check-label" for="exampleRadios1">
                     Filter
                 </label>
@@ -81,6 +83,7 @@
         </div>
     </div>
     <div class="wrapper-content" id="campaign-list">
+        <h3>ACTIVE CAMPAIGN</h3>
         <div class="campaign" :class="{'open': open[1]}">
             <div class="row no-gutters">
                 <div class="col-12 col-xl-6 campaign-resume">
@@ -134,16 +137,61 @@
                                 <span class="date-value">6</span>
                             </div>
                         </div>
-                        <div class="col-12 col-md-6 campaign-chart">
+                        <div class="col-12 col-md-6 campaign-chart campaign-button-block">
+                            <button class="btn btn-secondary btn-block">A</button>
+                            <button class="btn btn-secondary btn-block">B</button>
+                            <button class="btn btn-secondary btn-block">C</button>
+                            <button class="btn btn-secondary btn-block">D</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <h3>EXPIRED CAMPAIGN</h3>
         <div class="campaign inactive" :class="{'open': open[2]}">
             <div class="row no-gutters">
                 <div class="col-12 col-xl-6 campaign-resume">
                     <header @click="toggle(2)">
+                        <span class="campaign-resume--status"></span>
+                        <div class="campaign-resume--title">
+                            <strong>CAMPAIGN 677</strong>
+                            <span>HEALEY FORD LINCOLN “PM6000”</span>
+                        </div>
+                    </header>
+                </div>
+                <div class="col-12 col-xl-6 campaign-collapsable">
+                    <div class="row no-gutters">
+                        <div class="col-12 col-lg-6 campaign-date">
+                            <div class="row no-gutters">
+                                <div class="col-6 campaign-date--asset">
+                                    <img src="/img/img.png" alt="Image">
+                                </div>
+                                <div class="col-6 campaign-date--date">
+                                    <span class="campaign-date--date-label">End Date:</span>
+                                    <span class="campaign-date--date-value">11.21.18</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-6 campaign-chart">
+                            <div class="row no-gutters">
+                                <div class="col-6 campaign-chart--charts">
+                                    <img src="/img/pie.png" alt="Image">
+                                </div>
+                                <div class="col-6 campaign-chart--labels">
+                                    <span class="sms">sms</span>
+                                    <span class="call">call</span>
+                                    <span class="email">email</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="campaign inactive" :class="{'open': open[3]}">
+            <div class="row no-gutters">
+                <div class="col-12 col-xl-6 campaign-resume">
+                    <header @click="toggle(3)">
                         <span class="campaign-resume--status"></span>
                         <div class="campaign-resume--title">
                             <strong>CAMPAIGN 677</strong>

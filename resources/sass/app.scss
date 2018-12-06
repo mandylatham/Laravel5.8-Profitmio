@@ -8,6 +8,7 @@
 @import "~bootstrap/scss/type";
 @import "~bootstrap/scss/grid";
 @import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
 @import "~bootstrap/scss/dropdown";
 @import "~bootstrap-vue/es/components/dropdown/dropdown.css";
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
@@ -40,7 +41,11 @@ body {
     }
   }
 }
-
+h3 {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
 #main-header {
   background-color: #ddd;
   width: 100%;
@@ -100,6 +105,8 @@ body {
           .btn.btn-link {
             line-height: 24px;
             padding-top: 8px;
+            color: $gray;
+            text-decoration: none;
           }
           img {
             float: right;
@@ -120,6 +127,7 @@ body {
   overflow-x: hidden;
   .wrapper-aside {
     background: $gray;
+    padding: 20px;
     min-height: calc(100vh - 60px);
     color: #fff;
     transform: translate(-100%);
@@ -331,6 +339,12 @@ body {
       @include media-breakpoint-up(md) {
         border-left: 2px solid #fff;
       }
+    }
+    .campaign-button-block {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      justify-content: center;
     }
     &.inactive {
       font-size: 13px;
