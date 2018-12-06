@@ -6116,6 +6116,11 @@ body.open #wrapper .wrapper-aside {
           transform: translate(0, 0);
 }
 
+body.open #wrapper .wrapper-content {
+  -webkit-transform: translate(400px, 0);
+          transform: translate(400px, 0);
+}
+
 #main-header {
   background-color: #ddd;
   width: 100%;
@@ -6134,6 +6139,12 @@ body.open #wrapper .wrapper-aside {
   height: 40px;
 }
 
+@media (min-width: 992px) {
+  #main-header .logo {
+    width: 100px;
+  }
+}
+
 #main-header .navbar-menu-extra {
   float: right;
 }
@@ -6144,6 +6155,12 @@ body.open #wrapper .wrapper-aside {
   background-image: none;
   padding: 10px 10px;
   height: 40px;
+}
+
+@media (min-width: 992px) {
+  #main-header .navbar .sidebar-toggle {
+    display: none;
+  }
 }
 
 #main-header .navbar .nav {
@@ -6165,6 +6182,12 @@ body.open #wrapper .wrapper-aside {
   background-color: transparent;
   outline: none;
   cursor: pointer;
+}
+
+@media (min-width: 992px) {
+  #main-header .navbar .nav li .btn.btn-link {
+    height: 60px;
+  }
 }
 
 #main-header .navbar .nav li img {
@@ -6193,6 +6216,7 @@ body.open #wrapper .wrapper-aside {
 #wrapper {
   height: 100%;
   position: relative;
+  overflow-x: hidden;
 }
 
 #wrapper .wrapper-aside {
@@ -6230,13 +6254,53 @@ body.open #wrapper .wrapper-aside {
   font-size: 14px;
 }
 
+@media (min-width: 576px) {
+  #wrapper .wrapper-aside {
+    width: 400px;
+  }
+}
+
+@media (min-width: 992px) {
+  #wrapper .wrapper-aside {
+    width: 350px;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  #wrapper .wrapper-aside {
+    width: 400px;
+  }
+}
+
 #wrapper .wrapper-content {
   padding: 10px;
+  -webkit-transform: translate(0, 0);
+          transform: translate(0, 0);
+  -webkit-transition: margin .3s ease-in-out,-webkit-transform .3s ease-in-out;
+  transition: margin .3s ease-in-out,-webkit-transform .3s ease-in-out;
+  transition: transform .3s ease-in-out,margin .3s ease-in-out;
+  transition: transform .3s ease-in-out,margin .3s ease-in-out,-webkit-transform .3s ease-in-out;
 }
 
 @media (min-width: 768px) {
   #wrapper .wrapper-content {
     padding: 20px 30px;
+  }
+}
+
+@media (min-width: 992px) {
+  #wrapper .wrapper-content {
+    margin-left: 350px;
+    -webkit-transform: none;
+            transform: none;
+  }
+}
+
+@media (min-width: 1200px) {
+  #wrapper .wrapper-content {
+    margin-left: 400px;
   }
 }
 
