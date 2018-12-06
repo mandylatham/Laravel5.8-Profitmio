@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddRecipientRequest;
+use App\Events\CampaignResponseUpdated;
 use App\Events\ServiceDeptLabelAdded;
 use App\Models\Recipient;
 use App\Models\RecipientList;
@@ -122,6 +123,7 @@ class RecipientController extends Controller
         $recipient->fill(['notes' => $request->notes]);
 
         $recipient->save();
+        broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
 
         return $recipient->toJson();
     }
@@ -140,6 +142,7 @@ class RecipientController extends Controller
                 $request->label => 0,
             ]);
             $recipient->save();
+            broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
 
             $class = 'badge-danger';
             if (in_array($request->label, ['interested', 'appointment', 'service', 'callback'])) {
@@ -166,6 +169,7 @@ class RecipientController extends Controller
             ]);
 
             $recipient->save();
+            broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
 
             $class = 'badge-danger';
             if (in_array($request->label, ['interested', 'appointment', 'service'])) {

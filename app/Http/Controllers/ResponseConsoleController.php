@@ -2,11 +2,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Campaign;
+use App\Events\CampaignCountsUpdated;
+use App\Events\CampaignResponseUpdated;
 use App\Classes\MailgunService;
 use App\Models\EmailLog;
 use App\Models\PhoneNumber;
 use App\Models\Recipient;
-use App\Models\≈Response;
+use App\Models\Response;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 
@@ -282,6 +284,7 @@ class ResponseConsoleController extends Controller
 
         $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
         $recipient->save();
+        broadcast(new CampaignCountsUpdated($campaign));
 
         if ($campaign->client_passthrough && !empty($campaign->client_passthrough_email)) {
             $this->mailgun->sendPassthroughEmail(
@@ -501,6 +504,7 @@ class ResponseConsoleController extends Controller
 
             $response->recipient_id = $recipient->id;
             $response->save();
+            broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
 
             if ( $this->isUnsubscribeMessage($message)) {
                 \Log::debug('unsubscribing recipient #'.$recipient->id);

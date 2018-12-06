@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appointment;
 use App\Models\Campaign;
 use App\Classes\MailgunService;
+use App\Events\CampaignResponseUpdated;
 use App\Mail\CrmNotification;
 use App\Mail\LeadNotification;
 use App\Models\Recipient;
@@ -131,6 +132,7 @@ class AppointmentController extends Controller
             $recipient->callback = true;
         }
         $recipient->save();
+        broadcast(new CampaignResponseUpdated($campaign, $recipient));
 
         if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT, Appointment::TYPE_CALLBACK])) {
             if ($campaign->adf_crm_export) {
@@ -245,6 +247,7 @@ class AppointmentController extends Controller
         ]);
 
         $recipient->update(['appointment' => true]);
+        broadcast(new CampaignResponseUpdated($campaign, $recipient));
 
         return response()->json([
             'appointment_at' => $appointment_at->timezone(\Auth::user()->timezone)->format("m/d/Y h:i A T"),

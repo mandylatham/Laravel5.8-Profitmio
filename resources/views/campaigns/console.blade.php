@@ -404,21 +404,55 @@
     <script src="{{ secure_url('vendor/jt-timepicker/jquery.timepicker.min.js') }}"></script>
     <script src="{{ secure_url('js/Plugin/bootstrap-datepicker.js') }}"></script>
     <script src="{{ secure_url('vendor/bootstrap-datepicker/bootstrap-datepicker.js') }}"></script>
+    <script src="https://js.pusher.com/4.3/pusher.min.js"></script>
+
 <script type="text/javascript">
 var debug = false;
 var current_recipient = 0;
 var email_hash = '';
 var text_hash = '';
 
+@if(env('PUSHER_BROADCASTING_ENABLED', false))
+	Pusher.logToConsole = true;
+var pusher = new Pusher('{{env("PUSHER_APP_KEY", '')}}', {
+	cluster: 'eu',
+	forceTLS: true,
+	authEndpoint: '{{ url('/broadcasting/auth') }}',
+	auth: {
+		headers: {
+			'X-CSRF-Token': "{{ csrf_token() }}"
+		}
+	}
+});
+var channel = pusher.subscribe('private-campaign.{{$campaign->id}}');
+channel.bind('counts.updated', function(data) {
+	$('#recipientsTotalCount').html(data.totalCount);
+	$('#recipientsUnread').html(data.unread);
+	$('#recipientsIdle').html(data.idle);
+	$('#recipientsCalls').html(data.calls);
+	$('#recipientsEmails').html(data.email);
+	$('#recipientsSms').html(data.sms);
+});
+@endif
+
 /** Track Selected Recipient **/
 $(function() {
     $("tr").click(function() {
         if ($(this).data('recipient')) {
+            @if(env('PUSHER_BROADCASTING_ENABLED', false))
+			if (current_recipient != 0) {
+				channel.unbind('response.'+current_recipient+'.updated');
+			}
+			channel.bind('response.'+$(this).data('recipient')+'.updated', function(data) {});
+            @endif
             current_recipient = $(this).data('recipient');
         }
     });
 
     $(document).on('slidePanel::afterHide', function() {
+		@if(env('PUSHER_BROADCASTING_ENABLED', false))
+            channel.unbind('response.'+current_recipient+'.updated');
+        @endif
         current_recipient = 0;
     });
 
