@@ -17,7 +17,7 @@
         <img src="/img/logo.png">
     </a>
     <nav class="navbar">
-        <a href="javascript:;" class="sidebar-toggle"></a>
+        <a href="javascript:;" class="sidebar-toggle">B</a>
         <div class="navbar-menu-extra">
             <ul class="nav">
                 <li class="menu-item">
