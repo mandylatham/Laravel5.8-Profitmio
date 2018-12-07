@@ -14,9 +14,16 @@
 
 import './bootstrap';
 import Vue from 'vue'
+import moment from 'moment';
 import { Dropdown } from 'bootstrap-vue/es/components';
+import DatePick from 'vue-date-pick';
 
 Vue.use(Dropdown);
+Vue.use(DatePick);
+
+Vue.filter('format', function (value, format) {
+    return moment(value, 'YYYY-MM-DD').format(format);
+});
 
 new Vue({
     el: '#main-header'
@@ -30,9 +37,15 @@ new Vue({
     methods: {
         toggle: function (idx) {
             Vue.set(this.open, idx, !this.open[idx]);
-            // this.open = merge(this.open, {[idx]: !this.open[idx]});
-            // console.log(this, idx);
-            // this.open[idx] = !this.open[idx];
         }
     }
 });
+
+ new Vue({
+     el: '#wrapper-aside',
+     components: {DatePick},
+     methods: {},
+     data: {
+         selectedDate: moment().format('YYYY-MM-DD')
+     }
+ });

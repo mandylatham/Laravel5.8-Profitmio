@@ -58,7 +58,7 @@
 <!-- End Navigation Bar-->
 
 <div id="wrapper">
-    <div class="wrapper-aside">
+    <div class="wrapper-aside" id="wrapper-aside">
         <div class="calendar-filters">
             <div class="form-check">
                 <input class="form-check-input" type="radio" value="option2" checked>
@@ -79,6 +79,20 @@
                 <label class="form-check-label" for="exampleRadios1">
                     Filter
                 </label>
+            </div>
+        </div>
+        <date-pick class="event-calendar" v-model="selectedDate" :has-input-element="false"></date-pick>
+        <div class="events">
+            <header>
+                <span class="date">@{{ selectedDate | format('DD') }}</span>
+                <span class="label">@{{ selectedDate | format('MMMM Do, YYYY') }}</span>
+            </header>
+            <div class="event-list">
+                <div class="event"></div>
+                <div class="event"></div>
+                <div class="event"></div>
+                <div class="event"></div>
+                <div class="event"></div>
             </div>
         </div>
     </div>

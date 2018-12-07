@@ -17,6 +17,8 @@
     "vue": "^2.5.7"
   },
   "dependencies": {
-    "bootstrap-vue": "^2.0.0-rc.11"
+    "bootstrap-vue": "^2.0.0-rc.11",
+    "moment": "^2.22.2",
+    "vue-date-pick": "^1.0.4"
   }
 }
