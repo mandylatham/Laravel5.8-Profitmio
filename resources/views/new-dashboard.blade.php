@@ -81,7 +81,7 @@
                 </label>
             </div>
         </div>
-        <date-pick class="event-calendar" v-model="selectedDate" :has-input-element="false"></date-pick>
+        <date-pick class="event-calendar" :parse-date="parseDate" v-model="selectedDate" :has-input-element="false"></date-pick>
         <div class="events">
             <header>
                 <span class="date">@{{ selectedDate | format('DD') }}</span>

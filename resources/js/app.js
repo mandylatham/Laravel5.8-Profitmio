@@ -16,10 +16,9 @@ import './bootstrap';
 import Vue from 'vue'
 import moment from 'moment';
 import { Dropdown } from 'bootstrap-vue/es/components';
-import DatePick from 'vue-date-pick';
+import DatePick from './date-pick.vue';
 
 Vue.use(Dropdown);
-Vue.use(DatePick);
 
 Vue.filter('format', function (value, format) {
     return moment(value, 'YYYY-MM-DD').format(format);
@@ -44,7 +43,11 @@ new Vue({
  new Vue({
      el: '#wrapper-aside',
      components: {DatePick},
-     methods: {},
+     methods: {
+         parseDate: function (date, format) {
+             return moment(date, format).toDate();
+         }
+     },
      data: {
          selectedDate: moment().format('YYYY-MM-DD')
      }
