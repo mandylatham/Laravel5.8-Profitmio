@@ -326,6 +326,11 @@ $vdpColor: #7485c2 !default;
 
 }
 
+.vdpCell.has-events .vdpCellContent {
+    background-color: rgba(255, 255, 255, 0.4);
+    font-weight: bold;
+}
+
 .vdpCell.disabled {
 
     opacity: 0.5;

@@ -83,6 +83,7 @@
                                         selected: item.selected,
                                         disabled: item.disabled,
                                         today: item.today,
+                                        'has-events': item.hasEvents,
                                         outOfRange: item.outOfRange
                                     }"
                                 v-bind:data-id="item.dateKey"
@@ -136,6 +137,9 @@
 
 <script>
 
+    import moment from 'moment';
+    import each from 'lodash';
+
     const formatRE = /,|\.|-| |:|\/|\\/;
     const dayRE = /D+/;
     const monthRE = /M+/;
@@ -148,6 +152,7 @@
 
         props: {
             value: {type: String, default: ''},
+            events: {type: Object, default: () => {return {};}},
             format: {type: String, default: 'YYYY-MM-DD'},
             displayFormat: {type: String},
             hasInputElement: {type: Boolean, default: true},
@@ -203,6 +208,15 @@
 
             },
 
+            eventsPerDay() {
+                const events = {};
+                each(this.events, e => {
+                    events[e.date] = events[e.date] || [];
+                    events[e.date].push(e);
+                });
+                return events;
+            },
+
             isValidValue() {
 
                 const valueDate = this.valueDate;
@@ -249,12 +263,14 @@
 
                 // define day states
                 days.forEach(day => {
+                    const dateFormatted = this.getDateFormat(day.date, 'YYYY-MM-DD');
                     day.disabled = this.isDateDisabled(day.date);
                     day.today = areSameDates(day.date, today);
                     day.dateKey = [
                         day.date.getFullYear(), day.date.getMonth() + 1, day.date.getDate()
                     ].join('-');
                     day.selected = this.valueDate ? areSameDates(day.date, this.valueDate) : false;
+                    day.hasEvents = this.eventsPerDay[dateFormatted] && this.eventsPerDay[dateFormatted].length > 0
                 });
 
                 return chunkArray(days, 7);
@@ -332,6 +348,10 @@
         },
 
         methods: {
+
+            getDateFormat(date, format) {
+                return moment(date).format(format);
+            },
 
             valueToInputFormat(value) {
 
