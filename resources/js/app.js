@@ -40,15 +40,15 @@ new Vue({
     }
 });
 
- new Vue({
-     el: '#wrapper-aside',
-     components: {DatePick},
-     methods: {
-         parseDate: function (date, format) {
-             return moment(date, format).toDate();
-         }
-     },
-     data: {
-         selectedDate: moment().format('YYYY-MM-DD')
-     }
- });
+new Vue({
+    el: '#wrapper-aside',
+    components: {DatePick},
+    methods: {
+        parseDate: function (date, format) {
+            return moment(date, format).toDate();
+        }
+    },
+    data: {
+        selectedDate: moment().format('YYYY-MM-DD')
+    }
+});
