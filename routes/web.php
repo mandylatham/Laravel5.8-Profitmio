@@ -25,7 +25,10 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 //endregion
 
 Route::get('/new-dashboard', function () {
-    return view('new-dashboard');
+    return view('dashboard.index');
+});
+Route::get('/campaign-dashboard', function () {
+    return view('campaign.index');
 });
 
 //region AUTHENTICATED REQUESTS ONLY

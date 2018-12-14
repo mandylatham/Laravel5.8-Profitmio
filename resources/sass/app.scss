@@ -11,10 +11,15 @@
 @import "~bootstrap/scss/buttons";
 @import "~bootstrap/scss/dropdown";
 @import "~bootstrap-vue/es/components/dropdown/dropdown.css";
+@import '~vue-good-table/dist/vue-good-table.css';
 @import './date-pick.scss';
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
 @import "variables";
 @import "./event-calendar";
+
+// pages
+@import "./common/datatable";
+@import "./pages/index";
 
 body, html {
   height: 100%;
