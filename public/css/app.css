@@ -8169,27 +8169,12 @@ input[type="button"].btn-block {
   margin-bottom: 5px;
 }
 
-.wrapper--campaign-index {
-  padding: 40px;
-  background-color: #fff;
-}
-
 body,
 html {
   height: 100%;
   font-family: 'Source Sans Pro', sans-serif;
   font-size: 14px;
   color: #4c535b;
-}
-
-body {
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-      -ms-flex-flow: column;
-          flex-flow: column;
 }
 
 body.open #wrapper .wrapper-aside {
@@ -8200,12 +8185,6 @@ body.open #wrapper .wrapper-aside {
 body.open #wrapper .wrapper-content {
   -webkit-transform: translate(400px, 0);
           transform: translate(400px, 0);
-}
-
-h3 {
-  font-weight: bold;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
 }
 
 #main-header {
@@ -8765,5 +8744,11 @@ h3 {
     border-top: none;
     border-left: 4px solid #fff;
   }
+}
+
+h3 {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
 }
 

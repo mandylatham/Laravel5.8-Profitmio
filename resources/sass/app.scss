@@ -19,7 +19,6 @@
 
 // pages
 @import "./common/datatable";
-@import "./pages/index";
 
 body, html {
   height: 100%;
@@ -28,8 +27,8 @@ body, html {
   color: $gray;
 }
 body {
-  display: flex;
-  flex-flow: column;
+  //display: flex;
+  //flex-flow: column;
   &.open {
     #wrapper {
       .wrapper-aside {
@@ -40,11 +39,6 @@ body {
       }
     }
   }
-}
-h3 {
-  font-weight: bold;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
 }
 #main-header {
   background-color: #ddd;
@@ -413,4 +407,10 @@ h3 {
       }
     }
   }
+}
+
+h3 {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
 }

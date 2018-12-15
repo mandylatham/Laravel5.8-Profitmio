@@ -1,0 +1,40 @@
+@import '../../../sass/variables';
+
+.pmt {
+  $rootParent: &;
+  margin-top: 15px;
+  &-row {
+    $tableRow: &;
+    display: flex;
+    flex-flow: column;
+    &:nth-child(even) #{$rootParent}-col:not(.manager) {
+      background-color: rgb(225, 229, 232);
+    }
+    &:nth-child(odd) #{$rootParent}-col:not(.manager) {
+      background-color: rgb(240, 242, 243);
+    }
+  }
+  &-col {
+    font-size: 0.9rem;
+    opacity: 0;
+    max-height: 0;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    transition: max-height 100ms linear, opacity 100ms linear, padding 100ms linear;
+    overflow: hidden;
+    &.manager {
+      cursor: pointer;
+      background-color: $gray;
+      color: $gray-light;
+    }
+    @at-root {
+      #{$rootParent}-row.open &, #{$rootParent}-row &.manager, #{$rootParent}-row &.manager-footer {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 4px solid #fff;
+        max-height: 1000px;
+        opacity: 1;
+      }
+    }
+  }
+}

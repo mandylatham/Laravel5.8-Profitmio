@@ -1,31 +1,29 @@
 import './bootstrap';
 import Vue from 'vue'
-// import moment from 'moment';
 import { Dropdown } from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
-// import DatePick from './date-pick.vue';
 
 // Plugins
 Vue.use(Dropdown);
 Vue.use(VueGoodTablePlugin);
 Vue.component('v-select', vSelect);
 
-// Page Component
-Vue.component('campaign-index', require('./components/CampaignIndexComponent'));
+// Pages
+Vue.component('campaign-index', require('./page-components/campaign/index/CampaignIndexComponent'));
+
+// Components
+Vue.component('date-pick', require('./components/date-pick'));
+Vue.component('pm-responsive-table', require('./components/pm-responsive-table/pm-responsive-table'));
 
 // Vue.filter('format', function (value, format) {
 //     return moment(value, 'YYYY-MM-DD').format(format);
+
 // });
 
 // Main App
 new Vue({
-    el: '#wrapper'
-});
-
-// Main header
-new Vue({
-    el: '#main-header'
+    el: '#app'
 });
 
 // new Vue({

@@ -3,6 +3,28 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.toggle('open');
     });
 });
+
+window.breakpoints = {
+    isXs() {
+        return document.documentElement.clientWidth < 576;
+    },
+    isSm() {
+        const w = document.documentElement.clientWidth;
+        return w >= 576 && w < 768;
+    },
+    isMd() {
+        const w = document.documentElement.clientWidth;
+        return w >= 768 && w < 992;
+    },
+    isLg() {
+        const w = document.documentElement.clientWidth;
+        return w >= 992 && w < 1200;
+    },
+    isXlg() {
+        const w = document.documentElement.clientWidth;
+        return w >= 1200;
+    }
+};
 //
 // window._ = require('lodash');
 // window.Popper = require('popper.js').default;

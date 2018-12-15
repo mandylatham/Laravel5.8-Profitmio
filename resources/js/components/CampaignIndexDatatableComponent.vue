@@ -72,8 +72,14 @@
                         label: 'SMS/MMS',
                         field: 'text_responses_count',
                         sortable: true
+                    }, {
+                        label: 'Options',
+                        field: this.optionsField
                     }
                 ],
+                optionsFilter() {
+
+                },
                 rows: [{
                     id: 1,
                     name: 'name',
