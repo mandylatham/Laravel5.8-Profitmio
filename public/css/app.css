@@ -8169,6 +8169,12 @@ input[type="button"].btn-block {
   margin-bottom: 5px;
 }
 
+@media (min-width: 576px) {
+  .filter--form-group {
+    margin-bottom: 0;
+  }
+}
+
 body,
 html {
   height: 100%;

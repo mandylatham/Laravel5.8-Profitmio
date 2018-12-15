@@ -1,4 +1,25 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
 .wrapper--campaign-index {
   padding: 20px;
   background-color: #fff;
+  .pmt {
+    &-row {
+      @include media-breakpoint-up(sm) {
+        //flex-flow: row;
+        //flex-wrap: wrap;
+      }
+    }
+    &-col {
+      @include media-breakpoint-up(sm) {
+        //flex-grow: 1;
+        //opacity: 1;
+        //max-height: 1000px;
+        //border-bottom: 4px solid #fff;
+        //border-right: 4px solid #fff;
+      }
+    }
+  }
 }

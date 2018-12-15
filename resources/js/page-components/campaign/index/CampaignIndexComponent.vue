@@ -1,14 +1,14 @@
 <template>
     <div class="container-fluid">
         <div class="row align-items-end no-gutters">
-            <div class="col-12 col-sm-4">
-                <div class="form-group mb-0 filter--form-group">
+            <div class="col-12 col-sm-5">
+                <div class="form-group filter--form-group">
                     <label>Filter By Company</label>
                     <v-select :options="companies" class="filter--v-select"></v-select>
                 </div>
             </div>
             <div class="col-none col-sm-2"></div>
-            <div class="col-12 col-sm-4">
+            <div class="col-12 col-sm-5">
                 <input type="text" class="form-control filter--search-box" aria-describedby="search"
                        placeholder="Search" v-model="searchTerm">
             </div>
@@ -23,6 +23,7 @@
     </div>
 </template>
 <script>
+    require("./CampaignIndex.scss");
     export default {
         data() {
             return {
@@ -111,6 +112,3 @@
         }
     }
 </script>
-<style>
-    @import "./CampaignIndex.scss";
-</style>

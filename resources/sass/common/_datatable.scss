@@ -82,5 +82,8 @@
       font-size: 0.8rem;
       margin-bottom: 5px;
     }
+    @include media-breakpoint-up(sm) {
+      margin-bottom: 0;
+    }
   }
 }
