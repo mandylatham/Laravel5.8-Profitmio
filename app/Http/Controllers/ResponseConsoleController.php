@@ -148,6 +148,17 @@ class ResponseConsoleController extends Controller
         return view('campaigns.console', $viewData);
     }
 
+    // TODO: remove me; just for testing
+    // TODO: remove campaigns.console2.blade.php file
+    public function show2(Request $request, Campaign $campaign)
+    {
+        $viewData = $this->getRecipientData($request, $campaign, 'all');
+
+        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+
+        return view('campaigns.console2', $viewData);
+    }
+
     public function showUnread(Request $request, Campaign $campaign)
     {
         $viewData = $this->getRecipientData($request, $campaign, 'unread');

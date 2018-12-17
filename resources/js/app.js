@@ -15,8 +15,9 @@ window.Vue = require('vue');
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.component('example-component', require('./components/ExampleComponent.vue'));
+// Vue.component('example-component', require('./components/ExampleComponent.vue'));
+Vue.component('communication-side-panel', require('./components/CommunicationSidePanel.vue').default);
 
 const app = new Vue({
-    el: '#app'
+    el: '#vue-app'
 });
