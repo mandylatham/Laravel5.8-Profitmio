@@ -56114,6 +56114,7 @@ __WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('v-select', __WEBPACK_IMPO
 
 // Pages
 __WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('campaign-index', __webpack_require__(473));
+__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('user-index', __webpack_require__(499));
 
 // Components
 __WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('date-pick', __webpack_require__(478));
@@ -85402,7 +85403,7 @@ exports = module.exports = __webpack_require__(17)(false);
 
 
 // module
-exports.push([module.i, ".pmt {\n  margin-top: 15px; }\n  .pmt-row {\n    display: flex;\n    flex-flow: column; }\n    .pmt-row:nth-child(even) .pmt-col:not(.manager) {\n      background-color: #e1e5e8; }\n    .pmt-row:nth-child(odd) .pmt-col:not(.manager) {\n      background-color: #f0f2f3; }\n  .pmt-col {\n    font-size: 0.8rem;\n    opacity: 0;\n    max-height: 0;\n    padding-left: 0.8rem;\n    padding-right: 0.8rem;\n    transition: max-height 100ms linear, opacity 100ms linear, padding 100ms linear;\n    overflow: hidden;\n    display: flex;\n    align-items: center;\n    justify-content: center; }\n    .pmt-col.manager {\n      cursor: pointer;\n      background-color: #4c535b;\n      color: #e1e5e8; }\n    .pmt-col.manager-footer .btn-transparent {\n      padding: 0;\n      margin-right: 10px; }\n      .pmt-col.manager-footer .btn-transparent:last-child {\n        margin-right: 0; }\n    .pmt-row.open .pmt-col, .pmt-row .pmt-col.manager, .pmt-row .pmt-col.manager-footer {\n      padding-top: 0.6rem;\n      padding-bottom: 0.6rem;\n      border-bottom: 3px solid #fff;\n      max-height: 1000px;\n      opacity: 1; }\n", ""]);
+exports.push([module.i, ".pmt {\n  margin-top: 15px; }\n  .pmt-row {\n    display: flex;\n    flex-flow: column; }\n    .pmt-row:nth-child(even) .pmt-col:not(.manager) {\n      background-color: #e1e5e8; }\n    .pmt-row:nth-child(odd) .pmt-col:not(.manager) {\n      background-color: #f0f2f3; }\n  .pmt-col {\n    font-size: 0.8rem;\n    opacity: 0;\n    max-height: 0;\n    padding-left: 0.8rem;\n    padding-right: 0.8rem;\n    transition: max-height 100ms linear, opacity 100ms linear, padding 100ms linear;\n    overflow: hidden;\n    display: flex;\n    align-items: center;\n    justify-content: center; }\n    .pmt-col span.icon-value {\n      margin-left: 10px; }\n    .pmt-col svg {\n      height: 1.2rem; }\n    .pmt-col.manager {\n      cursor: pointer;\n      background-color: #4c535b;\n      color: #e1e5e8; }\n    .pmt-col.manager-footer .btn-transparent {\n      padding: 0;\n      margin-right: 10px; }\n      .pmt-col.manager-footer .btn-transparent:last-child {\n        margin-right: 0; }\n    .pmt-row.open .pmt-col, .pmt-row .pmt-col.manager, .pmt-row .pmt-col.manager-footer {\n      padding-top: 0.6rem;\n      padding-bottom: 0.6rem;\n      border-bottom: 3px solid #fff;\n      max-height: 1000px;\n      opacity: 1; }\n\n@media (min-width: 992px) {\n  .pmt {\n    display: table;\n    width: 100%;\n    table-layout: fixed; }\n    .pmt-row {\n      display: table-row; }\n    .pmt-col {\n      display: table-cell;\n      opacity: 1;\n      border-bottom: 3px solid #fff;\n      border-right: 3px solid #fff;\n      vertical-align: middle; }\n      .pmt-col:last-child {\n        border-right: 0; } }\n", ""]);
 
 // exports
 
@@ -94531,6 +94532,365 @@ function mergeFn (a, b) {
     b && b.apply(this, arguments)
   }
 }
+
+
+/***/ }),
+/* 499 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var disposed = false
+var normalizeComponent = __webpack_require__(55)
+/* script */
+var __vue_script__ = __webpack_require__(500)
+/* template */
+var __vue_template__ = __webpack_require__(501)
+/* template functional */
+var __vue_template_functional__ = false
+/* styles */
+var __vue_styles__ = null
+/* scopeId */
+var __vue_scopeId__ = null
+/* moduleIdentifier (server only) */
+var __vue_module_identifier__ = null
+var Component = normalizeComponent(
+  __vue_script__,
+  __vue_template__,
+  __vue_template_functional__,
+  __vue_styles__,
+  __vue_scopeId__,
+  __vue_module_identifier__
+)
+Component.options.__file = "resources/js/page-components/user/index/UserIndexComponent.vue"
+
+/* hot reload */
+if (false) {(function () {
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), false)
+  if (!hotAPI.compatible) return
+  module.hot.accept()
+  if (!module.hot.data) {
+    hotAPI.createRecord("data-v-855f9824", Component.options)
+  } else {
+    hotAPI.reload("data-v-855f9824", Component.options)
+  }
+  module.hot.dispose(function (data) {
+    disposed = true
+  })
+})()}
+
+module.exports = Component.exports
+
+
+/***/ }),
+/* 500 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+__webpack_require__(502);
+/* harmony default export */ __webpack_exports__["default"] = ({
+    data: function data() {
+        return {
+            rows: [{
+                id: 1,
+                first_name: 'Carlos',
+                last_name: 'Arauz',
+                email: 'carauzs@gmail.com',
+                phone_number: '213213123',
+                active: true,
+                companies: [{
+                    'id': 1,
+                    'name': 'Company A',
+                    'role': 'admin'
+                }]
+            }],
+            companies: [],
+            columns: [{
+                field: 'first_name',
+                is_manager: true,
+                classes: ['first-name-col']
+            }, {
+                field: 'email',
+                classes: ['email-col']
+            }, {
+                field: 'phone_number',
+                classes: ['phone-number-col']
+            }, {
+                field: 'status',
+                classes: ['status-col']
+            }, {
+                field: 'companies',
+                classes: ['companies-col']
+            }, {
+                field: 'options',
+                is_manager_footer: true,
+                classes: ['options-col']
+            }],
+            searchTerm: '',
+            serverParams: {
+                columnFilters: {},
+                sort: {
+                    field: '',
+                    type: ''
+                },
+                page: 1,
+                perPage: 10
+            },
+            totalRecords: 0
+        };
+    }
+});
+
+/***/ }),
+/* 501 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", { staticClass: "container-fluid" }, [
+    _c("div", { staticClass: "row align-items-end no-gutters" }, [
+      _c("div", { staticClass: "col-12 col-sm-5 col-lg-3" }, [
+        _c(
+          "div",
+          { staticClass: "form-group filter--form-group" },
+          [
+            _c("label", [_vm._v("Filter By Company")]),
+            _vm._v(" "),
+            _c("v-select", {
+              staticClass: "filter--v-select",
+              attrs: { options: _vm.companies }
+            })
+          ],
+          1
+        )
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-none col-sm-2 col-lg-6" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "col-12 col-sm-5 col-lg-3" }, [
+        _c("input", {
+          directives: [
+            {
+              name: "model",
+              rawName: "v-model",
+              value: _vm.searchTerm,
+              expression: "searchTerm"
+            }
+          ],
+          staticClass: "form-control filter--search-box",
+          attrs: {
+            type: "text",
+            "aria-describedby": "search",
+            placeholder: "Search"
+          },
+          domProps: { value: _vm.searchTerm },
+          on: {
+            input: function($event) {
+              if ($event.target.composing) {
+                return
+              }
+              _vm.searchTerm = $event.target.value
+            }
+          }
+        })
+      ]),
+      _vm._v(" "),
+      _c(
+        "div",
+        { staticClass: "col-12" },
+        [
+          _c("pm-responsive-table", {
+            attrs: { rows: _vm.rows, columns: _vm.columns },
+            scopedSlots: _vm._u([
+              {
+                key: "first_name",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _vm._v(
+                      "\n                    " +
+                        _vm._s(row.first_name) +
+                        " " +
+                        _vm._s(row.last_name) +
+                        " "
+                    ),
+                    _c("span", { staticClass: "font-weight-bold ml-1" }, [
+                      _vm._v("(id: " + _vm._s(row.id) + ")")
+                    ])
+                  ]
+                }
+              },
+              {
+                key: "email",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _c("mail-icon"),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "ml-10" }, [
+                      _vm._v(_vm._s(row.email))
+                    ])
+                  ]
+                }
+              },
+              {
+                key: "phone_number",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _c("phone-icon"),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "ml-10" }, [
+                      _vm._v(_vm._s(row.phone_number))
+                    ])
+                  ]
+                }
+              },
+              {
+                key: "status",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [_c("status", { attrs: { active: row.active } })]
+                }
+              },
+              {
+                key: "companies",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [_c("span", [_vm._v("-")])]
+                }
+              },
+              {
+                key: "options",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _c(
+                      "a",
+                      { staticClass: "pm-btn btn btn-transparent" },
+                      [_c("home-icon", { staticClass: "custom-class" })],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      { staticClass: "pm-btn btn btn-transparent" },
+                      [_c("edit-icon", { staticClass: "custom-class" })],
+                      1
+                    )
+                  ]
+                }
+              }
+            ])
+          })
+        ],
+        1
+      )
+    ])
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+module.exports = { render: render, staticRenderFns: staticRenderFns }
+if (false) {
+  module.hot.accept()
+  if (module.hot.data) {
+    require("vue-hot-reload-api")      .rerender("data-v-855f9824", module.exports)
+  }
+}
+
+/***/ }),
+/* 502 */
+/***/ (function(module, exports, __webpack_require__) {
+
+// style-loader: Adds some css to the DOM by adding a <style> tag
+
+// load the styles
+var content = __webpack_require__(503);
+if(typeof content === 'string') content = [[module.i, content, '']];
+// Prepare cssTransformation
+var transform;
+
+var options = {}
+options.transform = transform
+// add the styles to the DOM
+var update = __webpack_require__(18)(content, options);
+if(content.locals) module.exports = content.locals;
+// Hot Module Replacement
+if(false) {
+	// When the styles change, update the <style> tags
+	if(!content.locals) {
+		module.hot.accept("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/sass-loader/lib/loader.js!./UserIndex.scss", function() {
+			var newContent = require("!!../../../../../node_modules/css-loader/index.js!../../../../../node_modules/sass-loader/lib/loader.js!./UserIndex.scss");
+			if(typeof newContent === 'string') newContent = [[module.id, newContent, '']];
+			update(newContent);
+		});
+	}
+	// When the module is disposed, remove the <style> tags
+	module.hot.dispose(function() { update(); });
+}
+
+/***/ }),
+/* 503 */
+/***/ (function(module, exports, __webpack_require__) {
+
+exports = module.exports = __webpack_require__(17)(false);
+// imports
+
+
+// module
+exports.push([module.i, ".wrapper--user-index {\n  padding: 20px;\n  background-color: #fff; }\n  @media (min-width: 992px) {\n    .wrapper--user-index .pmt-col.options-col {\n      width: 90px; }\n    .wrapper--user-index .pmt-col.companies-col {\n      width: 30%; }\n    .wrapper--user-index .pmt-col.phone-number-col, .wrapper--user-index .pmt-col.email-col {\n      width: 15%;\n      padding-right: 2px;\n      padding-left: 2px; }\n    .wrapper--user-index .pmt-col.status-col {\n      width: 85px; } }\n", ""]);
+
+// exports
 
 
 /***/ })

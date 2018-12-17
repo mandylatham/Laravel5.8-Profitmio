@@ -30,6 +30,9 @@ Route::get('/new-dashboard', function () {
 Route::get('/campaign-dashboard', function () {
     return view('campaign.index');
 });
+Route::get('/user-dashboard', function () {
+    return view('user.index');
+});
 
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {

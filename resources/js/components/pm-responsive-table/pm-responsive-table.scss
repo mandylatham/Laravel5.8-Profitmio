@@ -1,4 +1,7 @@
 @import '../../../sass/variables';
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
 
 .pmt {
   $rootParent: &;
@@ -25,6 +28,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    span.icon-value {
+      margin-left: 10px;
+    }
+    svg {
+      height: 1.2rem;
+    }
     &.manager {
       cursor: pointer;
       background-color: $gray;
@@ -47,6 +56,28 @@
         border-bottom: 3px solid #fff;
         max-height: 1000px;
         opacity: 1;
+      }
+    }
+  }
+}
+
+
+@include media-breakpoint-up(lg) {
+  .pmt {
+    display: table;
+    width: 100%;
+    table-layout:fixed;
+    &-row {
+      display: table-row;
+    }
+    &-col {
+      display: table-cell;
+      opacity: 1;
+      border-bottom: 3px solid #fff;
+      border-right: 3px solid #fff;
+      vertical-align: middle;
+      &:last-child {
+        border-right: 0;
       }
     }
   }

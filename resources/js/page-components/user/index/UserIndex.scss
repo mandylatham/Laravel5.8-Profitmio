@@ -1,0 +1,38 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+.wrapper--user-index {
+  padding: 20px;
+  background-color: #fff;
+  @include media-breakpoint-up(lg) {
+    .pmt {
+      &-col {
+        &.options-col {
+          width: 90px;
+        }
+        &.companies-col {
+          width: 30%;
+        }
+        &.phone-number-col, &.email-col {
+          width: 15%;
+          padding-right: 2px;
+          padding-left: 2px;
+        }
+        &.status-col {
+          width: 85px;
+        }
+      }
+    }
+  }
+  //@include media-breakpoint-up(xl) {
+  //  .pmt-col {
+  //    &.dealership-col, &.agency-col {
+  //      width: 15%;
+  //    }
+  //    &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
+  //      width: 8%;
+  //    }
+  //  }
+  //}
+}
