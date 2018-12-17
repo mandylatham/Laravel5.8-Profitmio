@@ -3,6 +3,7 @@ import Vue from 'vue'
 import { Dropdown } from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
+import { ToggleLeftIcon } from 'vue-feather-icons'
 
 // Plugins
 Vue.use(Dropdown);
@@ -14,7 +15,11 @@ Vue.component('campaign-index', require('./page-components/campaign/index/Campai
 
 // Components
 Vue.component('date-pick', require('./components/date-pick'));
+Vue.component('status', require('./components/status/status'));
 Vue.component('pm-responsive-table', require('./components/pm-responsive-table/pm-responsive-table'));
+
+// Icons
+Vue.component('toggle-left-icon', ToggleLeftIcon);
 
 // Vue.filter('format', function (value, format) {
 //     return moment(value, 'YYYY-MM-DD').format(format);

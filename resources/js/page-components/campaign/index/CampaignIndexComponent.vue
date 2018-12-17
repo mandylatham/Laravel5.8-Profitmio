@@ -15,6 +15,7 @@
             <div class="col-12">
                 <pm-responsive-table :rows="rows" :columns="columns">
                     <template slot="options" slot-scope="{row}">
+                        <status :active="true"></status>
                     </template>
                 </pm-responsive-table>
             </div>
