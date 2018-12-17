@@ -5,6 +5,14 @@
 .wrapper--campaign-index {
   padding: 20px;
   background-color: #fff;
+  .pmt-col {
+    span {
+      margin-left: 10px;
+    }
+    svg {
+      height: 1.2rem;
+    }
+  }
   @include media-breakpoint-up(lg) {
     .pmt {
       display: table;
@@ -27,17 +35,27 @@
           text-align: center;
         }
         &.options-col {
-          width: 80px;
+          width: 90px;
         }
         &.dealership-col, &.agency-col {
           width: 140px;
         }
         &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
-          width: 80px;
+          width: 70px;
         }
         &.name-col {
           width: auto;
         }
+      }
+    }
+  }
+  @include media-breakpoint-up(xl) {
+    .pmt-col {
+      &.dealership-col, &.agency-col {
+        width: 15%;
+      }
+      &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
+        width: 8%;
       }
     }
   }

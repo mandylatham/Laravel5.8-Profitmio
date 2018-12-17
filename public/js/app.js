@@ -56121,7 +56121,13 @@ __WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('status', __webpack_requir
 __WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('pm-responsive-table', __webpack_require__(482));
 
 // Icons
-__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('toggle-left-icon', __WEBPACK_IMPORTED_MODULE_5_vue_feather_icons__["a" /* ToggleLeftIcon */]);
+__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('home-icon', __WEBPACK_IMPORTED_MODULE_5_vue_feather_icons__["b" /* HomeIcon */]);
+__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('edit-icon', __WEBPACK_IMPORTED_MODULE_5_vue_feather_icons__["a" /* EditIcon */]);
+__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('phone-icon', __WEBPACK_IMPORTED_MODULE_5_vue_feather_icons__["e" /* PhoneIcon */]);
+__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('mail-icon', __WEBPACK_IMPORTED_MODULE_5_vue_feather_icons__["c" /* MailIcon */]);
+__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('message-circle-icon', __WEBPACK_IMPORTED_MODULE_5_vue_feather_icons__["d" /* MessageCircleIcon */]);
+__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('toggle-left-icon', __WEBPACK_IMPORTED_MODULE_5_vue_feather_icons__["f" /* ToggleLeftIcon */]);
+__WEBPACK_IMPORTED_MODULE_1_vue___default.a.component('user-icon', __WEBPACK_IMPORTED_MODULE_5_vue_feather_icons__["g" /* UserIcon */]);
 
 // Vue.filter('format', function (value, format) {
 //     return moment(value, 'YYYY-MM-DD').format(format);
@@ -83570,6 +83576,27 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 __webpack_require__(475);
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -83625,7 +83652,6 @@ __webpack_require__(475);
                 classes: ['name-col']
             }, {
                 field: 'dealership.name',
-                html: true,
                 classes: ['dealership-col']
             }, {
                 field: 'agency.name',
@@ -83702,7 +83728,7 @@ exports = module.exports = __webpack_require__(17)(false);
 
 
 // module
-exports.push([module.i, ".wrapper--campaign-index {\n  padding: 20px;\n  background-color: #fff; }\n  @media (min-width: 992px) {\n    .wrapper--campaign-index .pmt {\n      display: table;\n      width: 100%;\n      table-layout: fixed; }\n      .wrapper--campaign-index .pmt-row {\n        display: table-row; }\n      .wrapper--campaign-index .pmt-col {\n        display: table-cell;\n        opacity: 1;\n        border-bottom: 3px solid #fff;\n        border-right: 3px solid #fff;\n        vertical-align: middle; }\n        .wrapper--campaign-index .pmt-col:last-child {\n          border-right: 0; }\n        .wrapper--campaign-index .pmt-col.id-col {\n          width: 40px;\n          text-align: center; }\n        .wrapper--campaign-index .pmt-col.options-col {\n          width: 80px; }\n        .wrapper--campaign-index .pmt-col.dealership-col, .wrapper--campaign-index .pmt-col.agency-col {\n          width: 140px; }\n        .wrapper--campaign-index .pmt-col.recipients-col, .wrapper--campaign-index .pmt-col.phone-responses-col, .wrapper--campaign-index .pmt-col.email-responses-col, .wrapper--campaign-index .pmt-col.text-responses-col {\n          width: 80px; }\n        .wrapper--campaign-index .pmt-col.name-col {\n          width: auto; } }\n", ""]);
+exports.push([module.i, ".wrapper--campaign-index {\n  padding: 20px;\n  background-color: #fff; }\n  .wrapper--campaign-index .pmt-col span {\n    margin-left: 10px; }\n  .wrapper--campaign-index .pmt-col svg {\n    height: 1.2rem; }\n  @media (min-width: 992px) {\n    .wrapper--campaign-index .pmt {\n      display: table;\n      width: 100%;\n      table-layout: fixed; }\n      .wrapper--campaign-index .pmt-row {\n        display: table-row; }\n      .wrapper--campaign-index .pmt-col {\n        display: table-cell;\n        opacity: 1;\n        border-bottom: 3px solid #fff;\n        border-right: 3px solid #fff;\n        vertical-align: middle; }\n        .wrapper--campaign-index .pmt-col:last-child {\n          border-right: 0; }\n        .wrapper--campaign-index .pmt-col.id-col {\n          width: 40px;\n          text-align: center; }\n        .wrapper--campaign-index .pmt-col.options-col {\n          width: 90px; }\n        .wrapper--campaign-index .pmt-col.dealership-col, .wrapper--campaign-index .pmt-col.agency-col {\n          width: 140px; }\n        .wrapper--campaign-index .pmt-col.recipients-col, .wrapper--campaign-index .pmt-col.phone-responses-col, .wrapper--campaign-index .pmt-col.email-responses-col, .wrapper--campaign-index .pmt-col.text-responses-col {\n          width: 70px; }\n        .wrapper--campaign-index .pmt-col.name-col {\n          width: auto; } }\n  @media (min-width: 1200px) {\n    .wrapper--campaign-index .pmt-col.dealership-col, .wrapper--campaign-index .pmt-col.agency-col {\n      width: 15%; }\n    .wrapper--campaign-index .pmt-col.recipients-col, .wrapper--campaign-index .pmt-col.phone-responses-col, .wrapper--campaign-index .pmt-col.email-responses-col, .wrapper--campaign-index .pmt-col.text-responses-col {\n      width: 8%; } }\n", ""]);
 
 // exports
 
@@ -83771,10 +83797,76 @@ var render = function() {
             attrs: { rows: _vm.rows, columns: _vm.columns },
             scopedSlots: _vm._u([
               {
+                key: "recipients_count",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _c("user-icon"),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "ml-10" }, [
+                      _vm._v(_vm._s(row.recipients_count))
+                    ])
+                  ]
+                }
+              },
+              {
+                key: "phone_responses_count",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _c("phone-icon"),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "ml-10" }, [
+                      _vm._v(_vm._s(row.phone_responses_count))
+                    ])
+                  ]
+                }
+              },
+              {
+                key: "email_responses_count",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _c("mail-icon"),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "ml-10" }, [
+                      _vm._v(_vm._s(row.email_responses_count))
+                    ])
+                  ]
+                }
+              },
+              {
+                key: "text_responses_count",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _c("message-circle-icon"),
+                    _vm._v(" "),
+                    _c("span", { staticClass: "ml-10" }, [
+                      _vm._v(_vm._s(row.text_responses_count))
+                    ])
+                  ]
+                }
+              },
+              {
                 key: "options",
                 fn: function(ref) {
                   var row = ref.row
-                  return [_c("status", { attrs: { active: true } })]
+                  return [
+                    _c(
+                      "a",
+                      { staticClass: "pm-btn btn btn-transparent" },
+                      [_c("home-icon", { staticClass: "custom-class" })],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "a",
+                      { staticClass: "pm-btn btn btn-transparent" },
+                      [_c("edit-icon", { staticClass: "custom-class" })],
+                      1
+                    )
+                  ]
                 }
               }
             ])
@@ -85298,7 +85390,7 @@ exports = module.exports = __webpack_require__(17)(false);
 
 
 // module
-exports.push([module.i, ".pmt {\n  margin-top: 15px; }\n  .pmt-row {\n    display: flex;\n    flex-flow: column; }\n    .pmt-row:nth-child(even) .pmt-col:not(.manager) {\n      background-color: #e1e5e8; }\n    .pmt-row:nth-child(odd) .pmt-col:not(.manager) {\n      background-color: #f0f2f3; }\n  .pmt-col {\n    font-size: 0.8rem;\n    opacity: 0;\n    max-height: 0;\n    padding-left: 0.8rem;\n    padding-right: 0.8rem;\n    transition: max-height 100ms linear, opacity 100ms linear, padding 100ms linear;\n    overflow: hidden;\n    display: flex;\n    align-items: center;\n    justify-content: center; }\n    .pmt-col.manager {\n      cursor: pointer;\n      background-color: #4c535b;\n      color: #e1e5e8; }\n    .pmt-row.open .pmt-col, .pmt-row .pmt-col.manager, .pmt-row .pmt-col.manager-footer {\n      padding-top: 0.6rem;\n      padding-bottom: 0.6rem;\n      border-bottom: 3px solid #fff;\n      max-height: 1000px;\n      opacity: 1; }\n", ""]);
+exports.push([module.i, ".pmt {\n  margin-top: 15px; }\n  .pmt-row {\n    display: flex;\n    flex-flow: column; }\n    .pmt-row:nth-child(even) .pmt-col:not(.manager) {\n      background-color: #e1e5e8; }\n    .pmt-row:nth-child(odd) .pmt-col:not(.manager) {\n      background-color: #f0f2f3; }\n  .pmt-col {\n    font-size: 0.8rem;\n    opacity: 0;\n    max-height: 0;\n    padding-left: 0.8rem;\n    padding-right: 0.8rem;\n    transition: max-height 100ms linear, opacity 100ms linear, padding 100ms linear;\n    overflow: hidden;\n    display: flex;\n    align-items: center;\n    justify-content: center; }\n    .pmt-col.manager {\n      cursor: pointer;\n      background-color: #4c535b;\n      color: #e1e5e8; }\n    .pmt-col.manager-footer .btn-transparent {\n      padding: 0;\n      margin-right: 10px; }\n      .pmt-col.manager-footer .btn-transparent:last-child {\n        margin-right: 0; }\n    .pmt-row.open .pmt-col, .pmt-row .pmt-col.manager, .pmt-row .pmt-col.manager-footer {\n      padding-top: 0.6rem;\n      padding-bottom: 0.6rem;\n      border-bottom: 3px solid #fff;\n      max-height: 1000px;\n      opacity: 1; }\n", ""]);
 
 // exports
 
@@ -85626,7 +85718,7 @@ if (false) {
 /* unused harmony export DropletIcon */
 /* unused harmony export Edit2Icon */
 /* unused harmony export Edit3Icon */
-/* unused harmony export EditIcon */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return EditIcon; });
 /* unused harmony export ExternalLinkIcon */
 /* unused harmony export EyeOffIcon */
 /* unused harmony export EyeIcon */
@@ -85657,7 +85749,7 @@ if (false) {
 /* unused harmony export HeadphonesIcon */
 /* unused harmony export HeartIcon */
 /* unused harmony export HelpCircleIcon */
-/* unused harmony export HomeIcon */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "b", function() { return HomeIcon; });
 /* unused harmony export ImageIcon */
 /* unused harmony export InboxIcon */
 /* unused harmony export InfoIcon */
@@ -85674,13 +85766,13 @@ if (false) {
 /* unused harmony export LockIcon */
 /* unused harmony export LogInIcon */
 /* unused harmony export LogOutIcon */
-/* unused harmony export MailIcon */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "c", function() { return MailIcon; });
 /* unused harmony export MapPinIcon */
 /* unused harmony export MapIcon */
 /* unused harmony export Maximize2Icon */
 /* unused harmony export MaximizeIcon */
 /* unused harmony export MenuIcon */
-/* unused harmony export MessageCircleIcon */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "d", function() { return MessageCircleIcon; });
 /* unused harmony export MessageSquareIcon */
 /* unused harmony export MicOffIcon */
 /* unused harmony export MicIcon */
@@ -85709,7 +85801,7 @@ if (false) {
 /* unused harmony export PhoneMissedIcon */
 /* unused harmony export PhoneOffIcon */
 /* unused harmony export PhoneOutgoingIcon */
-/* unused harmony export PhoneIcon */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "e", function() { return PhoneIcon; });
 /* unused harmony export PieChartIcon */
 /* unused harmony export PlayCircleIcon */
 /* unused harmony export PlayIcon */
@@ -85761,7 +85853,7 @@ if (false) {
 /* unused harmony export ThermometerIcon */
 /* unused harmony export ThumbsDownIcon */
 /* unused harmony export ThumbsUpIcon */
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return ToggleLeftIcon; });
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "f", function() { return ToggleLeftIcon; });
 /* unused harmony export ToggleRightIcon */
 /* unused harmony export Trash2Icon */
 /* unused harmony export TrashIcon */
@@ -85781,7 +85873,7 @@ if (false) {
 /* unused harmony export UserMinusIcon */
 /* unused harmony export UserPlusIcon */
 /* unused harmony export UserXIcon */
-/* unused harmony export UserIcon */
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "g", function() { return UserIcon; });
 /* unused harmony export UsersIcon */
 /* unused harmony export VideoOffIcon */
 /* unused harmony export VideoIcon */

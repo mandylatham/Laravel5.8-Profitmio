@@ -30,6 +30,16 @@
       background-color: $gray;
       color: $gray-light;
     }
+    &.manager-footer {
+      .btn-transparent {
+        padding: 0;
+        margin-right: 10px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+
+    }
     @at-root {
       #{$rootParent}-row.open &, #{$rootParent}-row &.manager, #{$rootParent}-row &.manager-footer {
         padding-top: 0.6rem;
