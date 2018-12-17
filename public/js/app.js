@@ -83743,7 +83743,7 @@ var render = function() {
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container-fluid" }, [
     _c("div", { staticClass: "row align-items-end no-gutters" }, [
-      _c("div", { staticClass: "col-12 col-sm-5" }, [
+      _c("div", { staticClass: "col-12 col-sm-5 col-lg-3" }, [
         _c(
           "div",
           { staticClass: "form-group filter--form-group" },
@@ -83759,9 +83759,9 @@ var render = function() {
         )
       ]),
       _vm._v(" "),
-      _c("div", { staticClass: "col-none col-sm-2" }),
+      _c("div", { staticClass: "col-none col-sm-2 col-lg-6" }),
       _vm._v(" "),
-      _c("div", { staticClass: "col-12 col-sm-5" }, [
+      _c("div", { staticClass: "col-12 col-sm-5 col-lg-3" }, [
         _c("input", {
           directives: [
             {
