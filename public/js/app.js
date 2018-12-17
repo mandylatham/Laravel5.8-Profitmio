@@ -83597,6 +83597,9 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
 
 __webpack_require__(475);
 /* harmony default export */ __webpack_exports__["default"] = ({
@@ -83616,18 +83619,18 @@ __webpack_require__(475);
                 email_responses_count: 1,
                 text_responses_count: 1
             }, {
-                id: 1,
-                name: 'name',
+                id: 2,
+                name: 'asdfasdfasdfasd',
                 dealership: {
-                    name: 'Dealership'
+                    name: 'Dealersfasdfasdfasdfhip'
                 },
                 agency: {
-                    name: 'Agency'
+                    name: 'asdfasdf'
                 },
-                recipients_count: 1,
-                phone_responses_count: 1,
-                email_responses_count: 1,
-                text_responses_count: 1
+                recipients_count: 123,
+                phone_responses_count: 12,
+                email_responses_count: 123,
+                text_responses_count: 12321
             }, {
                 id: 1,
                 name: 'name',
@@ -83644,11 +83647,8 @@ __webpack_require__(475);
             }],
             companies: [],
             columns: [{
-                field: 'id',
-                is_manager: true,
-                classes: ['font-weight-bold', 'id-col']
-            }, {
                 field: 'name',
+                is_manager: true,
                 classes: ['name-col']
             }, {
                 field: 'dealership.name',
@@ -83728,7 +83728,7 @@ exports = module.exports = __webpack_require__(17)(false);
 
 
 // module
-exports.push([module.i, ".wrapper--campaign-index {\n  padding: 20px;\n  background-color: #fff; }\n  .wrapper--campaign-index .pmt-col span {\n    margin-left: 10px; }\n  .wrapper--campaign-index .pmt-col svg {\n    height: 1.2rem; }\n  @media (min-width: 992px) {\n    .wrapper--campaign-index .pmt {\n      display: table;\n      width: 100%;\n      table-layout: fixed; }\n      .wrapper--campaign-index .pmt-row {\n        display: table-row; }\n      .wrapper--campaign-index .pmt-col {\n        display: table-cell;\n        opacity: 1;\n        border-bottom: 3px solid #fff;\n        border-right: 3px solid #fff;\n        vertical-align: middle; }\n        .wrapper--campaign-index .pmt-col:last-child {\n          border-right: 0; }\n        .wrapper--campaign-index .pmt-col.id-col {\n          width: 40px;\n          text-align: center; }\n        .wrapper--campaign-index .pmt-col.options-col {\n          width: 90px; }\n        .wrapper--campaign-index .pmt-col.dealership-col, .wrapper--campaign-index .pmt-col.agency-col {\n          width: 140px; }\n        .wrapper--campaign-index .pmt-col.recipients-col, .wrapper--campaign-index .pmt-col.phone-responses-col, .wrapper--campaign-index .pmt-col.email-responses-col, .wrapper--campaign-index .pmt-col.text-responses-col {\n          width: 70px; }\n        .wrapper--campaign-index .pmt-col.name-col {\n          width: auto; } }\n  @media (min-width: 1200px) {\n    .wrapper--campaign-index .pmt-col.dealership-col, .wrapper--campaign-index .pmt-col.agency-col {\n      width: 15%; }\n    .wrapper--campaign-index .pmt-col.recipients-col, .wrapper--campaign-index .pmt-col.phone-responses-col, .wrapper--campaign-index .pmt-col.email-responses-col, .wrapper--campaign-index .pmt-col.text-responses-col {\n      width: 8%; } }\n", ""]);
+exports.push([module.i, ".wrapper--campaign-index {\n  padding: 20px;\n  background-color: #fff; }\n  .wrapper--campaign-index .pmt-col span {\n    margin-left: 10px; }\n  .wrapper--campaign-index .pmt-col svg {\n    height: 1.2rem; }\n  @media (min-width: 992px) {\n    .wrapper--campaign-index .pmt {\n      display: table;\n      width: 100%;\n      table-layout: fixed; }\n      .wrapper--campaign-index .pmt-row {\n        display: table-row; }\n      .wrapper--campaign-index .pmt-col {\n        display: table-cell;\n        opacity: 1;\n        border-bottom: 3px solid #fff;\n        border-right: 3px solid #fff;\n        vertical-align: middle; }\n        .wrapper--campaign-index .pmt-col:last-child {\n          border-right: 0; }\n        .wrapper--campaign-index .pmt-col.options-col {\n          width: 90px; }\n        .wrapper--campaign-index .pmt-col.dealership-col, .wrapper--campaign-index .pmt-col.agency-col {\n          width: 140px; }\n        .wrapper--campaign-index .pmt-col.recipients-col, .wrapper--campaign-index .pmt-col.phone-responses-col, .wrapper--campaign-index .pmt-col.email-responses-col, .wrapper--campaign-index .pmt-col.text-responses-col {\n          width: 80px;\n          padding-left: 2px;\n          padding-right: 2px; }\n        .wrapper--campaign-index .pmt-col.name-col {\n          width: auto; } }\n  @media (min-width: 1200px) {\n    .wrapper--campaign-index .pmt-col.dealership-col, .wrapper--campaign-index .pmt-col.agency-col {\n      width: 15%; }\n    .wrapper--campaign-index .pmt-col.recipients-col, .wrapper--campaign-index .pmt-col.phone-responses-col, .wrapper--campaign-index .pmt-col.email-responses-col, .wrapper--campaign-index .pmt-col.text-responses-col {\n      width: 8%; } }\n", ""]);
 
 // exports
 
@@ -83796,6 +83796,18 @@ var render = function() {
           _c("pm-responsive-table", {
             attrs: { rows: _vm.rows, columns: _vm.columns },
             scopedSlots: _vm._u([
+              {
+                key: "name",
+                fn: function(ref) {
+                  var row = ref.row
+                  return [
+                    _vm._v("\n                    " + _vm._s(row.name) + " "),
+                    _c("span", { staticClass: "font-weight-bold ml-1" }, [
+                      _vm._v("(id: " + _vm._s(row.id) + ")")
+                    ])
+                  ]
+                }
+              },
               {
                 key: "recipients_count",
                 fn: function(ref) {

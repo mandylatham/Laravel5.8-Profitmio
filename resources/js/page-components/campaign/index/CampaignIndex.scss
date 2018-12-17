@@ -30,10 +30,6 @@
         &:last-child {
           border-right: 0;
         }
-        &.id-col {
-          width: 40px;
-          text-align: center;
-        }
         &.options-col {
           width: 90px;
         }
@@ -41,7 +37,9 @@
           width: 140px;
         }
         &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
-          width: 70px;
+          width: 80px;
+          padding-left: 2px;
+          padding-right: 2px;
         }
         &.name-col {
           width: auto;

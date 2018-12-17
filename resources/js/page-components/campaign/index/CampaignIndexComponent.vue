@@ -14,6 +14,9 @@
             </div>
             <div class="col-12">
                 <pm-responsive-table :rows="rows" :columns="columns">
+                    <template slot="name" slot-scope="{row}">
+                        {{ row.name }} <span class="font-weight-bold ml-1">(id: {{ row.id }})</span>
+                    </template>
                     <template slot="recipients_count" slot-scope="{row}">
                         <user-icon></user-icon>
                         <span class="ml-10">{{ row.recipients_count }}</span>
@@ -64,18 +67,18 @@
                         text_responses_count: 1
                     },
                     {
-                        id: 1,
-                        name: 'name',
+                        id: 2,
+                        name: 'asdfasdfasdfasd',
                         dealership: {
-                            name: 'Dealership'
+                            name: 'Dealersfasdfasdfasdfhip'
                         },
                         agency: {
-                            name: 'Agency'
+                            name: 'asdfasdf'
                         },
-                        recipients_count: 1,
-                        phone_responses_count: 1,
-                        email_responses_count: 1,
-                        text_responses_count: 1
+                        recipients_count: 123,
+                        phone_responses_count: 12,
+                        email_responses_count: 123,
+                        text_responses_count: 12321
                     },
                     {
                         id: 1,
@@ -95,11 +98,8 @@
                 companies: [],
                 columns: [
                     {
-                        field: 'id',
-                        is_manager: true,
-                        classes: ['font-weight-bold', 'id-col']
-                    }, {
                         field: 'name',
+                        is_manager: true,
                         classes: ['name-col']
                     }, {
                         field: 'dealership.name',
