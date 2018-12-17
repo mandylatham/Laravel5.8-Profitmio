@@ -15,7 +15,6 @@
             <div class="col-12">
                 <pm-responsive-table :rows="rows" :columns="columns">
                     <template slot="options" slot-scope="{row}">
-                        <button class="btn">A</button>
                     </template>
                 </pm-responsive-table>
             </div>
@@ -76,25 +75,33 @@
                     {
                         field: 'id',
                         is_manager: true,
-                        classes: ['font-weight-bold']
+                        classes: ['font-weight-bold', 'id-col']
                     }, {
-                        field: 'name'
+                        field: 'name',
+                        classes: ['name-col']
                     }, {
                         field: 'dealership.name',
-                        html: true
+                        html: true,
+                        classes: ['dealership-col']
                     }, {
-                        field: 'agency.name'
+                        field: 'agency.name',
+                        classes: ['agency-col']
                     }, {
-                        field: 'recipients_count'
+                        field: 'recipients_count',
+                        classes: ['recipients-col']
                     }, {
-                        field: 'phone_responses_count'
+                        field: 'phone_responses_count',
+                        classes: ['phone-responses-col']
                     }, {
-                        field: 'email_responses_count'
+                        field: 'email_responses_count',
+                        classes: ['email-responses-col']
                     }, {
-                        field: 'text_responses_count'
+                        field: 'text_responses_count',
+                        classes: ['text-responses-col']
                     }, {
                         field: 'options',
-                        is_manager_footer: true
+                        is_manager_footer: true,
+                        classes: ['options-col']
                     }
                 ],
                 searchTerm: '',

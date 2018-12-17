@@ -15,7 +15,7 @@
     }
   }
   &-col {
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     opacity: 0;
     max-height: 0;
     padding-left: 0.8rem;
@@ -32,9 +32,9 @@
     }
     @at-root {
       #{$rootParent}-row.open &, #{$rootParent}-row &.manager, #{$rootParent}-row &.manager-footer {
-        padding-top: 0.5rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 4px solid #fff;
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+        border-bottom: 3px solid #fff;
         max-height: 1000px;
         opacity: 1;
       }
