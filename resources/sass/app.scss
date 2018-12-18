@@ -119,53 +119,53 @@ body {
   height: 100%;
   position: relative;
   overflow-x: hidden;
-  .wrapper-aside {
-    background: $gray;
-    padding: 30px;
-    min-height: calc(100vh - 60px);
-    color: #fff;
-    transform: translate(-100%);
-    position: absolute;
-    top: 0; left: 0;
-    z-index: 100;
-    width: 100%;
-    transition: transform .3s ease-in-out,width .3s ease-in-out;
-    &--content {
-      padding: 20px 0;
-    }
-    .calendar-filters {
-      display: flex;
-      align-items: center;
-      justify-content: space-evenly;
-      color: #fff;
-      font-size: 14px;
-    }
-    @include media-breakpoint-up(sm) {
-      width: $wrapper-content-sm;
-    }
-    @include media-breakpoint-up(lg) {
-      width: $wrapper-aside-lg;
-      transform: none;
-    }
-    @include media-breakpoint-up(xl) {
-      width: $wrapper-aside-xl;
-    }
-  }
-  .wrapper-content {
-    padding: 10px;
-    transform: translate(0, 0);
-    transition: transform .3s ease-in-out,margin .3s ease-in-out;
-    @include media-breakpoint-up(md) {
-      padding: 20px 30px;
-    }
-    @include media-breakpoint-up(lg) {
-      margin-left: $wrapper-aside-lg;
-      transform: none;
-    }
-    @include media-breakpoint-up(xl) {
-      margin-left: $wrapper-aside-xl;
-    }
-  }
+  //.wrapper-aside {
+  //  background: $gray;
+  //  padding: 30px;
+  //  min-height: calc(100vh - 60px);
+  //  color: #fff;
+  //  transform: translate(-100%);
+  //  position: absolute;
+  //  top: 0; left: 0;
+  //  z-index: 100;
+  //  width: 100%;
+  //  transition: transform .3s ease-in-out,width .3s ease-in-out;
+  //  &--content {
+  //    padding: 20px 0;
+  //  }
+  //  .calendar-filters {
+  //    display: flex;
+  //    align-items: center;
+  //    justify-content: space-evenly;
+  //    color: #fff;
+  //    font-size: 14px;
+  //  }
+  //  @include media-breakpoint-up(sm) {
+  //    width: $wrapper-content-sm;
+  //  }
+  //  @include media-breakpoint-up(lg) {
+  //    width: $wrapper-aside-lg;
+  //    transform: none;
+  //  }
+  //  @include media-breakpoint-up(xl) {
+  //    width: $wrapper-aside-xl;
+  //  }
+  //}
+  //.wrapper-content {
+  //  padding: 10px;
+  //  transform: translate(0, 0);
+  //  transition: transform .3s ease-in-out,margin .3s ease-in-out;
+  //  @include media-breakpoint-up(md) {
+  //    padding: 20px 30px;
+  //  }
+  //  @include media-breakpoint-up(lg) {
+  //    margin-left: $wrapper-aside-lg;
+  //    transform: none;
+  //  }
+  //  @include media-breakpoint-up(xl) {
+  //    margin-left: $wrapper-aside-xl;
+  //  }
+  //}
   .campaign {
     margin-bottom:20px;
     .campaign-collapsable {
