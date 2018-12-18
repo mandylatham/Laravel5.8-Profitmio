@@ -1,71 +1,98 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+# PROFITMINER (PM)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+## Custom Vue Components
+### pm-responsive-table
+Simple table component that add toggle column feature and async loading. Style customization is handled by css.
 
-## About Laravel
+**How to use:**
+```
+<pm-responsive-table :rows="rows" :columns="columns"></pm-responsive-table>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel attempts to take the pain out of development by easing common tasks used in the majority of web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+export default {
+    data() {
+        return {
+            rows: [
+                {
+                    id: 1,
+                    name: 'name',
+                    dealership: {
+                        name: 'Dealership'
+                    },
+                    agency: {
+                        name: 'Agency'
+                    },
+                    recipients_count: 1
+                }
+            ],
+            columns: [
+                {
+                    field: 'id',
+                    is_manager: true,
+                    classes: ['font-weight-bold']
+                }, {
+                    field: 'name'
+                }, {
+                    field: 'dealership.name',
+                    html: true
+                }, {
+                    field: 'agency.name'
+                }, {
+                    field: 'recipients_count'
+                }, {
+                    field: 'options',
+                    is_manager_footer: true
+                }
+            ]
+        }
+    }
+}
+```
 
-Laravel is accessible, yet powerful, providing tools needed for large, robust applications.
+**Available options for column declaration**
 
-## Learning Laravel
+`field` (Required) Row object property that this column corresponds to. This can be: `agency` single row property or `agency.name` nested row property name,
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of any modern web application framework, making it a breeze to get started learning the framework.
+`classes` Array of classes to append to each row column.
 
-If you're not in the mood to read, [Laracasts](https://laracasts.com) contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, JavaScript, and more. Boost the skill level of yourself and your entire team by digging into our comprehensive video library.
+`html` indicates whether this column will require html rendering.
 
-## Laravel Sponsors
+`is_manager` indicates that this column shouldn't be hidden on mobile and control toggle feature;
 
-We would like to extend our thanks to the following sponsors for helping fund on-going Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell):
+`is_manager_footer` indicates that this column shouldn't be hidden on mobile but can't control toggle feature.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
+**Available options for cell content customization**
 
-## Contributing
+There are two options to customize the cell's content:
+1. `html`: this column options treats the content as html
+2. Each column has available an [scoped named slot](https://vuejs.org/v2/guide/components-slots.html#Scoped-Slots), the name of the slot match the column's field property. Each slot pass the `row` scoped object. Don't forget that `slot-scope` can actually accept any valid JavaScript expression.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```
+<pm-responsive-table :rows="rows" :columns="columns">
+    <template slot="options" slot-scope="{row}">
+        <button class="btn">A</button>
+    </template>
+</pm-responsive-table>
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-
-## Convention used to name routes
-All resources should use the singular form.
-- Show list resources view => {resource}.index
-- Show create resource view => {resource}.create
-- Show edit resource view => {resource}.edit
+export default {
+    data() {
+        return {
+            rows: [
+                {
+                    id: 1
+                }
+            ],
+            columns: [
+                {
+                    field: 'id',
+                    is_manager: true,
+                    classes: ['font-weight-bold']
+                }, {
+                    field: 'options',
+                    is_manager_footer: true
+                }
+            ]
+        }
+    }
+}
+```
