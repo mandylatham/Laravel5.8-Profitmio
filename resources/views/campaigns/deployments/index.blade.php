@@ -42,11 +42,16 @@
             <i class="icon fa-3x fa-th"></i>
         </a>
         @if (!$campaign->isExpired())
-            <a href="{{ route('campaign.drop.create', ['campaign' => $campaign->id]) }}"
-               class="btn btn-success waves-effect float-right">
-                <i class="icon md-plus" aria-hidden="true"></i>
-                New
-            </a>
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    New
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="{{ route('campaign.add-email-drop', ['campaign' => $campaign->id]) }}">Add Email Drop</a>
+                    <a class="dropdown-item" href="{{ route('campaign.add-mailer-drop', ['campaign' => $campaign->id]) }}">Add Mailer Drop</a>
+                    <a class="dropdown-item" href="{{ route('campaign.add-sms-drop', ['campaign' => $campaign->id]) }}">Add Sms Drop</a>
+                </div>
+            </div>
         @endif
     </div>
     @if ($drops->count() > 0)
