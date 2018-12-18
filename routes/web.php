@@ -141,7 +141,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/drops', 'DeploymentController@forCampaign')->name('campaign.drop.index');
         Route::get('/drop/{drop}', 'DeploymentController@show');
         Route::post('/drop/{deployment}/update', 'DeploymentController@update');
-        Route::get('/drops/new', 'DeploymentController@createNew')->name('campaign.drop.create');
+        Route::get('/drops/new-email-drop', 'DeploymentController@createNewEmailDrop')->name('campaign.add-email-drop');
+        Route::get('/drops/new-sms-drop', 'DeploymentController@createNewSmsDrop')->name('campaign.add-sms-drop');
+        Route::get('/drops/new-mailer-drop', 'DeploymentController@createNewMailerDrop')->name('campaign.add-mailer-drop');
         Route::post('/drops/create', 'DeploymentController@create');
         Route::post('/drops/add-groups', 'DeploymentController@saveGroups');
         Route::post('/drop/{drop}/send-sms/{recipient}', 'DeploymentController@deploySms');

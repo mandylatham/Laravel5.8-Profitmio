@@ -15,5 +15,8 @@
         "laravel-mix": "^2.0",
         "lodash": "^4.17.5",
         "vue": "^2.5.7"
+    },
+    "dependencies": {
+        "bootstrap-vue": "^2.0.0-rc.11"
     }
 }
