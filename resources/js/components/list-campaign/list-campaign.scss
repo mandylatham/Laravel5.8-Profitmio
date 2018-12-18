@@ -26,20 +26,43 @@
         margin-top: 5px;
       }
     }
+    @include media-breakpoint-up(lg) {
+      width: 45%;
+    }
   }
-  .campaign-asset {}
+  .campaign-asset {
+    text-align: center;
+    @include media-breakpoint-up(lg) {
+      width: 15%;
+    }
+  }
   .campaign-date {
     flex-flow: column;
     font-size: 1rem;
+    text-align: center;
     &--value {
       font-weight: bold;
       font-size: 1.1em;
     }
+    @include media-breakpoint-up(lg) {
+      width: 15%;
+    }
   }
   .campaign-chart {
+    &--container {
+      display: flex;
+      flex-flow: row;
+    }
+    &--chart {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
     &--labels {
       padding-left: 10px;
       margin-left: 20px;
+      flex-grow: 1;
       span {
         position: relative;
         display: block;
@@ -66,62 +89,8 @@
         }
       }
     }
+    @include media-breakpoint-up(lg) {
+      width: 25%;
+    }
   }
 }
-
-//.wrapper--campaign-index {
-//  padding: 20px;
-//  background-color: #fff;
-//  .pmt-col {
-//    span {
-//      margin-left: 10px;
-//    }
-//    svg {
-//      height: 1.2rem;
-//    }
-//  }
-//  @include media-breakpoint-up(lg) {
-//    .pmt {
-//      display: table;
-//      width: 100%;
-//      table-layout:fixed;
-//      &-row {
-//        display: table-row;
-//      }
-//      &-col {
-//        display: table-cell;
-//        opacity: 1;
-//        border-bottom: 3px solid #fff;
-//        border-right: 3px solid #fff;
-//        vertical-align: middle;
-//        &:last-child {
-//          border-right: 0;
-//        }
-//        &.options-col {
-//          width: 90px;
-//        }
-//        &.dealership-col, &.agency-col {
-//          width: 140px;
-//        }
-//        &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
-//          width: 80px;
-//          padding-left: 2px;
-//          padding-right: 2px;
-//        }
-//        &.name-col {
-//          width: auto;
-//        }
-//      }
-//    }
-//  }
-//  @include media-breakpoint-up(xl) {
-//    .pmt-col {
-//      &.dealership-col, &.agency-col {
-//        width: 15%;
-//      }
-//      &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
-//        width: 8%;
-//      }
-//    }
-//  }
-//}

@@ -33,13 +33,15 @@
                         <div class="campaign-date--value">{{ row.end_date | amDateFormat('DD.MM.YYYY') }}</div>
                     </template>
                     <template slot="campaign-chart" slot-scope="{row}">
-                        <div class="campaign-chart--chart">
-                            <img src="/img/pie.png" alt="Image">
-                        </div>
-                        <div class="campaign-chart--labels">
-                            <span class="sms">sms</span>
-                            <span class="call">call</span>
-                            <span class="email">email</span>
+                        <div class="campaign-chart--container">
+                            <div class="campaign-chart--chart">
+                                <img src="/img/pie.png" alt="Image">
+                            </div>
+                            <div class="campaign-chart--labels">
+                                <span class="sms">sms</span>
+                                <span class="call">call</span>
+                                <span class="email">email</span>
+                            </div>
                         </div>
                     </template>
                 </pm-responsive-table>
