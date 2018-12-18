@@ -17,6 +17,7 @@
                     <template slot="company-resume" slot-scope="{row}">
                         <div class="company-resume--container">
                             <div class="company-resume--image">
+                                <img src="/img/img.png" alt="Image">
                             </div>
                             <div class="company-resume--title">
                                 <strong>{{ row.name }}</strong>
@@ -25,14 +26,18 @@
                         </div>
                     </template>
                     <template slot="company-role" slot-scope="{row}">
+                        <div class="company-role--container">
                         <v-select :options="roles" class="filter--v-select"></v-select>
+                        </div>
                     </template>
                     <template slot="company-phone" slot-scope="{row}">
-                        <phone-icon></phone-icon>
-                        <span>{{ row.phone_number }}</span>
+                        <div class="company-phone--container">
+                            <phone-icon></phone-icon>
+                            <span>{{ row.phone_number }}</span>
+                        </div>
                     </template>
                     <template slot="company-stats" slot-scope="{row}">
-                        <div class="campaign-stats--container">
+                        <div class="company-stats--container">
                             <volume-icon></volume-icon>
                             <span class="badge badge-pill">{{ row.active_campaigns }}</span>
                             <span class="campaign-stats--label">Active Campaigns</span>
@@ -75,6 +80,7 @@
                         classes: ['company-stats']
                     }
                 ],
+                roles: [],
                 searchTerm: '',
                 serverParams: {
                     columnFilters: {},

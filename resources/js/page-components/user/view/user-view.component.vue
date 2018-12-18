@@ -60,12 +60,12 @@
             </div>
         </div>
         <div class="wrapper-content">
-            <b-tabs pills card >
+            <b-tabs pills card>
                 <b-tab title="CAMPAIGN" active>
                     <list-campaign></list-campaign>
                 </b-tab>
                 <b-tab title="COMPANY">
-                    <list-company></list-company>
+                    <list-company></list-company >
                 </b-tab>
             </b-tabs>
         </div>

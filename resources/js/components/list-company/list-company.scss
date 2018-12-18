@@ -1,10 +1,13 @@
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
+@import '../../../sass/variables';
 
 .list-company-container {
   .company-resume {
     &--container {
+      padding-top: 10px;
+      padding-bottom: 10px;
       display: flex;
       flex-flow: row;
       align-items: stretch;
@@ -15,6 +18,7 @@
       align-items: center;
       justify-content: center;
       flex: 2;
+      margin-right: 10px;
     }
     &--title {
       display: flex;
@@ -27,67 +31,63 @@
       }
     }
     @include media-breakpoint-up(lg) {
-      width: 45%;
+      width: 40%;
     }
   }
-  .campaign-asset {
-    text-align: center;
-    @include media-breakpoint-up(lg) {
-      width: 15%;
-    }
-  }
-  .campaign-date {
-    flex-flow: column;
-    font-size: 1rem;
-    text-align: center;
-    &--value {
-      font-weight: bold;
-      font-size: 1.1em;
-    }
-    @include media-breakpoint-up(lg) {
-      width: 15%;
-    }
-  }
-  .campaign-chart {
+  .company-role {
     &--container {
+      padding: 10px 60px;
+      width: 100%;
+      .filter--v-select {
+        width: 100%;
+      }
+      @include media-breakpoint-up(lg) {
+        padding: 0 15px;
+      }
+    }
+    @include media-breakpoint-up(lg) {
+      width: 25%;
+    }
+  }
+  .company-phone {
+    &--container {
+      padding-top: 10px;
+      padding-bottom: 10px;
+      text-align: center;
+      svg {
+        margin-right: 10px;
+      }
+      @include media-breakpoint-up(lg) {
+        padding: 0;
+      }
+    }
+    @include media-breakpoint-up(lg) {
+      width: 15%;
+    }
+  }
+  .company-stats {
+    &--container {
+      padding-top: 10px;
+      padding-bottom: 10px;
       display: flex;
       flex-flow: row;
-    }
-    &--chart {
-      flex-grow: 1;
-      display: flex;
       align-items: center;
       justify-content: center;
-    }
-    &--labels {
-      padding-left: 10px;
-      margin-left: 20px;
-      flex-grow: 1;
-      span {
-        position: relative;
-        display: block;
-        padding-left: 10px;
-        font-size: 13px;
-        &::after {
-          content: '';
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          left: -10px;
-          top: 50%;
-          margin-top: -5px;
-        }
-        &.sms::after {
-          background-color: rgb(76, 83, 91);
-        }
-        &.call::after {
-          background-color: #fff;
-        }
-        &.email::after {
-          background-color: rgb(101, 108, 116);
-        }
+      @include media-breakpoint-up(lg) {
+        padding: 0;
       }
+    }
+    .badge {
+      background-color: $gray;
+      color: #fff;
+      height: 25px;
+      display: flex;
+      margin-right: 10px;
+      font-weight: 300;
+      width: 25px;
+      align-items: center;
+      font-size: 1.1rem;
+      justify-content: center;
     }
     @include media-breakpoint-up(lg) {
       width: 25%;
