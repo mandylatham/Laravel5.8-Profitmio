@@ -2,59 +2,126 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
-.wrapper--campaign-index {
-  padding: 20px;
-  background-color: #fff;
-  .pmt-col {
-    span {
-      margin-left: 10px;
+.list-campaign-container {
+  .campaign-resume {
+    &--container {
+      display: flex;
+      flex-flow: row;
+      align-items: stretch;
+      flex-grow: 1;
     }
-    svg {
-      height: 1.2rem;
+    &--status {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 2;
     }
-  }
-  @include media-breakpoint-up(lg) {
-    .pmt {
-      display: table;
-      width: 100%;
-      table-layout:fixed;
-      &-row {
-        display: table-row;
-      }
-      &-col {
-        display: table-cell;
-        opacity: 1;
-        border-bottom: 3px solid #fff;
-        border-right: 3px solid #fff;
-        vertical-align: middle;
-        &:last-child {
-          border-right: 0;
-        }
-        &.options-col {
-          width: 90px;
-        }
-        &.dealership-col, &.agency-col {
-          width: 140px;
-        }
-        &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
-          width: 80px;
-          padding-left: 2px;
-          padding-right: 2px;
-        }
-        &.name-col {
-          width: auto;
-        }
+    &--title {
+      display: flex;
+      flex-flow: column;
+      flex: 6;
+      font-size: 1rem;
+      span {
+        font-weight: 300;
+        margin-top: 5px;
       }
     }
   }
-  @include media-breakpoint-up(xl) {
-    .pmt-col {
-      &.dealership-col, &.agency-col {
-        width: 15%;
-      }
-      &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
-        width: 8%;
+  .campaign-asset {}
+  .campaign-date {
+    flex-flow: column;
+    font-size: 1rem;
+    &--value {
+      font-weight: bold;
+      font-size: 1.1em;
+    }
+  }
+  .campaign-chart {
+    &--labels {
+      padding-left: 10px;
+      margin-left: 20px;
+      span {
+        position: relative;
+        display: block;
+        padding-left: 10px;
+        font-size: 13px;
+        &::after {
+          content: '';
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          left: -10px;
+          top: 50%;
+          margin-top: -5px;
+        }
+        &.sms::after {
+          background-color: rgb(76, 83, 91);
+        }
+        &.call::after {
+          background-color: #fff;
+        }
+        &.email::after {
+          background-color: rgb(101, 108, 116);
+        }
       }
     }
   }
 }
+
+//.wrapper--campaign-index {
+//  padding: 20px;
+//  background-color: #fff;
+//  .pmt-col {
+//    span {
+//      margin-left: 10px;
+//    }
+//    svg {
+//      height: 1.2rem;
+//    }
+//  }
+//  @include media-breakpoint-up(lg) {
+//    .pmt {
+//      display: table;
+//      width: 100%;
+//      table-layout:fixed;
+//      &-row {
+//        display: table-row;
+//      }
+//      &-col {
+//        display: table-cell;
+//        opacity: 1;
+//        border-bottom: 3px solid #fff;
+//        border-right: 3px solid #fff;
+//        vertical-align: middle;
+//        &:last-child {
+//          border-right: 0;
+//        }
+//        &.options-col {
+//          width: 90px;
+//        }
+//        &.dealership-col, &.agency-col {
+//          width: 140px;
+//        }
+//        &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
+//          width: 80px;
+//          padding-left: 2px;
+//          padding-right: 2px;
+//        }
+//        &.name-col {
+//          width: auto;
+//        }
+//      }
+//    }
+//  }
+//  @include media-breakpoint-up(xl) {
+//    .pmt-col {
+//      &.dealership-col, &.agency-col {
+//        width: 15%;
+//      }
+//      &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
+//        width: 8%;
+//      }
+//    }
+//  }
+//}

@@ -5,6 +5,10 @@ import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
 import { HomeIcon, EditIcon, PhoneIcon, MailIcon, MenuIcon, MessageCircleIcon, Trash2Icon, ToggleLeftIcon, XIcon, UserIcon } from 'vue-feather-icons'
 
+// Global filters
+import './filters/global-filters';
+
+
 // Plugins
 Vue.use(Dropdown);
 Vue.use(Tabs);
@@ -36,7 +40,7 @@ Vue.component('x-icon', XIcon);
 
 // Vue.filter('format', function (value, format) {
 //     return moment(value, 'YYYY-MM-DD').format(format);
-
+//
 // });
 
 // Main App

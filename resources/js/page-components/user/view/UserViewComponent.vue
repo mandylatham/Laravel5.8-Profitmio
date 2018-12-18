@@ -60,7 +60,7 @@
             </div>
         </div>
         <div class="wrapper-content">
-            <b-tabs pills card>
+            <b-tabs pills card >
                 <b-tab title="Campaign" active>
                     <list-campaign></list-campaign>
                 </b-tab>

@@ -79,6 +79,7 @@
     transition: transform .3s ease-in-out,margin .3s ease-in-out;
     .card-header {
       padding: 5px;
+      margin-bottom: 30px;
       ul {
         list-style: none;
         display: flex;
@@ -93,9 +94,9 @@
           text-decoration: none;
           background-color: lighten($gray, 15%);
           color: $gray-light;
-        }
-        li.active {
-          background-color: $gray;
+          &.active {
+            background-color: $gray;
+          }
         }
       }
     }
