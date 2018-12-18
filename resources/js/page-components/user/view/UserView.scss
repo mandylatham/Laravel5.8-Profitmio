@@ -3,6 +3,8 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
+$aside-width: 400px;
+
 #app {
   display: flex;
   flex-flow: column;
@@ -73,16 +75,28 @@
       }
     }
     @include media-breakpoint-up(sm) {
-      width: 450px;
+      width: $aside-width;
+    }
+    @include media-breakpoint-up(lg) {
+      min-height: calc(100vh - 60px);
+    }
+    @include media-breakpoint-up(xl) {
+      transform: none;
+      &-control, &-close-control {
+        display: none;
+      }
     }
   }
   .wrapper-content {
     padding: 40px 0 0 0;
     transform: translate(0, 0);
     transition: transform .3s ease-in-out,margin .3s ease-in-out;
+    .pmt {
+      margin-top: 30px;
+    }
     .card-header {
       padding: 5px;
-      margin-bottom: 30px;
+      margin-bottom: 40px;
       ul {
         list-style: none;
         display: flex;
@@ -97,11 +111,29 @@
           text-decoration: none;
           background-color: lighten($gray, 15%);
           color: $gray-light;
+          font-weight: 300;
           &.active {
             background-color: $gray;
           }
+          @include media-breakpoint-up(xl) {
+            font-size: 1.1em;
+          }
         }
       }
+      @include media-breakpoint-up(xl) {
+        margin: 5px 15px 40px 15px;
+        padding: 0;
+        ul {
+          justify-content: flex-start;
+          li {
+            margin-right: 20px;
+          }
+        }
+      }
+    }
+    @include media-breakpoint-up(xl) {
+      transform: none !important;
+      margin-left: $aside-width;
     }
   }
   &.open {

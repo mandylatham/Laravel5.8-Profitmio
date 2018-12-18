@@ -51,11 +51,13 @@
     }
     @at-root {
       #{$rootParent}-row.open &, #{$rootParent}-row &.manager, #{$rootParent}-row &.manager-footer {
-        padding-top: 0.6rem;
-        padding-bottom: 0.6rem;
-        border-bottom: 3px solid #fff;
-        max-height: 1000px;
-        opacity: 1;
+        @include media-breakpoint-down(lg) {
+          padding-top: 0.6rem;
+          padding-bottom: 0.6rem;
+          border-bottom: 3px solid #fff;
+          max-height: 1000px;
+          opacity: 1;
+        }
       }
     }
   }
