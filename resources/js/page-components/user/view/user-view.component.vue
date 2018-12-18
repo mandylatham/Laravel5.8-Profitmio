@@ -72,7 +72,7 @@
     </div>
 </template>
 <script>
-    require("./UserView.scss");
+    require("./user-view.scss");
     export default {
         data() {
             return {

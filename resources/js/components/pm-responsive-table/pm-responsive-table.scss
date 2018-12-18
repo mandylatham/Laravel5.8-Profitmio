@@ -51,7 +51,7 @@
     }
     @at-root {
       #{$rootParent}-row.open &, #{$rootParent}-row &.manager, #{$rootParent}-row &.manager-footer {
-        @include media-breakpoint-down(lg) {
+        @include media-breakpoint-down(md) {
           padding-top: 0.6rem;
           padding-bottom: 0.6rem;
           border-bottom: 3px solid #fff;
