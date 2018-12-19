@@ -24,6 +24,19 @@ Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.restore');
 //endregion
 
+Route::get('/new-dashboard', function () {
+    return view('dashboard.index');
+});
+Route::get('/campaign-dashboard', function () {
+    return view('campaign.index');
+});
+Route::get('/user-dashboard', function () {
+    return view('user.index');
+});
+Route::get('/user-view', function () {
+    return view('user.view');
+});
+
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
 

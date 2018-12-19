@@ -1,0 +1,89 @@
+@import "../variables";
+
+.pm-datatable {
+  margin-top: 25px;
+  table.vgt-table {
+    border-collapse: separate;
+    border: none;
+    &.bordered td, &.bordered th {
+      border: none;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      background-image: none;
+    }
+    thead th, thead td {
+      background-color: darken(rgb(225, 229, 232), 10%);
+      cursor: pointer;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td {
+      background-color: rgb(225, 229, 232);
+    }
+    tr:nth-child(odd) td {
+      background-color: rgb(240, 242, 243);
+    }
+  }
+  .vgt-wrap__actions-footer {
+    border: none;
+  }
+}
+
+.filter-- {
+  &v-select.v-select {
+    border: 1px solid $gray;
+    border-radius: 0;
+    input[type=search], input[type=search]:focus {
+      margin: 0;
+      padding: 0;
+      font-size: 0.9rem;
+      height: 2rem;
+    }
+    .vs__selected-options {
+      order: 2;
+    }
+    &.open {
+      .open-indicator:before {
+        transform: rotate(315deg) translate(-2px, 3px);
+      }
+    }
+    .open-indicator:before {
+      border-width: 1px 1px 0 0;
+      border-color: #fff;
+      transform: rotate(133deg) translate(-2px, 1px);
+    }
+    .vs__actions {
+      order: 1;
+      margin: 0;
+      padding: 0 10px;
+      text-align: center;
+      justify-content: center;
+      background-color: $gray;
+    }
+    .dropdown-toggle {
+      border: none;
+      padding: 0;
+      &:after {
+        display: none;
+      }
+    }
+  }
+  &search-box {
+    border-radius: 15px;
+    font-size: 0.9rem;
+    height: 2rem;
+    border-color: $gray;
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba(#495057, 0.25);
+      border-color: inherit;
+    }
+  }
+  &form-group {
+    label {
+      font-size: 0.8rem;
+      margin-bottom: 5px;
+    }
+    @include media-breakpoint-up(sm) {
+      margin-bottom: 0;
+    }
+  }
+}

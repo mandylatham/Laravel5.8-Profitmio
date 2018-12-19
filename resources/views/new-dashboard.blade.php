@@ -1,6 +1,62 @@
-@extends('layouts.base')
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Profit Miner</title>
 
-@section('content')
+    <script src="{{ asset('js/app.js') }}" defer></script>
+    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+</head>
+<body>
+<!-- Navigation Bar-->
+<div id="main-header">
+    <a href="index.html" class="logo">
+        <img src="/img/logo.png">
+    </a>
+    <nav class="navbar">
+        <a href="javascript:;" class="sidebar-toggle">B</a>
+        <div class="navbar-menu-extra">
+            <ul class="nav">
+                <li class="menu-item">
+                    <b-dropdown variant="link" no-caret>
+                        <template slot="button-content">
+                            <img src="/img/help.png" alt="Help">
+                        </template>
+                        <b-dropdown-item href="#">Action</b-dropdown-item>
+                        <b-dropdown-item href="#">Another action</b-dropdown-item>
+                        <b-dropdown-item href="#">Something else here...</b-dropdown-item>
+                    </b-dropdown>
+                </li>
+                <li class="menu-item">
+                    <b-dropdown variant="link" no-caret>
+                        <template slot="button-content">
+                            <img src="/img/notification.png" alt="Notifications">
+                        </template>
+                        <b-dropdown-item href="#">Action</b-dropdown-item>
+                        <b-dropdown-item href="#">Another action</b-dropdown-item>
+                        <b-dropdown-item href="#">Something else here...</b-dropdown-item>
+                    </b-dropdown>
+                </li>
+                <li class="menu-item menu-item-profile">
+                    <b-dropdown variant="link" no-caret>
+                        <template slot="button-content">
+                            <span>Jhon Doe</span>
+                            <img src="http://lorempixel.com/60/60/" alt="Avatar">
+                        </template>
+                        <b-dropdown-item href="#">Profile</b-dropdown-item>
+                        <b-dropdown-item href="#">Another action</b-dropdown-item>
+                        <b-dropdown-item href="#">Something else here...</b-dropdown-item>
+                    </b-dropdown>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</div>
+<!-- End Navigation Bar-->
+
 <div id="wrapper">
     <div class="wrapper-aside" id="wrapper-aside">
         <div class="calendar-filters">
@@ -188,4 +244,5 @@
         </div>
     </div>
 </div>
-@endsection
+</body>
+</html>
