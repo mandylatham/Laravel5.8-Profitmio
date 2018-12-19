@@ -31,6 +31,7 @@
         <div class="wrapper-content">
             <campaign-stats v-if="activeSection === 'stats'"></campaign-stats>
             <campaign-drops v-if="activeSection === 'drops'"></campaign-drops>
+            <campaign-recipients v-if="activeSection === 'recipients'"></campaign-recipients>
         </div>
     </div>
 </template>

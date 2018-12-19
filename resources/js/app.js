@@ -3,7 +3,7 @@ import Vue from 'vue'
 import { Tabs, Dropdown } from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
-import { CalendarIcon, HomeIcon, EditIcon, PhoneIcon, MapIcon, MailIcon, MenuIcon, MessageCircleIcon, MessageSquareIcon, PlusIcon, Trash2Icon, ToggleLeftIcon, VolumeIcon, XIcon, UserIcon } from 'vue-feather-icons'
+import { CalendarIcon, DatabaseIcon, DownloadIcon, HomeIcon, EditIcon, PhoneIcon, ListIcon, MapIcon, MailIcon, MenuIcon, MessageCircleIcon, MessageSquareIcon, PlusIcon, Trash2Icon, ToggleLeftIcon, VolumeIcon, XIcon, UserIcon, UsersIcon } from 'vue-feather-icons'
 
 // Global filters
 import './filters/global-filters';
@@ -21,6 +21,7 @@ Vue.component('user-view', require('./page-components/user/view/user-view.compon
 Vue.component('campaign-view', require('./page-components/campaign/view/campaign-view.component'));
 Vue.component('campaign-stats', require('./page-components/campaign/stats/campaign-stats.component'));
 Vue.component('campaign-drops', require('./page-components/campaign/drops/campaign-drops.component'));
+Vue.component('campaign-recipients', require('./page-components/campaign/recipients/campaign-recipients.component'));
 
 // Components
 Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-icon'));
@@ -33,6 +34,8 @@ Vue.component('list-company', require('./components/list-company/list-company.co
 
 // Icons
 Vue.component('calendar-icon', CalendarIcon);
+Vue.component('database-icon', DatabaseIcon);
+Vue.component('download-icon', DownloadIcon);
 Vue.component('home-icon', HomeIcon);
 Vue.component('edit-icon', EditIcon);
 Vue.component('plus-icon', PlusIcon);
@@ -42,9 +45,11 @@ Vue.component('mail-icon', MailIcon);
 Vue.component('menu-icon', MenuIcon);
 Vue.component('message-square-icon', MessageSquareIcon);
 Vue.component('message-circle-icon', MessageCircleIcon);
+Vue.component('list-icon', ListIcon);
 Vue.component('trash-icon', Trash2Icon);
 Vue.component('toggle-left-icon', ToggleLeftIcon);
 Vue.component('user-icon', UserIcon);
+Vue.component('users-icon', UsersIcon);
 Vue.component('x-icon', XIcon);
 Vue.component('volume-icon', VolumeIcon);
 
