@@ -19,6 +19,7 @@ Vue.component('v-select', vSelect);
 Vue.component('campaign-index', require('./page-components/campaign/index/CampaignIndexComponent'));
 Vue.component('user-index', require('./page-components/user/index/user-index.component'));
 Vue.component('user-view', require('./page-components/user/view/user-view.component'));
+Vue.component('campaign-view', require('./page-components/campaign/view/campaign-view.component'));
 
 // Components
 Vue.component('date-pick', require('./components/date-pick'));
