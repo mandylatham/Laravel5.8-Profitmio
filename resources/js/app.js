@@ -22,6 +22,7 @@ Vue.component('campaign-view', require('./page-components/campaign/view/campaign
 Vue.component('campaign-stats', require('./page-components/campaign/stats/campaign-stats.component'));
 Vue.component('campaign-drops', require('./page-components/campaign/drops/campaign-drops.component'));
 Vue.component('campaign-recipients', require('./page-components/campaign/recipients/campaign-recipients.component'));
+Vue.component('campaign-responses', require('./page-components/campaign/responses/campaign-responses.component'));
 
 // Components
 Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-icon'));

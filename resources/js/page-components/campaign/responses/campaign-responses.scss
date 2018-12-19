@@ -1,0 +1,43 @@
+@import "../../../../sass/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+$aside-width: 400px;
+
+.campaign-responses--container {
+  margin-top: 50px;
+  .response-block {
+    margin-bottom: 30px;
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
+    &--icon {
+      padding: 15px;
+      width: 100px;
+      background-color: $gray;
+      color: #fff;
+      min-height: 80px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      svg {
+        width: 40px;
+        height: 40px;
+      }
+    }
+    &--data {
+      padding: 15px 25px;
+      background-color: $gray-light;
+      align-content: center;
+      display: flex;
+      flex-flow: column;
+      strong {
+        margin-bottom: 5px;
+      }
+      p {
+        margin: 0;
+      }
+    }
+  }
+}
