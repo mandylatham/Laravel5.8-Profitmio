@@ -20,6 +20,8 @@ Vue.component('campaign-index', require('./page-components/campaign/index/Campai
 Vue.component('user-index', require('./page-components/user/index/user-index.component'));
 Vue.component('user-view', require('./page-components/user/view/user-view.component'));
 Vue.component('campaign-view', require('./page-components/campaign/view/campaign-view.component'));
+Vue.component('campaign-stats', require('./page-components/campaign/stats/campaign-stats.component'));
+Vue.component('campaign-drops', require('./page-components/campaign/drops/campaign-drops.component'));
 
 // Components
 Vue.component('date-pick', require('./components/date-pick'));

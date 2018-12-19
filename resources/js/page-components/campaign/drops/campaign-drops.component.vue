@@ -11,36 +11,47 @@
             <nav class="wrapper-aside--navigation">
                 <ul>
                     <li>
-                        <a :class="{'active': activeSection === 'stats'}" href="javascript:;" @click="activeSection = 'stats'">STATS</a>
+                        <a class="active" href="">STATS</a>
                     </li>
                     <li>
-                        <a :class="{'active': activeSection === 'drops'}" href="javascript:;" @click="activeSection = 'drops'">DROPS</a>
+                        <a href="">DROPS</a>
                     </li>
                     <li>
-                        <a :class="{'active': activeSection === 'recipients'}" href="javascript:;" @click="activeSection = 'recipients'">RECIPIENTS</a>
+                        <a href="">RECIPIENTS</a>
                     </li>
                     <li>
-                        <a :class="{'active': activeSection === 'responses'}" href="javascript:;" @click="activeSection = 'responses'">RESPONSES</a>
+                        <a href="">RESPONSES</a>
                     </li>
                     <li>
-                        <a :class="{'active': activeSection === 'edit'}" href="javascript:;" @click="activeSection = 'edit'">EDIT</a>
+                        <a href="">EDIT</a>
                     </li>
                 </ul>
             </nav>
         </div>
         <div class="wrapper-content">
-            <campaign-stats v-if="activeSection === 'stats'"></campaign-stats>
-            <campaign-drops v-if="activeSection === 'drops'"></campaign-drops>
+            <div class="chart">
+                <div class="chart--title clearfix">
+                    <h2>EMAIL</h2>
+                    <small>This shows the email sent over time</small>
+                </div>
+                <div class="chart--chart"></div>
+            </div>
+            <div class="chart">
+                <div class="chart--title clearfix">
+                    <h2>RESPONSES</h2>
+                    <small>This shows the SMSs sent over time</small>
+                </div>
+                <div class="chart--chart"></div>
+            </div>
         </div>
     </div>
 </template>
 <script>
-    require("./campaign-view.scss");
+    require("./campaign-drops.scss");
     export default {
         data() {
             return {
-                asideOpen: false,
-                activeSection: 'stats'
+                asideOpen: false
             };
         }
     }
