@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid">
+    <div class="container-fluid list-campaign-container">
         <div class="row align-items-end no-gutters">
             <div class="col-12 col-sm-5 col-lg-3">
                 <div class="form-group filter--form-group">
@@ -14,32 +14,35 @@
             </div>
             <div class="col-12">
                 <pm-responsive-table :rows="rows" :columns="columns">
-                    <template slot="name" slot-scope="{row}">
-                        {{ row.name }} <span class="font-weight-bold ml-1">(id: {{ row.id }})</span>
+                    <template slot="campaign-resume" slot-scope="{row}">
+                        <div class="campaign-resume--container">
+                            <div class="campaign-resume--status">
+                                <status :active="true" no-label></status>
+                            </div>
+                            <div class="campaign-resume--title">
+                                <strong>Campaign {{ row.id }}</strong>
+                                <span>{{ row.name }}</span>
+                            </div>
+                        </div>
                     </template>
-                    <template slot="recipients_count" slot-scope="{row}">
-                        <user-icon></user-icon>
-                        <span class="ml-10">{{ row.recipients_count }}</span>
+                    <template slot="campaign-asset" slot-scope="{row}">
+                        <img src="/img/img.png" alt="Image">
                     </template>
-                    <template slot="phone_responses_count" slot-scope="{row}">
-                        <phone-icon></phone-icon>
-                        <span class="ml-10">{{ row.phone_responses_count }}</span>
+                    <template slot="campaign-date" slot-scope="{row}">
+                        <div class="campaign-date--label">End Date:</div>
+                        <div class="campaign-date--value">{{ row.end_date | amDateFormat('DD.MM.YYYY') }}</div>
                     </template>
-                    <template slot="email_responses_count" slot-scope="{row}">
-                        <mail-icon></mail-icon>
-                        <span class="ml-10">{{ row.email_responses_count }}</span>
-                    </template>
-                    <template slot="text_responses_count" slot-scope="{row}">
-                        <message-circle-icon></message-circle-icon>
-                        <span class="ml-10">{{ row.text_responses_count }}</span>
-                    </template>
-                    <template slot="options" slot-scope="{row}">
-                        <a class="pm-btn btn btn-transparent">
-                            <home-icon class="custom-class"></home-icon>
-                        </a>
-                        <a class="pm-btn btn btn-transparent">
-                            <edit-icon class="custom-class"></edit-icon>
-                        </a>
+                    <template slot="campaign-chart" slot-scope="{row}">
+                        <div class="campaign-chart--container">
+                            <div class="campaign-chart--chart">
+                                <img src="/img/pie.png" alt="Image">
+                            </div>
+                            <div class="campaign-chart--labels">
+                                <span class="sms">sms</span>
+                                <span class="call">call</span>
+                                <span class="email">email</span>
+                            </div>
+                        </div>
                     </template>
                 </pm-responsive-table>
             </div>
@@ -53,76 +56,26 @@
             return {
                 rows: [
                     {
-                        id: 1,
-                        name: 'name',
-                        dealership: {
-                            name: 'Dealership'
-                        },
-                        agency: {
-                            name: 'Agency'
-                        },
-                        recipients_count: 1,
-                        phone_responses_count: 1,
-                        email_responses_count: 1,
-                        text_responses_count: 1
+                        id: 539,
+                        name: 'asdfasdf asdf sadf sad',
+                        end_date: '2018-01-01'
                     },
-                    {
-                        id: 2,
-                        name: 'asdfasdfasdfasd',
-                        dealership: {
-                            name: 'Dealersfasdfasdfasdfhip'
-                        },
-                        agency: {
-                            name: 'asdfasdf'
-                        },
-                        recipients_count: 123,
-                        phone_responses_count: 12,
-                        email_responses_count: 123,
-                        text_responses_count: 12321
-                    },
-                    {
-                        id: 1,
-                        name: 'name',
-                        dealership: {
-                            name: 'Dealership'
-                        },
-                        agency: {
-                            name: 'Agency'
-                        },
-                        recipients_count: 1,
-                        phone_responses_count: 1,
-                        email_responses_count: 1,
-                        text_responses_count: 1
-                    }
                 ],
                 companies: [],
                 columns: [
                     {
-                        field: 'name',
+                        field: 'campaign-resume',
                         is_manager: true,
-                        classes: ['name-col']
+                        classes: ['campaign-resume']
                     }, {
-                        field: 'dealership.name',
-                        classes: ['dealership-col']
+                        field: 'campaign-asset',
+                        classes: ['campaign-asset']
                     }, {
-                        field: 'agency.name',
-                        classes: ['agency-col']
+                        field: 'campaign-date',
+                        classes: ['campaign-date']
                     }, {
-                        field: 'recipients_count',
-                        classes: ['recipients-col']
-                    }, {
-                        field: 'phone_responses_count',
-                        classes: ['phone-responses-col']
-                    }, {
-                        field: 'email_responses_count',
-                        classes: ['email-responses-col']
-                    }, {
-                        field: 'text_responses_count',
-                        classes: ['text-responses-col']
-                    }, {
-                        field: 'options',
-                        is_manager_footer: true,
-                        classes: ['options-col']
+                        field: 'campaign-chart',
+                        classes: ['campaign-chart']
                     }
                 ],
                 searchTerm: '',

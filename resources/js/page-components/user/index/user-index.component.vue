@@ -45,7 +45,7 @@
     </div>
 </template>
 <script>
-    require("./UserIndex.scss");
+    require("./user-index.scss");
     export default {
         data() {
             return {

@@ -8,6 +8,8 @@
   @include media-breakpoint-up(lg) {
     .pmt {
       &-col {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
         &.options-col {
           width: 90px;
         }
@@ -25,14 +27,4 @@
       }
     }
   }
-  //@include media-breakpoint-up(xl) {
-  //  .pmt-col {
-  //    &.dealership-col, &.agency-col {
-  //      width: 15%;
-  //    }
-  //    &.recipients-col, &.phone-responses-col, &.email-responses-col, &.text-responses-col {
-  //      width: 8%;
-  //    }
-  //  }
-  //}
 }
