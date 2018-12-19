@@ -7,8 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Profit Miner</title>
 
-    <script src="{{ asset('js/app.js') }}" defer></script>
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <script src="{{ asset('js/new-app.js') }}" defer></script>
+    <link href="{{ asset('css/new-app.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">

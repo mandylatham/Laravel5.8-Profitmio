@@ -30,6 +30,9 @@ Route::get('/new-dashboard', function () {
 Route::get('/campaign-dashboard', function () {
     return view('campaign.index');
 });
+Route::get('/campaign-view', function () {
+    return view('campaign.view');
+});
 Route::get('/user-dashboard', function () {
     return view('user.index');
 });
