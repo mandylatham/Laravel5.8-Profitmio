@@ -3,11 +3,10 @@ import Vue from 'vue'
 import { Tabs, Dropdown } from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
-import { HomeIcon, EditIcon, PhoneIcon, MailIcon, MenuIcon, MessageCircleIcon, Trash2Icon, ToggleLeftIcon, VolumeIcon, XIcon, UserIcon } from 'vue-feather-icons'
+import { CalendarIcon, HomeIcon, EditIcon, PhoneIcon, MapIcon, MailIcon, MenuIcon, MessageCircleIcon, MessageSquareIcon, PlusIcon, Trash2Icon, ToggleLeftIcon, VolumeIcon, XIcon, UserIcon } from 'vue-feather-icons'
 
 // Global filters
 import './filters/global-filters';
-
 
 // Plugins
 Vue.use(Dropdown);
@@ -24,6 +23,8 @@ Vue.component('campaign-stats', require('./page-components/campaign/stats/campai
 Vue.component('campaign-drops', require('./page-components/campaign/drops/campaign-drops.component'));
 
 // Components
+Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-icon'));
+Vue.component('drop-status', require('./components/drop-status/drop-status'));
 Vue.component('date-pick', require('./components/date-pick'));
 Vue.component('status', require('./components/status/status'));
 Vue.component('pm-responsive-table', require('./components/pm-responsive-table/pm-responsive-table'));
@@ -31,11 +32,15 @@ Vue.component('list-campaign', require('./components/list-campaign/list-campaign
 Vue.component('list-company', require('./components/list-company/list-company.component'));
 
 // Icons
+Vue.component('calendar-icon', CalendarIcon);
 Vue.component('home-icon', HomeIcon);
 Vue.component('edit-icon', EditIcon);
+Vue.component('plus-icon', PlusIcon);
 Vue.component('phone-icon', PhoneIcon);
+Vue.component('map-icon', MapIcon);
 Vue.component('mail-icon', MailIcon);
 Vue.component('menu-icon', MenuIcon);
+Vue.component('message-square-icon', MessageSquareIcon);
 Vue.component('message-circle-icon', MessageCircleIcon);
 Vue.component('trash-icon', Trash2Icon);
 Vue.component('toggle-left-icon', ToggleLeftIcon);

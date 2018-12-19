@@ -11,19 +11,19 @@
             <nav class="wrapper-aside--navigation">
                 <ul>
                     <li>
-                        <a :class="{'active': activeSection === 'stats'}" href="javascript:;" @click="activeSection = 'stats'">STATS</a>
+                        <a :class="{'active': activeSection === 'stats'}" href="javascript:;" @click="changePage('stats')">STATS</a>
                     </li>
                     <li>
-                        <a :class="{'active': activeSection === 'drops'}" href="javascript:;" @click="activeSection = 'drops'">DROPS</a>
+                        <a :class="{'active': activeSection === 'drops'}" href="javascript:;" @click="changePage('drops')">DROPS</a>
                     </li>
                     <li>
-                        <a :class="{'active': activeSection === 'recipients'}" href="javascript:;" @click="activeSection = 'recipients'">RECIPIENTS</a>
+                        <a :class="{'active': activeSection === 'recipients'}" href="javascript:;" @click="changePage('recipients')">RECIPIENTS</a>
                     </li>
                     <li>
-                        <a :class="{'active': activeSection === 'responses'}" href="javascript:;" @click="activeSection = 'responses'">RESPONSES</a>
+                        <a :class="{'active': activeSection === 'responses'}" href="javascript:;" @click="changePage('responses')">RESPONSES</a>
                     </li>
                     <li>
-                        <a :class="{'active': activeSection === 'edit'}" href="javascript:;" @click="activeSection = 'edit'">EDIT</a>
+                        <a :class="{'active': activeSection === 'edit'}" href="javascript:;" @click="changePage('edit')">EDIT</a>
                     </li>
                 </ul>
             </nav>
@@ -42,6 +42,12 @@
                 asideOpen: false,
                 activeSection: 'stats'
             };
+        },
+        methods: {
+            changePage: function (page) {
+                this.activeSection = page;
+                this.asideOpen = false;
+            }
         }
     }
 </script>

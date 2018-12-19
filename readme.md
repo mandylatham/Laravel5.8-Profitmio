@@ -96,3 +96,13 @@ export default {
     }
 }
 ```
+
+## How to
+
+### Add Filters
+
+Create the filter in `js/filters` folder. If you want to make the filter global, import the filter in `js/filters/global-filters.js` file.
+
+
+## Todo
+[] Add search, pagination and slot for custom inputs in pm-responsive-table component 

@@ -5,119 +5,66 @@
 
 $aside-width: 400px;
 
-.wrapper--campaign-view {
-  flex-grow: 1;
-  .wrapper-aside {
-    background: $gray;
-    padding: 20px;
-    color: #fff;
-    transform: translate(-100%);
-    min-height: calc(100vh - 100px);
-    position: absolute;
-    top: 0; left: 0;
-    z-index: 100;
-    width: 100%;
-    transition: transform .3s ease-in-out,width .3s ease-in-out;
-    &-control {
-      position: absolute;
-      background-color: $gray;
-      color: $gray-light;
-      top: 0;
-      right: 0;
-      transform: translateX(100%);
-      padding: 5px;
-      cursor: pointer;
-    }
-    &-close-control {
-      float: right;
-      margin-bottom: 10px;
-      color: #fff;
-      text-decoration: none;
-    }
-    .campaign-avatar {
-      background-color: #ddd;
-      clear: both;
-      height: 150px;
-      padding: 20px;
-      margin-bottom: 30px;
-    }
-    &--navigation {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        li {
-          margin-bottom: 5px;
-        }
-        a {
-          text-decoration: none;
-          color: #fff;
-          padding: 10px 20px;
-          display: block;
-          &.active {
-            background-color: rgba(255, 255, 255, 0.1);
-          }
-        }
-      }
-    }
-    @include media-breakpoint-up(sm) {
-      width: $aside-width;
+.campaign-drops--container {
+  margin-bottom: 40px;
+  .drop-recipients-count {
+    text-align: center;
+    span {
+      margin-left: 10px;
     }
     @include media-breakpoint-up(lg) {
-      min-height: calc(100vh - 60px);
+      width: 30%;
     }
-    @include media-breakpoint-up(xl) {
-      transform: none;
-      &-control, &-close-control {
-        display: none;
+  }
+  .drop-type{
+    padding: 0 !important;
+    &--container {
+      width: 100%;
+      display: flex;
+      flex-flow: row;
+    }
+    &--icon {
+      width: 60px;
+      padding: 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      svg {
+        height: 1.5rem;
+      }
+    }
+    &--date {
+      flex-grow: 1;
+      color: $gray;
+      padding: 15px;
+      text-align: center;
+      span {
+        line-height: 1em;
+        margin-left: 10px;
+      }
+    }
+    @include media-breakpoint-up(lg) {
+      width: 40%;
+    }
+  }
+  .drop-status {
+    @include media-breakpoint-up(lg) {
+      width: 20%;
+      .drop-status-component {
+        width: 140px;
+        margin: 0 auto;
       }
     }
   }
-  .wrapper-content {
-    padding: 40px 10px 10px 10px;
-    transform: translate(0, 0);
-    transition: transform .3s ease-in-out,margin .3s ease-in-out;
-    .chart {
-      margin-bottom: 40px;
-      &--title {
-        h2 {
-          font-size: 1rem;
-          margin: 0;
-          font-weight: bold;
-          @include media-breakpoint-up(sm) {
-            float: left;
-          }
-        }
-        small {
-          font-size: 0.9rem;
-          @include media-breakpoint-up(sm) {
-            float: right;
-          }
-        }
-      }
-      &--chart {
-        border: 1px solid #000;
-        height: 150px;
-        margin-top: 10px;
-      }
-    }
-    @include media-breakpoint-up(xl) {
-      transform: none !important;
-      margin-left: $aside-width;
+  .drop-options {
+    @include media-breakpoint-up(lg) {
+      width: 90px;
     }
   }
-  &.open {
-    .wrapper-aside {
-      transform: translate(0, 0);
-    }
-    .wrapper-content {
-      transform: translate(100%, 0);
-      @include media-breakpoint-up(sm) {
-        transform: translate(450px, 0);
-      }
-    }
+  .pmt-row:nth-child(odd) .drop-type--date {
+    background-color: rgb(240, 242, 243);
+  }
+  .pmt-row:nth-child(even) .drop-type--date {
+    background-color: rgb(225, 229, 232);
   }
 }
