@@ -1,5 +1,5 @@
 <template>
-    <b-tabs pills card>
+    <b-tabs pills card class="campaign-edit--tabs">
         <b-tab title="DETAILS" active>
             <campaign-edit-detail></campaign-edit-detail>
         </b-tab>

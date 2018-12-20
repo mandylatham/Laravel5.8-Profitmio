@@ -4,7 +4,7 @@ import { Tabs, Dropdown } from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
 import { CalendarIcon, DatabaseIcon, DownloadIcon, HomeIcon, EditIcon, PhoneIcon, ListIcon, MapIcon, MailIcon, MenuIcon, MessageCircleIcon, MessageSquareIcon, PlusIcon, Trash2Icon, ToggleLeftIcon, VolumeIcon, XIcon, UserIcon, UsersIcon } from 'vue-feather-icons'
-import Datepicker from 'vuejs-datepicker';
+import Datepicker from 'vue2-datepicker';
 
 // Global filters
 import './filters/global-filters';
