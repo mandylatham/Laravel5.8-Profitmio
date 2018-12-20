@@ -27,6 +27,8 @@ Vue.component('campaign-recipients', require('./page-components/campaign/recipie
 Vue.component('campaign-responses', require('./page-components/campaign/responses/campaign-responses.component'));
 Vue.component('campaign-edit', require('./page-components/campaign/edit/campaign-edit.component'));
 Vue.component('campaign-edit-detail', require('./page-components/campaign/edit-detail/campaign-edit-detail.component'));
+Vue.component('campaign-edit-account', require('./page-components/campaign/edit-account/campaign-edit-account.component'));
+Vue.component('campaign-edit-phone', require('./page-components/campaign/edit-phone/campaign-edit-phone.component'));
 
 // Components
 Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-icon'));

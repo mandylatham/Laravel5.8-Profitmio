@@ -4,10 +4,10 @@
             <campaign-edit-detail></campaign-edit-detail>
         </b-tab>
         <b-tab title="ACCOUNT">
-            <!--<edit-campaign-account></edit-campaign-account>-->
+            <campaign-edit-account></campaign-edit-account>
         </b-tab>
         <b-tab title="PHONE">
-            <!--<edit-campaign-phones></edit-campaign-phones>-->
+            <campaign-edit-phone></campaign-edit-phone>
         </b-tab>
         <b-tab title="SETTING">
             <!--<edit-campaign-setting></edit-campaign-setting>-->

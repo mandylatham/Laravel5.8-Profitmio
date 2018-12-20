@@ -203,6 +203,21 @@
     }
 }
 
+.btn-pm {
+    @include button-variant($brand-purple, $brand-purple);
+    font-size: 0.8rem;
+    display: flex-inline;
+    align-items: center;
+    color: #fff;
+    svg {
+        height: 15px;
+        width: 15px;
+    }
+    span {
+        margin-left: 5px;
+    }
+}
+
 body, html {
   height: 100%;
   font-family: 'Source Sans Pro', sans-serif;
