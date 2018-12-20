@@ -29,6 +29,7 @@ Vue.component('campaign-edit', require('./page-components/campaign/edit/campaign
 Vue.component('campaign-edit-detail', require('./page-components/campaign/edit-detail/campaign-edit-detail.component'));
 Vue.component('campaign-edit-account', require('./page-components/campaign/edit-account/campaign-edit-account.component'));
 Vue.component('campaign-edit-phone', require('./page-components/campaign/edit-phone/campaign-edit-phone.component'));
+Vue.component('campaign-edit-setting', require('./page-components/campaign/edit-setting/campaign-edit-setting.component'));
 
 // Components
 Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-icon'));

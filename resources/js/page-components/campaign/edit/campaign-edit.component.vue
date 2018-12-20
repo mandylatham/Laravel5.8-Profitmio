@@ -10,7 +10,7 @@
             <campaign-edit-phone></campaign-edit-phone>
         </b-tab>
         <b-tab title="SETTING">
-            <!--<edit-campaign-setting></edit-campaign-setting>-->
+            <campaign-edit-setting></campaign-edit-setting>
         </b-tab>
     </b-tabs>
 </template>
