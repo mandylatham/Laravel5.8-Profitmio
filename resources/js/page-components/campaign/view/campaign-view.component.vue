@@ -33,6 +33,7 @@
             <campaign-drops v-if="activeSection === 'drops'"></campaign-drops>
             <campaign-recipients v-if="activeSection === 'recipients'"></campaign-recipients>
             <campaign-responses v-if="activeSection === 'responses'"></campaign-responses>
+            <campaign-edit v-if="activeSection === 'edit'"></campaign-edit>
         </div>
     </div>
 </template>

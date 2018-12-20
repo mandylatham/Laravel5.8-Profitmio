@@ -4,6 +4,7 @@ import { Tabs, Dropdown } from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
 import { CalendarIcon, DatabaseIcon, DownloadIcon, HomeIcon, EditIcon, PhoneIcon, ListIcon, MapIcon, MailIcon, MenuIcon, MessageCircleIcon, MessageSquareIcon, PlusIcon, Trash2Icon, ToggleLeftIcon, VolumeIcon, XIcon, UserIcon, UsersIcon } from 'vue-feather-icons'
+import Datepicker from 'vuejs-datepicker';
 
 // Global filters
 import './filters/global-filters';
@@ -13,6 +14,7 @@ Vue.use(Dropdown);
 Vue.use(Tabs);
 Vue.use(VueGoodTablePlugin);
 Vue.component('v-select', vSelect);
+Vue.component('datepicker', Datepicker);
 
 // Pages
 Vue.component('campaign-index', require('./page-components/campaign/index/CampaignIndexComponent'));
@@ -23,6 +25,8 @@ Vue.component('campaign-stats', require('./page-components/campaign/stats/campai
 Vue.component('campaign-drops', require('./page-components/campaign/drops/campaign-drops.component'));
 Vue.component('campaign-recipients', require('./page-components/campaign/recipients/campaign-recipients.component'));
 Vue.component('campaign-responses', require('./page-components/campaign/responses/campaign-responses.component'));
+Vue.component('campaign-edit', require('./page-components/campaign/edit/campaign-edit.component'));
+Vue.component('campaign-edit-detail', require('./page-components/campaign/edit-detail/campaign-edit-detail.component'));
 
 // Components
 Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-icon'));
