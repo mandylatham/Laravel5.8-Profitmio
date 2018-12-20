@@ -21,6 +21,7 @@ Vue.component('user-view', require('./page-components/user/view/user-view.compon
 Vue.component('campaign-view', require('./page-components/campaign/view/campaign-view.component'));
 Vue.component('campaign-stats', require('./page-components/campaign/stats/campaign-stats.component'));
 Vue.component('campaign-drops', require('./page-components/campaign/drops/campaign-drops.component'));
+Vue.component('company-index', require('./page-components/company/index/company-index.component'));
 
 // Components
 Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-icon'));
