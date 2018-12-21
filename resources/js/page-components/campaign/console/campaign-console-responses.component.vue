@@ -27,16 +27,7 @@
 
         <div class="row align-items-end no-gutters">
             <div class="col-12">
-                <pm-responsive-table :rows="rows" :columns="columns" v-on:on-click-row.prevent="showPanel">
-                    <template slot="console-response-name" slot-scope="{row}">
-                        <span>{{ row.name }}</span>
-                    </template>
-                    <template slot="console-response-email" slot-scope="{row}">
-                        <span>{{ row.email }}</span>
-                    </template>
-                    <template slot="console-response-date" slot-scope="{row}">
-                        <span>{{ row.date }}</span>
-                    </template>
+                <pm-responsive-table :rows="rows" :columns="columns" v-on:row-clicked="showPanel">
                 </pm-responsive-table>
             </div>
         </div>
@@ -106,15 +97,16 @@
                 ],
                 columns: [
                     {
-                        field: 'console-response-name',
+                        field: 'name',
+                        manager: true,
                         classes: ['console-response-name']
                     },
                     {
-                        field: 'console-response-email',
+                        field: 'email',
                         classes: ['console-response-email']
                     },
                     {
-                        field: 'console-response-date',
+                        field: 'date',
                         classes: ['console-response-date']
                     }
                 ],
@@ -128,7 +120,7 @@
             SearchIcon,
         },
         methods: {
-            showPanel() {
+            showPanel: function({row}) {
                 const panel = this.$showPanel({
                     component: 'communication-side-panel',
                     cssClass: 'communication-side-panel',

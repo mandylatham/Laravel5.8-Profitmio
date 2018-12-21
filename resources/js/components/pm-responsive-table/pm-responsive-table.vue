@@ -1,6 +1,6 @@
 <template>
     <div class="pmt">
-        <div class="pmt-row" @click="$emit('onClickRow', row)" :class="{'open': row.open}" v-for="(row, rowIndex) in rows">
+        <div class="pmt-row" @click="rowClicked(row)" :class="{'open': row.open}" v-for="(row, rowIndex) in rows">
             <div class="pmt-col" @click="toggleRow(row, column)" :class="classesForCol(column)" v-for="column in columns">
                 <span v-if="column.html" v-html="get(row, column.field)"></span>
                 <slot :name="column.field" :row="row" v-if="!column.html">
@@ -44,6 +44,11 @@
                     classes.push(...col.classes);
                 }
                 return classes;
+            },
+            rowClicked: function (row) {
+                this.$emit('row-clicked', {
+                    row
+                });
             },
             toggleRow: function (row, column) {
                 if (column.is_manager) {
