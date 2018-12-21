@@ -1,8 +1,8 @@
 <template>
     <div class="campaign-drop-type-icon">
-        <mail-icon v-if="type === 'email'"></mail-icon>
-        <message-square-icon v-if="type === 'message'"></message-square-icon>
-        <map-icon v-if="type === 'map'"></map-icon>
+        <span class="pm-font-mail-icon" v-if="type === 'email'"></span>
+        <span class="pm-font-sms-icon" v-if="type === 'message'"></span>
+        <span class="pm-font-templates-icon" v-if="type === 'map'"></span>
     </div>
 </template>
 <script>

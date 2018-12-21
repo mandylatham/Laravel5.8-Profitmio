@@ -1,14 +1,14 @@
 <template>
     <div class="container-fluid campaign-drops--container">
         <div class="row align-items-end no-gutters">
-            <div class="col-12 col-sm-5 col-lg-3">
-                <a class="pm-btn btn btn-pm">
+            <div class="col-3 col-sm-5 col-lg-3 mb-4">
+                <a class="btn pm-btn pm-btn-blue">
                     <plus-icon></plus-icon>
                     <span>NEW</span>
                 </a>
             </div>
-            <div class="col-none col-sm-2 col-lg-6"></div>
-            <div class="col-12 col-sm-5 col-lg-3">
+            <div class="col-1 col-sm-2 col-lg-6"></div>
+            <div class="col-8 col-sm-5 col-lg-3 mb-4">
                 <input type="text" class="form-control filter--search-box" aria-describedby="search"
                        placeholder="Search" v-model="searchTerm">
             </div>
@@ -20,7 +20,7 @@
                                 <drop-type-icon :type="row.type"></drop-type-icon>
                             </div>
                             <div class="drop-type--date">
-                                <calendar-icon></calendar-icon>
+                                <i class="pm-font-date-icon"></i>
                                 <span>{{ row.date | amDateTimeFormat('MM/DD/YYYY | HH:mm A') }}</span>
                             </div>
                         </div>
@@ -29,12 +29,12 @@
                         <drop-status :status="row.status"></drop-status>
                     </template>
                     <template slot="recipients" slot-scope="{row}">
-                        <user-icon></user-icon>
+                        <i class="pm-font-user-icon"></i>
                         <span>{{ row.recipients_count }} RECIPIENTS</span>
                     </template>
                     <template slot="options" slot-scope="{row}">
                         <a class="pm-btn btn btn-transparent">
-                            <edit-icon></edit-icon>
+                            <i class="pm-font-edit-icon"></i>
                         </a>
                         <a class="pm-btn btn btn-transparent">
                             <trash-icon></trash-icon>

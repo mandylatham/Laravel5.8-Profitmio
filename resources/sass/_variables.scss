@@ -1,3 +1,10 @@
+// Brand colors
+$brand-black: #20004A;
+$brand-purple: #572E8D;
+$brand-blue: rgb(103, 167, 204);
+$brand-gray: #4b525b;
+$brand-white: #edf0f5;
+$brand-yellow: #e7f386;
 
 // Body
 $body-bg: #f8fafc;
@@ -12,6 +19,9 @@ $wrapper-sidebar-width: 350px;
 $font-family-sans-serif: "Nunito", sans-serif;
 $font-size-base: 0.9rem;
 $line-height-base: 1.6;
+$headings-color: $brand-black;
+$headings-font-weight: bold;
+$h2-font-size: 1.3rem;
 
 // Colors
 $blue: #3490dc;
@@ -33,11 +43,3 @@ $wrapper-aside-lg: 350px;
 $wrapper-aside-xl: 400px;
 
 $form-control-height: calc(2rem + 2px);
-
-// Brand colors
-$brand-black: #20004A;
-$brand-purple: #572E8D;
-$brand-blue: rgb(103, 167, 204);
-$brand-gray: #4b525b;
-$brand-white: #edf0f5;
-$brand-yellow: #e7f386;

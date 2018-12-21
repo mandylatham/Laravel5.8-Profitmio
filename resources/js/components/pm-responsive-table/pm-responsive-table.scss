@@ -3,6 +3,13 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
+$pmrt-col-background-color: #fff;
+$pmrt-col-color: $brand-black;
+$pmrt-col-border-width: 3px;
+$pmrt-manager-col-background-color: $brand-purple;
+$pmrt-manager-col-color: #fff;
+$pmrt-border-color: $brand-white;
+
 .pmt {
   $rootParent: &;
   margin-top: 15px;
@@ -10,12 +17,7 @@
     $tableRow: &;
     display: flex;
     flex-flow: column;
-    &:nth-child(even) #{$rootParent}-col:not(.manager) {
-      background-color: rgb(225, 229, 232);
-    }
-    &:nth-child(odd) #{$rootParent}-col:not(.manager) {
-      background-color: rgb(240, 242, 243);
-    }
+    overflow: hidden;
   }
   &-col {
     font-size: 0.95rem;
@@ -28,6 +30,8 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    background-color: $pmrt-col-background-color;
+    color: $pmrt-col-color;
     span.icon-value {
       margin-left: 10px;
     }
@@ -36,12 +40,11 @@
     }
     &.manager {
       cursor: pointer;
-      background-color: $gray;
-      color: $gray-light;
+      background-color: $pmrt-manager-col-background-color;
+      color: $pmrt-manager-col-color;
     }
     &.manager-footer {
       .btn-transparent {
-        padding: 0;
         margin-right: 10px;
         &:last-child {
           margin-right: 0;
@@ -49,16 +52,31 @@
       }
 
     }
-    @at-root {
-      #{$rootParent}-row.open &, #{$rootParent}-row &.manager, #{$rootParent}-row &.manager-footer {
-        @include media-breakpoint-down(md) {
-          padding-top: 0.6rem;
-          padding-bottom: 0.6rem;
-          border-bottom: 3px solid #fff;
-          max-height: 1000px;
-          opacity: 1;
-        }
+    &:first-child {
+      border-radius: 5px 5px 0 0;
+      overflow: hidden;
+      @include media-breakpoint-up(lg) {
+        border-radius: 5px 0 0 5px;
+        border-bottom: $pmrt-col-border-width solid $pmrt-border-color;
       }
+    }
+    &:last-child {
+      border-bottom: none;
+      border-radius: 0 0 5px 5px;
+      overflow: hidden;
+      @include media-breakpoint-up(lg) {
+        border-radius: 0 5px 5px 0;
+        border-bottom: $pmrt-col-border-width solid $pmrt-border-color;
+      }
+    }
+  }
+  &-row.open &-col, &-row &-col.manager, &-row &-col.manager-footer {
+    @include media-breakpoint-down(md) {
+      padding-top: 0.6rem;
+      padding-bottom: 0.6rem;
+      border-bottom: 3px solid $pmrt-border-color;
+      max-height: 1000px;
+      opacity: 1;
     }
   }
 }
@@ -75,8 +93,8 @@
     &-col {
       display: table-cell;
       opacity: 1;
-      border-bottom: 3px solid #fff;
-      border-right: 3px solid #fff;
+      border-bottom: 3px solid $pmrt-border-color;
+      border-right: 3px solid $pmrt-border-color;
       vertical-align: middle;
       &:last-child {
         border-right: 0;
