@@ -1,7 +1,7 @@
 <template>
-    <div class="wrapper-component" :class="{'open': asideOpen, 'has-sidebar': hasSidebar}">
+    <div class="wrapper-component" :class="{'open': sidebarOpen, 'has-sidebar': hasSidebar}">
         <div class="wrapper-sidebar-controls">
-            <a href="javascript:;" class="wrapper-sidebar-controls-toggle" @click="asideOpen = !asideOpen">
+            <a href="javascript:;" class="wrapper-sidebar-controls-toggle" @click="sidebarOpen = !sidebarOpen">
                 <slot name="sidebar-toggle">
                     <menu-icon></menu-icon>
                 </slot>
@@ -28,8 +28,13 @@
         },
         data() {
             return {
-                asideOpen: false
+                sidebarOpen: false
             };
+        },
+        methods: {
+            closeSidebar: function () {
+                this.sidebarOpen = false;
+            }
         }
     };
 </script>

@@ -13,8 +13,7 @@ $aside-width: 300px;
         flex-flow: column;
         align-items: center;
         > div {
-            margin-bottom: 1rem;
-            font-weight: 300;
+            margin-bottom: 0.8rem;
         }
     }
     .company-avatar {
@@ -30,6 +29,6 @@ $aside-width: 300px;
         font-weight: bold;
     }
     .company-phone, .company-email {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
     }
 }
