@@ -40,12 +40,18 @@
                 </pm-responsive-table>
             </div>
         </div>
+
+        <slideout-panel></slideout-panel>
+
+        <button class="btn btn-primary" v-on:click.prevent="showPanel">
+            Show Panel
+        </button>
     </div>
 </template>
 <script>
     require("./campaign-console-responses.scss");
-    import {ChevronLeftIcon} from 'vue-feather-icons'
-    import {SearchIcon} from 'vue-feather-icons'
+    import {ChevronLeftIcon} from 'vue-feather-icons';
+    import {SearchIcon} from 'vue-feather-icons';
 
     export default {
         data() {
@@ -111,11 +117,23 @@
                         classes: ['console-response-date']
                     }
                 ],
+                panel1Form: {
+                    openOn: "right"
+                }
             };
         },
         components: {
             ChevronLeftIcon,
-            SearchIcon
+            SearchIcon,
+        },
+        methods: {
+            showPanel() {
+                const panel = this.$showPanel({
+                    component: 'communication-side-panel',
+                    cssClass: 'communication-side-panel',
+                    props: {}
+                });
+            }
         }
     }
 </script>

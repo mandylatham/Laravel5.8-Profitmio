@@ -22,6 +22,7 @@
     "moment": "^2.22.2",
     "vue-feather-icons": "^4.7.1",
     "vue-good-table": "^2.16.0",
-    "vue-select": "^2.5.1"
+    "vue-select": "^2.5.1",
+    "vue2-slideout-panel": "^2.1.0"
   }
 }

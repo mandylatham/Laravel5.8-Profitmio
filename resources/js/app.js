@@ -1,9 +1,27 @@
 import './bootstrap';
 import Vue from 'vue'
-import { Tabs, Dropdown } from 'bootstrap-vue/es/components';
+import {Tabs, Dropdown} from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
-import { CalendarIcon, HomeIcon, EditIcon, PhoneIcon, MapIcon, MailIcon, MenuIcon, MessageCircleIcon, MessageSquareIcon, PlusIcon, Trash2Icon, ToggleLeftIcon, VolumeIcon, XIcon, UserIcon } from 'vue-feather-icons'
+import {
+    CalendarIcon,
+    HomeIcon,
+    EditIcon,
+    PhoneIcon,
+    MapIcon,
+    MailIcon,
+    MenuIcon,
+    MessageCircleIcon,
+    MessageSquareIcon,
+    PlusIcon,
+    Trash2Icon,
+    ToggleLeftIcon,
+    VolumeIcon,
+    XIcon,
+    UserIcon
+} from 'vue-feather-icons'
+import VueSlideoutPanel from 'vue2-slideout-panel';
+
 
 // Global filters
 import './filters/global-filters';
@@ -13,6 +31,7 @@ Vue.use(Dropdown);
 Vue.use(Tabs);
 Vue.use(VueGoodTablePlugin);
 Vue.component('v-select', vSelect);
+Vue.use(VueSlideoutPanel);
 
 // Pages
 Vue.component('campaign-index', require('./page-components/campaign/index/CampaignIndexComponent'));
@@ -32,6 +51,9 @@ Vue.component('status', require('./components/status/status'));
 Vue.component('pm-responsive-table', require('./components/pm-responsive-table/pm-responsive-table'));
 Vue.component('list-campaign', require('./components/list-campaign/list-campaign'));
 Vue.component('list-company', require('./components/list-company/list-company.component'));
+Vue.component('pm-responsive-table', require('./components/pm-responsive-table/pm-responsive-table'));
+Vue.component('communication-side-panel', require('./components/CommunicationSidePanel.vue'));
+// Vue.component('communication-side-panel', require('./components/CommunicationSidePanel.vue').default);
 
 // Icons
 Vue.component('calendar-icon', CalendarIcon);

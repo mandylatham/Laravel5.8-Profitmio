@@ -13,6 +13,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
 
 .wrapper--campaign-console {
   flex-grow: 1;
+  background: #E8EBF2;
 
   .wrapper-aside {
     background: linear-gradient(#572E8D, #67A6CC);
@@ -181,7 +182,6 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
   }
 
   .wrapper-content {
-    background: #E8EBF2;
     height: 98.5vh;
     padding: 40px 10px 10px 10px;
     transform: translate(0, 0);
