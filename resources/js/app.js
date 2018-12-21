@@ -42,6 +42,7 @@ Vue.component('status', require('./components/status/status'));
 Vue.component('pm-responsive-table', require('./components/pm-responsive-table/pm-responsive-table'));
 Vue.component('list-campaign', require('./components/list-campaign/list-campaign'));
 Vue.component('list-company', require('./components/list-company/list-company.component'));
+Vue.component('wrapper', require('./components/wrapper/wrapper.component'));
 
 // Icons
 

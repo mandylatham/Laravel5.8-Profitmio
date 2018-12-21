@@ -7,87 +7,8 @@ $aside-width: 300px;
 
 .wrapper--campaign-view {
     flex-grow: 1;
-    background-color: $gray-light;
+    background-color: $brand-white;
 
-    .wrapper-aside {
-        background: $gray;
-        padding: 20px;
-        color: #fff;
-        transform: translateX(-100%);
-        min-height: 100vh;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 100;
-        width: 100%;
-        transition: transform .3s ease-in-out, width .3s ease-in-out;
-
-        &-control {
-            position: absolute;
-            background-color: $gray;
-            color: $gray-light;
-            top: 0;
-            right: 0;
-            transform: translateX(100%);
-            padding: 5px;
-            cursor: pointer;
-        }
-
-        &-close-control {
-            float: right;
-            margin-bottom: 10px;
-            color: #fff;
-            text-decoration: none;
-        }
-
-        .campaign-avatar {
-            background-color: #ddd;
-            clear: both;
-            height: 150px;
-            padding: 20px;
-            margin-bottom: 30px;
-        }
-
-        &--navigation {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-
-            ul {
-                list-style: none;
-                padding: 0;
-                margin: 0;
-
-                li {
-                    margin-bottom: 5px;
-                }
-
-                a {
-                    text-decoration: none;
-                    color: #fff;
-                    padding: 10px 20px;
-                    display: block;
-
-                    &.active {
-                        background-color: rgba(255, 255, 255, 0.1);
-                    }
-                }
-            }
-        }
-
-        @include media-breakpoint-up(sm) {
-            width: $aside-width;
-        }
-        @include media-breakpoint-up(lg) {
-            min-height: calc(100vh - 60px);
-        }
-        @include media-breakpoint-up(xl) {
-            transform: none;
-            &-control, &-close-control {
-                display: none;
-            }
-        }
-    }
 
     .wrapper-content {
         padding: 50px 10px 10px 10px;

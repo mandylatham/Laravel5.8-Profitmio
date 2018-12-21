@@ -1,5 +1,6 @@
 // Add all global icons here
 import Vue from 'vue';
+import {MenuIcon, XIcon} from 'vue-feather-icons';
 
 require('./pm-icons.scss');
 
@@ -13,6 +14,7 @@ Vue.component('edit-icon', require('./icons/edit-icon.vue'));
 Vue.component('folder-icon', require('./icons/folder-icon.vue'));
 Vue.component('help-icon', require('./icons/help-icon.vue'));
 Vue.component('idle-icon', require('./icons/idle-icon.vue'));
+Vue.component('menu-icon', MenuIcon);
 Vue.component('mail-icon', require('./icons/mail-icon.vue'));
 Vue.component('notification-icon', require('./icons/notification-icon.vue'));
 Vue.component('phone-icon', require('./icons/phone-icon.vue'));
@@ -25,3 +27,4 @@ Vue.component('tag-icon', require('./icons/tag-icon.vue'));
 Vue.component('templates-icon', require('./icons/templates-icon.vue'));
 Vue.component('unread-icon', require('./icons/unread-icon.vue'));
 Vue.component('user-icon', require('./icons/user-icon.vue'));
+Vue.component('x-icon', XIcon);

@@ -4,7 +4,6 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
-
 .top-navigation-bar {
   background-color: #fff;
   width: 100%;
@@ -33,10 +32,10 @@
     }
   }
   .navbar-menu {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 300px;
     min-height: 100vh;
     background-color: #fff;
     padding: 30px 0;
@@ -64,8 +63,12 @@
           color: $brand-white;
           text-decoration: none;
           text-transform: uppercase;
-          svg {
-            width: 60px;
+          [class^="pm-font-"], [class*=" pm-font-"] {
+            font-size: 1.5rem;
+            width: 40px;
+          }
+          .pm-font-companies-icon {
+            font-size: 1.25rem;
           }
           &.active {
             background-color: $brand-white;
@@ -93,6 +96,7 @@
         padding-left: 10px;
         float: left;
         .btn.btn-link {
+          text-decoration: none;
           padding: 8px;
           display: flex;
           align-items: center;

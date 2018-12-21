@@ -11,13 +11,13 @@
             <ul class="nav">
                 <li class="menu-item">
                     <a href="" class="active">
-                        <campaigns-icon></campaigns-icon>
+                        <span class="pm-font-campaigns-icon"></span>
                         <span>Campaigns</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="">
-                        <templates-icon></templates-icon>
+                        <span class="pm-font-templates-icon"></span>
                         <span>Templates</span>
                     </a>
                 </li>
@@ -29,13 +29,13 @@
                 </li>
                 <li class="menu-item">
                     <a href="">
-                        <companies-icon></companies-icon>
+                        <span class="pm-font-companies-icon"></span>
                         <span>Companies</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="">
-                        <system-icon></system-icon>
+                        <span class="pm-font-system-icon"></span>
                         <span>System</span>
                     </a>
                 </li>
@@ -46,7 +46,7 @@
                 <li class="menu-item">
                     <b-dropdown variant="link" no-caret>
                         <template slot="button-content">
-                            <user-icon></user-icon>
+                            <span class="pm-font-notification-icon"></span>
                         </template>
                         <b-dropdown-item href="#">Action</b-dropdown-item>
                         <b-dropdown-item href="#">Another action</b-dropdown-item>
@@ -56,7 +56,7 @@
                 <li class="menu-item">
                     <b-dropdown variant="link" no-caret>
                         <template slot="button-content">
-                            <user-icon></user-icon>
+                            <span class="pm-font-help-icon"></span>
                         </template>
                         <b-dropdown-item href="#">Action</b-dropdown-item>
                         <b-dropdown-item href="#">Another action</b-dropdown-item>

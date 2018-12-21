@@ -1,0 +1,96 @@
+@import '../../../sass/variables';
+@import '../../../sass/mixins';
+
+.wrapper-component {
+  height: 100%;
+  position: relative;
+  overflow-x: hidden;
+  &:not(.has-sidebar) {
+    .wrapper--sidebar-controls, .wrapper-sidebar {
+      display: none;
+    }
+  }
+  .wrapper-sidebar-controls {
+    padding: 10px 0;
+    transition: transform .3s ease-in-out, width .3s ease-in-out;
+  }
+  .wrapper-sidebar-toggle {
+    padding: 5px 15px;
+    display: inline-block;
+    background-color: #fff;
+    border-radius: 0 5px 5px 0;
+    color: $brand-purple;
+  }
+  .wrapper-sidebar {
+    padding: 20px;
+    color: #fff;
+    transform: translateX(-100%);
+    min-height: calc(100vh - #{$top-navigation-bar-height});
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    width: $wrapper-sidebar-width;
+    transition: transform .3s ease-in-out, width .3s ease-in-out;
+    @include background_gradient($brand-purple, $brand-blue, $brand-purple);
+    &-close-control {
+      float: right;
+      margin-bottom: 10px;
+      color: #fff;
+      text-decoration: none;
+    }
+    //
+    //&--navigation {
+    //  list-style: none;
+    //  padding: 0;
+    //  margin: 0;
+    //
+    //  ul {
+    //    list-style: none;
+    //    padding: 0;
+    //    margin: 0;
+    //
+    //    li {
+    //      margin-bottom: 5px;
+    //    }
+    //
+    //    a {
+    //      text-decoration: none;
+    //      color: #fff;
+    //      padding: 10px 20px;
+    //      display: block;
+    //
+    //      &.active {
+    //        background-color: rgba(255, 255, 255, 0.1);
+    //      }
+    //    }
+    //  }
+    //}
+    //
+    //@include media-breakpoint-up(sm) {
+    //  width: $aside-width;
+    //}
+    //@include media-breakpoint-up(lg) {
+    //  min-height: calc(100vh - 60px);
+    //}
+    //@include media-breakpoint-up(xl) {
+    //  transform: none;
+    //  &-control, &-close-control {
+    //    display: none;
+    //  }
+    //}
+  }
+  .wrapper-content {
+    padding: 10px 20px;
+    transform: translate(0, 0);
+    transition: transform .3s ease-in-out, margin .3s ease-in-out;
+  }
+  &.open.has-sidebar {
+      .wrapper-sidebar {
+        transform: translate(0, 0);
+      }
+      .wrapper-content, .wrapper-sidebar-controls {
+        transform: translate($wrapper-sidebar-width, 0);
+      }
+  }
+}
