@@ -7,31 +7,29 @@ $aside-width: 300px;
 
 .wrapper--campaign-view {
     flex-grow: 1;
-    background-color: $brand-white;
-
-
-    .wrapper-content {
-        padding: 50px 10px 10px 10px;
-        transform: translate(0, 0);
-        transition: transform .3s ease-in-out, margin .3s ease-in-out;
-
-        @include media-breakpoint-up(xl) {
-            padding: 50px 30px 20px 30px;
-            transform: none !important;
-            margin-left: $aside-width;
+    .company-data {
+        padding: 15px;
+        display: flex;
+        flex-flow: column;
+        align-items: center;
+        > div {
+            margin-bottom: 1rem;
+            font-weight: 300;
         }
     }
-
-    &.open {
-        .wrapper-aside {
-            transform: translate(0, 0);
-        }
-
-        .wrapper-content {
-            transform: translate(100%, 0);
-            @include media-breakpoint-up(sm) {
-                transform: translate(450px, 0);
-            }
-        }
+    .company-avatar {
+        width: 140px;
+        height: 140px;
+        background-color: #fafafa;
+        border-radius: 50%;
+        margin-bottom: 1.5rem;
+    }
+    .campaign-name {
+        font-size: 1.6rem;
+        margin-bottom: 1rem;
+        font-weight: bold;
+    }
+    .company-phone, .company-email {
+        font-size: 0.8rem;
     }
 }
