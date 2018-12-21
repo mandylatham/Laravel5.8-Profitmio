@@ -1,5 +1,5 @@
 <template>
-    <div class="pmt">
+    <div class="pmt" :class="{'disable-folding': disableFolding}">
         <div class="pmt-row" @click="rowClicked(row)" :class="{'open': row.open}" v-for="(row, rowIndex) in rows">
             <div class="pmt-col" @click="toggleRow(row, column)" :class="classesForCol(column)" v-for="column in columns">
                 <span v-if="column.html" v-html="get(row, column.field)"></span>
@@ -18,6 +18,11 @@
 
     export default {
         props: {
+            disableFolding: {
+                default: false,
+                type: Boolean,
+                required: false
+            },
             rows: {
                 type: Array,
                 required: true,
@@ -51,6 +56,9 @@
                 });
             },
             toggleRow: function (row, column) {
+                if (this.disableFolding) {
+                    return;
+                }
                 if (column.is_manager) {
                     Vue.set(row, 'open', !row.open);
                 }

@@ -1,16 +1,24 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
 .wrapper-content {
   .pmt-row {
     cursor: pointer;
 
     .pmt-col {
       background-color: #ffffff !important;
-      height: 56px;
+      height: 40px;
       text-align: center;
       border-bottom-color: #E8EBF2;
       border-width: 6px;
       border-right: none;
       border-left: none;
       border-top: none;
+
+      @include media-breakpoint-up(lg) {
+        height: 56px;
+      }
     }
   }
 

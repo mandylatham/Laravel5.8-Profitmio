@@ -27,7 +27,7 @@
 
         <div class="row align-items-end no-gutters">
             <div class="col-12">
-                <pm-responsive-table :rows="rows" :columns="columns" v-on:row-clicked="showPanel">
+                <pm-responsive-table :rows="rows" :columns="columns" :disable-folding="true" v-on:row-clicked="showPanel">
                 </pm-responsive-table>
             </div>
         </div>
@@ -93,7 +93,6 @@
                 columns: [
                     {
                         field: 'name',
-                        manager: true,
                         classes: ['console-response-name']
                     },
                     {
