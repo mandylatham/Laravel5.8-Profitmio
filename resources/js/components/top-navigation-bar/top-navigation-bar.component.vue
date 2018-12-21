@@ -11,7 +11,7 @@
             <ul class="nav">
                 <li class="menu-item">
                     <a href="" class="active">
-                        <user-icon></user-icon>
+                        <campaigns-icon></campaigns-icon>
                         <span>Campaigns</span>
                     </a>
                 </li>
@@ -23,19 +23,19 @@
                 </li>
                 <li class="menu-item">
                     <a href="">
-                        <user-icon></user-icon>
+                        <span class="pm-font-phone-icon"></span>
                         <span>Users</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="">
-                        <users-icon></users-icon>
+                        <companies-icon></companies-icon>
                         <span>Companies</span>
                     </a>
                 </li>
                 <li class="menu-item">
                     <a href="">
-                        <users-icon></users-icon>
+                        <system-icon></system-icon>
                         <span>System</span>
                     </a>
                 </li>

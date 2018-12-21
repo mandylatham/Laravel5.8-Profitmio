@@ -1,7 +1,6 @@
 import './bootstrap';
 import Vue from 'vue'
 import { Tabs, Dropdown } from 'bootstrap-vue/es/components';
-import {UserIcon} from 'vue-feather-icons';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
 import Datepicker from 'vue2-datepicker';
@@ -12,8 +11,7 @@ import './filters/global-filters';
 // Icons
 import './components/pm-icons/pm-icons';
 
-Vue.component('user-icon', UserIcon);
-// Pluginsl
+// Plugins
 Vue.use(Dropdown);
 Vue.use(Tabs);
 Vue.use(VueGoodTablePlugin);

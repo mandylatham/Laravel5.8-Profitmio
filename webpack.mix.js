@@ -13,5 +13,6 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/app.js', 'public/js/new-app.js')
     .copyDirectory('resources/remark_assets', 'public/')
+    .copyDirectory('resources/fonts', 'public/fonts/')
     .sass('resources/sass/app.scss', 'public/css/new-app.css')
     .copyDirectory('resources/img', 'public/img');
