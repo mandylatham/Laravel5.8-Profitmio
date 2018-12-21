@@ -33,11 +33,6 @@
         </div>
 
         <slideout-panel></slideout-panel>
-
-        <!-- TODO: REMOVE ME AFTER TESTING -->
-        <button class="btn btn-primary" v-on:click.prevent="showPanel">
-            Show Panel
-        </button>
     </div>
 </template>
 <script>
