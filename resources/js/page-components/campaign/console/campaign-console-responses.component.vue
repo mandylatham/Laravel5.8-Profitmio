@@ -27,7 +27,7 @@
 
         <div class="row align-items-end no-gutters">
             <div class="col-12">
-                <pm-responsive-table :rows="rows" :columns="columns">
+                <pm-responsive-table :rows="rows" :columns="columns" v-on:on-click-row.prevent="showPanel">
                     <template slot="console-response-name" slot-scope="{row}">
                         <span>{{ row.name }}</span>
                     </template>
@@ -43,6 +43,7 @@
 
         <slideout-panel></slideout-panel>
 
+        <!-- TODO: REMOVE ME AFTER TESTING -->
         <button class="btn btn-primary" v-on:click.prevent="showPanel">
             Show Panel
         </button>

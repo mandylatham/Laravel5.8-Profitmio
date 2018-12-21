@@ -102,7 +102,7 @@
 <script>
     export default {
         mounted() {
-            console.log('asdasd');
+            //
         },
         data() {
             return {
@@ -120,7 +120,7 @@
         },
         methods: {
             closePanel() {
-                this.$emit("closePanel", {});
+                this.$emit('closePanel', {});
             }
         }
     }
