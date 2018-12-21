@@ -2,7 +2,7 @@
     <div class="container-fluid edit-campaign-phone--container">
         <div class="row ">
             <div class="col-12">
-                <button class="btn btn-pm">
+                <button class="btn pm-btn pm-btn-purple">
                     <plus-icon></plus-icon>
                     <span>ADD PHONE NUMBER</span>
                 </button>
@@ -29,8 +29,8 @@
                                 <input type="text" class="form-control">
                             </td>
                             <td>
-                                <a class="btn btn-pm">
-                                    <edit-icon></edit-icon>
+                                <a class="btn pm-btn pm-btn-purple">
+                                    <span class="pm-font-edit-icon"></span>
                                 </a>
                             </td>
                         </tbody>

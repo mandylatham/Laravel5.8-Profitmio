@@ -21,7 +21,7 @@
                         <label>Start Date</label>
                         <datepicker :append-to-body="true" v-model="time1" :lang="'en'" class="pm-datepicker">
                             <template slot="calendar-icon">
-                                <calendar-icon></calendar-icon>
+                                <span class="pm-font-date-icon"></span>
                             </template>
                         </datepicker>
                     </div>
@@ -29,7 +29,7 @@
                         <label>End Date</label>
                         <datepicker :append-to-body="true" v-model="time1" :lang="'en'" class="pm-datepicker">
                             <template slot="calendar-icon">
-                                <calendar-icon></calendar-icon>
+                                <span class="pm-font-date-icon"></span>
                             </template>
                         </datepicker>
                     </div>
