@@ -1,65 +1,47 @@
 <template>
-    <div id="wrapper" class="wrapper--user-view" :class="{'open': asideOpen}">
-        <div class="wrapper-aside">
-            <a href="javascript:;" class="wrapper-aside-close-control" @click="asideOpen = false;">
-                <x-icon></x-icon>
-            </a>
-            <a href="javascript:;" class="wrapper-aside-control" @click="asideOpen = !asideOpen">
-                <menu-icon></menu-icon>
-            </a>
+    <wrapper ref="wrapperComponent" class="wrapper--user-view" :has-sidebar="true">
+        <template slot="wrapper-sidebar">
             <div class="user-avatar">
                 <button class="btn btn-default">
-                    <edit-icon></edit-icon>
+                    <span class="pm-font-edit-icon"></span>
                 </button>
             </div>
             <form action="">
                 <div class="row no-gutters">
                     <div class="col-12 mb-4">
-                        <label for="first_name" class="pmt-label">First Name</label>
-                        <div class="input-group pmt-input-group-prepend">
+                        <div class="form-group">
+                            <label for="first_name" class="pmt-label">First Name</label>
                             <input type="text" class="form-control" id="first_name" required>
-                            <div class="input-group-prepend">
-                                <edit-icon></edit-icon>
-                            </div>
                         </div>
                     </div>
                     <div class="col-12 mb-4">
-                        <label for="last_name" class="pmt-label">Last Name</label>
-                        <div class="input-group pmt-input-group-prepend">
+                        <div class="form-group">
+                            <label for="first_name" class="pmt-label">First Name</label>
                             <input type="text" class="form-control" id="last_name" required>
-                            <div class="input-group-prepend">
-                                <edit-icon></edit-icon>
-                            </div>
                         </div>
                     </div>
                     <div class="col-12 mb-4">
-                        <label for="username" class="pmt-label">Username</label>
-                        <div class="input-group pmt-input-group-prepend">
+                        <div class="form-group">
+                            <label for="first_name" class="pmt-label">First Name</label>
                             <input type="text" class="form-control" id="username" required>
-                            <div class="input-group-prepend">
-                                <edit-icon></edit-icon>
-                            </div>
                         </div>
                     </div>
                     <div class="col-12 mb-4">
-                        <label for="phone_number" class="pmt-label">Phone Number</label>
-                        <div class="input-group pmt-input-group-prepend">
+                        <div class="form-group">
+                            <label for="phone_number" class="pmt-label">Phone Number</label>
                             <input type="text" class="form-control" id="phone_number" required>
-                            <div class="input-group-prepend">
-                                <edit-icon></edit-icon>
-                            </div>
                         </div>
                     </div>
                 </div>
             </form>
             <div class="actions">
-                <button class="btn btn-remove">
+                <button class="btn pm-btn pm-btn-purple btn-remove">
                     <trash-icon></trash-icon>
                     <span class="ml-1">Delete User</span>
                 </button>
             </div>
-        </div>
-        <div class="wrapper-content">
+        </template>
+        <template slot="wrapper-content">
             <b-tabs pills card>
                 <b-tab title="CAMPAIGN" active>
                     <list-campaign></list-campaign>
@@ -68,8 +50,8 @@
                     <list-company></list-company >
                 </b-tab>
             </b-tabs>
-        </div>
-    </div>
+        </template>
+    </wrapper>
 </template>
 <script>
     require("./user-view.scss");

@@ -32,15 +32,15 @@
                     </template>
                     <template slot="company-phone" slot-scope="{row}">
                         <div class="company-phone--container">
-                            <phone-icon></phone-icon>
+                            <i class="pm-font-phone-icon"></i>
                             <span>{{ row.phone_number }}</span>
                         </div>
                     </template>
                     <template slot="company-stats" slot-scope="{row}">
                         <div class="company-stats--container">
-                            <volume-icon></volume-icon>
+                            <span class="company-stats--label">Active Campaigns</span>
+                            <i class="pm-font-campaigns-icon"></i>
                             <span class="badge badge-pill">{{ row.active_campaigns }}</span>
-                            <span class="campaign-stats--label">Active Campaigns</span>
                         </div>
                     </template>
                 </pm-responsive-table>

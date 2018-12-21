@@ -1,6 +1,7 @@
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
+@import "../../../sass/variables";
 
 .list-campaign-container {
   .campaign-resume {
@@ -78,14 +79,23 @@
           top: 50%;
           margin-top: -5px;
         }
-        &.sms::after {
-          background-color: rgb(76, 83, 91);
+        &.sms{
+          color: $brand-purple;
+          &::after {
+            background-color: $brand-purple;
+          }
         }
-        &.call::after {
-          background-color: #fff;
+        &.call {
+          color: $brand-yellow;
+          &::after {
+            background-color: $brand-yellow;
+          }
         }
-        &.email::after {
-          background-color: rgb(101, 108, 116);
+        &.email {
+          color: $brand-blue;
+          &::after {
+            background-color: $brand-blue;
+          }
         }
       }
     }
