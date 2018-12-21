@@ -17,7 +17,7 @@
                 </li>
                 <li class="menu-item">
                     <a href="">
-                        <map-icon></map-icon>
+                        <templates-icon></templates-icon>
                         <span>Templates</span>
                     </a>
                 </li>

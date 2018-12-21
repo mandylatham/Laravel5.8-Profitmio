@@ -1,15 +1,19 @@
 import './bootstrap';
 import Vue from 'vue'
 import { Tabs, Dropdown } from 'bootstrap-vue/es/components';
+import {UserIcon} from 'vue-feather-icons';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
-import { CalendarIcon, DatabaseIcon, DownloadIcon, HomeIcon, EditIcon, PhoneIcon, ListIcon, MapIcon, MailIcon, MenuIcon, MessageCircleIcon, MessageSquareIcon, PlusIcon, Trash2Icon, ToggleLeftIcon, VolumeIcon, XIcon, UserIcon, UsersIcon } from 'vue-feather-icons'
 import Datepicker from 'vue2-datepicker';
 
 // Global filters
 import './filters/global-filters';
 
-// Plugins
+// Icons
+import './components/pm-icons/pm-icons';
+
+Vue.component('user-icon', UserIcon);
+// Pluginsl
 Vue.use(Dropdown);
 Vue.use(Tabs);
 Vue.use(VueGoodTablePlugin);
@@ -42,25 +46,6 @@ Vue.component('list-campaign', require('./components/list-campaign/list-campaign
 Vue.component('list-company', require('./components/list-company/list-company.component'));
 
 // Icons
-Vue.component('calendar-icon', CalendarIcon);
-Vue.component('database-icon', DatabaseIcon);
-Vue.component('download-icon', DownloadIcon);
-Vue.component('home-icon', HomeIcon);
-Vue.component('edit-icon', EditIcon);
-Vue.component('plus-icon', PlusIcon);
-Vue.component('phone-icon', PhoneIcon);
-Vue.component('map-icon', MapIcon);
-Vue.component('mail-icon', MailIcon);
-Vue.component('menu-icon', MenuIcon);
-Vue.component('message-square-icon', MessageSquareIcon);
-Vue.component('message-circle-icon', MessageCircleIcon);
-Vue.component('list-icon', ListIcon);
-Vue.component('trash-icon', Trash2Icon);
-Vue.component('toggle-left-icon', ToggleLeftIcon);
-Vue.component('user-icon', UserIcon);
-Vue.component('users-icon', UsersIcon);
-Vue.component('x-icon', XIcon);
-Vue.component('volume-icon', VolumeIcon);
 
 // Vue.filter('format', function (value, format) {
 //     return moment(value, 'YYYY-MM-DD').format(format);
