@@ -8,6 +8,7 @@ $aside-width: 400px;
 .campaign-recipients--container {
   margin-bottom: 40px;
   .pmt-col {
+    font-size: 1rem;
     @include media-breakpoint-up(lg) {
       padding: 15px;
     }
@@ -30,6 +31,7 @@ $aside-width: 400px;
     &--icon {
       padding: 0 20px 0 10px;
       flex-grow: 1;
+      font-size: 2.5rem;
     }
     &--id {
       margin-top: 12px;
@@ -57,11 +59,15 @@ $aside-width: 400px;
     }
     &--stat {
       margin-bottom: 5px;
-      svg {
-        height: 1.4rem;
-        margin-right: 10px;
+      [class^="pm-font-"], [class*=" pm-font-"] {
+        width: 40px;
+
+        font-size: 1.2rem;
       }
-      span {
+      .pm-font-companies-icon {
+        font-size: 1.1rem;
+      }
+        span {
         display: inline-block;
         width: 80px;
         margin-right: 10px;
@@ -72,7 +78,8 @@ $aside-width: 400px;
     flex-flow: column;
     text-align: center;
     .btn-action {
-      border: 1px solid $gray;
+      color: $brand-blue;
+      border: 1px solid $brand-blue;
       border-radius: 0;
     }
     .options-group {

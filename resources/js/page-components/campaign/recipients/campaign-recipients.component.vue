@@ -2,7 +2,7 @@
     <div class="container-fluid campaign-recipients--container">
         <div class="row align-items-end no-gutters">
             <div class="col-12 col-sm-5 col-lg-3">
-                <a class="pm-btn btn btn-pm">
+                <a class="pm-btn pm-btn-blue btn">
                     <plus-icon></plus-icon>
                     <span>UPLOAD A NEW LIST</span>
                 </a>
@@ -12,7 +12,7 @@
                     <template slot="name" slot-scope="{row}">
                         <div class="recipient-name--container">
                             <div class="recipient-name--icon">
-                                <list-icon></list-icon>
+                                <span class="pm-font-system-icon"></span>
                             </div>
                             <div class="recipient-name--data">
                                 <strong>{{ row.name }}</strong>
@@ -24,17 +24,17 @@
                     <template slot="stats1" slot-scope="{row}">
                         <div class="recipient-stats--container">
                             <div class="recipient-stats--stat">
-                                <users-icon></users-icon>
+                                <span class="pm-font-companies-icon"></span>
                                 <span>Total</span>
                                 <strong>{{ row.total }}</strong>
                             </div>
                             <div class="recipient-stats--stat">
-                                <mail-icon></mail-icon>
+                                <span class="pm-font-mail-icon"></span>
                                 <span>Email</span>
                                 <strong>{{ row.email_count }}</strong>
                             </div>
                             <div class="recipient-stats--stat">
-                                <phone-icon></phone-icon>
+                                <span class="pm-font-phone-icon"></span>
                                 <span>Phone</span>
                                 <strong>{{ row.phone_count }}</strong>
                             </div>
@@ -43,12 +43,12 @@
                     <template slot="stats2" slot-scope="{row}">
                         <div class="recipient-stats--container">
                             <div class="recipient-stats--stat">
-                                <map-icon></map-icon>
+                                <span class="pm-font-templates-icon"></span>
                                 <span>Conquest</span>
                                 <strong>{{ row.conquest_count }}</strong>
                             </div>
                             <div class="recipient-stats--stat">
-                                <database-icon></database-icon>
+                                <span class="pm-font-dealer-db-icon"></span>
                                 <span>Dealer DB</span>
                                 <strong>{{ row.dealer_count }}</strong>
                             </div>
