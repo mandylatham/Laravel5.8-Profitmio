@@ -32,6 +32,7 @@ Vue.component('campaign-edit-phone', require('./page-components/campaign/edit-ph
 Vue.component('campaign-edit-setting', require('./page-components/campaign/edit-setting/campaign-edit-setting.component'));
 
 // Components
+Vue.component('top-navigation-bar', require('./components/top-navigation-bar/top-navigation-bar.component'));
 Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-icon'));
 Vue.component('drop-status', require('./components/drop-status/drop-status'));
 Vue.component('date-pick', require('./components/date-pick'));

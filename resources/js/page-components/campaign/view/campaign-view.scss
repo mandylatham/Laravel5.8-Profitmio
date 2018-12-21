@@ -3,7 +3,7 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
-$aside-width: 400px;
+$aside-width: 300px;
 
 .wrapper--campaign-view {
     flex-grow: 1;
@@ -13,8 +13,8 @@ $aside-width: 400px;
         background: $gray;
         padding: 20px;
         color: #fff;
-        transform: translate(-100%);
-        min-height: calc(100vh - 100px);
+        transform: translateX(-100%);
+        min-height: 100vh;
         position: absolute;
         top: 0;
         left: 0;
@@ -94,35 +94,8 @@ $aside-width: 400px;
         transform: translate(0, 0);
         transition: transform .3s ease-in-out, margin .3s ease-in-out;
 
-        .chart {
-            margin-bottom: 40px;
-
-            &--title {
-                h2 {
-                    font-size: 1rem;
-                    margin: 0;
-                    font-weight: bold;
-                    @include media-breakpoint-up(sm) {
-                        float: left;
-                    }
-                }
-
-                small {
-                    font-size: 0.9rem;
-                    @include media-breakpoint-up(sm) {
-                        float: right;
-                    }
-                }
-            }
-
-            &--chart {
-                border: 1px solid #000;
-                height: 150px;
-                margin-top: 10px;
-            }
-        }
-
         @include media-breakpoint-up(xl) {
+            padding: 50px 30px 20px 30px;
             transform: none !important;
             margin-left: $aside-width;
         }

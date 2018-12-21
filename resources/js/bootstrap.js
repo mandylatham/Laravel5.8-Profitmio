@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     document.querySelector('.sidebar-toggle').addEventListener('click', () => {
-        document.body.classList.toggle('open');
+        document.querySelector('.top-navigation-bar').classList.toggle('open');
     });
 });
 

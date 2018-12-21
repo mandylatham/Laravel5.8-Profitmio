@@ -12,9 +12,7 @@ $aside-width: 400px;
     }
     &--title {
       h2 {
-        font-size: 1rem;
         margin: 0;
-        font-weight: bold;
         @include media-breakpoint-up(sm) {
           float: left;
         }
