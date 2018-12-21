@@ -4,6 +4,8 @@ import { Tabs, Dropdown } from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
 import Datepicker from 'vue2-datepicker';
+import vClickOutside from 'v-click-outside'
+
 
 // Global filters
 import './filters/global-filters';
@@ -13,6 +15,7 @@ import './components/pm-icons/pm-icons';
 
 // Plugins
 Vue.use(Dropdown);
+Vue.use(vClickOutside);
 Vue.use(Tabs);
 Vue.use(VueGoodTablePlugin);
 Vue.component('v-select', vSelect);

@@ -1,9 +1,3 @@
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelector('.sidebar-toggle').addEventListener('click', () => {
-        document.querySelector('.top-navigation-bar').classList.toggle('open');
-    });
-});
-
 window.breakpoints = {
     isXs() {
         return document.documentElement.clientWidth < 576;

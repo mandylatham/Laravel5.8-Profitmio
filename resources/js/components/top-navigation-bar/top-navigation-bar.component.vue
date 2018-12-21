@@ -1,6 +1,6 @@
 <template>
-    <div class="top-navigation-bar">
-        <a href="javascript:;" class="sidebar-toggle">
+    <div class="top-navigation-bar" :class="{'open': openMenu}" v-click-outside="onClickOutside">
+        <a href="javascript:;" class="sidebar-toggle" @click="openMenu = true">
             <menu-icon></menu-icon>
         </a>
         <a href="index.html" class="logo">
@@ -84,7 +84,14 @@
     export default {
         props: {},
         data() {
-            return {};
+            return {
+                openMenu: false
+            };
+        },
+        methods: {
+            onClickOutside: function() {
+                this.openMenu = false
+            }
         }
     }
 </script>
