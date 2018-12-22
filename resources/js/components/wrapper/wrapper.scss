@@ -31,7 +31,7 @@
         overflow-y: scroll;
         color: #fff;
         transform: translateX(-100%);
-        height: calc(100vh - 50px - #{$top-navigation-bar-height});
+        height: calc(100vh - #{$top-navigation-bar-height});
         position: absolute;
         top: 0;
         left: 0;
@@ -81,6 +81,10 @@
         }
 
         &-close-control {
+            position: absolute;
+            cursor: pointer;
+            top: 15px;
+            right: 15px;
             @include media-breakpoint-up(lg) {
                 display: none;
             }

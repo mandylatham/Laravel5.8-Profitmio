@@ -8,7 +8,7 @@
             </a>
         </div>
         <div class="wrapper-sidebar">
-            <div class="wrapper-sidebar-close-control">
+            <div class="wrapper-sidebar-close-control" @click="sidebarOpen = !sidebarOpen">
                 <x-icon></x-icon>
             </div>
             <slot name="wrapper-sidebar"></slot>
