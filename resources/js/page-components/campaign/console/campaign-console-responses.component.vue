@@ -5,7 +5,7 @@
             <div class="col-6">
                 <button class="btn btn-round btn-sm">
                     <chevron-left-icon class="chevron-left-icon"></chevron-left-icon>
-                    Responses
+                    Home
                 </button>
             </div>
             <div class="col-6">
@@ -44,6 +44,51 @@
         data() {
             return {
                 rows: [
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
+                    {
+                        name: 'Bailey O’Reilly Jr. Ferry',
+                        email: 'uhodkiewicz@hotmail.com',
+                        date: '1 week ago'
+                    },
                     {
                         name: 'Bailey O’Reilly Jr. Ferry',
                         email: 'uhodkiewicz@hotmail.com',

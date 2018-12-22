@@ -3,7 +3,7 @@
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
 
-$aside-width: 400px;
+$aside-width: 340px;
 
 // TODO: probably move this to some other place since this will be global
 body, body *:not(html):not(style):not(br):not(tr):not(code) {
@@ -12,21 +12,27 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
 }
 
 .wrapper--campaign-console {
-  flex-grow: 1;
+  display: flex;
+  height: 100vh;
   background: #E8EBF2;
+  overflow: hidden;
 
   .wrapper-aside {
     background: linear-gradient(#572E8D, #67A6CC);
     padding: 20px 30px;
     color: #fff;
     transform: translate(-100%);
-    min-height: calc(100vh - 100px);
-    position: absolute;
+    height: 100%;
     top: 0;
-    left: 0;
-    z-index: 100;
-    width: 100%;
+    z-index: 1000;
+    width: $aside-width;
     transition: transform .3s ease-in-out, width .3s ease-in-out;
+    overflow-y: scroll;
+
+    ::-webkit-scrollbar {
+      width: 0px;
+      background: transparent;
+    }
 
     &-control {
       position: absolute;
@@ -182,10 +188,10 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
   }
 
   .wrapper-content {
-    height: 98.5vh;
-    padding: 40px 10px 10px 10px;
+    padding: 20px 10px 10px 10px;
     transform: translate(0, 0);
     transition: transform .3s ease-in-out, margin .3s ease-in-out;
+    overflow-y: scroll;
 
     .chart {
       margin-bottom: 40px;
@@ -217,7 +223,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
 
     @include media-breakpoint-up(xl) {
       transform: none !important;
-      margin-left: $aside-width;
+      width: 100%;
     }
   }
 
