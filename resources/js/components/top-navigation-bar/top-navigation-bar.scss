@@ -137,6 +137,17 @@
             }
         }
 
+        &-close-control {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            color: #fff;
+            @include media-breakpoint-up(lg) {
+                display: none;
+            }
+        }
+
         @include media-breakpoint-up(lg) {
             min-height: auto;
             width: auto;

@@ -7,6 +7,9 @@
             <img src="/img/logo.png">
         </a>
         <nav class="navbar-menu">
+            <div class="navbar-menu-close-control" @click="openMenu = false">
+                <x-icon></x-icon>
+            </div>
             <img src="/img/logo-reversed.png" alt="Logo Reversed" class="logo-reversed">
             <ul class="nav">
                 <li class="menu-item">
