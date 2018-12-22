@@ -23,6 +23,7 @@
     "v-click-outside": "^2.0.2",
     "vue-feather-icons": "^4.7.1",
     "vue-good-table": "^2.16.0",
+    "vue-perfect-scrollbar": "^0.1.0",
     "vue-select": "^2.5.1",
     "vue2-datepicker": "^2.6.4"
   }

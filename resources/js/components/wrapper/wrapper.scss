@@ -2,87 +2,101 @@
 @import '../../../sass/mixins';
 
 .wrapper-component {
-  height: 100%;
-  position: relative;
-  overflow-x: hidden;
-  .wrapper-sidebar-controls {
-    padding: 10px 0;
-    transition: transform .3s ease-in-out, width .3s ease-in-out;
-    &-toggle {
-      padding: 5px 15px;
-      display: inline-block;
-      background-color: #fff;
-      border-radius: 0 5px 5px 0;
-      color: $brand-purple;
-    }
-  }
-  .wrapper-sidebar {
-    padding: 20px;
-    color: #fff;
-    transform: translateX(-100%);
-    min-height: calc(100vh - #{$top-navigation-bar-height});
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 100;
-    width: $wrapper-sidebar-width;
-    transition: transform .3s ease-in-out, width .3s ease-in-out;
-    @include background_gradient($brand-purple, $brand-blue, $brand-purple);
+    height: 100%;
+    position: relative;
+    overflow-x: hidden;
 
-    &-navigation {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        li {
-          margin-bottom: 15px;
-        }
-        a {
-          padding: 12px;
-          border: none;
-          background-color: transparent;
-          outline: none;
-          cursor: pointer;
-          border-radius: 5px;
-          display: flex;
-          align-items: center;
-          color: $brand-white;
-          text-decoration: none;
-          text-transform: uppercase;
-          [class^="pm-font-"], [class*=" pm-font-"] {
-            font-size: 1.5rem;
-            width: 40px;
-          }
-          &.active {
-            background-color: $brand-white;
+    .wrapper-sidebar-controls {
+        padding: 10px 0;
+        transition: transform .3s ease-in-out, width .3s ease-in-out;
+
+        &-toggle {
+            padding: 5px 15px;
+            display: inline-block;
+            background-color: #fff;
+            border-radius: 0 5px 5px 0;
             color: $brand-purple;
-          }
         }
-      }
     }
-  }
-  .wrapper-content {
-    padding: 10px 20px;
-    transform: translate(0, 0);
-    transition: transform .3s ease-in-out, margin .3s ease-in-out;
-  }
-  &:not(.has-sidebar) {
-    .wrapper--sidebar-controls, .wrapper-sidebar {
-      display: none;
+
+    .wrapper-sidebar {
+        padding: 20px;
+        color: #fff;
+        transform: translateX(-100%);
+        height: calc(100vh - #{$top-navigation-bar-height});
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 100;
+        width: $wrapper-sidebar-width;
+        transition: transform .3s ease-in-out, width .3s ease-in-out;
+        @include background_gradient($brand-purple, $brand-blue, $brand-purple);
+
+        &-navigation {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+
+            ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+
+                li {
+                    margin-bottom: 15px;
+                }
+
+                a {
+                    padding: 12px;
+                    border: none;
+                    background-color: transparent;
+                    outline: none;
+                    cursor: pointer;
+                    border-radius: 5px;
+                    display: flex;
+                    align-items: center;
+                    color: $brand-white;
+                    text-decoration: none;
+                    text-transform: uppercase;
+
+                    [class^="pm-font-"], [class*=" pm-font-"] {
+                        font-size: 1.5rem;
+                        width: 40px;
+                    }
+
+                    &.active {
+                        background-color: $brand-white;
+                        color: $brand-purple;
+                    }
+                }
+            }
+        }
     }
-  }
-  &.open.has-sidebar {
-      .wrapper-sidebar {
+
+    .wrapper-content {
+        padding: 10px 20px;
+        height: calc(100vh - #{$top-navigation-bar-height});
         transform: translate(0, 0);
-      }
-      .wrapper-content, .wrapper-sidebar-controls {
-        transform: translate($wrapper-sidebar-width, 0);
-      }
-  }
+        transition: transform .3s ease-in-out, margin .3s ease-in-out;
+    }
+
+    &:not(.has-sidebar) {
+        .wrapper--sidebar-controls, .wrapper-sidebar {
+            display: none;
+        }
+    }
+
+    &.open.has-sidebar {
+        .wrapper-sidebar {
+            transform: translate(0, 0);
+        }
+
+        .wrapper-content, .wrapper-sidebar-controls {
+            transform: translate($wrapper-sidebar-width, 0);
+        }
+    }
 }
+
 //
 //.wrapper-aside {
 //  background: $gray;
