@@ -5,7 +5,6 @@ import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
 import Datepicker from 'vue2-datepicker';
 import vClickOutside from 'v-click-outside'
-import VuePerfectScrollbar from 'vue-perfect-scrollbar'
 
 // Global filters
 import './filters/global-filters';
@@ -20,7 +19,6 @@ Vue.use(Tabs);
 Vue.use(VueGoodTablePlugin);
 Vue.component('v-select', vSelect);
 Vue.component('datepicker', Datepicker);
-Vue.component('VuePerfectScrollbar', VuePerfectScrollbar);
 
 // Pages
 Vue.component('campaign-index', require('./page-components/campaign/index/CampaignIndexComponent'));

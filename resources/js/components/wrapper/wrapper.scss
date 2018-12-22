@@ -1,3 +1,6 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
 @import '../../../sass/variables';
 @import '../../../sass/mixins';
 
@@ -17,13 +20,18 @@
             border-radius: 0 5px 5px 0;
             color: $brand-purple;
         }
+
+        @include media-breakpoint-up(lg) {
+            display: none;
+        }
     }
 
     .wrapper-sidebar {
         padding: 20px;
+        overflow-y: scroll;
         color: #fff;
         transform: translateX(-100%);
-        height: calc(100vh - #{$top-navigation-bar-height});
+        height: calc(100vh - 50px - #{$top-navigation-bar-height});
         position: absolute;
         top: 0;
         left: 0;
@@ -71,13 +79,28 @@
                 }
             }
         }
+
+        &-close-control {
+            @include media-breakpoint-up(lg) {
+                display: none;
+            }
+        }
+
+        @include media-breakpoint-up(lg) {
+            transform: translateX(0);
+            height: calc(100vh - #{$top-navigation-bar-height});
+        }
     }
 
     .wrapper-content {
+        overflow-y: scroll;
         padding: 10px 20px;
         height: calc(100vh - #{$top-navigation-bar-height});
         transform: translate(0, 0);
         transition: transform .3s ease-in-out, margin .3s ease-in-out;
+        @include media-breakpoint-up(lg) {
+            margin-left: $wrapper-sidebar-width;
+        }
     }
 
     &:not(.has-sidebar) {
@@ -96,84 +119,3 @@
         }
     }
 }
-
-//
-//.wrapper-aside {
-//  background: $gray;
-//  padding: 20px;
-//  color: #fff;
-//  transform: translateX(-100%);
-//  min-height: 100vh;
-//  position: absolute;
-//  top: 0;
-//  left: 0;
-//  z-index: 100;
-//  width: 100%;
-//  transition: transform .3s ease-in-out, width .3s ease-in-out;
-//
-//  &-control {
-//    position: absolute;
-//    background-color: $gray;
-//    color: $gray-light;
-//    top: 0;
-//    right: 0;
-//    transform: translateX(100%);
-//    padding: 5px;
-//    cursor: pointer;
-//  }
-//
-//  &-close-control {
-//    float: right;
-//    margin-bottom: 10px;
-//    color: #fff;
-//    text-decoration: none;
-//  }
-//
-//  .campaign-avatar {
-//    background-color: #ddd;
-//    clear: both;
-//    height: 150px;
-//    padding: 20px;
-//    margin-bottom: 30px;
-//  }
-//
-//  &--navigation {
-//    list-style: none;
-//    padding: 0;
-//    margin: 0;
-//
-//    ul {
-//      list-style: none;
-//      padding: 0;
-//      margin: 0;
-//
-//      li {
-//        margin-bottom: 5px;
-//      }
-//
-//      a {
-//        text-decoration: none;
-//        color: #fff;
-//        padding: 10px 20px;
-//        display: block;
-//
-//        &.active {
-//          background-color: rgba(255, 255, 255, 0.1);
-//        }
-//      }
-//    }
-//  }
-//
-//  @include media-breakpoint-up(sm) {
-//    width: $aside-width;
-//  }
-//  @include media-breakpoint-up(lg) {
-//    min-height: calc(100vh - 60px);
-//  }
-//  @include media-breakpoint-up(xl) {
-//    transform: none;
-//    &-control, &-close-control {
-//      display: none;
-//    }
-//  }
-//}

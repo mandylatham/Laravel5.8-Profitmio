@@ -7,12 +7,15 @@
                 </slot>
             </a>
         </div>
-        <VuePerfectScrollbar class="wrapper-sidebar" v-once>
+        <div class="wrapper-sidebar">
+            <div class="wrapper-sidebar-close-control">
+                <x-icon></x-icon>
+            </div>
             <slot name="wrapper-sidebar"></slot>
-        </VuePerfectScrollbar>
-        <VuePerfectScrollbar class="wrapper-content" v-once>
+        </div>
+        <div class="wrapper-content">
             <slot name="wrapper-content"></slot>
-        </VuePerfectScrollbar>
+        </div>
     </div>
 </template>
 <script>
