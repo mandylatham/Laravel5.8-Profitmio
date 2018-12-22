@@ -99,10 +99,11 @@
     .wrapper-content {
         overflow-y: scroll;
         padding: 10px 20px;
-        height: calc(100vh - #{$top-navigation-bar-height});
+        height: calc(100vh - 50px - #{$top-navigation-bar-height});
         transform: translate(0, 0);
         transition: transform .3s ease-in-out, margin .3s ease-in-out;
         @include media-breakpoint-up(lg) {
+            height: calc(100vh - #{$top-navigation-bar-height});
             margin-left: $wrapper-sidebar-width;
         }
     }
@@ -113,13 +114,15 @@
         }
     }
 
-    &.open.has-sidebar {
-        .wrapper-sidebar {
-            transform: translate(0, 0);
-        }
+    @include media-breakpoint-down(lg) {
+        &.open.has-sidebar {
+            .wrapper-sidebar {
+                transform: translate(0, 0);
+            }
 
-        .wrapper-content, .wrapper-sidebar-controls {
-            transform: translate($wrapper-sidebar-width, 0);
+            .wrapper-content, .wrapper-sidebar-controls {
+                transform: translate($wrapper-sidebar-width, 0);
+            }
         }
     }
 }
