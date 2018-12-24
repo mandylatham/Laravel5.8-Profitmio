@@ -1,3 +1,5 @@
+@import './variables';
+
 .card-header {
   margin-bottom: 40px;
   ul {
@@ -33,5 +35,14 @@
         }
       }
     }
+  }
+}
+.nav-tabs .nav-link {
+  color: $brand-black;
+  padding: 15px 25px;
+  border-radius: 5px 5px 0 0;
+  &.active {
+    background-color: $brand-purple;
+    color: #fff;
   }
 }

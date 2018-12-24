@@ -42,14 +42,16 @@
             </div>
         </template>
         <template slot="wrapper-content">
-            <b-tabs pills card>
-                <b-tab title="CAMPAIGN" active>
-                    <list-campaign></list-campaign>
-                </b-tab>
-                <b-tab title="COMPANY">
-                    <list-company></list-company >
-                </b-tab>
-            </b-tabs>
+            <b-card no-body>
+                <b-tabs>
+                    <b-tab title="CAMPAIGN" active>
+                        <list-campaign></list-campaign>
+                    </b-tab>
+                    <b-tab title="COMPANY">
+                        <list-company></list-company >
+                    </b-tab>
+                </b-tabs>
+            </b-card>
         </template>
     </wrapper>
 </template>
