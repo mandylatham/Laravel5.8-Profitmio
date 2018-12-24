@@ -44,7 +44,7 @@
                     <b-dropdown variant="link" no-caret>
                         <template slot="button-content">
                             <span>Jhon Doe</span>
-                            <img src="http://lorempixel.com/60/60/" alt="Avatar">
+                            <img src="//lorempixel.com/60/60/" alt="Avatar">
                         </template>
                         <b-dropdown-item href="#">Profile</b-dropdown-item>
                         <b-dropdown-item href="#">Another action</b-dropdown-item>
