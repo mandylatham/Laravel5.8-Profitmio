@@ -3,8 +3,8 @@
         <template slot="wrapper-sidebar">
             <div class="company-data">
                 <div class="company-avatar"></div>
-                <div class="campaign-name">CAMPAIGN NAME</div>
-                <div class="company-address">711 W Harvard ST Orlando, FL 3238, US</div>
+                <div class="campaign-name text-center">CAMPAIGN NAME</div>
+                <div class="company-address text-center">711 W Harvard ST Orlando, FL 3238, US</div>
                 <div class="company-email">email@profitminer.io</div>
                 <div class="company-phone">333-3333-333</div>
             </div>

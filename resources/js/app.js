@@ -6,7 +6,6 @@ import vSelect from 'vue-select/dist/vue-select';
 import Datepicker from 'vue2-datepicker';
 import vClickOutside from 'v-click-outside'
 
-
 // Global filters
 import './filters/global-filters';
 

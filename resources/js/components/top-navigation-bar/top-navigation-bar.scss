@@ -5,130 +5,211 @@
 @import "~bootstrap/scss/mixins";
 
 .top-navigation-bar {
-  background-color: #fff;
-  width: 100%;
-  .sidebar-toggle {
-    background-color: transparent;
-    background-image: none;
-    height: $top-navigation-bar-height;
-    padding: 10px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    svg {
-      width: 24px;
-      height: 40px;
-      color: $gray;
-    }
-  }
-  .logo {
-    display: inline-flex;
-    align-items: center;
-    height: $top-navigation-bar-height;
-    justify-content: center;
-    padding: 10px;
-    img {
-      height: 40px;
-    }
-  }
-  .navbar-menu {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 300px;
-    min-height: 100vh;
     background-color: #fff;
-    padding: 30px 0;
-    z-index: 1000;
-    transform: translateX(-100%);
-    transition: transform .3s ease-in-out,width .3s ease-in-out;
-    @include background_gradient($brand-purple, $brand-blue, $brand-purple);
-    .nav {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      li {
-        padding-right: 30px;
-        padding-left: 30px;
-        margin-bottom: 10px;
-        a {
-          padding: 12px;
-          border: none;
-          background-color: transparent;
-          outline: none;
-          cursor: pointer;
-          border-radius: 5px;
-          display: flex;
-          align-items: center;
-          color: $brand-white;
-          text-decoration: none;
-          text-transform: uppercase;
-          [class^="pm-font-"], [class*=" pm-font-"] {
-            font-size: 1.5rem;
-            width: 40px;
-          }
-          .pm-font-companies-icon {
-            font-size: 1.25rem;
-          }
-          &.active {
-            background-color: $brand-white;
-            color: $brand-purple;
-          }
+    width: 100%;
+
+    .sidebar-toggle {
+        background-color: transparent;
+        background-image: none;
+        height: $top-navigation-bar-height;
+        padding: 10px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+            width: 24px;
+            height: 40px;
+            color: $gray;
         }
-      }
-    }
-    .logo-reversed {
-      height: 70px;
-      width: auto;
-      display: block;
-      margin: 0 auto;
-      margin-bottom: 50px;
-    }
-  }
-  .navbar-menu-extra {
-    float: right;
-    .nav {
-      list-style: none;
-      margin: 0;
-      padding: 0;
-      li {
-        padding-right: 10px;
-        padding-left: 10px;
-        float: left;
-        .btn.btn-link {
-          text-decoration: none;
-          padding: 8px;
-          display: flex;
-          align-items: center;
-          color: $brand-purple;
-          height: $top-navigation-bar-height;
-          svg {
-            height: 15px;
-            width: 15px;
-          }
+
+        @include media-breakpoint-up(lg) {
+            display: none;
         }
-      }
     }
-    .menu-item-profile {
-      .btn.btn-link {
-        line-height: 24px;
-        padding-top: 8px;
-        color: $gray;
-        text-decoration: none;
-      }
-      img {
-        float: right;
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        margin-left: 10px;
-        margin-top: -2px;
-      }
+
+    .logo {
+        display: inline-flex;
+        align-items: center;
+        height: $top-navigation-bar-height;
+        justify-content: center;
+        padding: 10px;
+
+        img {
+            height: 40px;
+        }
     }
-  }
-  &.open {
+
     .navbar-menu {
-      transform: translateX(0);
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 300px;
+        min-height: 100vh;
+        background-color: #fff;
+        padding: 30px 0;
+        z-index: 1000;
+        transform: translateX(-100%);
+        transition: transform .3s ease-in-out, width .3s ease-in-out;
+        @include background_gradient($brand-purple, $brand-blue, $brand-purple);
+
+        .nav {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            li {
+                padding-right: 30px;
+                padding-left: 30px;
+                margin-bottom: 10px;
+
+                a {
+                    padding: 12px;
+                    border: none;
+                    background-color: transparent;
+                    outline: none;
+                    cursor: pointer;
+                    border-radius: 5px;
+                    display: flex;
+                    align-items: center;
+                    color: $brand-white;
+                    text-decoration: none;
+                    text-transform: uppercase;
+
+                    [class^="pm-font-"], [class*=" pm-font-"] {
+                        font-size: 1.5rem;
+                        width: 40px;
+
+                        @include media-breakpoint-up(lg) {
+                            width: auto;
+                            font-size: 1rem;
+                        }
+                    }
+
+                    .pm-font-companies-icon {
+                        font-size: 1.25rem;
+
+                        @include media-breakpoint-up(lg) {
+                            font-size: 1rem;
+                        }
+                    }
+
+                    span {
+                        @include media-breakpoint-up(lg) {
+                            font-size: 0.6rem;
+                            text-transform: initial;
+                        }
+                    }
+
+                    &.active {
+                        background-color: $brand-white;
+                        color: $brand-purple;
+                    }
+
+                    @include media-breakpoint-up(lg) {
+                        background-color: transparent !important;
+                        display: flex;
+                        flex-flow: column;
+                        padding: 0;
+                        height: $top-navigation-bar-height;
+                        color: $brand-purple;
+                        align-items: center;
+                        justify-content: center;
+                    }
+                }
+
+                @include media-breakpoint-up(lg) {
+                    padding: 0 15px;
+                    margin: 0;
+                    float: left;
+                }
+            }
+        }
+
+        .logo-reversed {
+            height: 70px;
+            width: auto;
+            display: block;
+            margin: 0 auto 50px auto;
+
+            @include media-breakpoint-up(lg) {
+                display: none;
+            }
+        }
+
+        &-close-control {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            cursor: pointer;
+            color: #fff;
+            @include media-breakpoint-up(lg) {
+                display: none;
+            }
+        }
+
+        @include media-breakpoint-up(lg) {
+            min-height: auto;
+            width: auto;
+            transform: unset;
+            display: inline-block;
+            padding: 0;
+            margin-left: 200px;
+            background: transparent;
+        }
     }
-  }
+
+    .navbar-menu-extra {
+        float: right;
+
+        .nav {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+
+            li {
+                padding-right: 5px;
+                padding-left: 5px;
+                float: left;
+
+                .btn.btn-link {
+                    text-decoration: none;
+                    padding: 8px;
+                    display: flex;
+                    align-items: center;
+                    color: $brand-purple;
+                    height: $top-navigation-bar-height;
+
+                    svg {
+                        height: 15px;
+                        width: 15px;
+                    }
+                }
+            }
+        }
+
+        .menu-item-profile {
+            .btn.btn-link {
+                line-height: 24px;
+                padding-top: 8px;
+                color: $gray;
+                text-decoration: none;
+            }
+
+            img {
+                float: right;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                margin-left: 10px;
+                margin-top: -2px;
+            }
+        }
+    }
+
+    &.open {
+        .navbar-menu {
+            transform: translateX(0);
+        }
+    }
 }
