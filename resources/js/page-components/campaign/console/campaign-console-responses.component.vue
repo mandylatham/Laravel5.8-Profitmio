@@ -27,7 +27,9 @@
 
         <div class="row align-items-end no-gutters">
             <div class="col-12">
-                <pm-responsive-table :rows="rows" :columns="columns" :disable-folding="true" v-on:row-clicked="showPanel">
+                <!-- TODO: pass current `recipientId` to `showPanel` method -->
+                <pm-responsive-table :rows="rows" :columns="columns" :disable-folding="true"
+                                     v-on:row-clicked="showPanel(295)">
                 </pm-responsive-table>
             </div>
         </div>
@@ -41,100 +43,13 @@
     import {SearchIcon} from 'vue-feather-icons';
 
     export default {
+        mounted() {
+            //
+        },
         data() {
             return {
-                rows: [
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    },
-                    {
-                        name: 'Bailey O’Reilly Jr. Ferry',
-                        email: 'uhodkiewicz@hotmail.com',
-                        date: '1 week ago'
-                    }
-                ],
+                currentRecipientId: null,
+                rows: this.recipients.data,
                 columns: [
                     {
                         field: 'name',
@@ -145,25 +60,32 @@
                         classes: ['console-response-email']
                     },
                     {
-                        field: 'date',
+                        field: 'last_seen_ago',
                         classes: ['console-response-date']
                     }
                 ],
+                rowsTest: [],
                 panel1Form: {
-                    openOn: "right"
+                    openOn: 'right'
                 }
             };
         },
+        props: ['campaign', 'recipients'],
         components: {
             ChevronLeftIcon,
             SearchIcon,
         },
         methods: {
-            showPanel: function({row}) {
+            showPanel: function (recipientId) {
+                this.currentRecipientId = recipientId;
                 const panel = this.$showPanel({
                     component: 'communication-side-panel',
                     cssClass: 'communication-side-panel',
-                    props: {}
+                    width: '50%',
+                    props: {
+                        campaign: this.campaign,
+                        recipientId: this.currentRecipientId
+                    }
                 });
             }
         }

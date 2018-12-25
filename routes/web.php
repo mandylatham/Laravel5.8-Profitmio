@@ -39,8 +39,15 @@ Route::get('/user-dashboard', function () {
 Route::get('/user-view', function () {
     return view('user.view');
 });
+
+// TODO: remove me when original route is done
 Route::get('/new-response-console', function () {
     return view('campaign.console');
+});
+
+// TODO: remove me
+Route::get('/test-get', function () {
+    return \App\Models\Recipient::all()->toJson();
 });
 
 //region AUTHENTICATED REQUESTS ONLY
@@ -175,12 +182,12 @@ Route::group(['middleware' => 'auth'], function () {
         Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
         Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
         Route::any('/get-response-list', 'ResponseController@getResponseList');
-        Route::get('/response/{recipient}', 'ResponseController@getResponse');
+        // TODO: old route
+        // Route::get('/response/{recipient}', 'ResponseController@getResponse');
+        Route::get('/response/{recipient}', 'ResponseController@getResponseJson');
         Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply');
         Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console');
         Route::get('/response-console', 'ResponseConsoleController@show')->name('campaign.response-console.index');
-        // TODO: remove me, just for testing purposes
-        Route::get('/response-console2', 'ResponseConsoleController@show2')->name('campaign.response-console2.index');
         Route::get('/response-console/unread', 'ResponseConsoleController@showUnread')->name('campaign.response-console.index.unread');
         Route::get('/response-console/idle', 'ResponseConsoleController@showIdle')->name('campaign.response-console.index.idle');
         Route::get('/response-console/archived', 'ResponseConsoleController@showArchived')->name('campaign.response-console.index.archived');

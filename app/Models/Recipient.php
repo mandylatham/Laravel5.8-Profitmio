@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Auth;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -22,11 +24,12 @@ class Recipient extends Model
         'carrier', 'subgroup', 'from_dealer_db', 'callback'
     ];
 
+    protected $appends = ['last_seen_ago', 'name', 'vehicle'];
+
     public static $mappable = [
         'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip',
         'make', 'model', 'vin'
     ];
-
 
     public function list()
     {
@@ -130,5 +133,11 @@ class Recipient extends Model
         $this->email = '';
 
         $this->save();
+    }
+
+    public function getLastSeenAgoAttribute()
+    {
+        return $this->last_seen ? (new Carbon($this->last_seen))->timezone(Auth::user()->timezone)->diffForHumans(Carbon::now(),
+                true) . ' ago' : '';
     }
 }

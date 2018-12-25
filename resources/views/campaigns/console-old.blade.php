@@ -1,3 +1,5 @@
+{{-- TODO: remove me if not needed --}}
+
 @extends('layouts.console')
 
 @section('header')

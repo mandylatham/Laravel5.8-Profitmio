@@ -52,8 +52,7 @@ Vue.component('pm-responsive-table', require('./components/pm-responsive-table/p
 Vue.component('list-campaign', require('./components/list-campaign/list-campaign'));
 Vue.component('list-company', require('./components/list-company/list-company.component'));
 Vue.component('pm-responsive-table', require('./components/pm-responsive-table/pm-responsive-table'));
-Vue.component('communication-side-panel', require('./components/CommunicationSidePanel.vue'));
-// Vue.component('communication-side-panel', require('./components/CommunicationSidePanel.vue').default);
+Vue.component('communication-side-panel', require('./page-components/campaign/console/communication-side-panel.component'));
 
 // Icons
 Vue.component('calendar-icon', CalendarIcon);

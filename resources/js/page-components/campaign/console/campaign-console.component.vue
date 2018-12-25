@@ -1,7 +1,7 @@
 <template>
     <div id="wrapper" class="wrapper--campaign-console" :class="{'open': asideOpen}">
         <div class="wrapper-aside">
-            <a href="javascript:;" class="wrapper-aside-close-control" @click="asideOpen = false;">
+            <a href="javascript:;" class="wrapper-aside-close-control" @click="asideOpen = false">
                 <x-icon></x-icon>
             </a>
             <a href="javascript:;" class="wrapper-aside-control" @click="asideOpen = !asideOpen">
@@ -13,17 +13,17 @@
                     <li class="all">
                         <a :class="{'active': activeFilterSection === 'all'}" href="javascript:;"
                            @click="changeFilter('all')">All
-                            <span class="counter">25</span></a>
+                            <span class="counter">{{ this.counters.totalCount }}</span></a>
                     </li>
                     <li class="unread">
                         <a :class="{'active': activeFilterSection === 'unread'}" href="javascript:;"
                            @click="changeFilter('unread')">Unread
-                            <span class="counter">0</span></a>
+                            <span class="counter">{{ this.counters.unread }}</span></a>
                     </li>
                     <li class="idle">
                         <a :class="{'active': activeFilterSection === 'idle'}" href="javascript:;"
                            @click="changeFilter('idle')">Idle
-                            <span class="counter">28</span></a>
+                            <span class="counter">{{ this.counters.idle }}</span></a>
                     </li>
                 </ul>
 
@@ -34,17 +34,17 @@
                     <li class="calls">
                         <a :class="{'active': activeMediaTypeSection === 'calls'}" href="javascript:;"
                            @click="changeMediaType('calls')">Calls
-                            <span class="counter">28</span></a>
+                            <span class="counter">{{ this.counters.calls }}</span></a>
                     </li>
                     <li class="email">
                         <a :class="{'active': activeMediaTypeSection === 'email'}" href="javascript:;"
                            @click="changeMediaType('email')">Email
-                            <span class="counter">0</span></a>
+                            <span class="counter">{{ this.counters.email }}</span></a>
                     </li>
                     <li class="sms">
                         <a :class="{'active': activeMediaTypeSection === 'sms'}" href="javascript:;"
                            @click="changeMediaType('sms')">SMS
-                            <span class="counter">25</span></a>
+                            <span class="counter">{{ this.counters.sms }}</span></a>
                     </li>
                 </ul>
 
@@ -84,13 +84,17 @@
             </nav>
         </div>
         <div class="wrapper-content">
-            <campaign-console-responses></campaign-console-responses>
+            <campaign-console-responses :campaign="this.campaign"
+                                        :recipients="this.recipients"></campaign-console-responses>
         </div>
     </div>
 </template>
 <script>
     require("./campaign-console.scss");
     export default {
+        mounted() {
+            //
+        },
         data() {
             return {
                 asideOpen: false,
@@ -99,6 +103,10 @@
                 activeLabelSection: '',
             };
         },
+        computed: {
+            //
+        },
+        props: ['campaign', 'recipients', 'filter', 'label', 'counters'],
         methods: {
             changeFilter: function (item) {
                 this.activeFilterSection = item;
