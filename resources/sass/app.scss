@@ -1,4 +1,5 @@
 @import "variables";
+@import "mixins";
 // Bootstrap
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
@@ -25,8 +26,8 @@
 @import "./tabs";
 @import "./datepicker";
 @import "./pm-buttons";
-// pages
 @import "./common/datatable";
+@import "./common/top-navbar";
 
 .pm-form-group {
   margin-bottom: 2rem;

@@ -1,24 +1,24 @@
-    <b-navbar class="top-navigation-bar">
+    <b-navbar toggleable="sm" class="top-navigation-bar justify-content-space-between justify-content-sm-start">
 
-        <b-navbar-toggle target="sidebar-menu" class="sidebar-toggle js-toggle-sidebar-menu">
+        <b-navbar-toggle target="sidebar-menu" class="sidebar-toggle js-toggle-sidebar-menu d-inline-flex d-md-none">
             <template>
                 <menu-icon></menu-icon>
             </template>
         </b-navbar-toggle>
 
-        <b-navbar-brand href="#">
-            <img src="/img/logo.png" height="40px" class="logo d-sm-none d-md-none d-lg-none d-xl-none">
-            <img src="/img/logo-large.png" height="40px" class="logo-large d-none d-lg-block d-lg-block d-xl-block">
+        <b-navbar-brand href="#" class="ml-sm-4 ml-md-6 ml-lg-8">
+            <img src="/img/logo.png" height="40px" class="logo d-sm-none">
+            <img src="/img/logo-large.png" height="40px" class="logo-large d-none d-sm-block">
         </b-navbar-brand>
 
-        <b-navbar-toggle target="top-navbar" class="top-navbar-toggle">
+        <b-navbar-toggle target="top-navbar" class="top-navbar-toggle m-0 ml-sm-auto d-inline-flex d-sm-none">
             <template>
                 <more-vertical-icon></more-vertical-icon>
             </template>
         </b-navbar-toggle>
 
         <b-navbar-nav class="navbar-menu">
-            <div class="pm-logo-reversed">
+            <div class="pm-logo-reversed d-md-none">
                 <img src="/img/logo-reversed.png" alt="Logo Reversed">
             </div>
             <b-nav-item href="#" active>
@@ -50,7 +50,7 @@
                         <span>
                             <i class="pm-font-notification-icon"></i>
                         </span>
-                        <span>Notifications</span>
+                        <span class="d-sm-none">Notifications</span>
                     </template>
                     <b-dropdown-item href="#">Notification 1</b-dropdown-item>
                     <b-dropdown-item href="#">Notification 2</b-dropdown-item>
@@ -60,7 +60,7 @@
                         <span>
                             <i class="pm-font-help-icon"></i>
                         </span>
-                        <span>Help</span>
+                        <span class="d-sm-none">Help</span>
                     </template>
                     <b-dropdown-item href="#">Help 1</b-dropdown-item>
                     <b-dropdown-item href="#">Help 2</b-dropdown-item>
