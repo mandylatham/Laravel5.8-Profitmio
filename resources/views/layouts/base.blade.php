@@ -11,10 +11,21 @@
     <link href="{{ asset('css/new-app.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div id="app">
-        <top-navigation-bar></top-navigation-bar>
-
-        @yield('content')
+    <div id="app clearfix">
+        <div class="sidebar-container">
+            <div class="sidebar">
+                @yield('sidebar')
+            </div>
+        </div>
+        <div class="main-content-container">
+            <div class="top-navbar">
+                @component('layouts.top-navbar')
+                @endcomponent
+            </div>
+            <div class="main-content">
+                @yield('main-content')
+            </div>
+        </div>
     </div>
 </body>
 </html>

@@ -24,6 +24,9 @@ Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.restore');
 //endregion
 
+Route::get('/layout', function () {
+    return view('layouts.base');
+});
 Route::get('/new-dashboard', function () {
     return view('dashboard.index');
 });
