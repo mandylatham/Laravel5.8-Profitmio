@@ -11,7 +11,7 @@
     <link href="{{ asset('css/new-app.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div id="app clearfix">
+    <div id="app" class="clearfix">
         <div class="sidebar-container">
             <div class="sidebar">
                 @yield('sidebar')

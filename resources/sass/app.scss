@@ -145,16 +145,28 @@ body {
 
 #app {
   height: 100%;
-  //display: flex;
-  //flex-flow: row;
 }
 
 .sidebar-container {
-    width: 300px;
+    width: $sidebar-width;
     height: 100%;
     float: left;
+    background-color: blue;
+    position: absolute;
+    transform: translateX(-100%);
+    transition: transform .3s ease-in-out, width .3s ease-in-out;
 }
 
 .main-content-container {
-    margin-left: 300px;
+    //margin-left: 300px;
+    height: 100%;
+    background-color: green;
+    transition: transform .3s ease-in-out, width .3s ease-in-out;
+}
+
+.main-content {
+    margin-top: -$top-navigation-bar-height;
+    padding-top: $top-navigation-bar-height;
+    height: 100%;
+    background-color: red;
 }
