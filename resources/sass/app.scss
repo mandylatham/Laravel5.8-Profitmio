@@ -1,5 +1,4 @@
 @import "variables";
-
 // Bootstrap
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
@@ -15,122 +14,139 @@
 @import "~bootstrap/scss/nav";
 @import "~bootstrap/scss/card";
 @import "~bootstrap/scss/dropdown";
+@import "~bootstrap/scss/nav";
+@import "~bootstrap/scss/navbar";
 @import "~bootstrap-vue/es/components/dropdown/dropdown.css";
 @import '~vue-good-table/dist/vue-good-table.css';
 @import './date-pick.scss';
 @import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
-
 @import "./event-calendar";
 @import "./pm-font";
 @import "./tabs";
 @import "./datepicker";
 @import "./pm-buttons";
-
 // pages
 @import "./common/datatable";
 
 .pm-form-group {
-    margin-bottom: 2rem;
-    label {
-        font-size: 0.9rem;
-    }
+  margin-bottom: 2rem;
+
+  label {
+    font-size: 0.9rem;
+  }
 }
 
 .form-control {
-    height: $form-control-height;
-    border: none;
+  height: $form-control-height;
+  border: none;
 }
 
 .pm-datatable {
-    margin-top: 25px;
-    table.vgt-table {
-        border-collapse: separate;
-        border: none;
-        &.bordered td, &.bordered th {
-            border: none;
-            padding: 8px 15px;
-            font-size: 0.9rem;
-            background-image: none;
-        }
-        thead th, thead td {
-            background-color: darken(rgb(225, 229, 232), 10%);
-            cursor: pointer;
-            font-weight: 600;
-        }
-        tr:nth-child(even) td {
-            background-color: rgb(225, 229, 232);
-        }
-        tr:nth-child(odd) td {
-            background-color: rgb(240, 242, 243);
-        }
+  margin-top: 25px;
+
+  table.vgt-table {
+    border-collapse: separate;
+    border: none;
+
+    &.bordered td, &.bordered th {
+      border: none;
+      padding: 8px 15px;
+      font-size: 0.9rem;
+      background-image: none;
     }
-    .vgt-wrap__actions-footer {
-        border: none;
+
+    thead th, thead td {
+      background-color: darken(rgb(225, 229, 232), 10%);
+      cursor: pointer;
+      font-weight: 600;
     }
+
+    tr:nth-child(even) td {
+      background-color: rgb(225, 229, 232);
+    }
+
+    tr:nth-child(odd) td {
+      background-color: rgb(240, 242, 243);
+    }
+  }
+
+  .vgt-wrap__actions-footer {
+    border: none;
+  }
 }
 
 .filter-- {
-    &v-select.v-select {
-        border: none;
-        border-radius: 5px;
-        //overflow: hidden;
-        input[type=search], input[type=search]:focus {
-            margin: 0;
-            padding: 0;
-            font-size: 0.9rem;
-            height: $form-control-height;
-        }
-        .vs__selected-options {
-            order: 2;
-            background-color: #fff;
-            border-radius: 0 5px 5px 0;
-        }
-        &.open {
-            .open-indicator:before {
-                transform: rotate(315deg) translate(-2px, 3px);
-            }
-        }
-        .open-indicator:before {
-            border-width: 1px 1px 0 0;
-            border-color: #fff;
-            transform: rotate(133deg) translate(-2px, 1px);
-        }
-        .vs__actions {
-            order: 1;
-            margin: 0;
-            padding: 0 10px;
-            text-align: center;
-            justify-content: center;
-            background-color: $brand-purple;
-            border-radius: 5px 0 0 5px;
-        }
-        .dropdown-toggle {
-            border: none;
-            padding: 0;
-            &:after {
-                display: none;
-            }
-        }
+  &v-select.v-select {
+    border: none;
+    border-radius: 5px;
+    //overflow: hidden;
+    input[type=search], input[type=search]:focus {
+      margin: 0;
+      padding: 0;
+      font-size: 0.9rem;
+      height: $form-control-height;
     }
-    &search-box {
-        border-radius: 15px;
-        font-size: 0.9rem;
-        height: 2rem;
-        border-color: $gray;
-        &:focus {
-            box-shadow: 0 0 0 0.2rem rgba($brand-purple, 0.25);
-            border-color: inherit;
-        }
+
+    .vs__selected-options {
+      order: 2;
+      background-color: #fff;
+      border-radius: 0 5px 5px 0;
     }
-    &form-group {
-        label {
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-        }
-        @include media-breakpoint-up(sm) {
-            margin-bottom: 0;
-        }
+
+    &.open {
+      .open-indicator:before {
+        transform: rotate(315deg) translate(-2px, 3px);
+      }
     }
+
+    .open-indicator:before {
+      border-width: 1px 1px 0 0;
+      border-color: #fff;
+      transform: rotate(133deg) translate(-2px, 1px);
+    }
+
+    .vs__actions {
+      order: 1;
+      margin: 0;
+      padding: 0 10px;
+      text-align: center;
+      justify-content: center;
+      background-color: $brand-purple;
+      border-radius: 5px 0 0 5px;
+    }
+
+    .dropdown-toggle {
+      border: none;
+      padding: 0;
+
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  &search-box {
+    border-radius: 15px;
+    font-size: 0.9rem;
+    height: 2rem;
+    border-color: $gray;
+
+    &:focus {
+      box-shadow: 0 0 0 0.2rem rgba($brand-purple, 0.25);
+      border-color: inherit;
+    }
+  }
+
+  &form-group {
+    label {
+      font-size: 0.8rem;
+      margin-bottom: 5px;
+    }
+
+    @include media-breakpoint-up(sm) {
+      margin-bottom: 0;
+    }
+  }
 }
 
 body, html {
@@ -139,34 +155,42 @@ body, html {
   font-size: 14px;
   color: $gray;
 }
+
 body {
   background-color: $brand-white;
 }
 
 #app {
   height: 100%;
+  overflow: hidden;
+  //&.sidebar-open {
+  //  .sidebar-container {
+  //    transform: translateX(0);
+  //  }
+  //  .main-content-container {
+  //    transform: translateX($sidebar-width);
+  //  }
+  //}
 }
 
 .sidebar-container {
-    width: $sidebar-width;
-    height: 100%;
-    float: left;
-    background-color: blue;
-    position: absolute;
-    transform: translateX(-100%);
-    transition: transform .3s ease-in-out, width .3s ease-in-out;
+  width: $sidebar-width;
+  height: 100%;
+  float: left;
+  position: absolute;
+  transform: translateX(-100%);
+  transition: transform .3s ease-in-out, width .3s ease-in-out;
 }
 
 .main-content-container {
-    //margin-left: 300px;
-    height: 100%;
-    background-color: green;
-    transition: transform .3s ease-in-out, width .3s ease-in-out;
+  min-height: 100%;
+  transition: transform .3s ease-in-out, width .3s ease-in-out;
 }
 
 .main-content {
-    margin-top: -$top-navigation-bar-height;
-    padding-top: $top-navigation-bar-height;
-    height: 100%;
-    background-color: red;
+  min-height: calc(100vh - #{$top-navbar-height});
+}
+
+.top-navbar {
+  height: $top-navbar-height;
 }

@@ -1,6 +1,6 @@
 import './bootstrap';
 import Vue from 'vue'
-import { Card, Tabs, Dropdown } from 'bootstrap-vue/es/components';
+import { Navbar, Card, Tabs, Dropdown } from 'bootstrap-vue/es/components';
 import VueGoodTablePlugin from 'vue-good-table';
 import vSelect from 'vue-select/dist/vue-select';
 import Datepicker from 'vue2-datepicker';
@@ -17,6 +17,7 @@ Vue.use(Dropdown);
 Vue.use(vClickOutside);
 Vue.use(Card);
 Vue.use(Tabs);
+Vue.use(Navbar);
 Vue.use(VueGoodTablePlugin);
 Vue.component('v-select', vSelect);
 Vue.component('datepicker', Datepicker);

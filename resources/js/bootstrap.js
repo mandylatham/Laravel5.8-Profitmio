@@ -1,3 +1,10 @@
+document.addEventListener('DOMContentLoaded', function () {
+    console.log('ready');
+    console.log("document.querySelector('.js-toggle-sidebar-menu')", document.querySelector('.js-toggle-sidebar-menu'));
+    document.querySelector('.js-toggle-sidebar-menu').addEventListener('click', function () {
+        document.getElementById('app').classList.toggle('navbar-menu-open');
+    });
+});
 window.breakpoints = {
     isXs() {
         return document.documentElement.clientWidth < 576;
