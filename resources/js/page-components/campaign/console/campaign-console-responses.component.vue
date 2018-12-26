@@ -13,7 +13,7 @@
                     <div class="input-group-prepend">
                         <search-icon class="search-icon"></search-icon>
                     </div>
-                    <input type="text" class="form-control">
+                    <input type="text" class="form-control" v-model="searchText">
                 </div>
             </div>
         </div>
@@ -29,8 +29,14 @@
             <div class="col-12">
                 <!-- TODO: pass current `recipientId` to `showPanel` method -->
                 <pm-responsive-table :rows="rows" :columns="columns" :disable-folding="true"
-                                     v-on:row-clicked="showPanel(295)">
+                                     v-on:row-clicked="showPanel">
                 </pm-responsive-table>
+            </div>
+        </div>
+
+        <div class="row align-items-end no-gutters">
+            <div class="col-12">
+
             </div>
         </div>
 
@@ -44,11 +50,13 @@
 
     export default {
         mounted() {
-            //
+            this.getCurrentUser();
         },
         data() {
             return {
+                searchText: '',
                 currentRecipientId: null,
+                currentUser: [],
                 rows: this.recipients.data,
                 columns: [
                     {
@@ -76,18 +84,38 @@
             SearchIcon,
         },
         methods: {
-            showPanel: function (recipientId) {
-                this.currentRecipientId = recipientId;
+            showPanel: function (event) {
+                this.currentRecipientId = event.row.id;
                 const panel = this.$showPanel({
                     component: 'communication-side-panel',
                     cssClass: 'communication-side-panel',
                     width: '50%',
                     props: {
                         campaign: this.campaign,
-                        recipientId: this.currentRecipientId
+                        recipientId: this.currentRecipientId,
+                        currentUser: this.currentUser,
                     }
                 });
-            }
+            },
+            getCurrentUser: function () {
+                const vm = this;
+
+                axios.get('/current-user')
+                    .then(function (response) {
+                        vm.currentUser = response.data;
+                    })
+                    .catch(function (response) {
+                        console.log(response);
+                    });
+            },
+        },
+        computed: {
+            // filterTable() {
+            //     // let searchString = this.searchText;
+            //     return this.rows.filter((row) => {
+            //         row.name.indexOf(this.searchText) !== -1;
+            //     })
+            // }
         }
     }
 </script>

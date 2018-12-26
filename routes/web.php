@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 //region OUTSIDE API CALLS
 Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->name('pub-api.text-response-inbound')->middleware(null);
@@ -45,13 +47,13 @@ Route::get('/new-response-console', function () {
     return view('campaign.console');
 });
 
-// TODO: remove me
-Route::get('/test-get', function () {
-    return \App\Models\Recipient::all()->toJson();
-});
-
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
+
+    // TODO: move to better location
+    Route::get('/current-user', function (){
+        return Auth::user();
+    });
 
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
     Route::get('/', function () {
