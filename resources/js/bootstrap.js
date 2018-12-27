@@ -12,17 +12,21 @@ document.addEventListener('DOMContentLoaded', function () {
         }, timeout);
     });
 
-    document.querySelector('.js-toggle-side-menu').addEventListener('click', function () {
-        const app = document.getElementById('app');
-        // Move navbar-menu
-        if (app.classList.contains('side-menu-open')) {
-            collapseSideMenu();
-        } else {
-            app.classList.add('side-menu-open');
-        }
-    });
+    let toggleSideMenu = document.querySelector('.js-toggle-side-menu');
+    if (toggleSideMenu) {
+        toggleSideMenu.addEventListener('click', function () {
+            const app = document.getElementById('app');
+            // Move navbar-menu
+            if (app.classList.contains('side-menu-open')) {
+                collapseSideMenu();
+            } else {
+                app.classList.add('side-menu-open');
+            }
+        });
+    }
 
     function collapseSideMenu() {
+        const app = document.getElementById('app');
         app.classList.add('navbar-side-menu-fix');
         app.classList.remove('side-menu-open');
         setTimeout(() => {

@@ -24,6 +24,12 @@ Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm
 Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.restore');
 //endregion
 
+Route::group(['prefix' => 'new'], function () {
+    Route::get('campaign', function () {
+        return view('campaign.index');
+    });
+});
+
 Route::get('/layout', function () {
     return view('layouts.base');
 });

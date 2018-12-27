@@ -11,9 +11,11 @@
     <link href="{{ asset('css/new-app.css') }}" rel="stylesheet">
 </head>
 <body>
-    <div id="app" class="clearfix">
-        @component('layouts.sidebar')
-        @endcomponent
+    <div id="app" class="clearfix {{ $hasSidebar ? 'has-sidebar' : 'no-sidebar' }}">
+        @if (isset($hasSidebar) && $hasSidebar)
+            @component('layouts.sidebar')
+            @endcomponent
+        @endif
         <div class="main-content-container">
             @component('layouts.top-navbar')
             @endcomponent

@@ -48,39 +48,15 @@ Vue.component('list-campaign', require('./components/list-campaign/list-campaign
 Vue.component('list-company', require('./components/list-company/list-company.component'));
 Vue.component('wrapper', require('./components/wrapper/wrapper.component'));
 
-// Icons
-
-// Vue.filter('format', function (value, format) {
-//     return moment(value, 'YYYY-MM-DD').format(format);
-//
-// });
-
 // Main App
-new Vue({
-    el: '#app'
+var mainApp = new Vue({
+    el: '#app',
+    data: {
+        pageVariables: {
+        }
+    },
+    method: {}
 });
 
-// new Vue({
-//     el: '#campaign-list',
-//     data: {
-//         open: {}
-//     },
-//     methods: {
-//         toggle: function (idx) {
-//             Vue.set(this.open, idx, !this.open[idx]);
-//         }
-//     }
-// });
-
-// new Vue({
-//     el: '#wrapper-aside',
-//     components: {DatePick},
-//     methods: {
-//         parseDate: function (date, format) {
-//             return moment(date, format).toDate();
-//         }
-//     },
-//     data: {
-//         selectedDate: moment().format('YYYY-MM-DD')
-//     }
-// });
+// Pages
+import './campaign-index';
