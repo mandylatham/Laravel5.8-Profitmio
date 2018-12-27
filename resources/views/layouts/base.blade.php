@@ -7,8 +7,9 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Profit Miner</title>
 
-    <script src="{{ asset('js/new-app.js') }}" defer></script>
+    {{--<script src="{{ asset('js/new-app.js') }}" defer></script>--}}
     <link href="{{ asset('css/new-app.css') }}" rel="stylesheet">
+    @yield('head-script')
 </head>
 <body>
     <div id="app" class="clearfix {{ $hasSidebar ? 'has-sidebar' : 'no-sidebar' }}">
@@ -24,5 +25,6 @@
             </div>
         </div>
     </div>
+    @yield('body-script')
 </body>
 </html>

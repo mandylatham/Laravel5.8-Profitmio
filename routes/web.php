@@ -26,7 +26,13 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 
 Route::group(['prefix' => 'new'], function () {
     Route::get('campaign', function () {
-        return view('campaign.index');
+        return view('campaign.index', [
+            'companies' => [(object) [
+                'label' => 'asdfsaf',
+                'value' => 1
+                ]
+            ]
+        ]);
     });
 });
 

@@ -12,6 +12,7 @@ const mix = require('laravel-mix');
  */
 
 mix.js('resources/js/app.js', 'public/js/new-app.js')
+    .js('resources/js/campaign-index.js', 'public/js/campaign-index.js')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .sass('resources/sass/app.scss', 'public/css/new-app.css')
