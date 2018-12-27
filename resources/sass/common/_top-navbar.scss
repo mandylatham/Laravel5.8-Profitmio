@@ -71,27 +71,42 @@
       width: 40px;
     }
 
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(md) {
       position: static;
       width: auto;
       flex-flow: row;
-      background-color: transparent;
+      background: transparent;
+      display: flex;
+      flex-flow: row;
+      transform: none;
       .nav-item {
-        padding: 0;
         margin: 0;
         width: auto;
         flex-grow: 0;
+        padding: 0 10px;
       }
       a.nav-link {
         background-color: transparent;
-        color: #fff;
+        color: $brand-purple;
+        line-height: 1em;
         padding: 0;
         display: inline-flex;
         flex-flow: column;
-        font-size: .7rem;
-        height: 60px;
-        .svg {
-          height: 0.5rem;
+        font-size: .65rem;
+        height: $top-navbar-height;
+        align-items: center;
+        justify-content: center;
+        &.active, &:hover {
+          color: $brand-black;
+          background: transparent;
+        }
+        [class^="pm-font-"], [class*=" pm-font-"] {
+          font-size: .85rem;
+          width: auto;
+          margin-bottom: 5px;
+        }
+        .pm-font-companies-icon {
+          font-size: 0.9rem !important;
         }
       }
     }
