@@ -12,16 +12,11 @@
 </head>
 <body>
     <div id="app" class="clearfix">
-        <div class="sidebar-container">
-            <div class="sidebar">
-                @yield('sidebar')
-            </div>
-        </div>
+        @component('layouts.sidebar')
+        @endcomponent
         <div class="main-content-container">
-            <div class="top-navbar">
-                @component('layouts.top-navbar')
-                @endcomponent
-            </div>
+            @component('layouts.top-navbar')
+            @endcomponent
             <div class="main-content">
                 @yield('main-content')
             </div>

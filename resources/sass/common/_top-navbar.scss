@@ -4,6 +4,16 @@
   }
 }
 
+#app.navbar-side-menu-fix {
+  .navbar-menu {
+    transition: none;
+    transform: translateX(-200%);
+  }
+}
+.top-navbar {
+  height: $top-navbar-height;
+}
+
 .top-navigation-bar {
   background-color: #fff;
   width: 100%;
@@ -114,6 +124,7 @@
 
   .navbar-menu-extra {
     .profile {
+      flex-shrink: 0;
       img {
         width: 30px;
         height: 30px;

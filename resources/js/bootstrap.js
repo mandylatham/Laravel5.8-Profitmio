@@ -1,9 +1,34 @@
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('ready');
-    console.log("document.querySelector('.js-toggle-sidebar-menu')", document.querySelector('.js-toggle-sidebar-menu'));
-    document.querySelector('.js-toggle-sidebar-menu').addEventListener('click', function () {
-        document.getElementById('app').classList.toggle('navbar-menu-open');
+
+    document.querySelector('.js-toggle-navbar-menu').addEventListener('click', function () {
+        const app = document.getElementById('app');
+        let timeout = 0;
+        if (app.classList.contains('side-menu-open')) {
+            collapseSideMenu();
+            timeout = 300;
+        }
+        setTimeout(() => {
+            document.getElementById('app').classList.toggle('navbar-menu-open');
+        }, timeout);
     });
+
+    document.querySelector('.js-toggle-side-menu').addEventListener('click', function () {
+        const app = document.getElementById('app');
+        // Move navbar-menu
+        if (app.classList.contains('side-menu-open')) {
+            collapseSideMenu();
+        } else {
+            app.classList.add('side-menu-open');
+        }
+    });
+
+    function collapseSideMenu() {
+        app.classList.add('navbar-side-menu-fix');
+        app.classList.remove('side-menu-open');
+        setTimeout(() => {
+            app.classList.remove('navbar-side-menu-fix');
+        }, 300);
+    }
 });
 window.breakpoints = {
     isXs() {

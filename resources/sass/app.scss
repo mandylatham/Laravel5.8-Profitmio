@@ -1,5 +1,8 @@
+@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
+// Base Code
 @import "variables";
 @import "mixins";
+// Libraries
 // Bootstrap
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
@@ -17,17 +20,20 @@
 @import "~bootstrap/scss/dropdown";
 @import "~bootstrap/scss/nav";
 @import "~bootstrap/scss/navbar";
+// Bootstrap Vue
 @import "~bootstrap-vue/es/components/dropdown/dropdown.css";
 @import '~vue-good-table/dist/vue-good-table.css';
+// Custom Components
 @import './date-pick.scss';
-@import url('https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,700');
-@import "./event-calendar";
-@import "./pm-font";
-@import "./tabs";
-@import "./datepicker";
-@import "./pm-buttons";
+@import './event-calendar';
+@import './pm-font';
+@import './tabs';
+@import './datepicker';
+@import './pm-buttons';
+// Global Styles
 @import "./common/datatable";
 @import "./common/top-navbar";
+@import "./common/sidebar";
 
 .pm-form-group {
   margin-bottom: 2rem;
@@ -174,24 +180,15 @@ body {
   //}
 }
 
-.sidebar-container {
-  width: $sidebar-width;
-  height: 100%;
-  float: left;
-  position: absolute;
-  transform: translateX(-100%);
-  transition: transform .3s ease-in-out, width .3s ease-in-out;
-}
-
 .main-content-container {
   min-height: 100%;
-  transition: transform .3s ease-in-out, width .3s ease-in-out;
+  transition: margin .3s ease-in-out, transform .3s ease-in-out, width .3s ease-in-out;
+
+  @include media-breakpoint-up(xl) {
+    margin-left: $sidebar-width;
+  }
 }
 
 .main-content {
   min-height: calc(100vh - #{$top-navbar-height});
-}
-
-.top-navbar {
-  height: $top-navbar-height;
 }
