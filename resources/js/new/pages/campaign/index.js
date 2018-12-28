@@ -1,61 +1,25 @@
 import Vue from 'vue';
 import './../../common';
+import axios from 'axios';
+import {merge} from 'lodash';
 
 Vue.component('pm-responsive-table', require('./../../components/pm-responsive-table/pm-responsive-table'));
 
 window.app = new Vue({
     el: '#campaign-index',
     data: {
-        form: new Form({
-            company: '',
-            keywords: '',
-        }),
+        // form: new Form({
+        //     company: '',
+        //     keywords: '',
+        // }),
+        pagination: {
+            page: 2,
+            per_page: 15,
+            total: null
+        },
         pageVariables: {
             searchTerm: '',
-            rows: [
-                {
-                    id: 1,
-                    name: 'name',
-                    dealership: {
-                        name: 'Dealership'
-                    },
-                    agency: {
-                        name: 'Agency'
-                    },
-                    recipients_count: 1,
-                    phone_responses_count: 1,
-                    email_responses_count: 1,
-                    text_responses_count: 1
-                },
-                {
-                    id: 2,
-                    name: 'asdfasdfasdfasd',
-                    dealership: {
-                        name: 'Dealersfasdfasdfasdfhip'
-                    },
-                    agency: {
-                        name: 'asdfasdf'
-                    },
-                    recipients_count: 123,
-                    phone_responses_count: 12,
-                    email_responses_count: 123,
-                    text_responses_count: 12321
-                },
-                {
-                    id: 1,
-                    name: 'name',
-                    dealership: {
-                        name: 'Dealership'
-                    },
-                    agency: {
-                        name: 'Agency'
-                    },
-                    recipients_count: 1,
-                    phone_responses_count: 1,
-                    email_responses_count: 1,
-                    text_responses_count: 1
-                }
-            ],
+            campaigns: [],
             columns: [
                 {
                     field: 'name',
@@ -88,6 +52,9 @@ window.app = new Vue({
             formUrl: ''
         }
     },
+    mounted() {
+        this.fetchData(this.pagination);
+    },
     methods: {
         addPageVariables(name, value) {
             this.pageVariables = Object.assign({}, this.pageVariables, {[name]: value})
@@ -95,8 +62,28 @@ window.app = new Vue({
         getPageVariable(name) {
             return this.pageVariables[name];
         },
+        fetchData(params) {
+            axios
+                .get(this.pageVariables.formUrl, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    data: null,
+                    params: params
+                })
+                .then(response => {
+                    this.addPageVariables('campaigns', response.data.data);
+                    this.pagination = {
+                        page: response.data.current_page,
+                        per_page: response.data.per_page,
+                        total: response.data.total
+                    };
+                })
+                .catch(error => this.$toastr.e(error.response.data));
+        },
         onSubmit() {
-            this.form.post(this.pageVariables.formUrl);
+            this.fetchData(merge({current_page: this.pagination.current_page + 1}, this.pagination));
+            // this.form.post(this.pageVariables.formUrl);
         }
     }
 });

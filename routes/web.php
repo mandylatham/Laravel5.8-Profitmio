@@ -23,18 +23,18 @@ Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail'
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.restore');
 //endregion
-
-Route::group(['prefix' => 'new'], function () {
-    Route::get('campaign', function () {
-        return view('campaign.index', [
-            'companies' => [(object) [
-                'label' => 'asdfsaf',
-                'value' => 1
-                ]
-            ]
-        ]);
-    });
-});
+//
+//Route::group(['prefix' => 'new'], function () {
+//    Route::get('campaign', function () {
+//        return view('campaign.index', [
+//            'companies' => [(object) [
+//                'label' => 'asdfsaf',
+//                'value' => 1
+//                ]
+//            ]
+//        ]);
+//    });
+//});
 
 Route::get('/layout', function () {
     return view('layouts.base');

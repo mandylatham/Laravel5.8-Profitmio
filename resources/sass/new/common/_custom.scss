@@ -13,7 +13,7 @@ body {
 
 #app {
   height: 100%;
-  overflow: hidden;
+  overflow-x: hidden;
 
   &.no-sidebar {
     .main-content-container {

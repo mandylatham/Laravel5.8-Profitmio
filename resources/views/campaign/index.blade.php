@@ -10,27 +10,28 @@
     <script src="{{ asset('js/campaign-index.js') }}"></script>
     <script>
         window.app.addPageVariables('companies', []);
-        window.app.addPageVariables('campaigns', {!! $campaigns !!});
+        window.app.addPageVariables('formUrl', "{{ route('campaign.index') }}");
     </script>
 @endsection
 
 @section('main-content')
     <div class="container-fluid" id="campaign-index">
-        <div class="row align-items-end no-gutters">
-            <form @onBlur="onSubmit">
+        <form @onBlur="onSubmit">
+            <div class="row align-items-end no-gutters mb-md-3">
                 <div class="col-12 col-sm-5 col-lg-3">
                     <div class="form-group filter--form-group">
-                        <p class="text-danger" v-show="form.errors.has(company)">@{{ form.errors.get(company) }}</p>
                         <label>Filter By Company</label>
-                        <v-select :options="pageVariables.companies" v-on:select="search()" class="filter--v-select"></v-select>
+                        <v-select :options="pageVariables.companies" class="filter--v-select"></v-select>
                     </div>
                 </div>
                 <div class="col-none col-sm-2 col-lg-6"></div>
                 <div class="col-12 col-sm-5 col-lg-3">
-                    <input type="text" v-model="pageVariables.searchTerm" v-on:key-press.enter="search()" class="form-control filter--search-box" aria-describedby="search"
+                    <input type="text" v-model="pageVariables.searchTerm" class="form-control filter--search-box" aria-describedby="search"
                            placeholder="Search">
                 </div>
-            </form>
+            </div>
+        </form>
+        <div class="row align-items-end no-gutters">
             <div class="col-12">
                 <pm-responsive-table :rows="pageVariables.campaigns" :columns="pageVariables.columns">
                     <template slot="name" slot-scope="{row}">

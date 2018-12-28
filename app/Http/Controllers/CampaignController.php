@@ -48,7 +48,7 @@ class CampaignController extends Controller
         if ($request->isJson()) {
             return $campaigns;
         } else {
-            return view('campaigns.index', ['campaigns' => $campaigns]);
+            return view('campaign.index', ['campaigns' => $campaigns]);
         }
     }
 
