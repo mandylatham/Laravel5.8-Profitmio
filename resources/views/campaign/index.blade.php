@@ -9,8 +9,7 @@
 @section('body-script')
     <script src="{{ asset('js/campaign-index.js') }}"></script>
     <script>
-        window.app.addPageVariables('companies', []);
-        window.app.addPageVariables('formUrl', "{{ route('campaign.index') }}");
+        window.app.setFormUrl("{{ route('campaign.index') }}");
     </script>
 @endsection
 
@@ -20,7 +19,7 @@
             <div class="col-12 col-sm-5 col-lg-3">
                 <div class="form-group filter--form-group">
                     <label>Filter By Company</label>
-                    <v-select :options="pageVariables.companies" v-model="filters.companySelected" class="filter--v-select" @input="onPageChanged"></v-select>
+                    <v-select :options="companies" v-model="filters.companySelected" class="filter--v-select" @input="onPageChanged"></v-select>
                 </div>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
@@ -31,7 +30,7 @@
         </div>
         <div class="row align-items-end no-gutters">
             <div class="col-12">
-                <pm-responsive-table :rows="pageVariables.campaigns" :columns="pageVariables.columns" :pagination="pagination" :is-loading="isLoading" @page-changed="onPageChanged">
+                <pm-responsive-table :rows="campaigns" :columns="columnData" :pagination="pagination" :is-loading="isLoading" @page-changed="onPageChanged">
                     <template slot="name" slot-scope="{row}">
                         @{{ row.name }} <span class="font-weight-bold ml-1">(id: @{{ row.id }})</span>
                     </template>
