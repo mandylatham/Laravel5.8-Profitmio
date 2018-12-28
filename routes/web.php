@@ -136,6 +136,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region CAMPAIGN
     Route::get('/campaigns', 'CampaignController@index')->name('campaign.index')->middleware('can:view-campaigns');
+    Route::get('/campaigns/all', 'CampaignController@getAll')->name('campaign.get-all')->middleware('can:view-campaigns');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');

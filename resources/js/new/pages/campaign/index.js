@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueToastr2 from 'vue-toastr-2'
 import './../../common';
+import Form from './../../common/form';
 import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
 import {merge} from 'lodash';
@@ -13,6 +14,8 @@ Vue.component('spinner-icon', require('./../../components/spinner-icon/spinner-i
 window.app = new Vue({
     el: '#campaign-index',
     data: {
+        searchFormUrl: null,
+        searchForm: null,
         isLoading: true,
         pagination: {
             page: 1,
@@ -21,6 +24,8 @@ window.app = new Vue({
         },
         campaigns: [],
         companies: [],
+        searchTerm: '',
+        companySelected: null,
         columnData: [
             {
                 field: 'name',
@@ -50,41 +55,25 @@ window.app = new Vue({
                 classes: ['options-col']
             }
         ],
-        formUrl: '',
-        filters: {
-            searchTerm: '',
-            companySelected: null
-        }
     },
     mounted() {
+        this.searchFormUrl = window.searchFormUrl;
+        console.log(window.searchFormUrl);
+
+        this.searchForm = new Form({
+            company: this.companySelected,
+            q: this.searchTerm,
+            page: this.pagination.page,
+            per_page: this.pagination.per_page
+        });
+
         this.fetchData();
     },
     methods: {
-        setFormUrl(formUrl) {
-            this.formUrl = formUrl;
-        },
-
-        fetchData(params = {}) {
-            const p = {
-                page: this.pagination.page,
-                per_page: this.pagination.per_page,
-                ...params
-            };
-            if (this.filters.searchTerm) {
-                p.q = this.filters.searchTerm;
-            }
-            if (this.filters.companySelected) {
-                p.company = this.filters.companySelected;
-            }
+        fetchData() {
             this.isLoading = true;
-            axios
-                .get(this.formUrl, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    data: null,
-                    params: p
-                })
+            console.log(this.searchFormUrl);
+            this.searchForm.get(this.searchFormUrl)
                 .then(response => {
                     this.campaigns = response.data.data;
                     this.pagination = {
@@ -101,6 +90,7 @@ window.app = new Vue({
         },
 
         onPageChanged({page}) {
+            this.page = page;
             return this.fetchData(merge({page}));
         }
     }

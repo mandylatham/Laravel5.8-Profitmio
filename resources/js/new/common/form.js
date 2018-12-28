@@ -61,7 +61,6 @@ export default class Form {
     }
 
     onSuccess(data) {
-        this.reset();
     }
 
     onFail(errors) {

@@ -28,10 +28,22 @@ class CampaignController extends Controller
 
     public function index(Request $request)
     {
+        return view('campaign.index');
+    }
+
+    public function getAll(Request $request)
+    {
         $campaigns = Campaign::query()
             ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at');
+
+        if ($request->has('company')) {
+            $campaigns->where(function ($query) use ($request) {
+                $query->orWhere('agency_id', $request->get('company'));
+                $query->orWhere('dealership_id', $request->get('company'));
+            });
+        }
 
         if ($request->has('q')) {
             $likeQ = '%' . $request->get('q') . '%';
@@ -45,11 +57,7 @@ class CampaignController extends Controller
         $campaigns = $campaigns->orderBy('campaigns.id', 'desc')
             ->paginate(15);
 
-        if ($request->isJson()) {
-            return $campaigns;
-        } else {
-            return view('campaign.index', ['campaigns' => $campaigns]);
-        }
+        return $campaigns;
     }
 
     public function getList(Request $request)
