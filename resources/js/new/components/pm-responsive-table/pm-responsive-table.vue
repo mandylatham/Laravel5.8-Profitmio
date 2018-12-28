@@ -1,6 +1,12 @@
 <template>
     <div class="pmt-container">
         <div class="pmt">
+            <div class="pmt-spinner" v-if="isLoading">
+                <spinner-icon></spinner-icon>
+            </div>
+            <div class="no-items-row" v-if="rows.length === 0">
+                No Items
+            </div>
             <div class="pmt-row" :class="{'open': row.open}" v-for="(row, rowIndex) in rows">
                 <div class="pmt-col" @click="toggleRow(row, column)" :class="classesForCol(column)" v-for="column in columns">
                     <span v-if="column.html" v-html="get(row, column.field)"></span>
@@ -12,15 +18,15 @@
         </div>
         <div class="pmt-pagination">
             <div class="paginator-content">
-                <a class="paginator-left">
+                <a class="paginator-left" href="javascript:;" @click="goBack">
                     <chevron-left-icon></chevron-left-icon>
                 </a>
                 <div class="paginator-input">
-                    <input type="text" v-model="pagination.page" class="form-control" @keyup.enter="$emit('pageChanged', pagination.page)">
+                    <input type="text" v-model="pagination.page" class="form-control" @keyup.enter="changePage">
                     <span>of {{ totalPages }}</span>
                 </div>
-                <a class="paginator-right">
-                    <chevron-left-icon></chevron-left-icon>
+                <a class="paginator-right" href="javascript:;" @click="goUp">
+                    <chevron-right-icon></chevron-right-icon>
                 </a>
             </div>
         </div>
@@ -34,6 +40,11 @@
 
     export default {
         props: {
+            isLoading: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
             rows: {
                 type: Array,
                 required: true,
@@ -63,7 +74,25 @@
             }
         },
         methods: {
+            changePage: function () {
+                if (this.pagination.page < 1 || this.pagination.page > this.totalPages) {
+                    return;
+                }
+                this.$emit('page-changed', {page: this.pagination.page})
+            },
+            goBack: function () {
+                if (this.pagination.page <= 1) {
+                    return;
+                }
+                this.$emit('page-changed', {page: this.pagination.page - 1});
+            },
             get,
+            goUp: function () {
+                if (this.pagination.page >= this.totalPages) {
+                    return;
+                }
+                this.$emit('page-changed', {page: this.pagination.page + 1});
+            },
             classesForCol: function (col) {
                 const classes = [];
                 if (col.is_manager) {

@@ -20,18 +20,18 @@
             <div class="col-12 col-sm-5 col-lg-3">
                 <div class="form-group filter--form-group">
                     <label>Filter By Company</label>
-                    <v-select :options="pageVariables.companies" v-model="filters.companySelected" class="filter--v-select"></v-select>
+                    <v-select :options="pageVariables.companies" v-model="filters.companySelected" class="filter--v-select" @input="onPageChanged"></v-select>
                 </div>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
             <div class="col-12 col-sm-5 col-lg-3">
                 <input type="text" v-model="filters.searchTerm" class="form-control filter--search-box" aria-describedby="search"
-                       placeholder="Search" @keyup.enter="fetchMoreData()">
+                       placeholder="Search" @keyup.enter="fetchData()">
             </div>
         </div>
         <div class="row align-items-end no-gutters">
             <div class="col-12">
-                <pm-responsive-table :rows="pageVariables.campaigns" :columns="pageVariables.columns" :pagination="pagination">
+                <pm-responsive-table :rows="pageVariables.campaigns" :columns="pageVariables.columns" :pagination="pagination" :is-loading="isLoading" @page-changed="onPageChanged">
                     <template slot="name" slot-scope="{row}">
                         @{{ row.name }} <span class="font-weight-bold ml-1">(id: @{{ row.id }})</span>
                     </template>

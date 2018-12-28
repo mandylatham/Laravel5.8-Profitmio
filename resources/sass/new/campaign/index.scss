@@ -1,4 +1,5 @@
 @import './../common/index';
+@import './../components/spinner-icon';
 
 #campaign-index {
     @include media-breakpoint-up(lg) {

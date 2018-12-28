@@ -4,10 +4,12 @@ import axios from 'axios';
 import {merge} from 'lodash';
 
 Vue.component('pm-responsive-table', require('./../../components/pm-responsive-table/pm-responsive-table'));
+Vue.component('spinner-icon', require('./../../components/spinner-icon/spinner-icon'));
 
 window.app = new Vue({
     el: '#campaign-index',
     data: {
+        isLoading: true,
         pagination: {
             page: 1,
             per_page: 15,
@@ -52,7 +54,7 @@ window.app = new Vue({
         }
     },
     mounted() {
-        this.fetchData(this.pagination);
+        this.fetchData();
     },
     methods: {
         addPageVariables(name, value) {
@@ -61,14 +63,19 @@ window.app = new Vue({
         getPageVariable(name) {
             return this.pageVariables[name];
         },
-        fetchData(params) {
-            const p = {...params};
+        fetchData(params = {}) {
+            const p = {
+                page: this.pagination.page,
+                per_page: this.pagination.per_page,
+                ...params
+            };
             if (this.filters.searchTerm) {
                 p.q = this.filters.searchTerm;
             }
             if (this.filters.companySelected) {
                 p.company = this.filters.companySelected;
             }
+            this.isLoading = true;
             axios
                 .get(this.pageVariables.formUrl, {
                     headers: {
@@ -84,11 +91,12 @@ window.app = new Vue({
                         per_page: response.data.per_page,
                         total: response.data.total
                     };
+                    this.isLoading = false;
                 })
                 .catch(error => this.$toastr.e(error.response.data));
         },
-        fetchMoreData() {
-            return this.fetchData(merge({page: this.pagination.page + 1}, this.pagination));
+        onPageChanged({page}) {
+            return this.fetchData(merge({page}));
         }
     }
 });
