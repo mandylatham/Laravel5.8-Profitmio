@@ -1,5 +1,5 @@
 import ErrorBag from './error-bag';
-import Axios from 'axios';
+import axios from 'axios';
 
 export default class Form {
     /**
@@ -46,7 +46,7 @@ export default class Form {
 
     submit(method, url) {
         return new Promise((resolve, reject) =>  {
-            Axios[method](url, this.data)
+            axios[method](url, this.data)
                 .then(response => {
                     this.onSuccess(response.data);
 

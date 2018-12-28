@@ -8,17 +8,12 @@ Vue.component('pm-responsive-table', require('./../../components/pm-responsive-t
 window.app = new Vue({
     el: '#campaign-index',
     data: {
-        // form: new Form({
-        //     company: '',
-        //     keywords: '',
-        // }),
         pagination: {
-            page: 2,
+            page: 1,
             per_page: 15,
             total: null
         },
         pageVariables: {
-            searchTerm: '',
             campaigns: [],
             columns: [
                 {
@@ -50,6 +45,10 @@ window.app = new Vue({
                 }
             ],
             formUrl: ''
+        },
+        filters: {
+            searchTerm: '',
+            companySelected: null
         }
     },
     mounted() {
@@ -63,13 +62,20 @@ window.app = new Vue({
             return this.pageVariables[name];
         },
         fetchData(params) {
+            const p = {...params};
+            if (this.filters.searchTerm) {
+                p.q = this.filters.searchTerm;
+            }
+            if (this.filters.companySelected) {
+                p.company = this.filters.companySelected;
+            }
             axios
                 .get(this.pageVariables.formUrl, {
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     data: null,
-                    params: params
+                    params: p
                 })
                 .then(response => {
                     this.addPageVariables('campaigns', response.data.data);
@@ -81,9 +87,8 @@ window.app = new Vue({
                 })
                 .catch(error => this.$toastr.e(error.response.data));
         },
-        onSubmit() {
-            this.fetchData(merge({current_page: this.pagination.current_page + 1}, this.pagination));
-            // this.form.post(this.pageVariables.formUrl);
+        fetchMoreData() {
+            return this.fetchData(merge({page: this.pagination.page + 1}, this.pagination));
         }
     }
 });

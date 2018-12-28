@@ -1,6 +1,8 @@
 import Vue from 'vue';
-import {DownloadIcon, MenuIcon, MoreVerticalIcon, PlusIcon, TrashIcon, XIcon} from 'vue-feather-icons';
+import {ChevronLeftIcon, ChevronRightIcon, DownloadIcon, MenuIcon, MoreVerticalIcon, PlusIcon, TrashIcon, XIcon} from 'vue-feather-icons';
 
+Vue.component('chevron-left-icon', ChevronLeftIcon);
+Vue.component('chevron-right-icon', ChevronRightIcon);
 Vue.component('download-icon', DownloadIcon);
 Vue.component('menu-icon', MenuIcon);
 Vue.component('more-vertical-icon', MoreVerticalIcon);

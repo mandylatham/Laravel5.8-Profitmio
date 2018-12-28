@@ -16,24 +16,22 @@
 
 @section('main-content')
     <div class="container-fluid" id="campaign-index">
-        <form @onBlur="onSubmit">
-            <div class="row align-items-end no-gutters mb-md-3">
-                <div class="col-12 col-sm-5 col-lg-3">
-                    <div class="form-group filter--form-group">
-                        <label>Filter By Company</label>
-                        <v-select :options="pageVariables.companies" class="filter--v-select"></v-select>
-                    </div>
-                </div>
-                <div class="col-none col-sm-2 col-lg-6"></div>
-                <div class="col-12 col-sm-5 col-lg-3">
-                    <input type="text" v-model="pageVariables.searchTerm" class="form-control filter--search-box" aria-describedby="search"
-                           placeholder="Search">
+        <div class="row align-items-end no-gutters mb-md-3">
+            <div class="col-12 col-sm-5 col-lg-3">
+                <div class="form-group filter--form-group">
+                    <label>Filter By Company</label>
+                    <v-select :options="pageVariables.companies" v-model="filters.companySelected" class="filter--v-select"></v-select>
                 </div>
             </div>
-        </form>
+            <div class="col-none col-sm-2 col-lg-6"></div>
+            <div class="col-12 col-sm-5 col-lg-3">
+                <input type="text" v-model="filters.searchTerm" class="form-control filter--search-box" aria-describedby="search"
+                       placeholder="Search" @keyup.enter="fetchMoreData()">
+            </div>
+        </div>
         <div class="row align-items-end no-gutters">
             <div class="col-12">
-                <pm-responsive-table :rows="pageVariables.campaigns" :columns="pageVariables.columns">
+                <pm-responsive-table :rows="pageVariables.campaigns" :columns="pageVariables.columns" :pagination="pagination">
                     <template slot="name" slot-scope="{row}">
                         @{{ row.name }} <span class="font-weight-bold ml-1">(id: @{{ row.id }})</span>
                     </template>
