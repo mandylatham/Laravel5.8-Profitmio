@@ -1,5 +1,4 @@
 const mix = require('laravel-mix');
-
 /*
  |--------------------------------------------------------------------------
  | Mix Asset Management
@@ -11,9 +10,9 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js/new-app.js')
-    .js('resources/js/campaign-index.js', 'public/js/campaign-index.js')
+mix.js('resources/js/new/pages/campaign/index.js', 'public/js/campaign-index.js')
+    .sass('resources/sass/new/campaign/index.scss', 'public/css/campaign-index.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
-    .sass('resources/sass/app.scss', 'public/css/new-app.css')
+    // .sass('resources/sass/app.scss', 'public/css/new-app.css')
     .copyDirectory('resources/img', 'public/img');

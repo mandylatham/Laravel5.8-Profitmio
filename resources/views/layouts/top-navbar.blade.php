@@ -1,4 +1,4 @@
-<div class="top-navbar">
+<div class="top-navbar" id="top-navbar-menu">
     <b-navbar toggleable="sm" class="top-navigation-bar justify-content-space-between justify-content-sm-start">
 
         <b-navbar-toggle target="sidebar-menu" class="sidebar-toggle js-toggle-navbar-menu d-inline-flex d-md-none">

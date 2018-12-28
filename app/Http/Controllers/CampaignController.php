@@ -45,7 +45,11 @@ class CampaignController extends Controller
         $campaigns = $campaigns->orderBy('campaigns.id', 'desc')
             ->paginate(15);
 
-        return view('campaigns.index', ['campaigns' => $campaigns]);
+        if ($request->isJson()) {
+            return $campaigns;
+        } else {
+            return view('campaigns.index', ['campaigns' => $campaigns]);
+        }
     }
 
     public function getList(Request $request)
