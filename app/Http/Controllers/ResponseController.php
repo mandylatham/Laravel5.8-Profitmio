@@ -8,7 +8,7 @@ use App\Classes\MailgunService;
 use App\Models\Recipient;
 use App\Models\Response;
 use App\Models\ResponseThread;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use League\Csv\Writer;
 
@@ -184,8 +184,6 @@ class ResponseController extends Controller
 
         $response = new ResponseThread($campaign, $recipient);
 
-        dd($response);
-
         return $response->getForm();
     }
 
@@ -203,18 +201,28 @@ class ResponseController extends Controller
             ->get();
 
         $threads = collect([
-            'email' => Response::where('campaign_id', $campaign->id)
+            'email'     => Response::where('campaign_id', $campaign->id)
                 ->where('recipient_id', $recipient->id)
                 ->where('type', 'email')
                 ->get(),
-            'text'  => Response::where('campaign_id', $campaign->id)
+            'text'      => Response::where('campaign_id', $campaign->id)
                 ->where('recipient_id', $recipient->id)
                 ->where('type', 'text')
                 ->get(),
-            'phone' => Response::where('campaign_id', $campaign->id)
+            'phone'     => Response::where('campaign_id', $campaign->id)
                 ->where('recipient_id', $recipient->id)
                 ->where('type', 'phone')
                 ->get(),
+            'emailDrop' => $recipient->drops()
+                ->whereType('email')
+                ->whereStatus('Completed')
+                ->orderBy('send_at', 'desc')
+                ->first(),
+            'textDrop'  => $recipient->drops()
+                ->whereType('sms')
+                ->whereStatus('Completed')
+                ->orderBy('send_at', 'desc')
+                ->first(),
         ]);
 
         return [
@@ -223,6 +231,9 @@ class ResponseController extends Controller
             'appointments' => $appointments,
             'responses'    => $responses,
             'threads'      => $threads,
+            'rest'         => [
+                'appointmentTimes' => get_times('', '+15 minutes', '<option selected="selected">Appt Time</option>'),
+            ],
         ];
     }
 

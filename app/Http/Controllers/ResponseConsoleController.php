@@ -10,11 +10,11 @@ use App\Models\EmailLog;
 use App\Models\PhoneNumber;
 use App\Models\Recipient;
 use App\Models\Response;
-use DB;
+use App\Services\TwilioClient;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Log;
-use Twilio;
+use Illuminate\Support\Facades\Log;
 
 class ResponseConsoleController extends Controller
 {
@@ -440,6 +440,7 @@ class ResponseConsoleController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return mixed
+     * @throws \Twilio\Exceptions\ConfigurationException
      */
     public function smsReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
@@ -447,7 +448,7 @@ class ResponseConsoleController extends Controller
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
-        $reply = Twilio::sendSms($campaign->phone->phone_number, $recipient->phone, $request->get('message'));
+        $reply = (new TwilioClient)->sendSms($campaign->phone->phone_number, $recipient->phone, $request->get('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'text')
@@ -525,10 +526,12 @@ class ResponseConsoleController extends Controller
     /**
      * @param Request $request
      * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Twilio\Exceptions\ConfigurationException
+     * @throws \Twilio\Exceptions\TwilioException
      */
     public function inboundPhoneStatus(Request $request)
     {
-        $recording = Twilio::getRecordingFromSid($request->get('CallSid'));
+        $recording = (new TwilioClient)->getRecordingFromSid($request->get('CallSid'));
         if (empty($recording)) {
             return response('<Response>No recordings found, none processed</Response>')
                 ->header('Content-Type', 'text/xml');
@@ -663,11 +666,12 @@ class ResponseConsoleController extends Controller
      * @param                          $campaign
      *
      * @return \App\Models\Recipient
+     * @throws \Twilio\Exceptions\ConfigurationException
      */
     protected function createRecipientFromSender(Request $request, $campaign)
     {
         # Lookup caller's "caller-name" from Twilio
-        $sender = (object)Twilio::getNameFromPhoneNumber($request->get('From'));
+        $sender = (object)(new TwilioClient)->getNameFromPhoneNumber($request->get('From'));
 
         # Create a new Recipient and add it to the campaign for the person
         $recipient = new Recipient([

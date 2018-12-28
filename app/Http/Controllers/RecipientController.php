@@ -150,11 +150,13 @@ class RecipientController extends Controller
             }
         }
     }
+
     /**
-     * @param \App\Models\Recipient           $recipient
+     * @param \App\Models\Recipient    $recipient
      * @param \Illuminate\Http\Request $request
      *
      * @return string
+     * @throws \Exception
      */
     public function addLabel(Recipient $recipient, Request $request)
     {
@@ -373,6 +375,10 @@ class RecipientController extends Controller
         return json_encode(['itemsCount' => $count, 'data' => $recipients->get()]);
     }
 
+    /**
+     * @param Campaign $campaign
+     * @param Request  $request
+     */
     public function deletePartialRecipientsByField(Campaign $campaign, Request $request)
     {
         $valid_fields = ['name', 'email', 'phone', 'year', 'make', 'model', 'vin', 'address1', 'city', 'state', 'zip'];
@@ -406,7 +412,8 @@ class RecipientController extends Controller
 
     /**
      * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Campaign                                                   $campaign
+     * @param \App\Models\Campaign     $campaign
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function delete(Request $request, Campaign $campaign)
     {
@@ -492,6 +499,9 @@ class RecipientController extends Controller
         $recipient->save();
     }
 
+    /**
+     * @param Campaign $campaign
+     */
     public function download(Campaign $campaign)
     {
         $recipients = Recipient::where('campaign_id', $campaign->id)->get()->toArray();
@@ -602,6 +612,12 @@ class RecipientController extends Controller
         return $filename;
     }
 
+    /**
+     * @param Request       $request
+     * @param Campaign      $campaign
+     * @param RecipientList $list
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function deleteRecipientList(Request $request, Campaign $campaign, RecipientList $list)
     {
         if ($list->campaign_id != $campaign->id) {
@@ -633,6 +649,11 @@ class RecipientController extends Controller
         return redirect()->back();
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function createRecipientList(Request $request, Campaign $campaign)
     {
         try {
@@ -765,6 +786,10 @@ class RecipientController extends Controller
         }
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     */
     public function finishUpload(Request $request, Campaign $campaign)
     {
         $upload_id = substr(sha1($request->upload_identifier), 0, 63);
@@ -781,6 +806,10 @@ class RecipientController extends Controller
         }
     }
 
+    /**
+     * @param Campaign $campaign
+     * @return \Illuminate\Http\RedirectResponse
+     */
     public function deleteAll(Campaign $campaign)
     {
         Recipient::where('campaign_id', $campaign->id)->delete();
@@ -793,6 +822,11 @@ class RecipientController extends Controller
         abort('400', 'Cannot show partial recipients by field without a field specified');
     }
 
+    /**
+     * @param $label
+     * @return mixed
+     * @throws \Exception
+     */
     private function getLabelText($label)
     {
         $labels = [

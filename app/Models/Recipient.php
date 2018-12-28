@@ -2,7 +2,8 @@
 
 namespace App\Models;
 
-use Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -135,7 +136,7 @@ class Recipient extends Model
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
+                DB::select("
                     select distinct(recipient_id) from responses where campaign_id = {$campaignId}
                 ")
             )
@@ -146,7 +147,7 @@ class Recipient extends Model
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
+                DB::select("
                     select recipient_id from responses where id in (
                     select max(id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
                     ) and incoming = 1 and `read` = 0
@@ -159,7 +160,7 @@ class Recipient extends Model
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
+                DB::select("
                     select recipient_id from responses where id in (
                     select max(id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
                     ) and incoming = 0
