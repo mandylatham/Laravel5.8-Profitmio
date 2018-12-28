@@ -58,7 +58,6 @@ window.app = new Vue({
     },
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
-        console.log(window.searchFormUrl);
 
         this.searchForm = new Form({
             company: this.companySelected,
@@ -74,12 +73,12 @@ window.app = new Vue({
             this.isLoading = true;
             console.log(this.searchFormUrl);
             this.searchForm.get(this.searchFormUrl)
-                .then(response => {
-                    this.campaigns = response.data.data;
+                .then(data => {
+                    this.campaigns = data.data;
                     this.pagination = {
-                        page: response.data.current_page,
-                        per_page: response.data.per_page,
-                        total: response.data.total
+                        page: data.current_page,
+                        per_page: data.per_page,
+                        total: data.total
                     };
                     this.isLoading = false;
                 })
