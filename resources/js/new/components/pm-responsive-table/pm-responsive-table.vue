@@ -9,10 +9,8 @@
             </div>
             <div class="pmt-row" :class="{'open': row.open}" v-for="(row, rowIndex) in rows">
                 <div class="pmt-col" @click="toggleRow(row, column)" :class="classesForCol(column)" v-for="column in columns">
-                    <span v-if="column.html" v-html="get(row, column.field)"></span>
-                    <slot :name="column.field" :row="row" v-if="!column.html">
-                        {{ get(row, column.field) }}
-                    </slot>
+                    {{ column.field ? get(row, column.field) : '' }}
+                    <slot :name="column.slot" :row="row" v-if="column.slot"></slot>
                 </div>
             </div>
         </div>
@@ -57,6 +55,15 @@
                         page: 1,
                         per_page: 15,
                         total: 15
+                    };
+                }
+            },
+            options: {
+                type: Object,
+                required: false,
+                default: function () {
+                    return {
+                        breakMobile: 'lg'
                     };
                 }
             },

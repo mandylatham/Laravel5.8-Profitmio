@@ -13,85 +13,115 @@ Vue.component('spinner-icon', require('./../../components/spinner-icon/spinner-i
 
 window.app = new Vue({
     el: '#campaign-index',
+    computed: {
+        pagination: function () {
+            return {
+                page: this.searchForm.page,
+                per_page: this.searchForm.per_page,
+                total: this.total
+            };
+        }
+    },
     data: {
         searchFormUrl: null,
-        searchForm: null,
-        isLoading: true,
-        pagination: {
+        searchForm: new Form({
+            company: null,
+            q: null,
             page: 1,
             per_page: 15,
-            total: null
-        },
+        }),
+        isLoading: true,
+        total: null,
         campaigns: [],
         companies: [],
         searchTerm: '',
         companySelected: null,
         columnData: [
             {
-                field: 'name',
+                slot: 'name',
                 is_manager: true,
-                classes: ['name-col']
+                classes: ['name-col'],
+                widths: {
+                    'lg': '100px'
+                }
             }, {
                 field: 'dealership.name',
-                classes: ['dealership-col']
+                classes: ['dealership-col'],
+                widths: {
+                    'lg': '100px'
+                }
             }, {
                 field: 'agency.name',
-                classes: ['agency-col']
+                classes: ['agency-col'],
+                widths: {
+                    'lg': '100px'
+                }
             }, {
-                field: 'recipients_count',
-                classes: ['recipients-col']
+                slot: 'recipients_count',
+                classes: ['recipients-col'],
+                widths: {
+                    'lg': '100px'
+                }
             }, {
-                field: 'phone_responses_count',
-                classes: ['phone-responses-col']
+                slot: 'phone_responses_count',
+                classes: ['phone-responses-col'],
+                widths: {
+                    'lg': '100px'
+                }
             }, {
-                field: 'email_responses_count',
-                classes: ['email-responses-col']
+                slot: 'email_responses_count',
+                classes: ['email-responses-col'],
+                widths: {
+                    'lg': '100px'
+                }
             }, {
-                field: 'text_responses_count',
-                classes: ['text-responses-col']
+                slot: 'text_responses_count',
+                classes: ['text-responses-col'],
+                widths: {
+                    'lg': '100px'
+                }
             }, {
-                field: 'options',
+                slot: 'options',
                 is_manager_footer: true,
-                classes: ['options-col']
+                classes: ['options-col'],
+                widths: {
+                    'lg': '100px'
+                }
             }
         ],
+        tableOptions: {
+            mobile: 'lg'
+        },
+        formUrl: '',
+        filters: {
+            searchTerm: '',
+            companySelected: null
+        }
     },
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
-        console.log(window.searchFormUrl);
-
-        this.searchForm = new Form({
-            company: this.companySelected,
-            q: this.searchTerm,
-            page: this.pagination.page,
-            per_page: this.pagination.per_page
-        });
 
         this.fetchData();
     },
     methods: {
         fetchData() {
             this.isLoading = true;
-            console.log(this.searchFormUrl);
             this.searchForm.get(this.searchFormUrl)
                 .then(response => {
-                    this.campaigns = response.data.data;
-                    this.pagination = {
-                        page: response.data.current_page,
-                        per_page: response.data.per_page,
-                        total: response.data.total
-                    };
+                    this.campaigns = response.data;
+                    this.searchForm.page = response.current_page;
+                    this.searchForm.per_page = response.per_page;
+                    this.total= response.total;
                     this.isLoading = false;
                 })
                 .catch(error => {
-                    console.log(error);
                     this.$toastr.error("Unable to get campaigns");
                 });
         },
 
         onPageChanged({page}) {
-            this.page = page;
-            return this.fetchData(merge({page}));
+            this.searchForm.page = page;
+            return this.fetchData();
         }
     }
 });

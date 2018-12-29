@@ -37,6 +37,7 @@ $pmrt-border-color: $brand-white;
         display: flex;
         flex-flow: column;
         overflow: hidden;
+        margin-bottom: 3px;
     }
 
     &-col {
@@ -152,16 +153,17 @@ $pmrt-border-color: $brand-white;
 
 @include media-breakpoint-up(lg) {
     .pmt {
-        display: table;
+        //display: table;
         width: 100%;
-        table-layout: fixed;
+        //table-layout: fixed;
 
         &-row {
-            display: table-row;
+            flex-flow: row;
+            //display: table-row;
         }
 
         &-col {
-            display: table-cell;
+            //display: table-cell;
             opacity: 1;
             border-bottom: 3px solid $pmrt-border-color;
             border-right: 3px solid $pmrt-border-color;

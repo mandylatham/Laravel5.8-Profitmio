@@ -24,8 +24,11 @@ export default class Form {
         for (let property in this.originalData) {
             data[property] = this[property];
         }
-
         return data;
+    }
+
+    updateData(field) {
+
     }
 
     reset() {
@@ -46,7 +49,9 @@ export default class Form {
 
     submit(method, url) {
         return new Promise((resolve, reject) =>  {
-            axios[method](url, this.data)
+            axios[method](url, {
+                params: this.data()
+            })
                 .then(response => {
                     this.onSuccess(response.data);
 
