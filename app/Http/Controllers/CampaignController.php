@@ -17,18 +17,24 @@ class CampaignController extends Controller
 
     private $campaign;
 
+    private $company;
+
     private $recipient;
 
-    public function __construct(Campaign $campaign, EmailLog $emailLog, Recipient $recipient)
+    public function __construct(Campaign $campaign, Company $company, EmailLog $emailLog, Recipient $recipient)
     {
         $this->campaign = $campaign;
+        $this->company = $company;
         $this->emailLog = $emailLog;
         $this->recipient = $recipient;
     }
 
     public function index(Request $request)
     {
-        return view('campaign.index');
+        return view('campaign.index', [
+            'companySelected' => $this->company->find(session('filters.campaign.index.company')),
+            'q' => session('filters.campaign.index.q')
+        ]);
     }
 
     public function getAll(Request $request)
@@ -38,14 +44,16 @@ class CampaignController extends Controller
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at');
 
-        if ($request->has('company')) {
+        if ($request->filled('company')) {
+            session(['filters.campaign.index.company' => $request->input('company')]);
             $campaigns->where(function ($query) use ($request) {
                 $query->orWhere('agency_id', $request->get('company'));
                 $query->orWhere('dealership_id', $request->get('company'));
             });
         }
 
-        if ($request->has('q')) {
+        if ($request->filled('q')) {
+            session(['filters.campaign.index.q' => $request->input('q')]);
             $likeQ = '%' . $request->get('q') . '%';
             $campaigns->where('name', 'like', $likeQ)
                 ->orWhere('id', 'like', $likeQ)

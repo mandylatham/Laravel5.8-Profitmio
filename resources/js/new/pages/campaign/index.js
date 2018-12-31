@@ -92,14 +92,12 @@ window.app = new Vue({
         tableOptions: {
             mobile: 'lg'
         },
-        formUrl: '',
-        filters: {
-            searchTerm: '',
-            companySelected: null
-        }
+        formUrl: ''
     },
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
+        this.searchForm.company = window.companySelected;
+        this.searchForm.q = window.q;
 
         axios
             .get(window.getCompanyUrl, {

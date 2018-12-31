@@ -9,7 +9,9 @@
 @section('body-script')
     <script>
         window.searchFormUrl = "{{ route('campaign.get-all') }}";
-        window.getCompanyUrl = "{{ route('company.index') }}";
+        window.getCompanyUrl = "{{ route('company.get-all') }}";
+        window.companySelected = @json($companySelected);
+        window.q = "{{ $q }}";
     </script>
     <script src="{{ asset('js/campaign-index.js') }}"></script>
 @endsection

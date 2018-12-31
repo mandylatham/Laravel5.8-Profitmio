@@ -64,6 +64,16 @@ class CompanyController extends Controller
         ]);
     }
 
+    public function getAll(Request $request)
+    {
+        $companies = $this->company->orderBy('id', 'desc');
+        if ($request->has('q')) {
+            session(['filters.company.get-all.q' => $request->input('q')]);
+            $companies->search($request->input('q'));
+        }
+        return $companies->paginate($request->input('per_page', 15));
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -75,9 +85,6 @@ class CompanyController extends Controller
         $companies = $this->company->orderBy('id', 'desc');
         if ($request->has('q')) {
             $companies->search($request->input('q'));
-        }
-        if ($request->isJson()) {
-            return $companies->paginate($request->input('per_page', 15));
         }
         return view('company.index', ['companies' => $companies->paginate(15)]);
     }
