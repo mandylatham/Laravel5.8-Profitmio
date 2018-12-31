@@ -9,17 +9,18 @@
 @section('body-script')
     <script>
         window.searchFormUrl = "{{ route('campaign.get-all') }}";
+        window.getCompanyUrl = "{{ route('company.index') }}";
     </script>
     <script src="{{ asset('js/campaign-index.js') }}"></script>
 @endsection
 
 @section('main-content')
-    <div class="container-fluid" id="campaign-index">
+    <div class="container" id="campaign-index">
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-3">
                 <div class="form-group filter--form-group">
                     <label>Filter By Company</label>
-                    <v-select :options="companies" v-model="searchForm.company" class="filter--v-select" @input="onPageChanged"></v-select>
+                    <v-select :options="companies" label="name" index="id" v-model="searchForm.company" class="filter--v-select" @input="onPageChanged"></v-select>
                 </div>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>

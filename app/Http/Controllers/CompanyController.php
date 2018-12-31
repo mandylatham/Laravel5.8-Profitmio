@@ -76,7 +76,9 @@ class CompanyController extends Controller
         if ($request->has('q')) {
             $companies->search($request->input('q'));
         }
-
+        if ($request->isJson()) {
+            return $companies->paginate($request->input('per_page', 15));
+        }
         return view('company.index', ['companies' => $companies->paginate(15)]);
     }
 

@@ -101,6 +101,20 @@ window.app = new Vue({
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
 
+        axios
+            .get(window.getCompanyUrl, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                params: {
+                    per_page: 100
+                },
+                data: null
+            })
+            .then(response => {
+                this.companies = response.data.data;
+            });
+
         this.fetchData();
     },
     methods: {
@@ -118,9 +132,10 @@ window.app = new Vue({
                     this.$toastr.error("Unable to get campaigns");
                 });
         },
-
-        onPageChanged({page}) {
-            this.searchForm.page = page;
+        onPageChanged(event) {
+            if (event) {
+                this.searchForm.page = event.page;
+            }
             return this.fetchData();
         }
     }
