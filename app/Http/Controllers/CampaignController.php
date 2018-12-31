@@ -37,32 +37,15 @@ class CampaignController extends Controller
         ]);
     }
 
-    public function getAll(Request $request)
+    /**
+     * Return all campaigns for user display
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForUserDisplay(Request $request)
     {
-        $campaigns = Campaign::query()
-            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
-            ->with(['dealership', 'agency'])
-            ->whereNull('deleted_at');
-
-        if ($request->filled('company')) {
-            session(['filters.campaign.index.company' => $request->input('company')]);
-            $campaigns->where(function ($query) use ($request) {
-                $query->orWhere('agency_id', $request->get('company'));
-                $query->orWhere('dealership_id', $request->get('company'));
-            });
-        }
-
-        if ($request->filled('q')) {
-            session(['filters.campaign.index.q' => $request->input('q')]);
-            $likeQ = '%' . $request->get('q') . '%';
-            $campaigns->where('name', 'like', $likeQ)
-                ->orWhere('id', 'like', $likeQ)
-                ->orWhere('starts_at', 'like', $likeQ)
-                ->orWhere('ends_at', 'like', $likeQ)
-                ->orWhere('order_id', 'like', $likeQ);
-        }
-
-        $campaigns = $campaigns->orderBy('campaigns.id', 'desc')
+        $campaignQuery = Campaign::searchByRequest($request);
+        $campaigns = $campaignQuery->orderBy('campaigns.id', 'desc')
             ->paginate(15);
 
         return $campaigns;

@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Sofa\Eloquence\Eloquence;
 
 class Campaign extends Model
 {
-    use LogsActivity;
+    use LogsActivity, Eloquence;
+
+    protected $searchableColumns = ['name', 'id', 'starts_at', 'ends_at', 'order_id'];
 
     protected $fillable = [
         'agency_id',
@@ -97,6 +101,21 @@ class Campaign extends Model
         return $this->hasMany(User::class);
     }
 
+    public function scopeFilterByCompany($query, Company $company)
+    {
+        session(['filters.campaign.index.company' => $company->id]);
+        return $query->where(function ($query) use ($company) {
+            $query->orWhere('agency_id', $company->id);
+            $query->orWhere('dealership_id', $company->id);
+        });
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        session(['filters.campaign.index.q' => $q]);
+        return $query->search($q);
+    }
+
     public static function getCompanyCampaigns(int $companyId)
     {
         return
@@ -169,6 +188,20 @@ class Campaign extends Model
         return $this->hasMany(RecipientList::class, 'campaign_id', 'id');
     }
 
+    public static function searchByRequest(Request $request)
+    {
+        $query = self::query()
+            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
+            ->with(['dealership', 'agency'])
+            ->whereNull('deleted_at');
+        if ($request->has('company')) {
+            $query->filterByCompany(Company::findOrFail($request->input('company')));
+        }
+        if ($request->has('q')) {
+            $query->filterByQuery($request->input('q'));
+        }
+        return $query;
+    }
     public function email_responses()
     {
         return $this->hasMany(Response::class, 'campaign_id', 'id')->where('responses.type', 'email');

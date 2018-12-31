@@ -136,7 +136,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region CAMPAIGN
     Route::get('/campaigns', 'CampaignController@index')->name('campaign.index')->middleware('can:view-campaigns');
-    Route::get('/campaigns/all', 'CampaignController@getAll')->name('campaign.get-all')->middleware('can:view-campaigns');
+    Route::get('/campaigns/for-user-display', 'CampaignController@getForUserDisplay')->name('campaign.for-user-display')->middleware('can:view-campaigns');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
@@ -242,7 +242,8 @@ Route::group(['middleware' => 'auth'], function () {
     //region COMPANIES
     Route::group(['prefix' => 'companies'], function () {
         Route::get('', 'CompanyController@index')->middleware('can:create')->name('company.index');
-        Route::get('all', 'CompanyController@getAll')->middleware('can:create')->name('company.get-all');
+        Route::get('for-dropdown', 'CompanyController@getForDropdown')->middleware('can:create')->name('company.for-dropdown');
+        Route::get('for-user-display', 'CompanyController@getForUserDisplay')->middleware('can:create')->name('company.for-user-display');
         Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
         Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');
         Route::post('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');

@@ -64,7 +64,23 @@ class CompanyController extends Controller
         ]);
     }
 
-    public function getAll(Request $request)
+    /**
+     * Returns all companies for dropdown
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForDropdown(Request $request)
+    {
+        $companies = $this->company->orderBy('id', 'desc');
+        return $companies->paginate($request->input('per_page', 15));
+    }
+
+    /**
+     * Return all companies for user display
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForUserDisplay(Request $request)
     {
         $companies = $this->company->orderBy('id', 'desc');
         if ($request->has('q')) {

@@ -8,10 +8,10 @@
 
 @section('body-script')
     <script>
-        window.searchFormUrl = "{{ route('campaign.get-all') }}";
-        window.getCompanyUrl = "{{ route('company.get-all') }}";
+        window.searchFormUrl = "{{ route('campaign.for-user-display') }}";
+        window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
         window.companySelected = @json($companySelected);
-        window.q = "{{ $q }}";
+        window.q = @json($q);
     </script>
     <script src="{{ asset('js/campaign-index.js') }}"></script>
 @endsection
