@@ -4,14 +4,14 @@ import './../../common';
 import Form from './../../common/form';
 import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
-import {merge} from 'lodash';
 window.toastr = require('toastr');
 Vue.use(VueToastr2);
 
+Vue.component('campaign', require('./../../components/campaign/campaign'));
 Vue.component('pm-responsive-table', require('./../../components/pm-responsive-table/pm-responsive-table'));
 Vue.component('spinner-icon', require('./../../components/spinner-icon/spinner-icon'));
 
-window.app = new Vue({
+window['app'] = new Vue({
     el: '#campaign-index',
     computed: {
         pagination: function () {
@@ -96,7 +96,7 @@ window.app = new Vue({
     },
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
-        this.searchForm.company = window.companySelected;
+        this.companySelected = window.companySelected;
         this.searchForm.q = window.q;
 
         axios
@@ -117,6 +117,11 @@ window.app = new Vue({
     },
     methods: {
         fetchData() {
+            if (this.companySelected) {
+                this.searchForm.company = this.companySelected.id;
+            } else {
+                this.searchForm.company = null;
+            }
             this.isLoading = true;
             this.searchForm.get(this.searchFormUrl)
                 .then(response => {
@@ -130,10 +135,8 @@ window.app = new Vue({
                     this.$toastr.error("Unable to get campaigns");
                 });
         },
-        onPageChanged(event) {
-            if (event) {
-                this.searchForm.page = event.page;
-            }
+        onPageChanged() {
+            this.searchForm.page = event.page;
             return this.fetchData();
         }
     }
