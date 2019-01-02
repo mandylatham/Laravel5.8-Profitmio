@@ -39,6 +39,9 @@ Route::get('/user-dashboard', function () {
 Route::get('/user-view', function () {
     return view('user.view');
 });
+Route::get('/new-response-console', function () {
+    return view('campaign.console');
+});
 
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
@@ -157,7 +160,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/drops', 'DeploymentController@forCampaign')->name('campaign.drop.index');
         Route::get('/drop/{drop}', 'DeploymentController@show');
         Route::post('/drop/{deployment}/update', 'DeploymentController@update');
-        Route::get('/drops/new', 'DeploymentController@createNew')->name('campaign.drop.create');
+        Route::get('/drops/new-email-drop', 'DeploymentController@createNewEmailDrop')->name('campaign.add-email-drop');
+        Route::get('/drops/new-sms-drop', 'DeploymentController@createNewSmsDrop')->name('campaign.add-sms-drop');
+        Route::get('/drops/new-mailer-drop', 'DeploymentController@createNewMailerDrop')->name('campaign.add-mailer-drop');
         Route::post('/drops/create', 'DeploymentController@create');
         Route::post('/drops/add-groups', 'DeploymentController@saveGroups');
         Route::post('/drop/{drop}/send-sms/{recipient}', 'DeploymentController@deploySms');
@@ -243,6 +248,25 @@ Route::group(['middleware' => 'auth'], function () {
         });
     });
     //endregion
+
+    Route::get('/new-dashboard', function () {
+        return view('dashboard.index');
+    });
+    Route::get('/company-dashboard', function () {
+        return view('company.index');
+    });
+    Route::get('/campaign-dashboard', function () {
+        return view('campaign.index');
+    });
+    Route::get('/campaign-view', function () {
+        return view('campaign.view');
+    });
+    Route::get('/user-dashboard', function () {
+        return view('user.index');
+    });
+    Route::get('/user-view', function () {
+        return view('user.view');
+    });
 });
 //endregion
 
