@@ -108,8 +108,13 @@
     padding: 1rem 2rem;
     justify-content: center;
     transition: max-height 300ms linear, opacity 300ms linear;
-    .btn {
-      margin-bottom: 5px;
+    a {
+      margin-bottom: 0.5rem;
+      color: $brand-purple;
+      text-decoration: none;
+      span {
+        margin-right: 10px;
+      }
     }
   }
   .campaign-chart {

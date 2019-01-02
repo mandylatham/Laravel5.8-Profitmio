@@ -25,6 +25,11 @@
 // Bootstrap Vue
 @import "~bootstrap-vue/es/components/dropdown/dropdown.css";
 @import '~vue-good-table/dist/vue-good-table.css';
+// Font Awesome
+@import '~@fortawesome/fontawesome-free/scss/brands';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
 ///////////////////////////
 @import './custom';
 @import './top-navbar';

@@ -36,10 +36,10 @@
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links">
-            <button class="btn pm-btn pm-btn-purple">A</button>
-            <button class="btn pm-btn pm-btn-purple">B</button>
-            <button class="btn pm-btn pm-btn-purple">C</button>
-            <button class="btn pm-btn pm-btn-purple">D</button>
+            <a href=""><span class="fa fa-search"></span> Status</a>
+            <a href=""><span class="fas fa-tint"></span> Drops</a>
+            <a href=""><span class="fa fa-users"></span> Recipients</a>
+            <a href=""><span class="fa fa-terminal"></span> Console</a>
         </div>
     </div>
     <div class="row no-gutters campaign-component inactive" v-else-if="!campaignActive">
