@@ -1,3 +1,6 @@
+// Import vanilla javascript code
+import './vanilla';
+// Import Vue and dependencies
 import Vue from 'vue';
 // Global event
 import './global-event-bus';

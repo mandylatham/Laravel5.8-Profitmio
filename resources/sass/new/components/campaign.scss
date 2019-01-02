@@ -115,6 +115,9 @@
       span {
         margin-right: 10px;
       }
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
   }
   .campaign-chart {
