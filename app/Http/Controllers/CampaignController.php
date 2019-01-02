@@ -45,7 +45,9 @@ class CampaignController extends Controller
     public function getForUserDisplay(Request $request)
     {
         $campaignQuery = Campaign::searchByRequest($request);
-        $campaigns = $campaignQuery->orderBy('campaigns.id', 'desc')
+        $campaigns = $campaignQuery
+            ->orderBy('status', 'asc')
+            ->orderBy('campaigns.id', 'desc')
             ->paginate(15);
 
         return $campaigns;

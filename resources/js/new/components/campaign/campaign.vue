@@ -1,7 +1,7 @@
 <template>
-    <div class="row no-gutters campaign-component active" v-if="campaignActive">
+    <div class="row no-gutters campaign-component active" :class="{'closed': campaignClosed}" v-if="campaignActive">
         <div class="col-12 col-md-5">
-            <div class="campaign-header">
+            <div class="campaign-header" @click="toggleCampaign">
                 <div class="campaign-header--status">
                     <status no-label :active="campaignActive"></status>
                 </div>
@@ -90,7 +90,9 @@
             }
         },
         data() {
-            return {};
+            return {
+                campaignClosed: true
+            };
         },
         computed: {
             daysLeft: function () {
@@ -101,6 +103,11 @@
             },
             pieChartDataSet: function () {
                 return [['sms', this.campaign.text_responses_count], ['call', this.campaign.phone_responses_count], ['email', this.campaign.email_responses_count]];
+            }
+        },
+        methods: {
+            toggleCampaign: function () {
+                this.campaignClosed = !this.campaignClosed;
             }
         }
     }

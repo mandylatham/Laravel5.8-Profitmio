@@ -31,14 +31,14 @@
                        placeholder="Search" @keyup.enter="fetchData">
             </div>
         </div>
-        <div class="row align-items-end no-gutters mt-5">
+        <div class="row align-items-end no-gutters mt-3">
             <div class="col-12">
                 <div class="loader-spinner" v-if="isLoading">
                     <spinner-icon></spinner-icon>
                 </div>
-                <div class="campaign-group-label">ACTIVE</div>
+                <div class="campaign-group-label" v-if="countActiveCampaigns > 0">ACTIVE</div>
                 <campaign v-for="campaign in campaigns" v-if="campaign.status === 'Active'" :key="campaign.id" :campaign="campaign"></campaign>
-                <div class="campaign-group-label">INACTIVE</div>
+                <div class="campaign-group-label" v-if="countInactiveCampaigns > 0">INACTIVE</div>
                 <campaign v-for="campaign in campaigns" v-if="campaign.status !== 'Active'" :key="campaign.id" :campaign="campaign"></campaign>
                 <pm-pagination :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
             </div>

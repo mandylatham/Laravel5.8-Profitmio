@@ -10,6 +10,7 @@ Vue.use(VueToastr2);
 // Chart Library
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
+import {filter} from 'lodash';
 
 Vue.use(VueChartkick, {adapter: Chart})
 
@@ -22,6 +23,16 @@ window['app'] = new Vue({
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
     },
     computed: {
+        countActiveCampaigns: function () {
+            return filter(this.campaigns, {
+                status: 'Active'
+            }).length;
+        },
+        countInactiveCampaigns: function () {
+            return filter(this.campaigns, item => {
+                return item.status !== 'Active';
+            }).length;
+        },
         pagination: function () {
             return {
                 page: this.searchForm.page,

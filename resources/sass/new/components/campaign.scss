@@ -40,6 +40,7 @@
     flex-flow: row;
     border-top: 3px solid $brand-white;
     border-bottom: 3px solid $brand-white;
+    transition: max-height 300ms linear, opacity 100ms linear;
     @include media-breakpoint-up(md) {
       border-top: none;
       border-bottom: none;
@@ -76,6 +77,7 @@
     justify-content: center;
     flex-flow: column;
     border-right: 3px solid $brand-white;
+    transition: max-height 300ms linear, opacity 100ms linear;
     @include media-breakpoint-up(md) {
       border-left: 3px solid $brand-white;
     }
@@ -105,6 +107,7 @@
     flex-flow: column;
     padding: 1rem 2rem;
     justify-content: center;
+    transition: max-height 300ms linear, opacity 300ms linear;
     .btn {
       margin-bottom: 5px;
     }
@@ -112,13 +115,16 @@
   .campaign-chart {
     background-color: #fff;
     padding: 0.5rem;
+
     &--labels {
       padding-left: 10px;
+
       span {
         position: relative;
         display: block;
         padding-left: 10px;
         font-size: 13px;
+
         &::after {
           content: '';
           position: absolute;
@@ -129,20 +135,43 @@
           top: 50%;
           margin-top: -5px;
         }
+
         &.sms::after {
           background-color: $brand-purple;
         }
+
         &.call::after {
           background-color: $brand-yellow;
         }
+
         &.email::after {
           background-color: $brand-blue;
         }
       }
     }
   }
+  &.active {
+    @include media-breakpoint-down(sm) {
+      .campaign-header {
+        cursor: pointer;
+      }
+      &.closed {
+        .campaign-header {
+          height: 100%;
+        }
+
+        .campaign-postcard, .campaign-date, .campaign-links {
+          max-height: 0;
+          padding: 0;
+          border: 0;
+          height: auto;
+          opacity: 0;
+          overflow: hidden;
+        }
+      }
+     }
+  }
   &.inactive {
-    margin-bottom: 0.3rem;
     .campaign-header {
       background-color: #fff;
       color: $brand-black;
@@ -167,45 +196,3 @@
     }
   }
 }
-//.campaign-component-inactive {
-//  border-radius: 5px;
-//  overflow: hidden;
-//  //.campaign-header {
-//  //  padding: 20px;
-//  //  display: flex;
-//  //  flex-flow: row;
-//  //  background-color: #fff;
-//  //  color: $brand-black;
-//  //  &--status {
-//  //    flex-grow: 1;
-//  //    display: inline-flex;
-//  //    align-items: center;
-//  //    justify-content: center;
-//  //  }
-//  //  &--title {
-//  //    display: flex;
-//  //    flex-grow: 5;
-//  //    flex-flow: column;
-//  //    align-items: flex-start;
-//  //    justify-content: center;
-//  //    strong, p {
-//  //      margin: 0;
-//  //      font-size: 1.1rem;
-//  //      line-height: 1em;
-//  //    }
-//  //    p {
-//  //      font-weight: 300;
-//  //      margin-top: 0.7em;
-//  //    }
-//  //  }
-//  //}
-//  //.campaign-image {
-//  //  background-color: #fff;
-//  //  padding: 0.5rem;
-//  //  text-align: center;
-//  //  img {
-//  //    height: 100%;
-//  //    max-width: 100%;
-//  //  }
-//  //}
-//}
