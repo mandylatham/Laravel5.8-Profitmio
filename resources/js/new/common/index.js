@@ -14,3 +14,5 @@ Vue.use(Tabs);
 Vue.use(Navbar);
 // Icons
 import './pm-icons';
+// Filters
+import './../filters/global-filters';

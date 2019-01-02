@@ -1,18 +1,26 @@
 import Vue from 'vue';
-import VueToastr2 from 'vue-toastr-2'
 import './../../common';
 import Form from './../../common/form';
 import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
+// Toastr Library
+import VueToastr2 from 'vue-toastr-2'
 window.toastr = require('toastr');
 Vue.use(VueToastr2);
+// Chart Library
+import VueChartkick from 'vue-chartkick'
+import Chart from 'chart.js'
 
-Vue.component('campaign', require('./../../components/campaign/campaign'));
-Vue.component('pm-responsive-table', require('./../../components/pm-responsive-table/pm-responsive-table'));
-Vue.component('spinner-icon', require('./../../components/spinner-icon/spinner-icon'));
+Vue.use(VueChartkick, {adapter: Chart})
 
 window['app'] = new Vue({
     el: '#campaign-index',
+    components: {
+        'campaign': require('./../../components/campaign/campaign'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
+        'pm-responsive-table': require('./../../components/campaign/campaign'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+    },
     computed: {
         pagination: function () {
             return {
@@ -116,6 +124,10 @@ window['app'] = new Vue({
         this.fetchData();
     },
     methods: {
+        onCompanySelected() {
+            this.searchForm.page = 1;
+            return this.fetchData();
+        },
         fetchData() {
             if (this.companySelected) {
                 this.searchForm.company = this.companySelected.id;
@@ -135,7 +147,7 @@ window['app'] = new Vue({
                     this.$toastr.error("Unable to get campaigns");
                 });
         },
-        onPageChanged() {
+        onPageChanged(event) {
             this.searchForm.page = event.page;
             return this.fetchData();
         }
