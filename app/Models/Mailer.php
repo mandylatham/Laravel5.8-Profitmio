@@ -12,11 +12,11 @@ class Mailer extends Model implements HasMedia
     use HasMediaTrait;
 
     protected $fillable = [
-        'name', 'in_home_at',
+        'name', 'type', 'size', 'in_home_at',
     ];
 
     public function campaign()
     {
-        return $this->belongsTo(Campaign::class);
+        return $this->belongsTo(Campaign::class, 'id', 'campaign_id');
     }
 }

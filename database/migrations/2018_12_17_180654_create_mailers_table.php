@@ -17,6 +17,8 @@ class CreateMailersTable extends Migration
             $table->increments('id');
             $table->integer('campaign_id');
             $table->string('name')->nullable();
+            $table->string('type', 255)->nullable();
+            $table->string('size', 255)->nullable();
             $table->dateTime('in_home_at')->nullable();
             $table->timestamps();
         });
