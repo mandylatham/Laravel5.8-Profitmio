@@ -21,7 +21,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-md-4 campaign-date">
+        <div class="col-6 col-md-4 campaign-date">
             <p>
                 <span class="label">Start Date:</span>
                 <span class="value">{{ campaign.starts_at | amDateFormat('MM.DD.YY') }}</span>
@@ -35,7 +35,7 @@
                 <strong>{{ daysLeft }}</strong>
             </div>
         </div>
-        <div class="col-12 col-sm-6 col-md-3 campaign-links">
+        <div class="col-6 col-md-3 campaign-links">
             <button class="btn pm-btn pm-btn-purple">A</button>
             <button class="btn pm-btn pm-btn-purple">B</button>
             <button class="btn pm-btn pm-btn-purple">C</button>
@@ -52,14 +52,14 @@
                 <p>{{ campaign.name }}</p>
             </div>
         </div>
-        <div class="col-12 col-md-2 campaign-postcard--image">
+        <div class="col-4 col-md-2 campaign-postcard--image">
             <img src="" alt="">
         </div>
-        <div class="col-12 col-md-2 campaign-date">
+        <div class="col-4 col-md-2 campaign-date">
             <span class="label">End Date:</span>
             <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>
     </div>
-        <div class="col-12 col-sm-6 col-md-3 campaign-chart">
+        <div class="col-4 col-md-3 campaign-chart">
             <div class="row no-gutters">
                 <div class="col-6 campaign-chart--charts">
                     <pie-chart height="70px" :colors="['#572E8D', '#e7f386', '#67A7CC']" :legend="false" :data="pieChartDataSet"></pie-chart>

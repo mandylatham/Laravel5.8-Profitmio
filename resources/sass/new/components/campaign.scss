@@ -38,7 +38,13 @@
     padding: 1rem 2rem;
     display: flex;
     flex-flow: row;
-    &--image, &--value{
+    border-top: 3px solid $brand-white;
+    border-bottom: 3px solid $brand-white;
+    @include media-breakpoint-up(md) {
+      border-top: none;
+      border-bottom: none;
+    }
+      &--image, &--value{
       flex-grow: 1;
       flex-shrink: 0;
     }
@@ -69,8 +75,10 @@
     align-items: center;
     justify-content: center;
     flex-flow: column;
-    border-left: 3px solid $brand-white;
     border-right: 3px solid $brand-white;
+    @include media-breakpoint-up(md) {
+      border-left: 3px solid $brand-white;
+    }
     p {
       line-height: 1em;
       margin-bottom: 0.5em;
@@ -134,14 +142,23 @@
     }
   }
   &.inactive {
+    margin-bottom: 0.3rem;
     .campaign-header {
       background-color: #fff;
       color: $brand-black;
       height: auto;
+      border-bottom: 3px solid $brand-white;
+      @include media-breakpoint-up(md) {
+        border-bottom: none;
+      }
     }
     .campaign-postcard--image {
       background-color: #fff;
-      border-left: 3px solid $brand-white;
+      border-right: 3px solid $brand-white;
+      @include media-breakpoint-up(md) {
+        border-left: 3px solid $brand-white;
+        border-right: none;
+      }
     }
     .campaign-date {
       span {

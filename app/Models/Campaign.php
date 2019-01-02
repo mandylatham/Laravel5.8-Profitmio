@@ -196,9 +196,13 @@ class Campaign extends Model
             ->whereNull('deleted_at');
         if ($request->has('company')) {
             $query->filterByCompany(Company::findOrFail($request->input('company')));
+        } else {
+            session()->forget('filters.campaign.index.company');
         }
         if ($request->has('q')) {
             $query->filterByQuery($request->input('q'));
+        } else {
+            session()->forget('filters.campaign.index.q');
         }
         return $query;
     }

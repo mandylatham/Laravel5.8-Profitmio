@@ -17,6 +17,15 @@
         align-items: center;
         justify-content: center;
     }
+    .campaign-group-label {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-top: 3rem;
+        margin-bottom: 1rem;
+    }
+    .pm-pagination {
+        margin-bottom: 2rem;
+    }
     @include media-breakpoint-up(lg) {
         padding: 10px 30px 20px 30px;
     }

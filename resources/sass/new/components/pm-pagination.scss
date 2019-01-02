@@ -6,7 +6,11 @@
   align-items: stretch;
   justify-content: center;
 
-  .paginator-input {
+  @include media-breakpoint-down(xs) {
+    width: 100%;
+  }
+
+    .paginator-input {
     flex-flow: row;
     background-color: #fff;
     border: 1px solid #ddd;
