@@ -1,0 +1,48 @@
+.wrapper-content {
+  .pmt-row {
+    .pmt-col {
+      background-color: #ffffff !important;
+      height: 56px;
+      text-align: center;
+      border-bottom-color: #E8EBF2;
+      border-width: 6px;
+      border-right: none;
+      border-left: none;
+      border-top: none;
+    }
+  }
+
+  .btn {
+    background-color: #67A6CC;
+    color: #ffffff;
+    line-height: 2;
+  }
+
+  .input-group {
+    .input-group-prepend {
+      position: relative;
+      top: 28px;
+      left: 15px;
+      color: #67A6CC;
+      width: 24px;
+      height: 24px;
+    }
+
+    input.form-control {
+      border-color: #67A6CC;
+      padding-left: 45px;
+      border-width: 2px;
+      border-radius: 10px;
+    }
+  }
+
+  a.icon {
+    display: inline-block;
+    text-align: center;
+
+    > img {
+      width: 25px;
+      object-fit: contain;
+    }
+  }
+}

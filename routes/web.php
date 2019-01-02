@@ -54,6 +54,9 @@ Route::get('/user-dashboard', function () {
 Route::get('/user-view', function () {
     return view('user.view');
 });
+Route::get('/new-response-console', function () {
+    return view('campaign.console');
+});
 
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
