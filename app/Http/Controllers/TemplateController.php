@@ -75,7 +75,7 @@ class TemplateController extends Controller
 
     public function getForUserDisplay(Request $request)
     {
-        $templates = CampaignScheduleTemplate::all();
+        $templates = CampaignScheduleTemplate::paginate(15);
 
         return $templates;
     }
