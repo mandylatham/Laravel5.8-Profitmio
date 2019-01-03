@@ -75,7 +75,10 @@ class TemplateController extends Controller
 
     public function getForUserDisplay(Request $request)
     {
-        return CampaignScheduleTemplate::paginate(15);
+        $templates = CampaignScheduleTemplate::searchByRequest($request)
+            ->paginate(15);
+
+        return $templates;
     }
 
     public function delete(CampaignScheduleTemplate $template)
