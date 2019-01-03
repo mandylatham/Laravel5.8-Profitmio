@@ -55,7 +55,8 @@ class CampaignScheduleTemplate extends Model
             session()->forget('filters.template.index.company');
         }
         if ($request->has('q')) {
-            $query->filterByQuery(e($request->input('q')));
+            $safeQuery = e($request->input('q'));
+            $query->filterByQuery($safeQuery);
         } else {
             session()->forget('filters.template.index.q');
         }

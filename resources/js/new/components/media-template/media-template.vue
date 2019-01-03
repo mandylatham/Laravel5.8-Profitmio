@@ -13,19 +13,8 @@
             <img src="" alt="">
         </div>
         <div class="col-4 col-md-2 media-template-date">
-            <span class="label">End Date:</span>
-            <span class="value">{{ media_template.ends_at | amDateFormat('MM.DD.YY') }}</span>
         </div>
         <div class="col-4 col-md-3 media-template-chart">
-            <div class="row no-gutters">
-                <div class="col-6 media-template-chart--charts">
-                </div>
-                <div class="col-6 media-template-chart--labels">
-                    <span class="sms">sms</span>
-                    <span class="call">call</span>
-                    <span class="email">email</span>
-                </div>
-            </div>
         </div>
     </div>
 </template>
