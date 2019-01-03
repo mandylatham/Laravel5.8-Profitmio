@@ -37,6 +37,9 @@
     import {get} from 'lodash';
 
     export default {
+        components: {
+            'spinner-icon':  require('./../spinner-icon/spinner-icon')
+        },
         props: {
             isLoading: {
                 type: Boolean,

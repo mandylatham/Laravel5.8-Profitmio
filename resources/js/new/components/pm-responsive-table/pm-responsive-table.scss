@@ -117,6 +117,9 @@ $pmrt-border-color: $brand-white;
             flex-flow: row;
             align-items: stretch;
             justify-content: center;
+            @include media-breakpoint-down(xs) {
+                width: 100%;
+            }
         }
         .paginator-input {
             flex-flow: row;
