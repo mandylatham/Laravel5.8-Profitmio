@@ -37,6 +37,21 @@ class UserController extends Controller
     }
 
     /**
+     * Return all companies for user display
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForUserDisplay(Request $request)
+    {
+        $userQuery = $this->user->searchByRequest($request);
+        $users = $userQuery
+            ->orderBy('id', 'desc')
+            ->paginate(15);
+
+        return $users;
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @param Request $request
@@ -44,12 +59,12 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = auth()->user()->getListOfUsers($request->input('company'));
+//        $users = auth()->user()->getListOfUsers($request->input('company'));
         return view('users.index', [
-            'users' => $users,
-            'company' => !auth()->user()->isAdmin() ? $this->company->findOrFail(get_active_company()) : null,
-            'companies' => $this->company->orderBy('name', 'asc')->get(),
-            'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
+//            'users' => $users,
+//            'company' => !auth()->user()->isAdmin() ? $this->company->findOrFail(get_active_company()) : null,
+//            'companies' => $this->company->orderBy('name', 'asc')->get(),
+//            'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
         ]);
     }
 

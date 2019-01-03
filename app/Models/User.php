@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -262,7 +263,7 @@ class User extends Authenticatable
 
     public function getNameAttribute()
     {
-        return ucwords(Str::lower($this->first_name).' ' . Str::lower($this->last_name));
+        return ucwords(Str::lower($this->first_name) . ' ' . Str::lower($this->last_name));
     }
 
     static function getPossibleTimezonesForUser()
@@ -282,5 +283,40 @@ class User extends Authenticatable
             'US/Pacific-New',
             'US/Samoa',
         ];
+    }
+
+    public static function searchByRequest(Request $request)
+    {
+        $loggedUser = auth()->user();
+        $query = self::query();
+        if ($request->has('company') && $loggedUser->isAdmin()) {
+            $query->filterByCompany(Company::findOrFail($request->input('company')));
+        } else if ($loggedUser->isCompanyAdmin(get_active_company())) {
+            $query->filterByCompany(Company::findOrFail(get_active_company()));
+        } else if (!$request->has('company')) {
+            session()->forget('filters.user.index.company');
+        }
+        if ($request->has('q')) {
+            $query->filterByQuery($request->input('q'));
+        } else {
+            session()->forget('filters.user.index.q');
+        }
+        return $query;
+    }
+
+    public function scopeFilterByCompany($query, Company $company)
+    {
+        session(['filters.user.index.company' => $company->id]);
+        return $query->join('');
+//        return $query->join(function ($query) use ($company) {
+//            $query->orWhere('agency_id', $company->id);
+//            $query->orWhere('dealership_id', $company->id);
+//        });
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        session(['filters.user.index.q' => $q]);
+        return $query->search($q);
     }
 }
