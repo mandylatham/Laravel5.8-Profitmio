@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\CampaignScheduleTemplate;
 use App\Http\Requests\NewTemplateRequest;
 use Illuminate\Http\Request;
@@ -66,11 +67,17 @@ class TemplateController extends Controller
 
     public function index()
     {
+        return view('template.index', [
+            'companySelected' => Company::find(session('filters.template.index.company')),
+            'q' => session('filters.template.index.q')
+        ]);
+    }
+
+    public function getForUserDisplay(Request $request)
+    {
         $templates = CampaignScheduleTemplate::all();
 
-        $viewData['templates'] = $templates;
-
-        return view('templates.index', $viewData);
+        return $templates;
     }
 
     public function delete(CampaignScheduleTemplate $template)

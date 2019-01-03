@@ -43,6 +43,7 @@ Vue.component('drop-type-icon', require('./components/drop-type-icon/drop-type-i
 Vue.component('drop-status', require('./components/drop-status/drop-status'));
 Vue.component('date-pick', require('./components/date-pick'));
 Vue.component('status', require('./components/status/status'));
+Vue.component('media-type', require('./components/media-type/media-type'));
 Vue.component('pm-responsive-table', require('./components/pm-responsive-table/pm-responsive-table'));
 Vue.component('list-campaign', require('./components/list-campaign/list-campaign'));
 Vue.component('list-company', require('./components/list-company/list-company.component'));

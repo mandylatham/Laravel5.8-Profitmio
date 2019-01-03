@@ -1,0 +1,206 @@
+.media-template-component {
+  border-radius: 5px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  .media-template-header {
+    padding: 20px;
+    display: flex;
+    flex-flow: row;
+    height: 45%;
+    background-color: $brand-purple;
+    color: #fff;
+    &--status {
+      flex-grow: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    &--title {
+      display: flex;
+      flex-grow: 5;
+      flex-flow: column;
+      align-items: flex-start;
+      justify-content: center;
+      strong, p {
+        margin: 0;
+        font-size: 1.1rem;
+        line-height: 1em;
+      }
+      p {
+        font-weight: 300;
+        margin-top: 0.7em;
+      }
+    }
+  }
+  .media-template-postcard {
+    height: 55%;
+    background-color: #fff;
+    padding: 1rem 2rem;
+    display: flex;
+    flex-flow: row;
+    border-top: 3px solid $brand-white;
+    border-bottom: 3px solid $brand-white;
+    transition: max-height 300ms linear, opacity 100ms linear;
+    @include media-breakpoint-up(md) {
+      border-top: none;
+      border-bottom: none;
+    }
+      &--image, &--value{
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
+    &--image {
+      text-align: center;
+      img {
+        height: 100%;
+        max-width: 100%;
+      }
+    }
+    &--value {
+      flex-grow: 1;
+      line-height: 1.5em;
+      padding-left: 2rem;
+      strong {
+        margin-bottom: 4px;
+        display: inline-block;
+      }
+      p {
+        margin: 0;
+      }
+    }
+  }
+  .media-template-date {
+    background-color: #fff;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-flow: column;
+    border-right: 3px solid $brand-white;
+    transition: max-height 300ms linear, opacity 100ms linear;
+    @include media-breakpoint-up(md) {
+      border-left: 3px solid $brand-white;
+    }
+    p {
+      line-height: 1em;
+      margin-bottom: 0.5em;
+    }
+    .value {
+      font-weight: bold;
+      margin-left: 15px;
+    }
+    &--left {
+      display: flex;
+      flex-flow: column;
+      align-items: center;
+      margin-top: 1em;
+      strong {
+        font-size: 5rem;
+        line-height: 1em;
+        font-weight: 400;
+      }
+    }
+  }
+  .media-template-links {
+    display: flex;
+    background-color: #fff;
+    flex-flow: column;
+    padding: 1rem 2rem;
+    justify-content: center;
+    transition: max-height 300ms linear, opacity 300ms linear;
+    a {
+      margin-bottom: 0.5rem;
+      color: $brand-purple;
+      text-decoration: none;
+      span {
+        margin-right: 10px;
+      }
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .media-template-chart {
+    background-color: #fff;
+    padding: 0.5rem;
+
+    &--labels {
+      padding-left: 10px;
+
+      span {
+        position: relative;
+        display: block;
+        padding-left: 10px;
+        font-size: 13px;
+
+        &::after {
+          content: '';
+          position: absolute;
+          width: 10px;
+          height: 10px;
+          border-radius: 50%;
+          left: -10px;
+          top: 50%;
+          margin-top: -5px;
+        }
+
+        &.sms::after {
+          background-color: $brand-purple;
+        }
+
+        &.call::after {
+          background-color: $brand-yellow;
+        }
+
+        &.email::after {
+          background-color: $brand-blue;
+        }
+      }
+    }
+  }
+  &.active {
+    @include media-breakpoint-down(sm) {
+      .media-template-header {
+        cursor: pointer;
+      }
+      &.closed {
+        .media-template-header {
+          height: 100%;
+        }
+
+        .media-template-postcard, .media-template-date, .media-template-links {
+          max-height: 0;
+          padding: 0;
+          border: 0;
+          height: auto;
+          opacity: 0;
+          overflow: hidden;
+        }
+      }
+     }
+  }
+  &.inactive {
+    .media-template-header {
+      background-color: #fff;
+      color: $brand-black;
+      height: auto;
+      border-bottom: 3px solid $brand-white;
+      @include media-breakpoint-up(md) {
+        border-bottom: none;
+      }
+    }
+    .media-template-postcard--image {
+      background-color: #fff;
+      border-right: 3px solid $brand-white;
+      @include media-breakpoint-up(md) {
+        border-left: 3px solid $brand-white;
+        border-right: none;
+      }
+    }
+    .media-template-date {
+      span {
+        margin: 0;
+      }
+    }
+  }
+}

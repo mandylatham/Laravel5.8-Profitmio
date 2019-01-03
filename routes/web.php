@@ -109,6 +109,8 @@ Route::group(['middleware' => 'auth'], function () {
     //endregion
 
     //region TEMPLATES
+    Route::get('/templates', 'TemplateController@index')->name('template.index')->middleware('can:view-templates');
+    Route::get('/templates/for-user-display', 'TemplateController@getForUserDisplay')->name('template.for-user-display')->middleware('can:view-templates');
     Route::group(['prefix' => 'template'], function () {
         Route::get('', 'TemplateController@index')->name('template.index')->middleware('can:view-templates');
         Route::get('/new', 'TemplateController@newForm')->name('template.create')->middleware('can:change-templates');
