@@ -98,11 +98,9 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
-        $companies = $this->company->orderBy('id', 'desc');
-        if ($request->has('q')) {
-            $companies->search($request->input('q'));
-        }
-        return view('company.index', ['companies' => $companies->paginate(15)]);
+        return view('company.index', [
+            'q' => session('filters.company.index.q')
+        ]);
     }
 
     /**

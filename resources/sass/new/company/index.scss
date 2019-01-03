@@ -1,0 +1,17 @@
+@import './../common/index';
+
+#company-index {
+  padding: 2rem 1rem;
+  .company-image {
+    background-size: cover;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-position: 50% 50%;
+    margin-right: 1rem;
+    margin-left: 1rem;
+  }
+  .company-name {
+    font-weight: bold;
+  }
+}
