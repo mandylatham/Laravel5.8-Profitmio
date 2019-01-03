@@ -38,6 +38,11 @@ class Company extends Model
         return $this->belongsToMany(User::class)->withPivot('role');
     }
 
+    public function templates()
+    {
+        return $this->hasMany(CampaignScheduleTemplate::class);
+    }
+
     public static function getAgencies()
     {
         return self::where('type', self::TYPE_AGENCY)->whereNull('deleted_at')->get();
