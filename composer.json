@@ -22,6 +22,7 @@
         "pion/laravel-chunk-upload": "^1.2",
         "sofa/eloquence-base": "^5.6",
         "spatie/laravel-activitylog": "^3.1",
+        "spatie/laravel-fractal": "^5.4",
         "spatie/laravel-medialibrary": "^7.5",
         "twilio/sdk": "^5.24"
     },
