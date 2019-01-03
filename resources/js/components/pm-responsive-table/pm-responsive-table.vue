@@ -14,20 +14,7 @@
                 </div>
             </div>
         </div>
-        <div class="pmt-pagination">
-            <div class="paginator-content">
-                <a class="paginator-left" href="javascript:;" @click="goBack">
-                    <chevron-left-icon></chevron-left-icon>
-                </a>
-                <div class="paginator-input">
-                    <input type="text" v-model="pagination.page" class="form-control" @keyup.enter="changePage">
-                    <span>of {{ totalPages }}</span>
-                </div>
-                <a class="paginator-right" href="javascript:;" @click="goUp">
-                    <chevron-right-icon></chevron-right-icon>
-                </a>
-            </div>
-        </div>
+        <pm-pagination :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
     </div>
 </template>
 <script>
@@ -36,7 +23,8 @@
 
     export default {
         components: {
-            'spinner-icon':  require('./../spinner-icon/spinner-icon')
+            'spinner-icon':  require('./../spinner-icon/spinner-icon'),
+            'pm-pagination':  require('./../pm-pagination/pm-pagination')
         },
         props: {
             isLoading: {
@@ -82,24 +70,9 @@
             }
         },
         methods: {
-            changePage: function () {
-                if (this.pagination.page < 1 || this.pagination.page > this.totalPages) {
-                    return;
-                }
-                this.$emit('page-changed', {page: this.pagination.page})
-            },
-            goBack: function () {
-                if (this.pagination.page <= 1) {
-                    return;
-                }
-                this.$emit('page-changed', {page: this.pagination.page - 1});
-            },
             get,
-            goUp: function () {
-                if (this.pagination.page >= this.totalPages) {
-                    return;
-                }
-                this.$emit('page-changed', {page: this.pagination.page + 1});
+            onPageChanged: function (event) {
+                this.$emit('page-changed', {page: event.page});
             },
             classesForCol: function (col) {
                 const classes = [];

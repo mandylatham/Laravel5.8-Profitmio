@@ -1,7 +1,5 @@
-@import './../common/variables';
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
+@import './pm-pagination';
+@import './spinner-icon';
 
 $pmrt-col-background-color: #fff;
 $pmrt-col-color: $brand-black;
