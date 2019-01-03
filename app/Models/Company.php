@@ -63,6 +63,11 @@ class Company extends Model
         return $this->type === self::TYPE_SUPPORT;
     }
 
+    public function isUserProfileReady($userId)
+    {
+        return $this->users()->where('user_id', $userId)->whereNotNull('company_user.completed_at')->count() > 0;
+    }
+
     public function getCampaigns($q = null)
     {
         $campaigns = Campaign::with(['dealership', 'agency'])

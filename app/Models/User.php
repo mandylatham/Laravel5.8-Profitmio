@@ -50,6 +50,8 @@ class User extends Authenticatable
         'password', 'remember_token',
     ];
 
+    protected $attributes = [];
+
     public function activate($companyId)
     {
         $rel = $this->invitations()->where('company_id', $companyId)->firstOrFail();
@@ -103,7 +105,7 @@ class User extends Authenticatable
      */
     public function companies()
     {
-        return $this->belongsToMany(Company::class)->using(CompanyUser::class)->withPivot('role', 'config', 'completed_at');
+        return $this->belongsToMany(Company::class)->using(CompanyUser::class)->withPivot('role', 'config', 'is_active', 'completed_at');
     }
 
     /**
@@ -291,7 +293,7 @@ class User extends Authenticatable
         $query = self::query();
         if ($request->has('company') && $loggedUser->isAdmin()) {
             $query->filterByCompany(Company::findOrFail($request->input('company')));
-        } else if ($loggedUser->isCompanyAdmin(get_active_company())) {
+        } else if (!$loggedUser->isAdmin() && $loggedUser->isCompanyAdmin(get_active_company())) {
             $query->filterByCompany(Company::findOrFail(get_active_company()));
         } else if (!$request->has('company')) {
             session()->forget('filters.user.index.company');
@@ -307,7 +309,8 @@ class User extends Authenticatable
     public function scopeFilterByCompany($query, Company $company)
     {
         session(['filters.user.index.company' => $company->id]);
-        return $query->join('');
+        return $query->join('company_user', 'users.id', '=', 'company_user.user_id')
+            ->where('company_id', $company->id);
 //        return $query->join(function ($query) use ($company) {
 //            $query->orWhere('agency_id', $company->id);
 //            $query->orWhere('dealership_id', $company->id);
@@ -317,6 +320,7 @@ class User extends Authenticatable
     public function scopeFilterByQuery($query, $q)
     {
         session(['filters.user.index.q' => $q]);
-        return $query->search($q);
+        return $query;
+//        return $query->search($q);
     }
 }

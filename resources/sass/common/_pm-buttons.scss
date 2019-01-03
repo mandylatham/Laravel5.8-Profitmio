@@ -32,6 +32,18 @@
       color: darken($red, 15%);
     }
   }
+  &-green {
+    color: $green;
+    &:hover {
+      color: darken($green, 15%);
+    }
+  }
+  &-blue {
+    color: $blue;
+    &:hover {
+      color: darken($blue, 15%);
+    }
+  }
   &-warning {
     color: $orange;
     &:hover {

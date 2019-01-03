@@ -3,7 +3,7 @@
 ])
 
 @section('head-styles')
-    <link href="{{ asset('css/company-index.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/site-admin-user-index.css') }}" rel="stylesheet">
 @endsection
 
 @section('body-script')
@@ -13,7 +13,7 @@
         window.companySelected = @json($companySelected);
         window.q = @json($q);
     </script>
-    <script src="{{ asset('js/user-index.js') }}"></script>
+    <script src="{{ asset('js/site-admin-user-index.js') }}"></script>
 @endsection
 
 @section('main-content')
@@ -34,17 +34,38 @@
         <div class="row align-items-end no-gutters">
             <div class="col-12">
                 <pm-responsive-table :rows="users" :columns="columnData" :pagination="pagination" :is-loading="isLoading" @page-changed="onPageChanged">
-                    <template slot="id" slot-scope="{row}">
-                        <span class="iser-id">ID: @{{ row.id }}</span>
-                        <span class="user-name">@{{ row.first_name }} @{{ row.last_name }}</span>
+                    <template slot="id" slot-scope="{row: user}">
+                        <span class="user-id">ID: @{{ user.id }}</span>
+                        <span class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
+                        <user-role class="ml-2" :role="'site_admin'" v-if="user.is_admin"></user-role>
                     </template>
-                    <template slot="options" slot-scope="{row}">
-                        <a class="btn btn-link pm-btn-link pm-btn-link-warning" href="">
-                            <edit-2-icon></edit-2-icon>
+                    <template slot="phone_number" slot-scope="{row}">
+                        <span class="pm-font-phone-icon mr-2"></span>@{{ row.phone_number || '--' }}
+                    </template>
+                    <template slot="companies" slot-scope="{row: user}">
+                        <span v-if="user.is_admin">--</span>
+                        <ul class="companies" v-if="!user.is_admin">
+                            <li v-for="company in user.companies">@{{ company.name }} <user-role class="ml-2" :role="company.role"></user-role></li>
+                        </ul>
+                    </template>
+                    <template slot="options" slot-scope="{row: user}">
+                        <a href="" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.is_admin">
+                            <i class="far fa-edit"></i>
                         </a>
-                        <a href="" class="btn btn-link pm-btn-link pm-btn-link-danger">
-                            <trash-icon></trash-icon>
+                        <a href="" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="!user.is_admin && user.has_active_companies">
+                            <i class="far fa-eye"></i>
                         </a>
+                        <a href="" class="btn btn-link" title="Has Pending Invitations" v-if="!user.is_admin && user.has_pending_invitations">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                        @if ($companySelected)
+                        <a href="" class="btn btn-link pm-btn-link pm-btn-link-green" title="Activate" v-if="!user.is_admin && isActiveInCompany(user, @json($companySelected->id))">
+                            <i class="far fa-check-circle"></i>
+                        </a>
+                        <a href="" class="btn btn-link pm-btn-link pm-btn-link-danger" title="Deactivate" v-if="!user.is_admin && !isActiveInCompany(user, @json($companySelected->id))">
+                            <i class="far fa-times-circle"></i>
+                        </a>
+                        @endif
                     </template>
                 </pm-responsive-table>
             </div>
@@ -97,25 +118,6 @@
                             {{--@endif--}}
                             {{--<div class="table-responsive">--}}
                                 {{--<table id="users" class="table table-striped table-hover datatable">--}}
-                                    {{--<thead>--}}
-                                    {{--<tr>--}}
-                                        {{--<th>ID</th>--}}
-                                        {{--<th>First Name</th>--}}
-                                        {{--<th>Last Name</th>--}}
-                                        {{--@if (!auth()->user()->isAdmin() || $selectedCompanyId)--}}
-                                            {{--<th>Type</th>--}}
-                                        {{--@else--}}
-                                            {{--<th>Company / Type</th>--}}
-                                        {{--@endif--}}
-                                        {{--<th>Username</th>--}}
-                                        {{--<th>Email</th>--}}
-                                        {{--<th>Phone Number</th>--}}
-                                        {{--@if(!auth()->user()->isAdmin() || (auth()->user()->isAdmin() && $selectedCompanyId))--}}
-                                            {{--<th>Status</th>--}}
-                                        {{--@endif--}}
-                                        {{--<th>Actions</th>--}}
-                                    {{--</tr>--}}
-                                    {{--</thead>--}}
                                     {{--<tbody>--}}
                                     {{--@foreach($users as $user)--}}
                                         {{--<tr>--}}

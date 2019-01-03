@@ -11,7 +11,7 @@ Vue.use(VueToastr2);
 window['app'] = new Vue({
     el: '#user-index',
     components: {
-        'pm-responsive-table': require('./../../components/campaign/campaign')
+        'pm-responsive-table': require('./../../components/pm-responsive-table/pm-responsive-table')
     },
     computed: {
         pagination: function () {
@@ -30,6 +30,7 @@ window['app'] = new Vue({
             page: 1,
             per_page: 15,
         }),
+        isAdmin: undefined,
         isLoading: true,
         total: null,
         users: [],
@@ -39,11 +40,11 @@ window['app'] = new Vue({
                 slot: 'id',
                 is_manager: true,
             }, {
-                field: 'username'
+                slot: 'companies'
             }, {
                 field: 'email'
             }, {
-                field: 'phone_number'
+                slot: 'phone_number'
             }, {
                 slot: 'options',
                 is_manager_footer: true
@@ -92,9 +93,10 @@ window['app'] = new Vue({
             this.searchForm.get(this.searchFormUrl)
                 .then(response => {
                     this.users = response.data;
-                    this.searchForm.page = response.current_page;
-                    this.searchForm.per_page = response.per_page;
-                    this.total= response.total;
+                    console.log('this.users', this.users);
+                    this.searchForm.page = response.meta.current_page;
+                    this.searchForm.per_page = response.meta.per_page;
+                    this.total = response.meta.total;
                     this.isLoading = false;
                 })
                 .catch(error => {
