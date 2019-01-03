@@ -55,59 +55,6 @@ window['app'] = new Vue({
         companies: [],
         searchTerm: '',
         companySelected: null,
-        columnData: [
-            {
-                slot: 'name',
-                is_manager: true,
-                classes: ['name-col'],
-                widths: {
-                    'lg': '100px'
-                }
-            }, {
-                field: 'dealership.name',
-                classes: ['dealership-col'],
-                widths: {
-                    'lg': '100px'
-                }
-            }, {
-                field: 'agency.name',
-                classes: ['agency-col'],
-                widths: {
-                    'lg': '100px'
-                }
-            }, {
-                slot: 'recipients_count',
-                classes: ['recipients-col'],
-                widths: {
-                    'lg': '100px'
-                }
-            }, {
-                slot: 'phone_responses_count',
-                classes: ['phone-responses-col'],
-                widths: {
-                    'lg': '100px'
-                }
-            }, {
-                slot: 'email_responses_count',
-                classes: ['email-responses-col'],
-                widths: {
-                    'lg': '100px'
-                }
-            }, {
-                slot: 'text_responses_count',
-                classes: ['text-responses-col'],
-                widths: {
-                    'lg': '100px'
-                }
-            }, {
-                slot: 'options',
-                is_manager_footer: true,
-                classes: ['options-col'],
-                widths: {
-                    'lg': '100px'
-                }
-            }
-        ],
         tableOptions: {
             mobile: 'lg'
         },
