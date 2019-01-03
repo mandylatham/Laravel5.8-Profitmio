@@ -23,3 +23,19 @@
     color: #fff !important;
   }
 }
+.pm-btn-link {
+  border: none;
+  background-color: transparent;
+  &-danger {
+    color: $red;
+    &:hover {
+      color: darken($red, 15%);
+    }
+  }
+  &-warning {
+    color: $orange;
+    &:hover {
+      color: darken($orange, 15%);
+    }
+  }
+}

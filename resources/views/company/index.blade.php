@@ -34,10 +34,10 @@
                         <span class="company-name">@{{ row.name }}</span>
                     </template>
                     <template slot="options" slot-scope="{row}">
-                        <a class="btn btn-link pm-btn btn-warning" href="">
-                            <i class="far fa-edit"></i>
+                        <a class="btn btn-link pm-btn-link pm-btn-link-warning" href="">
+                            <edit-2-icon></edit-2-icon>
                         </a>
-                        <a href="" class="btn btn-link btn-danger">
+                        <a href="" class="btn btn-link pm-btn-link pm-btn-link-danger">
                             <trash-icon></trash-icon>
                         </a>
                     </template>
