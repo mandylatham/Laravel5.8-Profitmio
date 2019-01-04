@@ -33,7 +33,7 @@
         </div>
         <div class="row align-items-end no-gutters">
             <div class="col-12">
-                <pm-responsive-table :rows="users" :columns="columnData" :pagination="pagination" :is-loading="isLoading" @page-changed="onPageChanged">
+                <pm-responsive-table :rows="users" :columns="columnData" :pagination="pagination" :disable-toggle="true" :is-loading="isLoading" @page-changed="onPageChanged">
                     <template slot="id" slot-scope="{row: user}">
                         <span class="user-id">ID: @{{ user.id }}</span>
                         <span class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
@@ -49,6 +49,9 @@
                         </ul>
                     </template>
                     <template slot="options" slot-scope="{row: user}">
+                        <a href="" class="btn btn-link pm-btn-link pm-btn-link-green" title="View">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
                         <a href="" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.is_admin">
                             <i class="far fa-edit"></i>
                         </a>
