@@ -190,12 +190,15 @@ class Campaign extends Model
 
     public static function searchByRequest(Request $request)
     {
+        $loggedUser = auth()->user();
         $query = self::query()
             ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at');
-        if ($request->has('company')) {
+        if ($request->has('company') && $loggedUser->isAdmin()) {
             $query->filterByCompany(Company::findOrFail($request->input('company')));
+        } else if (!$loggedUser->isAdmin()) {
+//            $query->filterByCompany(Company::findOrFail(get_active_company()));
         } else {
             session()->forget('filters.campaign.index.company');
         }
@@ -206,6 +209,7 @@ class Campaign extends Model
         }
         return $query;
     }
+
     public function email_responses()
     {
         return $this->hasMany(Response::class, 'campaign_id', 'id')->where('responses.type', 'email');

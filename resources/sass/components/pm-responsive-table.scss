@@ -23,13 +23,6 @@ $pmrt-border-color: $brand-white;
         justify-content: center;
     }
 
-    .no-items-row {
-        padding: 10px 20px;
-        background-color: #fff;
-        text-align: center;
-        border-radius: 5px;
-    }
-
     &-row {
         $tableRow: &;
         display: flex;

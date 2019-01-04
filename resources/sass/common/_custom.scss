@@ -34,3 +34,10 @@ body {
 .main-content {
   min-height: calc(100vh - #{$top-navbar-height});
 }
+
+.no-items-row {
+  padding: 10px 20px;
+  background-color: #fff;
+  text-align: center;
+  border-radius: 5px;
+}

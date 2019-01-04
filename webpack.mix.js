@@ -12,6 +12,8 @@ const mix = require('laravel-mix');
 
 mix.js('resources/js/pages/campaign/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/campaign/index.scss', 'public/css/campaign-index.css')
+    .js('resources/js/pages/dashboard/dashboard.js', 'public/js/dashboard.js')
+    .sass('resources/sass/dashboard/dashboard.scss', 'public/css/dashboard.css')
     .js('resources/js/pages/company/index.js', 'public/js/company-index.js')
     .sass('resources/sass/company/index.scss', 'public/css/company-index.css')
     .js('resources/js/pages/user/site-admin-index.js', 'public/js/site-admin-user-index.js')
