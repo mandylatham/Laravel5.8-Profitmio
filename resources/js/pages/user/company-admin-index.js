@@ -2,14 +2,13 @@ import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
 import 'vue-toastr-2/dist/vue-toastr-2.min.css'
-import axios from 'axios';
 // Toastr Library
 import VueToastr2 from 'vue-toastr-2'
 window.toastr = require('toastr');
 Vue.use(VueToastr2);
 
 window['app'] = new Vue({
-    el: '#user-index',
+    el: '#company-user-index',
     components: {
         'pm-responsive-table': require('./../../components/pm-responsive-table/pm-responsive-table')
     },
@@ -34,17 +33,18 @@ window['app'] = new Vue({
         isLoading: true,
         total: null,
         users: [],
-        companies: [],
         columnData: [
             {
                 slot: 'id',
                 is_manager: true,
             }, {
-                slot: 'companies'
+                slot: 'type'
             }, {
-                field: 'email'
+                slot: 'mail'
             }, {
                 slot: 'phone_number'
+            }, {
+                slot: 'status'
             }, {
                 slot: 'options',
                 is_manager_footer: true
@@ -59,41 +59,16 @@ window['app'] = new Vue({
     },
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
-        this.companySelected = window.companySelected;
         this.searchForm.q = window.q;
-
-        axios
-            .get(window.getCompanyUrl, {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                params: {
-                    per_page: 100
-                },
-                data: null
-            })
-            .then(response => {
-                this.companies = response.data.data;
-            });
-
         this.fetchData();
     },
     methods: {
-        onCompanySelected() {
-            this.searchForm.page = 1;
-            return this.fetchData();
-        },
         fetchData() {
-            if (this.companySelected) {
-                this.searchForm.company = this.companySelected.id;
-            } else {
-                this.searchForm.company = null;
-            }
             this.isLoading = true;
-            this.searchForm.get(this.searchFormUrl)
+            this.searchForm
+                .get(this.searchFormUrl)
                 .then(response => {
                     this.users = response.data;
-                    console.log('this.users', this.users);
                     this.searchForm.page = response.meta.current_page;
                     this.searchForm.per_page = response.meta.per_page;
                     this.total = response.meta.total;
