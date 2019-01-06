@@ -16,26 +16,29 @@
 
 @section('sidebar-content')
     <div class="calendar-filters">
-        <div class="form-check">
-            <input class="form-check-input" type="radio" value="option2" checked>
-            <label class="form-check-label" for="exampleRadios2">
-                Filter
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option1"
-                   checked>
-            <label class="form-check-label" for="exampleRadios2">
-                Filter
-            </label>
-        </div>
-        <div class="form-check">
-            <input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"
-                   checked>
-            <label class="form-check-label" for="exampleRadios1">
-                Filter
-            </label>
-        </div>
+        <p-radio class="p-default p-round" name="radio1">Filter 1</p-radio>
+        <p-radio class="p-default p-round" name="radio1">Filter 2</p-radio>
+        <p-radio class="p-default p-round" name="radio1">Filter 3</p-radio>
+        {{--<div class="form-check">--}}
+            {{--<input class="form-check-input" type="radio" value="option2" checked>--}}
+            {{--<label class="form-check-label" for="exampleRadios2">--}}
+                {{--Filter--}}
+            {{--</label>--}}
+        {{--</div>--}}
+        {{--<div class="form-check">--}}
+            {{--<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios2" value="option1"--}}
+                   {{--checked>--}}
+            {{--<label class="form-check-label" for="exampleRadios2">--}}
+                {{--Filter--}}
+            {{--</label>--}}
+        {{--</div>--}}
+        {{--<div class="form-check">--}}
+            {{--<input class="form-check-input" type="radio" name="exampleRadios" id="exampleRadios1" value="option1"--}}
+                   {{--checked>--}}
+            {{--<label class="form-check-label" for="exampleRadios1">--}}
+                {{--Filter--}}
+            {{--</label>--}}
+        {{--</div>--}}
     </div>
     <date-pick class="event-calendar" :parse-date="parseDate" v-model="selectedDate" :has-input-element="false"></date-pick>
     <div class="events">
