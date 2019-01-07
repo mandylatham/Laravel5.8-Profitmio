@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Campaign;
+use App\Models\Company;
 use App\Models\Drop;
 use Illuminate\Http\Request;
 
@@ -46,10 +47,14 @@ class DropController extends Controller
         $drops = $this->drop->whereIn('campaign_id', $ids)
             ->whereNull('deleted_at')
             ->selectRaw("
-				concat('Campaign ', campaign_id, ': ', type, ' drop') as title, send_at")
+				concat('Campaign ', campaign_id, ': ', type, ' drop') as title, send_at as start")
             ->get();
         $drops = $drops->map(function ($item) {
-            return ['title' => $item->title, 'start' => $item->send_at->toDateTimeString()];
+            return [
+                'title' => $item->title,
+                'start' => $item->send_at->toDateTimeString(),
+                'date' => $item->send_at->toDateString()
+            ];
         });
 
         return $drops;

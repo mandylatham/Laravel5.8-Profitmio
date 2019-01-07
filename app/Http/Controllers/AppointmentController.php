@@ -69,7 +69,7 @@ class AppointmentController extends Controller
             ->whereIn('campaign_id', $ids)
             ->where('type', 'appointment')
             ->whereNotNull('appointment_at')
-            ->selectRaw("concat('Campaign ', campaign_id, ': ', first_name,' ',last_name,': ',phone_number) as title, appointment_at as start")
+            ->selectRaw("concat('Campaign ', campaign_id, ': ', first_name,' ',last_name,': ',phone_number) as title, appointment_at as start, DATE(appointment_at) as date")
             ->get();
 
         return $appointments;

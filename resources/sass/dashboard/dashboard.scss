@@ -23,6 +23,9 @@
         font-weight: bold;
         margin-top: 2rem;
         margin-bottom: 1rem;
+        &:first-child {
+            margin-top: 0;
+        }
     }
     .pm-pagination {
         margin-bottom: 2rem;
@@ -72,14 +75,14 @@
                 }
                 &.today {
                     font-weight: bold;
-                    color: #fff;
                 }
                 &.selected {
-                    background-color: #fff;
-                    .vdpCellContent {
-                        background-color: transparent;
-                        color: $gray;
-                    }
+                    color: $brand-purple;
+                    background-color: $brand-white;
+                    //.vdpCellContent {
+                    //    background-color: transparent;
+                    //    color: $gray;
+                    //}
                 }
                 &:hover {
                     .vdpCellContent {
@@ -93,6 +96,13 @@
             }
         }
     }
+}
+.no-events {
+    color: $brand-purple;
+    background-color: #fff;
+    border-radius: 5px;
+    padding: 0.5rem 1rem;
+    line-height: 1em;
 }
 .events {
     margin: 10px 0;
@@ -117,10 +127,15 @@
         }
     }
     .event {
-        height: 5px;
-        background-color: $gray-light;
-        border-radius: 3px;
+        background-color: $brand-white;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
         margin-top: 20px;
+        color: $brand-purple;
+        .time {
+            float: right;
+            font-size: 0.8rem;
+        }
     }
 }
 .sidebar-container {

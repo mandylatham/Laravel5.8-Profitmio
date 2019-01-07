@@ -10,6 +10,7 @@ Vue.use(VueToastr2);
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
 import {filter} from 'lodash';
+import axios from "axios";
 
 Vue.use(VueChartkick, {adapter: Chart});
 
@@ -93,12 +94,94 @@ window['sidebar'] = new Vue({
     components: {
         'date-pick': require('./../../components/date-pick/date-pick')
     },
+    computed: {
+        eventsForDay: function () {
+            const events = [];
+            if (this.selectedDate) {
+                this.calendarEvents.forEach(e => {
+                    if (e.date === this.selectedDate) {
+                        events.push(e);
+                    }
+                });
+            }
+            return events;
+        }
+    },
     data: {
+        appointmentSelected: true,
+        calendarEvents: [],
+        dropsSelected: true,
+        // eventsForDay: [],
+        filter: 'appointment',
         selectedDate: moment().format('YYYY-MM-DD'),
     },
     methods: {
         parseDate: function (date, format) {
             return moment(date, format).toDate();
+        },
+        // onDaySelected: function (dateSelected) {
+        //     const eventsForDay = [];
+        //     this.calendarEvents.forEach(e => {
+        //         if (e.date === dateSelected) {
+        //             eventsForDay.push(e);
+        //         }
+        //     });
+        //     this.eventsForDay = eventsForDay;
+        // },
+        fetchCalendarData: function () {
+            const promises = [];
+            if (this.filter === 'appointment') {
+                promises.push(
+                    axios
+                        .get(window.appointmentsUrl, {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            params: {
+                                per_page: 100,
+                                start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('month').format('YYYY-MM-DD'),
+                                end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD')
+                            },
+                            data: null
+                        })
+                        .then(response => {
+                            this.calendarEvents = response.data;
+                        })
+                );
+            }
+            if (this.filter === 'drop') {
+                promises.push(
+                    axios
+                        .get(window.dropsUrl, {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            params: {
+                                per_page: 100,
+                                start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('month').format('YYYY-MM-DD'),
+                                end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD')
+                            },
+                            data: null
+                        })
+                        .then(response => {
+                            this.calendarEvents = response.data;
+                        })
+                );
+            }
+            return Promise.all(promises);
+        }
+    },
+    mounted() {
+        this.fetchCalendarData();
+    },
+    watch: {
+        selectedDate: function (newDate, oldDate) {
+            newDate = moment(newDate, 'YYYY-MM-DD');
+            oldDate = moment(oldDate, 'YYYY-MM-DD');
+            // Month Changed, fetch new data for calendar
+            if (newDate.format('MMYYYY') !== oldDate.format('MMYYYY')) {
+                this.fetchCalendarData();
+            }
         }
     }
 });

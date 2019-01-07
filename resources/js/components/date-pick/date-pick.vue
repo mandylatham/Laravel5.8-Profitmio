@@ -138,7 +138,6 @@
 <script>
 
     import moment from 'moment';
-    import each from 'lodash';
 
     const formatRE = /,|\.|-| |:|\/|\\/;
     const dayRE = /D+/;
@@ -152,7 +151,7 @@
 
         props: {
             value: {type: String, default: ''},
-            events: {type: Object, default: () => {return {};}},
+            events: {type: Array, default: () => {return [];}},
             format: {type: String, default: 'YYYY-MM-DD'},
             displayFormat: {type: String},
             hasInputElement: {type: Boolean, default: true},
@@ -210,10 +209,12 @@
 
             eventsPerDay() {
                 const events = {};
-                each(this.events, e => {
+                console.log(' computing', this.events);
+                this.events.forEach(e => {
                     events[e.date] = events[e.date] || [];
                     events[e.date].push(e);
                 });
+                console.log(' computed events', events);
                 return events;
             },
 
@@ -626,7 +627,6 @@
                         newDate.setMinutes(this.currentTime.minutes);
                         newDate.setSeconds(this.currentTime.seconds);
                     }
-
                     this.$emit('input', this.formatDateToString(newDate, this.format));
 
                     if (this.hasInputElement && !this.pickTime) {
