@@ -1,7 +1,6 @@
 <template>
     <div class="media-type-component">
-        <span class="media-type-icon" :class="{ mediaClass }"></span>
-        <span class="media-type-value" :class="{'d-none': hiddenValue}">{{ media_type | capitalize }}</span>
+        <span class="media-type-icon" :class="this.mediaClass"></span>
     </div>
 </template>
 <script>
@@ -17,10 +16,11 @@
                 if (this.media_type == 'email') {
                     return 'fa fa-envelope';
                 } else if (this.media_type == 'sms') {
-                    return 'fa fa-message';
+                    return 'fa fa-comment';
                 } else {
                     return 'fa fa-question';
                 }
+                console.log(this.media_type);
             },
             hiddenValue: function () {
                 return this.$attrs.hasOwnProperty('no-label');
