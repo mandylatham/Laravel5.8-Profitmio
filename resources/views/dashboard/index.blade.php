@@ -11,6 +11,10 @@
         window.searchFormUrl = "{{ route('campaign.for-dashboard-display') }}";
         window.appointmentsUrl = "{{ route('appointment.for-calendar-display') }}";
         window.dropsUrl = "{{ route('drop.for-calendar-display') }}";
+        window.campaignViewUrl = "{{ route('campaign.view', ['campaign' => ':campaignId']) }}";
+        window.campaignDropIndex = "{{ route('campaign.drop.index', ['campaign' => ':campaignId']) }}";
+        window.campaignRecipientIndex = "{{ route('campaign.recipient.index', ['campaign' => ':campaignId']) }}";
+        window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.q = @json($q);
     </script>
     <script src="{{ asset('js/dashboard.js') }}"></script>

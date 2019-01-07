@@ -36,10 +36,10 @@
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links">
-            <a href=""><span class="fa fa-search"></span> Status</a>
-            <a href=""><span class="fas fa-tint"></span> Drops</a>
-            <a href=""><span class="fa fa-users"></span> Recipients</a>
-            <a href=""><span class="fa fa-terminal"></span> Console</a>
+            <a :href="generateRoute(campaignViewUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
+            <a :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
+            <a :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
+            <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
         </div>
     </div>
     <div class="row no-gutters campaign-component inactive" v-else-if="!campaignActive">
@@ -75,6 +75,7 @@
 </template>
 <script>
     import moment from 'moment';
+    import {generateRoute} from './../../common/helpers'
 
     export default {
         components: {
@@ -91,7 +92,11 @@
         },
         data() {
             return {
-                campaignClosed: true
+                campaignClosed: true,
+                campaignViewUrl: '',
+                campaignDropIndex: '',
+                campaignRecipientIndex: '',
+                campaignResponseConsoleIndex: ''
             };
         },
         computed: {
@@ -108,7 +113,14 @@
         methods: {
             toggleCampaign: function () {
                 this.campaignClosed = !this.campaignClosed;
-            }
+            },
+            generateRoute
+        },
+        mounted: function () {
+            this.campaignViewUrl = window.campaignViewUrl;
+            this.campaignDropIndex = window.campaignDropIndex;
+            this.campaignRecipientIndex = window.campaignRecipientIndex;
+            this.campaignResponseConsoleIndex = window.campaignResponseConsoleIndex;
         }
     }
 </script>
