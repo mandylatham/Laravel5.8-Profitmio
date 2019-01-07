@@ -86,6 +86,18 @@ Route::group(['middleware' => 'auth'], function () {
     });
     //endregion
 
+    //region APPOINTMENT
+    Route::group(['prefix' => 'appointment'], function () {
+        Route::get('for-calendar-display', 'AppointmentController@getForCalendarDisplay')->name('appointment.for-calendar-display');
+    });
+    //endregion
+
+    //region DROP
+    Route::group(['prefix' => 'drop'], function () {
+        Route::get('for-calendar-display', 'DropController@getForCalendarDisplay')->name('drop.for-calendar-display');
+    });
+    //endregion
+
     //region SELECTOR
     Route::group(['prefix' => 'selector'], function () {
         Route::get('', 'SelectorController@show')->name('selector.select-active-company');
