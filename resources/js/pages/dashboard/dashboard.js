@@ -16,7 +16,6 @@ Vue.use(VueChartkick, {adapter: Chart});
 window['app'] = new Vue({
     el: '#dashboard',
     components: {
-        'date-pick': require('./../../components/date-pick/date-pick'),
         'campaign': require('./../../components/campaign/campaign'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
@@ -85,6 +84,21 @@ window['app'] = new Vue({
         onPageChanged(event) {
             this.searchForm.page = event.page;
             return this.fetchData();
+        }
+    }
+});
+
+window['sidebar'] = new Vue({
+    el: '#sidebar',
+    components: {
+        'date-pick': require('./../../components/date-pick/date-pick')
+    },
+    data: {
+        selectedDate: moment().format('YYYY-MM-DD'),
+    },
+    methods: {
+        parseDate: function (date, format) {
+            return moment(date, format).toDate();
         }
     }
 });

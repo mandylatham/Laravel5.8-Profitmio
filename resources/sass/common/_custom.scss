@@ -33,7 +33,7 @@ body {
 
 .main-content {
     height: calc(100vh - #{$top-navbar-height});
-    overflow-y: hidden;
+    overflow-y: scroll;
 }
 
 .no-items-row {
