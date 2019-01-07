@@ -60,7 +60,7 @@
 @endsection
 
 @section('main-content')
-    <div class="container" id="dashboard">
+    <div class="container pt-3 pt-md-5" id="dashboard">
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-3">
             </div>

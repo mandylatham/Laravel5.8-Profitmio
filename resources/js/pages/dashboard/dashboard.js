@@ -14,7 +14,7 @@ import {filter} from 'lodash';
 Vue.use(VueChartkick, {adapter: Chart});
 
 window['app'] = new Vue({
-    el: '#app',
+    el: '#dashboard',
     components: {
         'date-pick': require('./../../components/date-pick/date-pick'),
         'campaign': require('./../../components/campaign/campaign'),
