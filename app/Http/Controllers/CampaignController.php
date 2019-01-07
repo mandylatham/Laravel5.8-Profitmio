@@ -37,6 +37,35 @@ class CampaignController extends Controller
         ]);
     }
 
+    public function getCampaignIds()
+    {
+        $ids = $this->campaign->select('id');
+        $company = $this->company->findOrFail(get_active_company());
+
+        if ($company->isDealership()) {
+            $ids->where('dealership_id', $company->id);
+        } else if ($company->isAgency()) {
+            $ids->where('agency_id', $company->id);
+        }
+
+        return $ids->get()->toArray();
+    }
+
+    public function getForDashboardDisplay(Request $request)
+    {
+        $ids = $this->getCampaignIds();
+
+        // Get the Campaigns
+        $campaigns = $this->campaign
+            ->whereIn('campaigns.id', $ids)
+            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
+            ->with(['dealership', 'agency'])
+            ->groupBy('campaigns.id')
+            ->orderBy('campaigns.id', 'desc');
+
+        return $campaigns->paginate(15);
+    }
+
     /**
      * Return all campaigns for user display
      * @param Request $request

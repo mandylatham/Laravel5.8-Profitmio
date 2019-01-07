@@ -62,6 +62,7 @@ Route::get('/new-response-console', function () {
 Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
+    Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
@@ -153,6 +154,7 @@ Route::group(['middleware' => 'auth'], function () {
     //region CAMPAIGN
     Route::get('/campaigns', 'CampaignController@index')->name('campaign.index')->middleware('can:view-campaigns');
     Route::get('/campaigns/for-user-display', 'CampaignController@getForUserDisplay')->name('campaign.for-user-display');
+    Route::get('/campaigns/for-dashboard-display', 'CampaignController@getForDashboardDisplay')->name('campaign.for-dashboard-display');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
