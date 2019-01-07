@@ -24,7 +24,6 @@ body {
 
 .main-content-container {
     height: 100%;
-    overflow-y: scroll;
     transition: margin .3s ease-in-out, transform .3s ease-in-out, width .3s ease-in-out;
 
     @include media-breakpoint-up(xl) {
@@ -33,7 +32,8 @@ body {
 }
 
 .main-content {
-    min-height: calc(100vh - #{$top-navbar-height});
+    height: calc(100vh - #{$top-navbar-height});
+    overflow-y: hidden;
 }
 
 .no-items-row {
