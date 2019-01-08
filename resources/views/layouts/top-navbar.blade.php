@@ -47,7 +47,7 @@
             </b-nav-item>
             @endcan
             @if (auth()->user()->isAdmin())
-            <b-nav-item href="route('company.index') }}">
+            <b-nav-item href="{{ route('company.index') }}">
                 <span class="pm-font-companies-icon"></span>
                 <span>Companies</span>
             </b-nav-item>
