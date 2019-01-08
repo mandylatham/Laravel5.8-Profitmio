@@ -9,6 +9,7 @@
 @section('body-script')
     <script>
         window.searchFormUrl = "{{ route('company.for-user-display') }}";
+        window.companyEditUrl = "{{ route('company.edit', ['company' => ':companyId']) }}";
         window.q = @json($q);
     </script>
     <script src="{{ asset('js/company-index.js') }}"></script>
@@ -34,12 +35,12 @@
                         <span class="company-name">@{{ row.name }}</span>
                     </template>
                     <template slot="options" slot-scope="{row}">
-                        <a class="btn btn-link pm-btn-link pm-btn-link-warning" href="">
-                            <edit-2-icon></edit-2-icon>
+                        <a class="btn btn-link pm-btn-link pm-btn-link-warning" :href="generateRoute(companyEditUrl, {'companyId': row.id})">
+                            <i class="far fa-edit"></i>
                         </a>
-                        <a href="" class="btn btn-link pm-btn-link pm-btn-link-danger">
-                            <trash-icon></trash-icon>
-                        </a>
+                        {{--<a href="" class="btn btn-link pm-btn-link pm-btn-link-danger">--}}
+                            {{--<trash-icon></trash-icon>--}}
+                        {{--</a>--}}
                     </template>
                 </pm-responsive-table>
             </div>

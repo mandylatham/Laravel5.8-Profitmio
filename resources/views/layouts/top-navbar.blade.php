@@ -22,30 +22,51 @@
             <div class="pm-logo-reversed d-md-none text-center">
                 <img src="/img/logo-reversed.png" alt="Logo Reversed">
             </div>
-            <b-nav-item href="#" active>
+            @if (!auth()->user()->isAdmin())
+            <b-nav-item href="{{ route('dashboard') }}" active>
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </b-nav-item>
+            @endif
+            @can('list', \App\Models\Campaign::class)
+            <b-nav-item href="{{ route('campaign.index') }}" active>
                 <span class="pm-font-campaigns-icon"></span>
                 <span>Campaigns</span>
             </b-nav-item>
-            <b-nav-item href="#">
+            @endcan
+            @can('list', \App\Models\CampaignScheduleTemplate::class)
+            <b-nav-item href="{{ route('template.index') }}">
                 <span class="pm-font-templates-icon"></span>
                 <span>Templates</span>
             </b-nav-item>
-            <b-nav-item href="#">
+            @endcan
+            @can('list', \App\Models\User::class)
+            <b-nav-item href="{{ route('user.index') }}">
                 <span class="pm-font-phone-icon"></span>
                 <span>Users</span>
             </b-nav-item>
-            <b-nav-item href="#">
+            @endcan
+            @if (auth()->user()->isAdmin())
+            <b-nav-item href="{{ route('company.index') }}">
                 <span class="pm-font-companies-icon"></span>
                 <span>Companies</span>
             </b-nav-item>
+            @endif
+            @if (auth()->user()->isAdmin())
             <b-nav-item href="#">
                 <span class="pm-font-system-icon"></span>
                 <span>System</span>
             </b-nav-item>
+            @endif
         </b-navbar-nav>
 
         <b-collapse is-nav id="top-navbar">
             <b-navbar-nav class="ml-auto navbar-menu-extra">
+                @impersonating
+                <b-nav-item right href="{{ route('admin.impersonate-leave') }}">
+                    <i class="fas fa-sign-out-alt"></i>
+                </b-nav-item>
+                @endImpersonating
                 <b-nav-item-dropdown right variant="link" size="lg" no-caret>
                     <template slot="button-content">
                         <span>
@@ -69,10 +90,10 @@
                 <b-nav-item-dropdown class="profile" right variant="link" size="lg" no-caret>
                     <template slot="button-content">
                         <img src="http://lorempixel.com/60/60/" alt="Avatar">
-                        <span>Jhon Doe</span>
+                        <span>{{ auth()->user()->first_name }}</span>
                     </template>
-                    <b-dropdown-item href="#">Profile</b-dropdown-item>
-                    <b-dropdown-item href="#">Signout</b-dropdown-item>
+                    <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>
+                    <b-dropdown-item href="{{ route('logout') }}">Signout</b-dropdown-item>
                 </b-nav-item-dropdown>
             </b-navbar-nav>
         </b-collapse>

@@ -8,12 +8,15 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Sofa\Eloquence\Eloquence;
 use Lab404\Impersonate\Models\Impersonate;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
-    use Notifiable, Impersonate, LogsActivity;
+    use Notifiable, Impersonate, LogsActivity, Eloquence;
+
+    protected $searchableColumns = ['id', 'first_name', 'last_name', 'email', 'phone_number'];
 
     protected static $logAttributes = ['id', 'name', 'is_admin', 'email', 'campaigns', 'companies'];
 
@@ -49,6 +52,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    protected $attributes = [];
 
     public function activate($companyId)
     {
@@ -103,7 +108,7 @@ class User extends Authenticatable
      */
     public function companies()
     {
-        return $this->belongsToMany(Company::class)->using(CompanyUser::class)->withPivot('role', 'config', 'completed_at');
+        return $this->belongsToMany(Company::class)->using(CompanyUser::class)->withPivot('role', 'config', 'is_active', 'completed_at');
     }
 
     /**
@@ -291,7 +296,7 @@ class User extends Authenticatable
         $query = self::query();
         if ($request->has('company') && $loggedUser->isAdmin()) {
             $query->filterByCompany(Company::findOrFail($request->input('company')));
-        } else if ($loggedUser->isCompanyAdmin(get_active_company())) {
+        } else if (!$loggedUser->isAdmin() && $loggedUser->isCompanyAdmin(get_active_company())) {
             $query->filterByCompany(Company::findOrFail(get_active_company()));
         } else if (!$request->has('company')) {
             session()->forget('filters.user.index.company');
@@ -307,7 +312,8 @@ class User extends Authenticatable
     public function scopeFilterByCompany($query, Company $company)
     {
         session(['filters.user.index.company' => $company->id]);
-        return $query->join('');
+        return $query->join('company_user', 'users.id', '=', 'company_user.user_id')
+            ->where('company_id', $company->id);
 //        return $query->join(function ($query) use ($company) {
 //            $query->orWhere('agency_id', $company->id);
 //            $query->orWhere('dealership_id', $company->id);

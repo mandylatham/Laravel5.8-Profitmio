@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Classes\CompanyUserActivityLog;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateCompanyDataRequest;
+use App\Http\Resources\UserCollection;
 use App\Models\Company;
 use App\Mail\InviteUser;
 use App\Models\User;
+use App\Transformers\UserTransformer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -45,10 +47,11 @@ class UserController extends Controller
     {
         $userQuery = $this->user->searchByRequest($request);
         $users = $userQuery
-            ->orderBy('id', 'desc')
+            ->select('users.*')
+            ->orderBy('users.id', 'desc')
             ->paginate(15);
 
-        return $users;
+        return new UserCollection($users);
     }
 
     /**
@@ -59,12 +62,9 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-//        $users = auth()->user()->getListOfUsers($request->input('company'));
         return view('users.index', [
-//            'users' => $users,
-//            'company' => !auth()->user()->isAdmin() ? $this->company->findOrFail(get_active_company()) : null,
-//            'companies' => $this->company->orderBy('name', 'asc')->get(),
-//            'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
+            'companySelected' => $this->company->find(session('filters.user.index.company')),
+            'q' => session('filters.user.index.q')
         ]);
     }
 

@@ -5,8 +5,6 @@
     </div>
 </template>
 <script>
-    require("./status.scss");
-
     export default {
         props: {
             active: {

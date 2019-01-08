@@ -1,0 +1,31 @@
+@import './../common/index';
+@import './../components/pm-responsive-table';
+
+#user-index {
+    padding: 2rem 1rem;
+    .user-id {
+        font-weight: bold;
+    }
+    .user-name {
+        margin-left: 10px;
+        display: inline-block;
+    }
+    .pmt-col {
+        padding: 0.4rem 0.7rem !important;
+        height: 40px !important;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+    ul.companies {
+        padding: 0;
+        list-style: none;
+        margin: 0.5em 0;
+        line-height: 1em;
+        li {
+            margin-bottom: 0.4em;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+}
