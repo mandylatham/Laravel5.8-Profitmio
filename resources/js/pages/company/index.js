@@ -6,6 +6,7 @@ import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import VueToastr2 from 'vue-toastr-2'
 window.toastr = require('toastr');
 Vue.use(VueToastr2);
+import {generateRoute} from './../../common/helpers'
 
 window['app'] = new Vue({
     el: '#company-index',
@@ -57,10 +58,12 @@ window['app'] = new Vue({
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
         this.searchForm.q = window.q;
+        this.companyEditUrl = window.companyEditUrl;
 
         this.fetchData();
     },
     methods: {
+        generateRoute,
         onCompanySelected() {
             this.searchForm.page = 1;
             return this.fetchData();
