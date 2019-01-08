@@ -62,6 +62,7 @@ Route::get('/new-response-console', function () {
 Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
+    Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
@@ -83,6 +84,18 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/resend-invitation', 'AdminController@resendInvitation')->name('admin.resend-invitation')->middleware('can:resend-invitation,App\Models\User');
         Route::get('/impersonate/leave', 'AdminController@impersonateLeave')->name('admin.impersonate-leave');
         Route::get('/impersonate/{user}', 'AdminController@impersonateUser')->name('admin.impersonate')->middleware('can:impersonate,App\Models\User');
+    });
+    //endregion
+
+    //region APPOINTMENT
+    Route::group(['prefix' => 'appointment'], function () {
+        Route::get('for-calendar-display', 'AppointmentController@getForCalendarDisplay')->name('appointment.for-calendar-display');
+    });
+    //endregion
+
+    //region DROP
+    Route::group(['prefix' => 'drop'], function () {
+        Route::get('for-calendar-display', 'DropController@getForCalendarDisplay')->name('drop.for-calendar-display');
     });
     //endregion
 
@@ -140,7 +153,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region CAMPAIGN
     Route::get('/campaigns', 'CampaignController@index')->name('campaign.index')->middleware('can:view-campaigns');
-    Route::get('/campaigns/for-user-display', 'CampaignController@getForUserDisplay')->name('campaign.for-user-display')->middleware('can:view-campaigns');
+    Route::get('/campaigns/for-user-display', 'CampaignController@getForUserDisplay')->name('campaign.for-user-display');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
@@ -246,7 +259,7 @@ Route::group(['middleware' => 'auth'], function () {
     //region COMPANIES
     Route::group(['prefix' => 'companies'], function () {
         Route::get('', 'CompanyController@index')->middleware('can:create')->name('company.index');
-        Route::get('for-dropdown', 'CompanyController@getForDropdown')->middleware('can:create')->name('company.for-dropdown');
+        Route::get('for-dropdown', 'CompanyController@getForDropdown')->name('company.for-dropdown');
         Route::get('for-user-display', 'CompanyController@getForUserDisplay')->middleware('can:create')->name('company.for-user-display');
         Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
         Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');

@@ -71,8 +71,10 @@ class CompanyController extends Controller
      */
     public function getForDropdown(Request $request)
     {
-        $companies = $this->company->orderBy('id', 'desc');
-        return $companies->paginate($request->input('per_page', 15));
+        return $this->company
+            ->searchByRequest($request)
+            ->orderBy('id', 'desc')
+            ->paginate($request->input('per_page', 15));
     }
 
     /**

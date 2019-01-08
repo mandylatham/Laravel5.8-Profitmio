@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Sofa\Eloquence\Eloquence;
 
@@ -95,5 +96,25 @@ class Company extends Model
         $campaigns->orderBy('campaigns.id', 'desc');
 
         return $campaigns;
+    }
+
+    public static function searchByRequest(Request $request)
+    {
+        $loggedUser = auth()->user();
+        $query = self::query();
+        if (!$loggedUser->isAdmin()) {
+            $campaignsCompanyIds = Campaign::select('dealership_id', 'agency_id')
+                ->where(function ($query) {
+                    return $query->where('agency_id', get_active_company())
+                        ->orWhere('dealership_id', get_active_company());
+                })
+                ->get()
+                ->toArray();
+            $campaignsCompanyIds = array_where(array_unique(array_flatten($campaignsCompanyIds)), function ($id) {
+                return $id !== get_active_company();
+            });
+            $query->whereIn('id', $campaignsCompanyIds);
+        }
+        return $query;
     }
 }

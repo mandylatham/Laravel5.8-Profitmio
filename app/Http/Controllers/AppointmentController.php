@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Campaign;
+use App\Models\Company;
 use App\Classes\MailgunService;
 use App\Mail\CrmNotification;
 use App\Mail\LeadNotification;
@@ -26,20 +27,52 @@ class AppointmentController extends Controller
 
     private $campaign;
 
+    private $company;
+
     private $log;
 
     private $recipient;
 
     private $mail;
 
-    public function __construct(Appointment $appointment, Carbon $carbon, Campaign $campaign, Recipient $recipient, Logger $log, Mailer $mail)
+    public function __construct(Appointment $appointment, Carbon $carbon, Campaign $campaign, Company $company, Recipient $recipient, Logger $log, Mailer $mail)
     {
         $this->appointment = $appointment;
         $this->carbon = $carbon;
         $this->campaign = $campaign;
+        $this->company = $company;
         $this->log = $log;
         $this->recipient = $recipient;
         $this->mail = $mail;
+    }
+
+    public function getCampaignIds()
+    {
+        $ids = $this->campaign->select('id');
+        $company = $this->company->findOrFail(get_active_company());
+
+        if ($company->isDealership()) {
+            $ids->where('dealership_id', $company->id);
+        } else if ($company->isAgency()) {
+            $ids->where('agency_id', $company->id);
+        }
+
+        return $ids->get()->toArray();
+    }
+
+    public function getForCalendarDisplay(Request $request)
+    {
+        $ids = $this->getCampaignIds();
+
+        $appointments = $this->appointment
+            ->where('called_back', 0)
+            ->whereIn('campaign_id', $ids)
+            ->where('type', 'appointment')
+            ->whereNotNull('appointment_at')
+            ->selectRaw("concat('Campaign ', campaign_id, ': ', first_name,' ',last_name,': ',phone_number) as title, appointment_at as start, DATE(appointment_at) as date")
+            ->get();
+
+        return $appointments;
     }
 
     /**

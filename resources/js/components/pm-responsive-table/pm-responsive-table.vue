@@ -7,7 +7,7 @@
             <div class="no-items-row" v-if="rows.length === 0">
                 No Items
             </div>
-            <div class="pmt-row" :class="{'open': row.open}" v-for="(row, rowIndex) in rows">
+            <div class="pmt-row" :class="{'open': row.open || disableToggle}" v-for="(row, rowIndex) in rows">
                 <div class="pmt-col" @click="toggleRow(row, column)" :class="classesForCol(column)" v-for="column in columns">
                     {{ column.field ? get(row, column.field) : '' }}
                     <slot :name="column.slot" :row="row" v-if="column.slot"></slot>
@@ -28,6 +28,11 @@
         },
         props: {
             isLoading: {
+                type: Boolean,
+                required: false,
+                default: false
+            },
+            disableToggle: {
                 type: Boolean,
                 required: false,
                 default: false
