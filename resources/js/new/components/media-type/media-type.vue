@@ -1,7 +1,5 @@
 <template>
-    <div class="media-type-component">
-        <span class="media-type-icon" :class="this.mediaClass"></span>
-    </div>
+    <span class="media-type-icon" :class="this.mediaClass"></span>
 </template>
 <script>
     export default {

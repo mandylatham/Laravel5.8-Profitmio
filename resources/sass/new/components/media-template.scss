@@ -37,8 +37,9 @@
     height: 55%;
     background-color: #fff;
     padding: 1rem 2rem;
-    display: flex;
-    flex-flow: row;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     border-top: 3px solid $brand-white;
     border-bottom: 3px solid $brand-white;
     transition: max-height 300ms linear, opacity 100ms linear;
@@ -46,7 +47,7 @@
       border-top: none;
       border-bottom: none;
     }
-      &--image, &--value{
+    &--image, &--value{
       flex-grow: 1;
       flex-shrink: 0;
     }
@@ -69,6 +70,10 @@
         margin: 0;
       }
     }
+  }
+  .media-type-icon {
+    font-size: 35px;
+    color: #20004a;
   }
   .media-template-date {
     background-color: #fff;

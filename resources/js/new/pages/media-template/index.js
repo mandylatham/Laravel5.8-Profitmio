@@ -51,7 +51,7 @@ window['app'] = new Vue({
         this.searchForm.q = window.q;
 
         axios
-            .get(window.getCompanyUrl, {
+            .get(window.searchFormUrl, {
                 headers: {
                     'Content-Type': 'application/json'
                 },
