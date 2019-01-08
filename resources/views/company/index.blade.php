@@ -36,7 +36,7 @@
                     </template>
                     <template slot="options" slot-scope="{row}">
                         <a class="btn btn-link pm-btn-link pm-btn-link-warning" :href="generateRoute(companyEditUrl, {'companyId': row.id})">
-                            <edit-2-icon></edit-2-icon>
+                            <i class="far fa-edit"></i>
                         </a>
                         {{--<a href="" class="btn btn-link pm-btn-link pm-btn-link-danger">--}}
                             {{--<trash-icon></trash-icon>--}}

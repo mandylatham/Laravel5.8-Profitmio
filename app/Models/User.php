@@ -8,12 +8,15 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Sofa\Eloquence\Eloquence;
 use Lab404\Impersonate\Models\Impersonate;
 use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
-    use Notifiable, Impersonate, LogsActivity;
+    use Notifiable, Impersonate, LogsActivity, Eloquence;
+
+    protected $searchableColumns = ['id', 'first_name', 'last_name', 'email', 'phone_number'];
 
     protected static $logAttributes = ['id', 'name', 'is_admin', 'email', 'campaigns', 'companies'];
 
@@ -320,7 +323,6 @@ class User extends Authenticatable
     public function scopeFilterByQuery($query, $q)
     {
         session(['filters.user.index.q' => $q]);
-        return $query;
-//        return $query->search($q);
+        return $query->search($q);
     }
 }
