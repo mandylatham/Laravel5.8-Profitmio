@@ -41,6 +41,7 @@ window['app'] = new Vue({
         }
     },
     data: {
+        companies: [],
         selectedDate: moment().format('YYYY-MM-DD'),
         searchFormUrl: null,
         searchForm: new Form({
@@ -62,9 +63,27 @@ window['app'] = new Vue({
         this.searchFormUrl = window.searchFormUrl;
         this.searchForm.q = window.q;
 
+        axios
+            .get(window.getCompanyUrl, {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                params: {
+                    per_page: 100
+                },
+                data: null
+            })
+            .then(response => {
+                this.companies = response.data.data;
+            });
+
         this.fetchData();
     },
     methods: {
+        onCompanySelected() {
+            this.searchForm.page = 1;
+            return this.fetchData();
+        },
         parseDate: function (date, format) {
             return moment(date, format).toDate();
         },

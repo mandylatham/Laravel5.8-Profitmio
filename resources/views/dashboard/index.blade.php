@@ -8,14 +8,15 @@
 
 @section('body-script')
     <script>
-        window.searchFormUrl = "{{ route('campaign.for-dashboard-display') }}";
         window.appointmentsUrl = "{{ route('appointment.for-calendar-display') }}";
-        window.dropsUrl = "{{ route('drop.for-calendar-display') }}";
         window.campaignViewUrl = "{{ route('campaign.view', ['campaign' => ':campaignId']) }}";
         window.campaignDropIndex = "{{ route('campaign.drop.index', ['campaign' => ':campaignId']) }}";
         window.campaignRecipientIndex = "{{ route('campaign.recipient.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
+        window.dropsUrl = "{{ route('drop.for-calendar-display') }}";
+        window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
         window.q = @json($q);
+        window.searchFormUrl = "{{ route('campaign.for-user-display') }}";
     </script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
 @endsection
@@ -45,6 +46,10 @@
     <div class="container pt-3 pt-md-5" id="dashboard">
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-3">
+                <div class="form-group filter--form-group" v-if="companies.length > 1">
+                    <label>Filter By Company</label>
+                    <v-select :options="companies" label="name" v-model="companySelected" class="filter--v-select" @input="onCompanySelected"></v-select>
+                </div>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
             <div class="col-12 col-sm-5 col-lg-3">

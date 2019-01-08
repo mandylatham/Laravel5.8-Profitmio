@@ -195,17 +195,26 @@ class Campaign extends Model
             ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at');
-        if ($request->has('company') && $loggedUser->isAdmin()) {
-            $query->filterByCompany(Company::findOrFail($request->input('company')));
-        } else if (!$loggedUser->isAdmin()) {
-//            $query->filterByCompany(Company::findOrFail(get_active_company()));
-        } else {
-            session()->forget('filters.campaign.index.company');
+
+        if (!$loggedUser->isAdmin()) {
+            $company = Company::findOrFail(get_active_company());
+            if ($company->isDealership()) {
+                $query->where('dealership_id', $company->id);
+            } else if ($company->isAgency()) {
+                $query->where('agency_id', $company->id);
+            }
         }
+
         if ($request->has('q')) {
             $query->filterByQuery($request->input('q'));
         } else {
             session()->forget('filters.campaign.index.q');
+        }
+
+        if ($request->has('company')) {
+            $query->filterByCompany(Company::findOrFail($request->input('company')));
+        } else {
+            session()->forget('filters.campaign.index.company');
         }
         return $query;
     }
