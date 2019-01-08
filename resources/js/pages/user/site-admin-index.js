@@ -7,6 +7,7 @@ import axios from 'axios';
 import VueToastr2 from 'vue-toastr-2'
 window.toastr = require('toastr');
 Vue.use(VueToastr2);
+import {generateRoute} from './../../common/helpers'
 
 window['app'] = new Vue({
     el: '#user-index',
@@ -76,12 +77,20 @@ window['app'] = new Vue({
         tableOptions: {
             mobile: 'lg'
         },
-        formUrl: ''
+        formUrl: '',
+        userEditUrl: '',
+        userImpersonateUrl: '',
+        userActivateUrl: '',
+        userDeactivateUrl: ''
     },
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
         this.companySelected = window.companySelected;
         this.searchForm.q = window.q;
+        this.userEditUrl = window.userEditUrl;
+        this.userImpersonateUrl = window.userImpersonateUrl;
+        this.userActivateUrl = window.userActivateUrl;
+        this.userDeactivateUrl = window.userDeactivateUrl;
 
         axios
             .get(window.getCompanyUrl, {
@@ -100,6 +109,7 @@ window['app'] = new Vue({
         this.fetchData();
     },
     methods: {
+        generateRoute,
         isActiveInCompany: function (user, companyId) {
             let isActive = false;
             user.companies.forEach(company => {

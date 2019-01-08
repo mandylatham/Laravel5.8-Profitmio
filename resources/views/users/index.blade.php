@@ -15,6 +15,10 @@
         window.searchFormUrl = "{{ route('user.for-user-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
         window.companySelected = @json($companySelected);
+        window.userEditUrl = "{{ route('user.edit', ['user' => ':userId']) }}";
+        window.userImpersonateUrl = "{{ route('admin.impersonate', ['user' => ':userId']) }}";
+        window.userActivateUrl = "{{ route('user.activate', ['user' => ':userId']) }}";
+        window.userDeactivateUrl = "{{ route('user.deactivate', ['user' => ':userId']) }}";
         window.q = @json($q);
     </script>
     @if (auth()->user()->isAdmin())
@@ -58,23 +62,23 @@
                             </ul>
                         </template>
                         <template slot="options" slot-scope="{row: user}">
-                            <a href="" class="btn btn-link pm-btn-link pm-btn-link-green" title="View">
-                                <i class="fas fa-external-link-alt"></i>
-                            </a>
-                            <a href="" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.is_admin">
+                            {{--<a :href="generateRoute(userViewUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-green" title="View">--}}
+                                {{--<i class="fas fa-external-link-alt"></i>--}}
+                            {{--</a>--}}
+                            <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.is_admin">
                                 <i class="far fa-edit"></i>
                             </a>
-                            <a href="" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="!user.is_admin && user.has_active_companies">
+                            <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="!user.is_admin && user.has_active_companies">
                                 <i class="far fa-eye"></i>
                             </a>
-                            <a href="" class="btn btn-link" title="Has Pending Invitations" v-if="!user.is_admin && user.has_pending_invitations">
+                            <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link" title="Has Pending Invitations" v-if="!user.is_admin && user.has_pending_invitations">
                                 <i class="fas fa-envelope"></i>
                             </a>
                             @if ($companySelected)
-                            <a href="" class="btn btn-link pm-btn-link pm-btn-link-green" title="Activate" v-if="!user.is_admin && isActiveInCompany(user, @json($companySelected->id))">
+                            <a :href="generateRoute(userActivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-green" title="Activate" v-if="!user.is_admin && isActiveInCompany(user, @json($companySelected->id))">
                                 <i class="far fa-check-circle"></i>
                             </a>
-                            <a href="" class="btn btn-link pm-btn-link pm-btn-link-danger" title="Deactivate" v-if="!user.is_admin && !isActiveInCompany(user, @json($companySelected->id))">
+                            <a :href="generateRoute(userDeactivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-danger" title="Deactivate" v-if="!user.is_admin && !isActiveInCompany(user, @json($companySelected->id))">
                                 <i class="far fa-times-circle"></i>
                             </a>
                             @endif

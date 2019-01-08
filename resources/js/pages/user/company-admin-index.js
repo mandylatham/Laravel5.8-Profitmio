@@ -6,6 +6,8 @@ import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import VueToastr2 from 'vue-toastr-2'
 window.toastr = require('toastr');
 Vue.use(VueToastr2);
+import {generateRoute} from './../../common/helpers'
+
 
 window['app'] = new Vue({
     el: '#company-user-index',
@@ -55,14 +57,23 @@ window['app'] = new Vue({
         tableOptions: {
             mobile: 'lg'
         },
-        formUrl: ''
+        formUrl: '',
+        userEditUrl: '',
+        userImpersonateUrl: '',
+        userActivateUrl: '',
+        userDeactivateUrl: ''
     },
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
         this.searchForm.q = window.q;
+        this.userEditUrl = window.userEditUrl;
+        this.userImpersonateUrl = window.userImpersonateUrl;
+        this.userActivateUrl = window.userActivateUrl;
+        this.userDeactivateUrl = window.userDeactivateUrl;
         this.fetchData();
     },
     methods: {
+        generateRoute,
         fetchData() {
             this.isLoading = true;
             this.searchForm
