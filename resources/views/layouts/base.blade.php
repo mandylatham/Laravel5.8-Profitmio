@@ -20,6 +20,17 @@
             @component('layouts.top-navbar')
             @endcomponent
             <div class="main-content">
+                @if (isset($hasSidebar) && $hasSidebar)
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="sidebar-toggler js-toggle-side-menu d-xl-none">
+                                @yield('sidebar-toggle-content')
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
                 @yield('main-content')
             </div>
         </div>

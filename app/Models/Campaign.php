@@ -204,16 +204,13 @@ class Campaign extends Model
                 $query->where('agency_id', $company->id);
             }
         } else if ($loggedUser->isAdmin() && $request->has('user')) {
-            // Return campaigns for user passed as parameter
-            $companiesId = array_pluck(User::findOrFail($request->input('user'))
-                ->companies()
-                ->select('company.id')
+            $campaignsId = \DB::table('campaign_user')
+                ->whereUserId($request->input('user'))
+                ->select('campaign_id')
                 ->get()
-                ->toArray(), ['id']);
-            $query->where(function($q) use ($companiesId) {
-                $q->where('agency_id', $companiesId)
-                    ->orWhere('dealership_id', $companiesId);
-            });
+                ->pluck('campaign_id')
+                ->toArray();
+            $query->whereIn('id', $campaignsId);
         }
 
         if ($request->has('q')) {

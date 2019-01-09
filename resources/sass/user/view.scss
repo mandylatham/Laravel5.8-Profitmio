@@ -5,7 +5,19 @@
 @import './../components/pm-pagination';
 
 #user-view {
+    padding: 55px 30px 20px 30px;
+    .card-header {
+        padding: 0;
+        background-color: transparent;
+        border-bottom: 1px solid $brand-purple;
+        .nav {
+            margin: 0;
+            background-color: transparent;
+            border: none;
+        }
+    }
     .card {
+        background-color: transparent;
         border: none;
         .nav-tabs .nav-link {
             background-color: $brand-purple;
@@ -16,21 +28,17 @@
             border-radius: 0;
         }
         .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
-            background-color: $brand-blue;
-            color: #fff;
+            background-color: #fff;
+            color: $brand-purple;
             border: none;
+            border-top: 1px solid $brand-purple;
             height: 100%;
             padding: 0.7rem 2rem;
             border-radius: 0;
         }
     }
-    .card-header {
-        padding: 0;
-        .nav {
-            margin: 0;
-            border: none;
-            background-color: #fff;
-        }
+    .tab-content {
+        background-color: #fff;
     }
     .filter--v-select.v-select .vs__selected-options {
         border: 1px solid #ddd;
@@ -56,7 +64,69 @@
     .pm-pagination {
         margin-bottom: 2rem;
     }
-    @include media-breakpoint-up(lg) {
-        padding: 20px 30px 20px 30px;
+}
+
+.sidebar-wrapper {
+    padding: 2rem;
+    position: relative;
+    .avatar {
+        margin-bottom: 1.5rem;
+        position: relative;
+        &--image {
+            height: 120px;
+            width: 120px;
+            border-radius: 50%;
+            background-color: #fff;
+            margin: 0 auto;
+            position: relative;
+        }
+        &--edit {
+            padding: 0;
+            height: 30px;
+            width: 30px;
+            background-color: #fff;
+            border-radius: 50%;
+            border: 2px solid $brand-purple;
+            top: 0;
+            right: 0;
+            color: $brand-black;
+            position: absolute;
+        }
+    }
+    .edit-user, .delete-user {
+        margin: 0;
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1em;
+        padding: 0;
+        position: absolute;
+    }
+    .edit-user {
+        left: 1rem;
+        top: 1rem;
+    }
+    .delete-user {
+        right: 1rem;
+        bottom: 1rem;
+    }
+    .panel-data {
+        background-color: transparent;
+        color: #fff;
+        border: none;
+        border-bottom: 1px solid #fff;
+        border-radius: 0;
+        padding: 0.4rem 1rem;
+        line-height: 1em;
+        height: auto;
+    }
+    .form-group {
+        margin-bottom: 0.8rem;
+        label {
+            color: $brand-white;
+            font-size: 0.85rem;
+        }
     }
 }

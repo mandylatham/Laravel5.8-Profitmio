@@ -11,7 +11,11 @@
   }
 }
 .top-navbar {
-  height: $top-navbar-height;
+  height: $top-navbar-height-mobile;
+
+    @include media-breakpoint-up(sm) {
+        height: $top-navbar-height;
+    }
 }
 
 .top-navigation-bar {
@@ -26,6 +30,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
+
+      @include media-breakpoint-down(md) {
+          height: $top-navbar-height-mobile;
+      }
   }
 
   .navbar-menu {
@@ -61,6 +69,7 @@
       cursor: pointer;
       border-radius: 5px;
       display: flex;
+        height: 100%;
       align-items: center;
       color: $brand-white;
       text-decoration: none;
@@ -103,7 +112,11 @@
         display: inline-flex;
         flex-flow: column;
         font-size: .65rem;
-        height: $top-navbar-height;
+        //height: $top-navbar-height;
+        //
+        //  @include media-breakpoint-down(md) {
+        //      height: $top-navbar-height-mobile;
+        //  }
         align-items: center;
         justify-content: center;
         &.active, &:hover {

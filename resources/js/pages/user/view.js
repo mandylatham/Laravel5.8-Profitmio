@@ -84,7 +84,7 @@ window['app'] = new Vue({
     methods: {
         onCampaignCompanySelected() {
             this.searchCampaignForm.page = 1;
-            return this.fetchData();
+            return this.fetchCampaigns();
         },
         fetchCampaigns() {
             if (this.campaignCompanySelected) {
@@ -113,3 +113,10 @@ window['app'] = new Vue({
         }
     }
 });
+
+window['sidebar'] = new Vue({
+    el: '#sidebar',
+    data: {
+        enableInputs: false
+    }
+})
