@@ -1,22 +1,27 @@
 <template>
     <div class="row no-gutters media-template-component inactive">
-        <div class="col-4 col-md-2 media-template-postcard--image">
-            <media-type no-label :media_type="media_template.type"></media-type>
-        </div>
         <div class="col-12 col-md-5 media-template-header">
             <div class="media-template-header--title">
-                <strong>Template {{ media_template.id }}</strong>
-                <p>{{ media_template.name }}</p>
+                <p>Template {{ media_template.id }}</p>
+                <strong>{{ media_template.name }}</strong>
             </div>
         </div>
-        <div class="col-4 col-md-2 media-template-date">
+        <div class="col-4 col-md-2 media-template-postcard">
+            <media-type no-label :media_type="media_template.type"></media-type>
         </div>
-        <div class="col-4 col-md-3 media-template-chart">
+        <div class="col-4 col-md-2 media-template-date">
+            <span>Created On</span>
+            <span>{{ media_template.created_at | amDateFormat('MM.DD.YY') }}</span>
+        </div>
+        <div class="col-4 col-md-3 media-template-links">
+            <a :href="generateRoute(templateEdit, {'templateId': media_template.id})"><span class="fa fa-edit"></span> Edit</a>
+            <a :href="generateRoute(templateDelete, {'templateId': media_template.id})"><span class="fa fa-trash"></span> Delete</a>
         </div>
     </div>
 </template>
 <script>
     import moment from 'moment';
+    import {generateRoute} from './../../common/helpers'
 
     export default {
         components: {
@@ -33,8 +38,14 @@
         },
         data() {
             return {
-                mediaTemplateClosed: true
+                mediaTemplateClosed: true,
+                templateEdit: '',
+                templateDelete: ''
             };
+        },
+        mounted: function () {
+            this.templateEdit = window.templateEdit;
+            this.templateDelete = window.templateDelete;
         },
         computed: {
             template_text: function () {
@@ -49,6 +60,7 @@
             }
         },
         methods: {
+            generateRoute
         }
     }
 </script>

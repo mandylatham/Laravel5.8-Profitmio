@@ -10,6 +10,9 @@
     width: 75px;
     background-color: $brand-purple;
     color: #fff;
+    @include media-breakpoint-down(md) {
+      border-top: 6px solid $brand-purple;
+    }
     &--status {
       flex-grow: 1;
       display: inline-flex;
@@ -29,15 +32,14 @@
       }
       p {
         font-weight: 300;
-        margin-top: 0.7em;
+        margin: 0 0 0.7em 0;
       }
     }
   }
   .media-template-postcard {
-    height: 55%;
-    background-color: #fff;
+    background-color: $brand-purple;
     padding: 1rem 2rem;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     border-top: 3px solid $brand-white;
@@ -47,33 +49,10 @@
       border-top: none;
       border-bottom: none;
     }
-    &--image, &--value{
-      flex-grow: 1;
-      flex-shrink: 0;
-    }
-    &--image {
-      text-align: center;
-      img {
-        height: 100%;
-        max-width: 100%;
-      }
-    }
-    &--value {
-      flex-grow: 1;
-      line-height: 1.5em;
-      padding-left: 2rem;
-      strong {
-        margin-bottom: 4px;
-        display: inline-block;
-      }
-      p {
-        margin: 0;
-      }
-    }
   }
   .media-type-icon {
     font-size: 35px;
-    color: #20004a;
+    color: #fff;
   }
   .media-template-date {
     background-color: #fff;
@@ -123,44 +102,6 @@
       }
       &:last-child {
         margin-bottom: 0;
-      }
-    }
-  }
-  .media-template-chart {
-    background-color: #fff;
-    padding: 0.5rem;
-
-    &--labels {
-      padding-left: 10px;
-
-      span {
-        position: relative;
-        display: block;
-        padding-left: 10px;
-        font-size: 13px;
-
-        &::after {
-          content: '';
-          position: absolute;
-          width: 10px;
-          height: 10px;
-          border-radius: 50%;
-          left: -10px;
-          top: 50%;
-          margin-top: -5px;
-        }
-
-        &.sms::after {
-          background-color: $brand-purple;
-        }
-
-        &.call::after {
-          background-color: $brand-yellow;
-        }
-
-        &.email::after {
-          background-color: $brand-blue;
-        }
       }
     }
   }

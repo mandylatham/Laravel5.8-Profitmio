@@ -9,6 +9,8 @@ window.toastr = require('toastr');
 Vue.use(VueToastr2);
 // Chart Library
 import {filter} from 'lodash';
+import Modal from 'bootstrap-vue'
+Vue.use(Modal);
 
 window['app'] = new Vue({
     el: '#template-index',
