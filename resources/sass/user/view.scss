@@ -5,7 +5,22 @@
 @import './../components/pm-pagination';
 
 #user-view {
-    padding: 55px 30px 20px 30px;
+    margin-top: 1rem;
+    .campaign-component {
+        .campaign-postcard {
+            background-color: $brand-white;
+            border-top-color: #fff;
+            border-bottom-color: #fff;
+        }
+        .campaign-date {
+            background-color: $brand-white;
+            border-left-color: #fff;
+            border-right-color: #fff;
+        }
+        .campaign-links {
+            background-color: $brand-white;
+        }
+    }
     .card-header {
         padding: 0;
         background-color: transparent;

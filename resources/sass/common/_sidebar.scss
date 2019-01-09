@@ -40,19 +40,10 @@
 
 .sidebar-toggler {
     padding: 5px 10px;
+    margin-top: 1rem;
     display: inline-block;
     background-color: #fff;
     color: $brand-purple;
     border-radius: 0 5px 5px 0;
     cursor: pointer;
-    position: absolute;
-    top: 55px;
-    right: -30px;
-    transform: translateX(100%);
-    transition: right 150ms linear;
-
-    @include media-breakpoint-up(sm) {
-        top: 90px;
-        right: -55px;
-    }
 }
