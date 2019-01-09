@@ -243,4 +243,13 @@ class UserController extends Controller
     {
         //
     }
+
+    public function view(User $user)
+    {
+        return view('users.view', [
+            'user' => $user,
+            'campaignCompanySelected' => $this->company->find(session('filters.user.view.campaign-company-selected')),
+            'q' => session('filters.user.view.campaign-q')
+        ]);
+    }
 }

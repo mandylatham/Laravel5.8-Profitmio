@@ -20,6 +20,8 @@ mix.js('resources/js/pages/campaign/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/user/site-admin-index.scss', 'public/css/site-admin-user-index.css')
     .js('resources/js/pages/user/company-admin-index.js', 'public/js/company-admin-user-index.js')
     .sass('resources/sass/user/company-admin-index.scss', 'public/css/company-admin-user-index.css')
+    .js('resources/js/pages/user/view.js', 'public/js/user-view.js')
+    .sass('resources/sass/user/view.scss', 'public/css/user-view.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');
