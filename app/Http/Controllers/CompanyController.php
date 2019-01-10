@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CompanyCollection;
 use App\Models\Campaign;
 use App\Classes\CampaignUserActivityLog;
 use App\Classes\CompanyUserActivityLog;
@@ -84,12 +85,12 @@ class CompanyController extends Controller
      */
     public function getForUserDisplay(Request $request)
     {
-        $companies = $this->company->orderBy('id', 'desc');
-        if ($request->has('q')) {
-            session(['filters.company.get-all.q' => $request->input('q')]);
-            $companies->search($request->input('q'));
-        }
-        return $companies->paginate($request->input('per_page', 15));
+        $companies = $this->company
+            ->searchByRequest($request)
+            ->orderBy('id', 'desc')
+            ->paginate(15);
+
+        return new CompanyCollection($companies);
     }
 
     /**
