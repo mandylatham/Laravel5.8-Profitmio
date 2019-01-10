@@ -55,9 +55,6 @@
     .tab-content {
         background-color: #fff;
     }
-    .filter--v-select.v-select .vs__selected-options {
-        border: 1px solid #ddd;
-    }
     .loader-spinner {
         position: absolute;
         top: 0;
@@ -78,6 +75,88 @@
     }
     .pm-pagination {
         margin-bottom: 2rem;
+    }
+    .company {
+        background-color: $brand-white;
+        border-radius: 5px;
+        margin-bottom: 0.3rem;
+        &-info {
+            display: flex;
+            flex-flow: row;
+            padding: 0.5rem;
+            border-right: 3px solid #fff;
+            &--image {
+                width: 30%;
+                flex-grow: 0;
+                flex-shrink: 0;
+            }
+            &--data {
+                padding-left: 1rem;
+                display: flex;
+                flex-flow: column;
+                justify-content: center;
+                p {
+                    margin: 0;
+                }
+            }
+        }
+        &-role {
+            border-right: 3px solid #fff;
+            background-color: $brand-white;
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
+            padding: 1rem;
+        }
+        &-phone {
+            border-right: 3px solid #fff;
+            background-color: $brand-white;
+            color: $brand-purple;
+            display: flex;
+            flex-flow: row;
+            justify-content: center;
+            padding: 1rem;
+            align-items: center;
+        }
+        &-active-campaigns {
+            background-color: $brand-white;
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
+            padding: 1rem;
+            align-items: center;
+            div {
+                display: flex;
+                flex-flow: row;
+                align-items: center;
+                justify-content: center;
+                margin-top: 0.2rem;
+            }
+            .pm-font-campaigns-icon {
+                font-size: 1.3rem;
+                margin-right: 0.3rem;
+                color: $brand-purple;
+            }
+            &--counter {
+                width: 20px;
+                height: 20px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                background-color: $brand-blue;
+                border-radius: 50%;
+                color: #fff;
+                font-size: 1rem;
+                font-weight: 300;
+            }
+        }
+        &-timezone {
+            border-right: 3px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem;
+        }
     }
 }
 

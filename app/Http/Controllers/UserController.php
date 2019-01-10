@@ -248,6 +248,7 @@ class UserController extends Controller
     {
         return view('users.view', [
             'user' => $user,
+            'timezones' => $user->getPossibleTimezonesForUser(),
             'campaignCompanySelected' => $this->company->find(session('filters.user.view.campaign-company-selected')),
             'q' => session('filters.user.view.campaign-q')
         ]);

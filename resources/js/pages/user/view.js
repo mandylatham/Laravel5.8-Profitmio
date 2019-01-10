@@ -11,6 +11,8 @@ Vue.use(VueToastr2);
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
 import {filter} from 'lodash';
+import './../../filters/user-role.filter';
+import {generateRoute} from './../../common/helpers';
 
 Vue.use(VueChartkick, {adapter: Chart});
 
@@ -22,6 +24,9 @@ window['app'] = new Vue({
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
     },
     computed: {
+        countCompanies: function () {
+            return this.companiesForList.length;
+        },
         countActiveCampaigns: function () {
             return filter(this.campaigns, {
                 status: 'Active'
@@ -31,6 +36,13 @@ window['app'] = new Vue({
             return filter(this.campaigns, item => {
                 return item.status !== 'Active';
             }).length;
+        },
+        companiesPagination: function () {
+            return {
+                page: this.searchCompanyForm.page,
+                per_page: this.searchCompanyForm.per_page,
+                total: this.totalCompanies
+            };
         },
         campaignsPagination: function () {
             return {
@@ -42,6 +54,12 @@ window['app'] = new Vue({
     },
     data: {
         searchCampaignFormUrl: null,
+        searchCompanyForm: new Form({
+            q: null,
+            page: 1,
+            per_page: 15,
+            user: null
+        }),
         searchCampaignForm: new Form({
             company: null,
             q: null,
@@ -49,18 +67,25 @@ window['app'] = new Vue({
             per_page: 15,
             user: null
         }),
+        editUserForm: new Form(window.user),
+        loadingCompanies: true,
         loadingCampaigns: true,
         total: null,
+        totalForCompanies: null,
         campaigns: [],
         companies: [],
+        companiesForList: [],
+        roles: ['site_admin', 'user'],
         searchTerm: '',
         campaignCompanySelected: null,
         tableOptions: {
             mobile: 'lg'
         },
+        timezones: [],
         formUrl: ''
     },
     mounted() {
+        this.timezones = window.timezones;
         this.campaignCompanySelected = window.campaignCompanySelected;
         this.searchCampaignForm.q = window.q;
 
@@ -80,8 +105,21 @@ window['app'] = new Vue({
             });
 
         this.fetchCampaigns();
+        this.fetchCompanies();
     },
     methods: {
+        companyDataUpdated(company) {
+            axios
+                .post(generateRoute(window.updateCompanyDataUrl, {'userId': window.user.id}), {
+                    company: company.id,
+                    role: company.role,
+                    timezone: company.timezone
+                })
+                .then(response => {
+                }, () => {
+                    this.$toastr.error('Unable to process your request');
+                });
+        },
         onCampaignCompanySelected() {
             this.searchCampaignForm.page = 1;
             return this.fetchCampaigns();
@@ -107,10 +145,30 @@ window['app'] = new Vue({
                     this.$toastr.error("Unable to get campaigns");
                 });
         },
+        fetchCompanies() {
+            this.searchCompanyForm.user = window.user.id;
+            this.loadingCompanies = true;
+            this.searchCompanyForm
+                .get(window.searchCompaniesFormUrl)
+                .then(response => {
+                    this.companiesForList = response.data;
+                    this.searchCompanyForm.page = response.meta.current_page;
+                    this.searchCompanyForm.per_page = response.meta.per_page;
+                    this.totalCompanies = response.meta.total;
+                    this.loadingCompanies = false;
+                })
+                .catch(error => {
+                    this.$toastr.error("Unable to get campaigns");
+                });
+        },
         onCampaignPageChanged(event) {
             this.searchCampaignForm.page = event.page;
             return this.fetchCampaigns();
-        }
+        },
+        onCompanyPageChanged(event) {
+            this.searchCompanyForm.page = event.page;
+            return this.fetchCompanies();
+        },
     }
 });
 

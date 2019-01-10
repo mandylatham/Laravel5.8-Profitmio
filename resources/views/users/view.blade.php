@@ -9,8 +9,11 @@
 @section('body-script')
     <script>
         window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
+        window.searchCompaniesFormUrl = "{{ route('company.for-user-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
         window.campaignCompanySelected = @json($campaignCompanySelected);
+        window.timezones = @json($timezones);
+        window.updateCompanyDataUrl = "{{ route('user.update-company-data', ['user' => ':userId']) }}";
         window.user = @json($user);
         window.q = @json($q);
     </script>
@@ -34,11 +37,9 @@
     </button>
     <button class="btn pm-btn pm-btn-danger delete-user" type="button"><i class="fas fa-trash-alt"></i></button>
     <form class="clearfix" class="form" method="post" action="{{ route('user.update', ['user' => $user->id]) }}">
-        {{ csrf_field() }}
         <div class="form-group">
             <label for="first_name">First Name</label>
-            <input type="text" class="form-control empty" name="first_name" placeholder="First Name"
-                   value="{{ old('first_name') ?? $user->first_name }}" required v-if="enableInputs">
+            <input type="text" class="form-control empty" name="first_name" placeholder="First Name" v-model="editUserForm.first_name" required v-if="enableInputs">
             <p class="form-control panel-data" v-if="!enableInputs">{{ $user->first_name }}</p>
         </div>
         <div class="form-group">
@@ -98,6 +99,66 @@
                     </div>
                 </b-tab>
                 <b-tab title="COMPANY">
+                    <div class="row align-items-end no-gutters mb-md-4" v-if="countCompanies > 0">
+                        <div class="col-12 col-sm-5 col-lg-4">
+                        </div>
+                        <div class="col-none col-sm-2 col-lg-4"></div>
+                        <div class="col-12 col-sm-5 col-lg-4">
+                            <input type="text" v-model="searchCompanyForm.q" class="form-control filter--search-box" aria-describedby="search"
+                                   placeholder="Search" @keyup.enter="fetchCompanies">
+                        </div>
+                    </div>
+                    <div class="row align-items-end no-gutters mt-3">
+                        <div class="col-12">
+                            <div class="loader-spinner" v-if="loadingCompanies">
+                                <spinner-icon></spinner-icon>
+                            </div>
+                            <div class="no-items-row" v-if="countCompanies === 0">
+                                No Items
+                            </div>
+                            <div class="company" v-for="company in companiesForList">
+                                <div class="row no-gutters">
+                                    <div class="col-12 col-md-4 company-info">
+                                        <div class="company-info--image">
+                                            <img src="" alt="">
+                                        </div>
+                                        <div class="company-info--data">
+                                            <strong>@{{ company.name }}</strong>
+                                            <p>@{{ company.address }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-md-3 company-role">
+                                        <v-select :options="roles" v-model="company.role" class="filter--v-select" @input="companyDataUpdated(company)">
+                                            <template slot="selected-option" slot-scope="option">
+                                                @{{ option.label | userRole }}
+                                            </template>
+                                            <template slot="option" slot-scope="option">
+                                                @{{ option.label | userRole }}
+                                            </template>
+                                        </v-select>
+                                    </div>
+                                    <div class="col-4 col-md-3 company-timezone">
+                                        <v-select :options="timezones" v-model="company.timezone" class="filter--v-select" @input="companyDataUpdated(company)">
+                                            <template slot="selected-option" slot-scope="option">
+                                                @{{ option.label }}
+                                            </template>
+                                            <template slot="option" slot-scope="option">
+                                                @{{ option.label }}
+                                            </template>
+                                        </v-select>
+                                    </div>
+                                    <div class="col-4 col-md-2 company-active-campaigns">
+                                        <small>Active Campaigns</small>
+                                        <div>
+                                            <span class="pm-font-campaigns-icon"></span>
+                                            <span class="company-active-campaigns--counter">@{{ company.active_campaigns }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <pm-pagination v-if="countCompanies > 0" :pagination="companiesPagination" @page-changed="onCompanyPageChanged"></pm-pagination>
+                        </div>
+                    </div>
                 </b-tab>
             </b-tabs>
         </b-card>
