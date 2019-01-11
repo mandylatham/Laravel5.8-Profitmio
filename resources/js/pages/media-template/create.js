@@ -36,7 +36,7 @@ Vue.directive('template-variable-swap', function (el, binding) {
 window['app'] = new Vue({
     el: '#template-details',
     components: {
-        'media-template-detail': require('./../../components/media-template/detail'),
+        'media-template-detail': require('./../../components/media-template/create'),
     },
     computed: {
     },

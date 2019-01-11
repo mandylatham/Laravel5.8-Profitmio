@@ -126,8 +126,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/templates/for-user-display', 'TemplateController@getForUserDisplay')->name('template.for-user-display')->middleware('can:view-templates');
     Route::group(['prefix' => 'template'], function () {
         Route::get('', 'TemplateController@index')->name('template.index')->middleware('can:view-templates');
-        Route::get('/new', 'TemplateController@newForm')->name('template.create')->middleware('can:change-templates');
-        Route::post('', 'TemplateController@create')->name('template.store')->middleware('can:change-templates');
+        Route::get('/create-form', 'TemplateController@createForm')->name('template.create-form')->middleware('can:change-templates');
+        Route::post('/create', 'TemplateController@create')->name('template.create')->middleware('can:change-templates');
         Route::group(['prefix' => '{template}', 'middleware' => 'can:view-templates'], function () {
             Route::get('/', 'TemplateController@show')->name('template.show');
             Route::post('/json', 'TemplateController@showJson')->name('template.show-json');

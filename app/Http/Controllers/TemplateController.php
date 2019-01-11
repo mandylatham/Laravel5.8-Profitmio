@@ -9,11 +9,11 @@ use Illuminate\Http\Request;
 
 class TemplateController extends Controller
 {
-    public function newForm()
+    public function createForm()
     {
         $viewData = [];
 
-        return view('templates.new', $viewData);
+        return view('template.create', $viewData);
     }
 
     public function create(NewTemplateRequest $request)
