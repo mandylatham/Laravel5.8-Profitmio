@@ -102,6 +102,9 @@ window['app'] = new Vue({
         this.fetchCompanies();
     },
     methods: {
+        canEditCompanyData(company) {
+            return window.userRole === 'site_admin' ||  (window.userRole === 'admin' && company.role === 'user');
+        },
         companyDataUpdated(company) {
             axios
                 .post(generateRoute(window.updateCompanyDataUrl, {'userId': window.user.id}), {

@@ -108,31 +108,31 @@
                             <span class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
                         </template>
                         <template slot="type" slot-scope="{row: user}">
-                            <user-role class="ml-2" :role="user.role"></user-role>
+                            <user-role class="ml-2" :role="user.role" :short-version="false"></user-role>
                         </template>
                         <template slot="mail" slot-scope="{row: user}">
-                            <span class="pm-font-mail-icon mr-2"></span>@{{ user.mail || '--' }}
+                            <span class="pm-font-mail-icon mr-2"></span>@{{ user.email || '--' }}
                         </template>
                         <template slot="phone_number" slot-scope="{row}">
                             <span class="pm-font-phone-icon mr-2"></span>@{{ row.phone_number || '--' }}
                         </template>
                         <template slot="status" slot-scope="{row: user}">
-                            <user-status :status="user.status"></user-status>
+                            <status :active="user.is_active"></status>
                         </template>
                         <template slot="options" slot-scope="{row: user}">
-                            <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.is_admin">
+                            <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.role === 'user'">
                                 <i class="far fa-edit"></i>
                             </a>
-                            <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="!user.is_admin && user.has_active_companies">
+                            <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="user.role === 'user' && user.has_active_companies">
                                 <i class="far fa-eye"></i>
                             </a>
-                            <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link" title="Has Pending Invitations" v-if="!user.is_admin && user.has_pending_invitations">
+                            <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link" title="Has Pending Invitations" v-if="user.role === 'user' && user.has_pending_invitations">
                                 <i class="fas fa-envelope"></i>
                             </a>
-                            <a :href="generateRoute(userActivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-green" title="Activate" v-if="!user.is_admin && isActiveInCompany(user, @json($companySelected->id))">
+                            <a :href="generateRoute(userActivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-green" title="Activate" v-if="user.role === 'user' && !user.is_active">
                                 <i class="far fa-check-circle"></i>
                             </a>
-                            <a :href="generateRoute(userDeactivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-danger" title="Deactivate" v-if="!user.is_admin && !isActiveInCompany(user, @json($companySelected->id))">
+                            <a :href="generateRoute(userDeactivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-danger" title="Deactivate" v-if="user.role === 'user' && user.is_active">
                                 <i class="far fa-times-circle"></i>
                             </a>
                         </template>

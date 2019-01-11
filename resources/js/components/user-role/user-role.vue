@@ -1,5 +1,5 @@
 <template>
-    <span class="user-role-component badge" :class="classesToAdd" :title="title">{{ role | userRole(true) }}</span>
+    <span class="user-role-component badge" :class="classesToAdd" :title="title">{{ role | userRole(shortVersion) }}</span>
 </template>
 <script>
     export default {
@@ -7,6 +7,11 @@
             role: {
                 type: String,
                 required: true,
+            },
+            shortVersion: {
+                type: Boolean,
+                required: false,
+                default: true
             }
         },
         computed: {

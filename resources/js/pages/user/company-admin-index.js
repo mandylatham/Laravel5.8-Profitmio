@@ -1,18 +1,18 @@
 import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
-import 'vue-toastr-2/dist/vue-toastr-2.min.css'
-// Toastr Library
-import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
 import {generateRoute} from './../../common/helpers'
 
 
 window['app'] = new Vue({
     el: '#company-user-index',
     components: {
-        'pm-responsive-table': require('./../../components/pm-responsive-table/pm-responsive-table')
+        'pm-responsive-table': require('./../../components/pm-responsive-table/pm-responsive-table'),
+        'user-role': require('./../../components/user-role/user-role'),
+        'status': require('./../../components/status/status')
+    },
+    filters: {
+        'userRole': require('./../../filters/user-role.filter')
     },
     computed: {
         pagination: function () {

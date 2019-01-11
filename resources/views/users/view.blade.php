@@ -137,7 +137,7 @@
                                         </div>
                                     </div>
                                     <div class="col-4 col-md-3 company-role">
-                                        <v-select :options="roles" v-model="company.role" class="filter--v-select" @input="companyDataUpdated(company)">
+                                        <v-select :options="roles" :disabled="!canEditCompanyData(company)" v-model="company.role" class="filter--v-select" @input="companyDataUpdated(company)">
                                             <template slot="selected-option" slot-scope="option">
                                                 @{{ option.label | userRole }}
                                             </template>
@@ -147,7 +147,7 @@
                                         </v-select>
                                     </div>
                                     <div class="col-4 col-md-3 company-timezone">
-                                        <v-select :options="timezones" v-model="company.timezone" class="filter--v-select" @input="companyDataUpdated(company)">
+                                        <v-select :options="timezones" :disabled="!canEditCompanyData(company)" v-model="company.timezone" class="filter--v-select" @input="companyDataUpdated(company)">
                                             <template slot="selected-option" slot-scope="option">
                                                 @{{ option.label }}
                                             </template>

@@ -24,6 +24,12 @@ class User extends JsonResource
             'companies' => $this->when(auth()->user()->isAdmin(), function () {
                 return Company::collection($this->companies);
             }),
+            'is_active' => $this->when(!auth()->user()->isAdmin(), function () {
+                return (bool) $this->resource->isActive(get_active_company());
+            }),
+            'role' => $this->when(!auth()->user()->isAdmin(), function () {
+                return $this->resource->getRole(\App\Models\Company::findOrFail(get_active_company()));
+            }),
             'has_active_companies' => $this->hasActiveCompanies(),
             'has_pending_invitations' => $this->hasPendingInvitations()
         ];

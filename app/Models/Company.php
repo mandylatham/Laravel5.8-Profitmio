@@ -125,6 +125,8 @@ class Company extends Model
                 ->get()
                 ->pluck('id');
             $query->whereIn('id', $companiesId);
+        } else if (!$loggedUser->isAdmin() && $request->has('user')) {
+            $query->where('id', get_active_company());
         } else if (!$loggedUser->isAdmin()) {
             $campaignsCompanyIds = Campaign::select('dealership_id', 'agency_id')
                 ->where(function ($query) {

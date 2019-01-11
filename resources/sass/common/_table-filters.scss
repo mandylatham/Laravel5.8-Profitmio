@@ -18,6 +18,12 @@
             border: 1px solid $brand-gray;
         }
 
+        &.disabled {
+            .dropdown-toggle, .dropdown-toggle .clear, .dropdown-toggle input, .open-indicator, .selected-tag .close{
+                background-color: inherit;
+            }
+        }
+
         &.open {
             .open-indicator:before {
                 transform: rotate(315deg) translate(-2px, 3px);
