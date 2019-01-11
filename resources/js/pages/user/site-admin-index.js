@@ -133,7 +133,6 @@ window['app'] = new Vue({
             this.searchForm.get(this.searchFormUrl)
                 .then(response => {
                     this.users = response.data;
-                    console.log('this.users', this.users);
                     this.searchForm.page = response.meta.current_page;
                     this.searchForm.per_page = response.meta.per_page;
                     this.total = response.meta.total;

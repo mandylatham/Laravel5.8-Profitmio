@@ -11,8 +11,6 @@ Vue.use(VueToastr2);
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
 import {filter} from 'lodash';
-import './../../filters/user-role.filter';
-import {generateRoute} from './../../common/helpers';
 
 Vue.use(VueChartkick, {adapter: Chart});
 
@@ -25,6 +23,7 @@ window['app'] = new Vue({
     },
     computed: {
         countCompanies: function () {
+            console.log('this', this);
             return this.companiesForList.length;
         },
         countActiveCampaigns: function () {
@@ -36,13 +35,6 @@ window['app'] = new Vue({
             return filter(this.campaigns, item => {
                 return item.status !== 'Active';
             }).length;
-        },
-        companiesPagination: function () {
-            return {
-                page: this.searchCompanyForm.page,
-                per_page: this.searchCompanyForm.per_page,
-                total: this.totalCompanies
-            };
         },
         campaignsPagination: function () {
             return {
@@ -70,21 +62,17 @@ window['app'] = new Vue({
         loadingCompanies: true,
         loadingCampaigns: true,
         total: null,
-        totalForCompanies: null,
         campaigns: [],
         companies: [],
         companiesForList: [],
-        roles: ['site_admin', 'user'],
         searchTerm: '',
         campaignCompanySelected: null,
         tableOptions: {
             mobile: 'lg'
         },
-        timezones: [],
         formUrl: ''
     },
     mounted() {
-        this.timezones = window.timezones;
         this.campaignCompanySelected = window.campaignCompanySelected;
         this.searchCampaignForm.q = window.q;
 
@@ -107,18 +95,6 @@ window['app'] = new Vue({
         this.fetchCompanies();
     },
     methods: {
-        companyDataUpdated(company) {
-            axios
-                .post(generateRoute(window.updateCompanyDataUrl, {'userId': window.user.id}), {
-                    company: company.id,
-                    role: company.role,
-                    timezone: company.timezone
-                })
-                .then(response => {
-                }, () => {
-                    this.$toastr.error('Unable to process your request');
-                });
-        },
         onCampaignCompanySelected() {
             this.searchCampaignForm.page = 1;
             return this.fetchCampaigns();
@@ -150,10 +126,12 @@ window['app'] = new Vue({
             this.searchCompanyForm
                 .get(window.searchCompaniesFormUrl)
                 .then(response => {
+                    console.log('response', response);
+                    console.log('this', this);
                     this.companiesForList = response.data;
-                    this.searchCompanyForm.page = response.meta.current_page;
-                    this.searchCompanyForm.per_page = response.meta.per_page;
-                    this.totalCompanies = response.meta.total;
+                    this.searchCompanyForm.page = response.current_page;
+                    this.searchCompanyForm.per_page = response.per_page;
+                    this.totalCompanies = response.total;
                     this.loadingCompanies = false;
                 })
                 .catch(error => {
@@ -163,71 +141,13 @@ window['app'] = new Vue({
         onCampaignPageChanged(event) {
             this.searchCampaignForm.page = event.page;
             return this.fetchCampaigns();
-        },
-        onCompanyPageChanged(event) {
-            this.searchCompanyForm.page = event.page;
-            return this.fetchCompanies();
-        },
+        }
     }
 });
 
 window['sidebar'] = new Vue({
     el: '#sidebar',
-    components: {
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-    },
     data: {
-        loading: false,
-        enableInputs: false,
-        editUserForm: new Form(window.user),
-        user: {}
-    },
-    methods: {
-        saveUser: function () {
-            this.loading = true;
-            this.editUserForm
-                .post(generateRoute(window.updateUserUrl, {userId: window.user.id}))
-                .then(() => {
-                    this.enableInputs = false;
-                    this.$toastr.success('User updated!');
-                    this.loading = false;
-                    this.user = this.editUserForm.data();
-                })
-                .catch(e => {
-                    this.$toastr.error("Unable to process your request");
-                    this.loading = false;
-                });
-        },
-        deleteUser: function () {
-            this.$swal({
-                title: "Are you sure?",
-                text: "You will not be able to undo this operation!",
-                type: "warning",
-                showCancelButton: true,
-                confirmButtonColor: "#DD6B55",
-                confirmButtonText: "Yes",
-                cancelButtonText: "No",
-                allowOutsideClick: false,
-                showLoaderOnConfirm: true,
-                preConfirm: () => {
-                    return axios.delete(window.deleteUserUrl);
-                }
-            }).then(result => {
-                if (result.value) {
-                    this.$swal({
-                        title: 'User Deleted',
-                        type: 'success',
-                        allowOutsideClick: false
-                    }).then(() => {
-                        window.location.replace(window.userIndexUrl);
-                    });
-                }
-            }, error => {
-                this.$toastr.error('Unable to process your request');
-            });
-        }
-    },
-    mounted: function () {
-        this.user = window.user;
+        enableInputs: false
     }
-});
+})

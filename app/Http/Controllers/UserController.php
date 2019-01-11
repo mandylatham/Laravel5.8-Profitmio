@@ -82,6 +82,11 @@ class UserController extends Controller
         return redirect()->back();
     }
 
+    public function delete(User $user, Request $request)
+    {
+        $user->delete();
+    }
+
     /**
      * @param StoreUserRequest $request
      * @return \Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector

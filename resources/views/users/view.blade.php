@@ -16,7 +16,9 @@
         window.timezones = @json($timezones);
         window.updateCompanyDataUrl = "{{ route('user.update-company-data', ['user' => ':userId']) }}";
         window.user = @json($user);
+        window.deleteUserUrl = "{{ route('user.delete', ['user' => $user->id]) }}";
         window.q = @json($q);
+        window.userIndexUrl = "{{ route('user.index') }}";
     </script>
     <script src="{{ asset('js/user-view.js') }}"></script>
 @endsection
@@ -66,7 +68,9 @@
             </div>
         </button>
     </form>
-    <button class="btn pm-btn pm-btn-danger delete-user" type="button"><i class="fas fa-trash-alt"></i></button>
+    @if (auth()->user()->isAdmin() && !$user->isAdmin())
+    <button class="btn pm-btn pm-btn-danger delete-user" type="button" @click="deleteUser"><i class="fas fa-trash-alt"></i></button>
+    @endif
 @endsection
 
 @section('main-content')

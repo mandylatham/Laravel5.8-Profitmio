@@ -22,3 +22,6 @@ Vue.use(Navbar);
 import './pm-icons';
 // Filters
 import './../filters/global-filters';
+// Sweet Alert
+import VueSweetalert2 from 'vue-sweetalert2';
+Vue.use(VueSweetalert2);
