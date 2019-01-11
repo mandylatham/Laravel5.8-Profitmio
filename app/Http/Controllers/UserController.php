@@ -208,7 +208,9 @@ class UserController extends Controller
     {
         $user->update($request->except(['password']));
 
-        return response()->redirectToRoute('user.edit', ['user' => $user->id]);
+        return response()->json([]);
+
+//        return response()->redirectToRoute('user.edit', ['user' => $user->id]);
     }
 
     public function updateForm(User $user)

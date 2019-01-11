@@ -67,7 +67,6 @@ window['app'] = new Vue({
             per_page: 15,
             user: null
         }),
-        editUserForm: new Form(window.user),
         loadingCompanies: true,
         loadingCampaigns: true,
         total: null,
@@ -174,7 +173,33 @@ window['app'] = new Vue({
 
 window['sidebar'] = new Vue({
     el: '#sidebar',
+    components: {
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+    },
     data: {
-        enableInputs: false
+        loading: false,
+        enableInputs: false,
+        editUserForm: new Form(window.user),
+        user: {}
+    },
+    methods: {
+        saveUser: function () {
+            this.loading = true;
+            this.editUserForm
+                .post(generateRoute(window.updateUserUrl, {userId: window.user.id}))
+                .then(() => {
+                    this.enableInputs = false;
+                    this.$toastr.success('User updated!');
+                    this.loading = false;
+                    this.user = this.editUserForm.data();
+                })
+                .catch(e => {
+                    this.$toastr.error("Unable to process your request");
+                    this.loading = false;
+                });
+        }
+    },
+    mounted: function () {
+        this.user = window.user;
     }
-})
+});

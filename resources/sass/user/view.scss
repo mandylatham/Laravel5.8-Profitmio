@@ -196,15 +196,15 @@
         justify-content: center;
         line-height: 1em;
         padding: 0;
-        position: absolute;
     }
     .edit-user {
-        left: 1rem;
+        position: absolute;
+        left: 2rem;
         top: 1rem;
     }
     .delete-user {
-        right: 1rem;
-        bottom: 1rem;
+        float: right;
+        margin-top: 3rem;
     }
     .panel-data {
         background-color: transparent;
@@ -221,6 +221,16 @@
         label {
             color: $brand-white;
             font-size: 0.85rem;
+        }
+    }
+    .loader-spinner {
+        .sk-circle {
+            margin: 0;
+            width: 15px;
+            height: 15px;
+            .sk-child:before {
+                background-color: #fff;
+            }
         }
     }
 }

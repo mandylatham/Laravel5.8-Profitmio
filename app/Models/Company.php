@@ -138,6 +138,18 @@ class Company extends Model
             });
             $query->whereIn('id', $campaignsCompanyIds);
         }
+
+        if ($request->has('q')) {
+            $query->filterByQuery($request->input('q'));
+        } else {
+            session()->forget('filters.company.index.q');
+        }
         return $query;
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        session(['filters.company.index.q' => $q]);
+        return $query->search($q);
     }
 }

@@ -33,7 +33,7 @@ class Company extends JsonResource
             $data['role'] = $userModel->getRole($this->resource);
             $data['timezone'] = $userModel->getTimezone($this->resource);
         }
-        $this->whenPivotLoaded('company_user', function () use ($data) {
+        $this->whenPivotLoaded('company_user', function () use (&$data) {
             $data['role'] = $this->pivot->role;
         });
         return $data;

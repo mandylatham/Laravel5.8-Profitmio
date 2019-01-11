@@ -12,6 +12,7 @@
         window.searchCompaniesFormUrl = "{{ route('company.for-user-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
         window.campaignCompanySelected = @json($campaignCompanySelected);
+        window.updateUserUrl = "{{ route('user.update', ['user' => ':userId']) }}";
         window.timezones = @json($timezones);
         window.updateCompanyDataUrl = "{{ route('user.update-company-data', ['user' => ':userId']) }}";
         window.user = @json($user);
@@ -32,36 +33,40 @@
             </button>
         </div>
     </div>
+    @if (auth()->user()->isAdmin() && !$user->isAdmin())
     <button class="btn pm-btn pm-btn-blue edit-user" @click="enableInputs = !enableInputs">
         <i class="fas fa-pencil-alt"></i>
     </button>
-    <button class="btn pm-btn pm-btn-danger delete-user" type="button"><i class="fas fa-trash-alt"></i></button>
-    <form class="clearfix" class="form" method="post" action="{{ route('user.update', ['user' => $user->id]) }}">
+    @endif
+    <form class="clearfix form" method="post" action="{{ route('user.update', ['user' => $user->id]) }}" @submit.prevent="saveUser">
         <div class="form-group">
             <label for="first_name">First Name</label>
             <input type="text" class="form-control empty" name="first_name" placeholder="First Name" v-model="editUserForm.first_name" required v-if="enableInputs">
-            <p class="form-control panel-data" v-if="!enableInputs">{{ $user->first_name }}</p>
+            <p class="form-control panel-data" v-if="!enableInputs">@{{ user.first_name }}</p>
         </div>
         <div class="form-group">
             <label for="last_name">Last Name</label>
-            <input type="text" class="form-control" name="last_name" placeholder="Last Name"
-                   value="{{ old('last_name') ?? $user->last_name }}" required v-if="enableInputs">
-            <p class="form-control panel-data" v-if="!enableInputs">{{ $user->last_name }}</p>
+            <input type="text" class="form-control" name="last_name" placeholder="Last Name" v-model="editUserForm.last_name" required v-if="enableInputs">
+            <p class="form-control panel-data" v-if="!enableInputs">@{{ user.last_name }}</p>
         </div>
         <div class="form-group">
             <label for="email">Email</label>
-            <input type="text" class="form-control" name="email" placeholder="Email"
-                   value="{{ old('email') ?? $user->email }}" required v-if="enableInputs">
-            <p class="form-control panel-data" v-if="!enableInputs">{{ $user->email }}</p>
+            <input type="text" class="form-control" name="email" placeholder="Email" v-model="editUserForm.email" required v-if="enableInputs">
+            <p class="form-control panel-data" v-if="!enableInputs">@{{ user.email }}</p>
         </div>
         <div class="form-group">
             <label for="phone_number">Phone Number</label>
-            <input type="text" class="form-control" name="phone_number" placeholder="Phone Number"
-                   value="{{ old('phone_number') ?? $user->phone_number }}" required v-if="enableInputs">
-            <p class="form-control panel-data" v-if="!enableInputs">{{ $user->phone_number }}</p>
+            <input type="text" class="form-control" name="phone_number" placeholder="Phone Number" v-model="editUserForm.phone_number" required v-if="enableInputs">
+            <p class="form-control panel-data" v-if="!enableInputs">@{{ user.phone_number }}</p>
         </div>
-        <button class="btn pm-btn pm-btn-purple float-left" type="button" v-if="enableInputs"><i class="fas fa-save mr-2"></i>Save</button>
+        <button class="btn pm-btn pm-btn-purple float-left mt-4" type="submit" :disabled="loading" v-if="enableInputs">
+            <span v-if="!loading"><i class="fas fa-save mr-2"></i>Save</span>
+            <div class="loader-spinner" v-if="loading">
+                <spinner-icon></spinner-icon>
+            </div>
+        </button>
     </form>
+    <button class="btn pm-btn pm-btn-danger delete-user" type="button"><i class="fas fa-trash-alt"></i></button>
 @endsection
 
 @section('main-content')
