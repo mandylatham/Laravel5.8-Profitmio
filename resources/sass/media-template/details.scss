@@ -49,4 +49,10 @@
     .template-name {
         border-left: 3px solid $brand-purple;
     }
+    .card-header {
+        padding: 2px 0px 2px 12px;
+        p {
+            margin-bottom: 0;
+        }
+    }
 }

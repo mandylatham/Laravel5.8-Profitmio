@@ -44,8 +44,8 @@ window['app'] = new Vue({
         template: {},
         toggleInputs: false,
         toggleNameInput: false,
-        updateUrl: null,
-        deleteUrl: null,
+        updateUrl: '',
+        deleteUrl: '',
         updateForm: new Form({
             name: null,
             text_message: null,

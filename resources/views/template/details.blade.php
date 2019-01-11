@@ -23,7 +23,7 @@
                     <i class="fas fa-chevron-left mr-1"></i>
                     Back
                 </a>
-                <media-template-detail :template="template" :updateUrl="updateUrl"></media-template-detail>
+                <media-template-detail :template="template" :url="updateUrl"></media-template-detail>
             </div>
         </div>
     </div>

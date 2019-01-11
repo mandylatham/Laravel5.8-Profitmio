@@ -46,10 +46,9 @@ class TemplateController extends Controller
         return view('template.details', $viewData);
     }
 
-    public function update(CampaignScheduleTemplate $template, NewTemplateRequest $request)
+    public function update(CampaignScheduleTemplate $template, Request $request)
     {
-        return response()->json(['status' => 'success']);
-        $template->fill($request->all());
+        $template->fill($request->input('params'));
 
         $template->save();
 
