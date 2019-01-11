@@ -29,9 +29,9 @@
 
                 <b-modal id="add-template-modal" hide-footer title="How do you want to add a template?">
                     <div class="add-template-buttons">
-                        <button class="btn btn-default">
+                        <a href="{{ route('template.create-form') }}" class="btn btn-default">
                             <i class="fa fa-code mr-2"></i>
-                            I have my own HTML</button>
+                            I have my own HTML</a>
                         <button class="btn btn-default">
                             <i class="fa fa-cogs mr-2"></i>
                             I need to build one from scratch</button>
