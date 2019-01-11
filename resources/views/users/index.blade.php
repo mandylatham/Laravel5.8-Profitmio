@@ -36,7 +36,7 @@
                     <a class="btn pm-btn pm-btn-blue float-right" href="{{ route('user.create') }}"><i class="fas fa-plus mr-3"></i>New User</a>
                 </div>
             </div>
-            <div class="row align-items-end no-gutters mb-md-3">
+            <div class="row align-items-end mb-3">
                 <div class="col-12 col-sm-5 col-lg-3">
                     <div class="form-group filter--form-group">
                         <label>Filter By Company</label>
@@ -49,44 +49,53 @@
                            placeholder="Search" @keyup.enter="fetchData()">
                 </div>
             </div>
-            <div class="row align-items-end no-gutters">
-                <div class="col-12">
-                    <pm-responsive-table :rows="users" :columns="columnData" :pagination="pagination" :disable-toggle="true" :is-loading="isLoading" @page-changed="onPageChanged">
-                        <template slot="id" slot-scope="{row: user}">
-                            <span class="user-id">ID: @{{ user.id }}</span>
-                            <span class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
-                            <user-role class="ml-2" :role="'site_admin'" v-if="user.is_admin"></user-role>
-                        </template>
-                        <template slot="phone_number" slot-scope="{row}">
-                            <span class="pm-font-phone-icon mr-2"></span>@{{ row.phone_number || '--' }}
-                        </template>
-                        <template slot="companies" slot-scope="{row: user}">
-                            <span v-if="user.is_admin">--</span>
-                            <ul class="companies" v-if="!user.is_admin">
-                                <li v-for="company in user.companies">@{{ company.name }} <user-role class="ml-2" :role="company.role"></user-role></li>
-                            </ul>
-                        </template>
-                        <template slot="options" slot-scope="{row: user}">
-                            <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.is_admin">
-                                <i class="far fa-edit"></i>
-                            </a>
-                            <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="!user.is_admin && user.has_active_companies">
-                                <i class="far fa-eye"></i>
-                            </a>
-                            <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link" title="Has Pending Invitations" v-if="!user.is_admin && user.has_pending_invitations">
-                                <i class="fas fa-envelope"></i>
-                            </a>
-                            @if ($companySelected)
-                            <a :href="generateRoute(userActivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-green" title="Activate" v-if="!user.is_admin && isActiveInCompany(user, @json($companySelected->id))">
-                                <i class="far fa-check-circle"></i>
-                            </a>
-                            <a :href="generateRoute(userDeactivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-danger" title="Deactivate" v-if="!user.is_admin && !isActiveInCompany(user, @json($companySelected->id))">
-                                <i class="far fa-times-circle"></i>
-                            </a>
-                            @endif
-                        </template>
-                    </pm-responsive-table>
+            <div class="list-container">
+                <div class="loader-spinner" v-if="isLoading">
+                    <spinner-icon></spinner-icon>
                 </div>
+                <div class="no-items-row" v-if="users.length === 0">
+                    No Items
+                </div>
+                <div class="user-row" v-for="user in users">
+                    <div class="row no-gutters">
+                        <div class="col-12 col-md-8 col-xl-3">
+                            <div class="user-row--id justify-content-center justify-content-xl-start">
+                                <strong class="mr-2">ID: @{{ user.id }}</strong>
+                                <span class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
+                                <user-role class="ml-3" :role="'site_admin'" v-if="user.is_admin"></user-role>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4 col-xl-2">
+                            <div class="user-row--companies justify-content-center justify-content-xl-start">
+                                <span>Active Companies</span>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                            <div class="user-row--email justify-content-center justify-content-xl-start">
+                                <i class="fas fa-envelope mr-2"></i>@{{ user.email || '--' }}
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6 col-lg-4 col-xl-2">
+                            <div class="user-row--phone-number justify-content-center justify-content-xl-start">
+                                <span class="pm-font-phone-icon mr-2"></span>@{{ user.phone_number || '--' }}
+                            </div>
+                        </div>
+                        <div class="col-12 col-lg-4 col-xl-2">
+                            <div class="user-row--options justify-content-center align-items-xl-start">
+                                <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.is_admin">
+                                    <i class="far fa-eye mr-3"></i> View
+                                </a>
+                                <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="!user.is_admin && user.has_active_companies">
+                                    <i class="fas fa-lock-open mr-3"></i> Impersonate
+                                </a>
+                                <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-black" title="Has Pending Invitations" v-if="!user.is_admin && user.has_pending_invitations">
+                                    <i class="fas fa-envelope mr-3"></i> Has Pending Invitations
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <pm-pagination class="mt-3" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
             </div>
         </div>
     @else
@@ -121,7 +130,7 @@
                         </template>
                         <template slot="options" slot-scope="{row: user}">
                             <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.role === 'user'">
-                                <i class="far fa-edit"></i>
+                                <i class="far fa-edit mr-2"></i> Edit User
                             </a>
                             <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="user.role === 'user' && user.has_active_companies">
                                 <i class="far fa-eye"></i>

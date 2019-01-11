@@ -12,7 +12,8 @@ import {generateRoute} from './../../common/helpers'
 window['app'] = new Vue({
     el: '#user-index',
     components: {
-        'pm-responsive-table': require('./../../components/pm-responsive-table/pm-responsive-table'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
         'user-role': require('./../../components/user-role/user-role')
     },
     filters: {
