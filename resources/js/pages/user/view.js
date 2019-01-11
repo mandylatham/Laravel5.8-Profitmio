@@ -1,12 +1,7 @@
 import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
-import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
-// Toastr Library
-import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
 // Chart Library
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'

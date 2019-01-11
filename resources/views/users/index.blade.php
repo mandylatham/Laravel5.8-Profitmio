@@ -31,6 +31,11 @@
 @section('main-content')
     @if (auth()->user()->isAdmin())
         <div class="container" id="user-index">
+            <div class="row">
+                <div class="col">
+                    <a class="btn pm-btn pm-btn-blue float-right" href="{{ route('user.create') }}"><i class="fas fa-plus mr-3"></i>New User</a>
+                </div>
+            </div>
             <div class="row align-items-end no-gutters mb-md-3">
                 <div class="col-12 col-sm-5 col-lg-3">
                     <div class="form-group filter--form-group">

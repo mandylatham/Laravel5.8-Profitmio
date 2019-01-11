@@ -1,0 +1,17 @@
+@import './../common/index';
+@import './../components/spinner-icon';
+
+#user-create {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    .loader-spinner {
+        .sk-circle {
+            margin: 0;
+            width: 15px;
+            height: 15px;
+            .sk-child:before {
+                background-color: #fff;
+            }
+        }
+    }
+}

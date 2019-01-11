@@ -98,7 +98,7 @@ class UserController extends Controller
             ->first();
 
         if (($request->input('role') == 'site_admin' && !is_null($user)) || ($user && $user->isAdmin())) {
-            return redirect()->back()->withErrors('The email has already been taken.');
+            return response()->json(['error' => 'The email has already been taken.'], 400);
         }
         if (!$user) {
             $user = new $this->user();
@@ -140,7 +140,8 @@ class UserController extends Controller
 
         Mail::to($user)->send(new InviteUser($user, $processRegistration));
 
-        return redirect()->route('user.index');
+        return response()->json([], 201);
+//        return redirect()->route('user.index');
     }
 
     /**
