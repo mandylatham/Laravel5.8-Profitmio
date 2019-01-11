@@ -30,11 +30,11 @@ class UpdateCompanyDataRequest extends FormRequest
         return [
             'company' => 'required',
             'role' => [
-                'required',
+                'sometimes',
                 Rule::in($possibleRoles)
             ],
             'timezone' => [
-                'required',
+                'sometimes',
                 Rule::in(User::getPossibleTimezonesForUser())
             ]
         ];

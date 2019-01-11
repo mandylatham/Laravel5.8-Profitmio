@@ -5,6 +5,7 @@
 @import './../components/pm-pagination';
 
 #campaign-index {
+    padding: 2rem 1rem;
     .loader-spinner {
         position: absolute;
         top: 0;
@@ -25,8 +26,5 @@
     }
     .pm-pagination {
         margin-bottom: 2rem;
-    }
-    @include media-breakpoint-up(lg) {
-        padding: 10px 30px 20px 30px;
     }
 }

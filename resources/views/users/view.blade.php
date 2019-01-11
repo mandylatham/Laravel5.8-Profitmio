@@ -18,6 +18,11 @@
         window.user = @json($user);
         window.deleteUserUrl = "{{ route('user.delete', ['user' => $user->id]) }}";
         window.q = @json($q);
+        @if (auth()->user()->isAdmin())
+            window.userRole = 'site_admin';
+        @else
+            window.userRole = @json(auth()->user()->getRole(App\Models\Company::findOrFail(get_active_company())));
+        @endif
         window.userIndexUrl = "{{ route('user.index') }}";
     </script>
     <script src="{{ asset('js/user-view.js') }}"></script>
@@ -137,7 +142,7 @@
                                         </div>
                                     </div>
                                     <div class="col-4 col-md-3 company-role">
-                                        <v-select :options="roles" :disabled="!canEditCompanyData(company)" v-model="company.role" class="filter--v-select" @input="companyDataUpdated(company)">
+                                        <v-select :options="roles" :disabled="!canEditCompanyData(company)" v-model="company.role" class="filter--v-select" @input="updateCompanyData(company)">
                                             <template slot="selected-option" slot-scope="option">
                                                 @{{ option.label | userRole }}
                                             </template>
@@ -147,7 +152,7 @@
                                         </v-select>
                                     </div>
                                     <div class="col-4 col-md-3 company-timezone">
-                                        <v-select :options="timezones" :disabled="!canEditCompanyData(company)" v-model="company.timezone" class="filter--v-select" @input="companyDataUpdated(company)">
+                                        <v-select :options="timezones" :disabled="!canEditCompanyData(company)" v-model="company.timezone" class="filter--v-select" @input="updateCompanyData(company)">
                                             <template slot="selected-option" slot-scope="option">
                                                 @{{ option.label }}
                                             </template>

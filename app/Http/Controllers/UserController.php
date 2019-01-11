@@ -231,11 +231,14 @@ class UserController extends Controller
     {
         $invitation = $user->invitations()->where('company_id', $request->input('company'))->firstOrFail();
 
-        $config = $invitation->config;
-        $config['timezone'] = $request->input('timezone');
-
-        $invitation->config = $config;
-        $invitation->role = $request->input('role');
+        if ($request->has('timezone')) {
+            $config = $invitation->config;
+            $config['timezone'] = $request->input('timezone');
+            $invitation->config = $config;
+        }
+        if ($request->has('role')) {
+            $invitation->role = $request->input('role');
+        }
         $invitation->save();
 
         return response()->json('Resource updated.');

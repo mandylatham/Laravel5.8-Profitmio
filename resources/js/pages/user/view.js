@@ -69,7 +69,7 @@ window['app'] = new Vue({
         campaigns: [],
         companies: [],
         companiesForList: [],
-        roles: ['site_admin', 'user'],
+        roles: ['admin', 'user'],
         searchTerm: '',
         campaignCompanySelected: null,
         tableOptions: {
@@ -103,19 +103,7 @@ window['app'] = new Vue({
     },
     methods: {
         canEditCompanyData(company) {
-            return window.userRole === 'site_admin' ||  (window.userRole === 'admin' && company.role === 'user');
-        },
-        companyDataUpdated(company) {
-            axios
-                .post(generateRoute(window.updateCompanyDataUrl, {'userId': window.user.id}), {
-                    company: company.id,
-                    role: company.role,
-                    timezone: company.timezone
-                })
-                .then(response => {
-                }, () => {
-                    this.$toastr.error('Unable to process your request');
-                });
+            return window.userRole === 'site_admin' || (window.userRole === 'admin' && company.role === 'user');
         },
         onCampaignCompanySelected() {
             this.searchCampaignForm.page = 1;
@@ -135,7 +123,7 @@ window['app'] = new Vue({
                     this.campaigns = response.data;
                     this.searchCampaignForm.page = response.current_page;
                     this.searchCampaignForm.per_page = response.per_page;
-                    this.total= response.total;
+                    this.total = response.total;
                     this.loadingCampaigns = false;
                 })
                 .catch(error => {
@@ -166,6 +154,23 @@ window['app'] = new Vue({
             this.searchCompanyForm.page = event.page;
             return this.fetchCompanies();
         },
+        updateCompanyData(company) {
+            const data = {
+                company: company.id
+            };
+            if (company.role) {
+                data.role = company.role;
+            }
+            if (company.timezone) {
+                data.timezone = company.timezone;
+            }
+            axios
+                .post(generateRoute(window.updateCompanyDataUrl, {'userId': window.user.id}), data)
+                .then(response => {
+                }, () => {
+                    this.$toastr.error('Unable to process your request');
+                });
+        }
     }
 });
 

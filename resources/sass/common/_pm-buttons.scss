@@ -33,6 +33,11 @@
         @include button-variant($red, $red);
         color: #fff !important;
     }
+
+    &-black {
+        @include button-variant($brand-black, $brand-black);
+        color: #fff !important;
+    }
 }
 
 .pm-btn-link {
@@ -68,6 +73,14 @@
 
         &:hover {
             color: darken($orange, 15%);
+        }
+    }
+
+    &-black {
+        color: $brand-black;
+
+        &:hover {
+            color: darken ($brand-black, 15%);
         }
     }
 }
