@@ -43,11 +43,12 @@ class TemplateController extends Controller
     {
         $viewData['template'] = $template;
 
-        return view('templates.edit', $viewData);
+        return view('template.details', $viewData);
     }
 
     public function update(CampaignScheduleTemplate $template, NewTemplateRequest $request)
     {
+        return response()->json(['status' => 'success']);
         $template->fill($request->all());
 
         $template->save();

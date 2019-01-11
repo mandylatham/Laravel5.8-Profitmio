@@ -10,7 +10,7 @@
     width: 75px;
     background-color: $brand-purple;
     color: #fff;
-    @include media-breakpoint-down(md) {
+    @include media-breakpoint-down(sm) {
       border-top: 6px solid $brand-purple;
     }
     &--status {

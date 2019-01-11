@@ -21,6 +21,8 @@ mix.js('resources/js/pages/campaign/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/user/company-admin-index.scss', 'public/css/company-admin-user-index.css')
     .sass('resources/sass/media-template/index.scss', 'public/css/media-template-index.css')
     .js('resources/js/pages/media-template/index.js', 'public/js/media-template-index.js')
+    .sass('resources/sass/media-template/details.scss', 'public/css/media-template-details.css')
+    .js('resources/js/pages/media-template/details.js', 'public/js/media-template-details.js')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');
