@@ -67,7 +67,7 @@
                         </div>
                         <div class="col-12 col-md-4 col-xl-2">
                             <div class="user-row--companies justify-content-center justify-content-xl-start">
-                                <span>Active Companies</span>
+                                <div>Active Companies <span class="ml-2 counter">@{{ user.active_companies }}</span></div>
                             </div>
                         </div>
                         <div class="col-12 col-md-6 col-lg-4 col-xl-3">

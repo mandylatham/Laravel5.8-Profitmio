@@ -3,6 +3,16 @@
 
 #user-index {
     padding: 2rem 1rem;
+    .counter {
+        height: 20px;
+        width: 20px;
+        background-color: $brand-purple;
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+    }
     .loader-spinner {
         position: absolute;
         top: 0;

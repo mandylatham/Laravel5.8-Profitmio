@@ -30,6 +30,7 @@ class User extends JsonResource
             'role' => $this->when(!auth()->user()->isAdmin(), function () {
                 return $this->resource->getRole(\App\Models\Company::findOrFail(get_active_company()));
             }),
+            'active_companies' => $this->countActiveCompanies(),
             'has_active_companies' => $this->hasActiveCompanies(),
             'has_pending_invitations' => $this->hasPendingInvitations()
         ];

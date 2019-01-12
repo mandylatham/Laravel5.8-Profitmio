@@ -153,6 +153,11 @@ class User extends Authenticatable
         }
     }
 
+    public function countActiveCompanies()
+    {
+        return $this->invitations()->where('is_active', 1)->count();
+    }
+
     public function hasActiveCompanies()
     {
         return $this->invitations()->where('is_active', 1)->count() > 0;

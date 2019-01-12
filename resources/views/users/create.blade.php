@@ -49,8 +49,8 @@
                         <v-select :options="companies" label="name" v-model="companySelected" class="filter--v-select">
                         </v-select>
                     </div>
-                    <button type="submit" :disabled="loading" class="btn pm-btn pm-btn-purple pm-btn-md mt-4">
-                        <span v-if="!loading">Add User</span>
+                    <button type="submit" :disabled="loading" class="btn pm-btn-submit pm-btn pm-btn-purple pm-btn-md mt-4">
+                        <span v-if="!loading"><i class="fas fa-plus mr-2"></i>Add User</span>
                         <div class="loader-spinner" v-if="loading">
                             <spinner-icon></spinner-icon>
                         </div>
