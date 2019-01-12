@@ -20,6 +20,11 @@
         .campaign-links {
             background-color: $brand-white;
         }
+        &.inactive {
+            .campaign-header, .campaign-postcard--image, .campaign-date, .campaign-chart {
+                background-color: $brand-white;
+            }
+        }
     }
     .card-header {
         padding: 0;

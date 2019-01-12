@@ -1,12 +1,7 @@
 import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
-import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
-// Toastr Library
-import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
 import {generateRoute} from './../../common/helpers'
 
 window['app'] = new Vue({
@@ -41,43 +36,8 @@ window['app'] = new Vue({
         total: null,
         users: [],
         companies: [],
-        columnData: [
-            {
-                slot: 'id',
-                is_manager: true,
-                widths: {
-
-                }
-            }, {
-                slot: 'companies',
-                widths: {
-                    'lg': '240px'
-                }
-            }, {
-                field: 'email',
-                widths: {
-                    'lg': '200px'
-                }
-            }, {
-                slot: 'phone_number',
-                classes: ['text-center'],
-                widths: {
-                    'lg': '160px'
-                }
-            }, {
-                slot: 'options',
-                is_manager_footer: true,
-                classes: ['text-center'],
-                widths: {
-                    'lg': '140px'
-                }
-            }
-        ],
         searchTerm: '',
         companySelected: null,
-        tableOptions: {
-            mobile: 'lg'
-        },
         formUrl: '',
         userEditUrl: '',
         userImpersonateUrl: '',

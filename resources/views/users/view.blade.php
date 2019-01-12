@@ -40,11 +40,9 @@
             </button>
         </div>
     </div>
-    @if (auth()->user()->isAdmin() && !$user->isAdmin())
-    <button class="btn pm-btn pm-btn-blue edit-user" @click="enableInputs = !enableInputs">
+    <button class="btn pm-btn pm-btn-blue edit-user" v-if="loggedUserRole === 'site_admin' || (loggedUserRole === 'admin' && user.role !== 'site_admin')" @click="enableInputs = !enableInputs">
         <i class="fas fa-pencil-alt"></i>
     </button>
-    @endif
     <form class="clearfix form" method="post" action="{{ route('user.update', ['user' => $user->id]) }}" @submit.prevent="saveUser">
         <div class="form-group">
             <label for="first_name">First Name</label>
@@ -73,9 +71,7 @@
             </div>
         </button>
     </form>
-    @if (auth()->user()->isAdmin() && !$user->isAdmin())
-    <button class="btn pm-btn pm-btn-danger delete-user" type="button" @click="deleteUser"><i class="fas fa-trash-alt"></i></button>
-    @endif
+    <button v-if="loggedUserRole === 'site_admin'" class="btn pm-btn pm-btn-danger delete-user" type="button" @click="deleteUser"><i class="fas fa-trash-alt"></i></button>
 @endsection
 
 @section('main-content')

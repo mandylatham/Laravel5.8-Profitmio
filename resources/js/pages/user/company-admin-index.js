@@ -3,13 +3,12 @@ import './../../common';
 import Form from './../../common/form';
 import {generateRoute} from './../../common/helpers'
 
-
 window['app'] = new Vue({
     el: '#company-user-index',
     components: {
-        'pm-responsive-table': require('./../../components/pm-responsive-table/pm-responsive-table'),
-        'user-role': require('./../../components/user-role/user-role'),
-        'status': require('./../../components/status/status')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
+        'user-role': require('./../../components/user-role/user-role')
     },
     filters: {
         'userRole': require('./../../filters/user-role.filter')
@@ -35,28 +34,8 @@ window['app'] = new Vue({
         isLoading: true,
         total: null,
         users: [],
-        columnData: [
-            {
-                slot: 'id',
-                is_manager: true,
-            }, {
-                slot: 'type'
-            }, {
-                slot: 'mail'
-            }, {
-                slot: 'phone_number'
-            }, {
-                slot: 'status'
-            }, {
-                slot: 'options',
-                is_manager_footer: true
-            }
-        ],
         searchTerm: '',
         companySelected: null,
-        tableOptions: {
-            mobile: 'lg'
-        },
         formUrl: '',
         userEditUrl: '',
         userImpersonateUrl: '',

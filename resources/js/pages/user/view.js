@@ -76,12 +76,14 @@ window['app'] = new Vue({
             mobile: 'lg'
         },
         timezones: [],
-        formUrl: ''
+        formUrl: '',
+        loggedUserRole: ''
     },
     mounted() {
         this.timezones = window.timezones;
         this.campaignCompanySelected = window.campaignCompanySelected;
         this.searchCampaignForm.q = window.q;
+        this.loggedUserRole = window.userRole;
 
         axios
             .get(window.getCompanyUrl, {
@@ -103,7 +105,7 @@ window['app'] = new Vue({
     },
     methods: {
         canEditCompanyData(company) {
-            return window.userRole === 'site_admin' || (window.userRole === 'admin' && company.role === 'user');
+            return window.userRole === 'site_admin' || window.userRole === 'admin';
         },
         onCampaignCompanySelected() {
             this.searchCampaignForm.page = 1;
@@ -183,7 +185,8 @@ window['sidebar'] = new Vue({
         loading: false,
         enableInputs: false,
         editUserForm: new Form(window.user),
-        user: {}
+        user: {},
+        loggedUserRole: ''
     },
     methods: {
         saveUser: function () {
@@ -232,5 +235,6 @@ window['sidebar'] = new Vue({
     },
     mounted: function () {
         this.user = window.user;
+        this.loggedUserRole = window.userRole;
     }
 });
