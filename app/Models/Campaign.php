@@ -203,6 +203,14 @@ class Campaign extends Model
             } else if ($company->isAgency()) {
                 $query->where('agency_id', $company->id);
             }
+        } else if ($loggedUser->isAdmin() && $request->has('user')) {
+            $campaignsId = \DB::table('campaign_user')
+                ->whereUserId($request->input('user'))
+                ->select('campaign_id')
+                ->get()
+                ->pluck('campaign_id')
+                ->toArray();
+            $query->whereIn('id', $campaignsId);
         }
 
         if ($request->has('q')) {

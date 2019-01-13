@@ -16,6 +16,7 @@ class CampaignTableSeeder extends Seeder
         factory(Campaign::class, 20)
             ->create()
             ->each(function ($campaign) use ($faker) {
+                // TODO: Add users to this campaign
                 // Create recipient lists
                 factory(\App\Models\RecipientList::class, $faker->numberBetween(1, 5))
                     ->create([

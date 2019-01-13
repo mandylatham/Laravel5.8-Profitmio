@@ -111,6 +111,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('', 'UserController@index')->name('user.index')->middleware(['check.active.company', 'can:list,App\Models\User']);
         Route::get('for-user-display', 'UserController@getForUserDisplay')->middleware(['check.active.company', 'can:list,App\Models\User'])->name('user.for-user-display');
         Route::get('/create', 'UserController@create')->name('user.create')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::get('{user}', 'UserController@view')->name('user.view')->middleware(['check.active.company', 'can:list,App\Models\User']);
         Route::get('/{user}/edit', 'UserController@edit')->name('user.edit')->middleware(['check.active.company', 'can:edit-user,user']);
         Route::get('/{user}/activate', 'UserController@activate')->name('user.activate')->middleware(['check.active.company', 'can:edit-user,user']);
         Route::get('/{user}/deactivate', 'UserController@deactivate')->name('user.deactivate')->middleware(['check.active.company', 'can:edit-user,user']);

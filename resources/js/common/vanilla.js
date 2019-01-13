@@ -25,6 +25,13 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    let closeSideMenuButton = document.querySelector('.js-close-side-menu');
+    if (closeSideMenuButton) {
+        closeSideMenuButton.addEventListener('click', function () {
+            collapseSideMenu();
+        });
+    }
+
     function collapseSideMenu() {
         const app = document.getElementById('app');
         app.classList.add('navbar-side-menu-fix');

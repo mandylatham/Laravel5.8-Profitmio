@@ -12,7 +12,6 @@
 .sidebar-container {
     width: $sidebar-width;
     height: 100%;
-    overflow-y: scroll;
     float: left;
     position: absolute;
     transform: translateX(-100%);
@@ -23,15 +22,37 @@
         transform: translateX(0);
     }
 
-    .sidebar-toggler {
-        padding: 5px 10px;
-        display: inline-block;
-        background-color: #fff;
-        border-radius: 0 5px 5px 0;
-        cursor: pointer;
+    .sidebar-wrapper {
+        overflow-y: scroll;
+        height: 100%;
+    }
+
+    .sidebar-close {
         position: absolute;
-        top: 100px;
-        right: 0;
-        transform: translateX(100%);
+        color: $brand-white;
+        font-size: 1.6rem;
+        top: 1rem;
+        right: 1rem;
+        line-height: 1em;
+        z-index: 1;
+    }
+}
+
+.sidebar-toggler {
+    padding: 5px 10px;
+    display: inline-block;
+    background-color: #fff;
+    color: $brand-purple;
+    border-radius: 0 5px 5px 0;
+    cursor: pointer;
+    position: absolute;
+    top: 55px;
+    right: -30px;
+    transform: translateX(100%);
+    transition: right 150ms linear;
+
+    @include media-breakpoint-up(sm) {
+        top: 90px;
+        right: -55px;
     }
 }
