@@ -5,11 +5,15 @@
 @section('head-styles')
     <link href="{{ asset('css/console.css') }}" rel="stylesheet">
 @endsection
+
 @section('body-script')
     <script>
         window.filter = @json($filter);
         window.label = @json($label);
         window.counters = @json($counters);
+        window.campaign = @json($campaign);
+        window.recipients = @json($recipients);
+        window.user = @json(auth()->user());
     </script>
     <script src="{{ asset('js/console.js') }}"></script>
 @endsection
@@ -91,14 +95,44 @@
     </nav>
 @endsection
 
-@section('content')
-    <div id="console">
+@section('main-content')
+    <div id="console" class="container-fluid list-campaign-container">
+        <div class="row align-items-end no-gutters">
+            <div class="col-12 col-sm-5 col-lg-3">
+                <button class="btn pm-btn pm-btn-blue">
+                    <i class="fas fa-chevron-left mr-2"></i>
+                    Home
+                </button>
+            </div>
+            <div class="col-none col-sm-2 col-lg-6"></div>
+            <div class="col-12 col-sm-5 col-lg-3">
+                <input type="text" v-model="searchText" class="form-control filter--search-box" aria-describedby="search"
+                       placeholder="Search">
+            </div>
+        </div>
 
-        {{--<campaign-console :campaign="{{ $campaign->toJson() }}" :recipients="{{ $recipients->toJson() }}"
-                          :filter="{{ json_encode($filter) }}" :label="{{ json_encode($label) }}"
-                          :counters="{{ json_encode($counters) }}"></campaign-console>--}}
+        <div class="row align-items-end no-gutters mt-4 mb-3">
+            <div class="col-12">
+                <a class="icon" href="javascript:;"><img src="../../../../img/icons/folder.png" alt="folder"></a>
+                <a class="icon" href="javascript:;"><img src="../../../../img/icons/tag.png" alt="tag"></a>
+            </div>
+        </div>
 
-        <campaign-console-responses :campaign="{{ $campaign->toJson() }}"
-                                    :recipients="{{ $recipients->toJson() }}"></campaign-console-responses>
+        <div class="row align-items-end no-gutters">
+            <div class="col-12">
+                <!-- TODO: pass current `recipientId` to `showPanel` method -->
+                <pm-responsive-table :rows="rows" :columns="columns" :disable-folding="true"
+                                     v-on:row-clicked="showPanel">
+                </pm-responsive-table>
+            </div>
+        </div>
+
+        <div class="row align-items-end no-gutters">
+            <div class="col-12">
+
+            </div>
+        </div>
+
+        <slideout-panel></slideout-panel>
     </div>
 @endsection
