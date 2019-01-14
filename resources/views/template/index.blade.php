@@ -19,7 +19,7 @@
 @endsection
 
 @section('main-content')
-    <div class="container" id="template-index">
+    <div class="container" id="template-index" v-cloak>
         <div class="row mt-md-3">
             <div class="col-12">
                 <button v-b-modal.add-template-modal class="btn btn-primary mr-3">
@@ -30,10 +30,10 @@
                 <b-modal id="add-template-modal" hide-footer title="How do you want to add a template?">
                     <div class="add-template-buttons">
                         <a href="{{ route('template.create-form') }}" class="btn btn-default">
-                            <i class="fa fa-code mr-2"></i>
+                            <i class="fa fa-code mr-3"></i>
                             I have my own HTML</a>
                         <button class="btn btn-default">
-                            <i class="fa fa-cogs mr-2"></i>
+                            <i class="fa fa-cogs mr-3"></i>
                             I need to build one from scratch</button>
                     </div>
                 </b-modal>

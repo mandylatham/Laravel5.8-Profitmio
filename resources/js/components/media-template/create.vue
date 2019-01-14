@@ -4,7 +4,7 @@
         <div class="card-body p-5">
             <div class="row mb-4">
                 <div class="col-12">
-                    <h1><input name="name" class="form-control" v-model="template.name" aria-label="Template Name" aria-describedby="save-name-button"></h1>
+                    <h1><input name="name" class="form-control" v-model="template.name" aria-label="Template Name" aria-describedby="save-name-button" placeholder="Template Name"></h1>
                 </div>
             </div>
             <div class="row mb-4" v-if="template.type == 'sms'">
@@ -145,13 +145,6 @@
             editor: require('vue2-ace-editor'),
         },
         props: {
-            template: {
-                type: Object,
-                required: true,
-                default: function () {
-                    return {};
-                }
-            },
             url: {
                 type: String,
                 required: true,
@@ -162,6 +155,14 @@
         },
         data() {
             return {
+                template: {
+                    name: '',
+                    type: '',
+                    text_message: '',
+                    email_subject: '',
+                    email_text: '',
+                    email_html: '',
+                },
                 mediaTemplateClosed: true,
                 templateEdit: '',
                 templateDelete: '',
