@@ -1,11 +1,3 @@
-<communication-side-panel some-data="12"></communication-side-panel>
-
-<?php
-
-// TODO: REMOVE THIS FILE?
-
-/*
-
 <script src="{{ secure_url('js/Plugin/sweetalert.min.js') }}"></script>
 <link type="text/css" rel="stylesheet" href="{{ secure_url('css/sweetalert.css') }}">
 

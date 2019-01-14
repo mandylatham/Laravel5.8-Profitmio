@@ -1,0 +1,95 @@
+@import '../../../sass/variables';
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+.pmt {
+  $rootParent: &;
+  margin-top: 15px;
+  &-row {
+    $tableRow: &;
+    display: flex;
+    flex-flow: column;
+    &:nth-child(even) #{$rootParent}-col:not(.manager) {
+      background-color: rgb(225, 229, 232);
+    }
+    &:nth-child(odd) #{$rootParent}-col:not(.manager) {
+      background-color: rgb(240, 242, 243);
+    }
+  }
+  &-col {
+    font-size: 0.95rem;
+    opacity: 0;
+    max-height: 0;
+    padding-left: 0.8rem;
+    padding-right: 0.8rem;
+    transition: max-height 100ms linear, opacity 100ms linear, padding 100ms linear;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    span.icon-value {
+      margin-left: 10px;
+    }
+    svg {
+      height: 1.2rem;
+    }
+    &.manager {
+      cursor: pointer;
+      background-color: $gray;
+      color: $gray-light;
+    }
+    &.manager-footer {
+      .btn-transparent {
+        padding: 0;
+        margin-right: 10px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+
+    }
+    @at-root {
+      #{$rootParent}-row.open &, #{$rootParent}-row &.manager, #{$rootParent}-row &.manager-footer {
+        @include media-breakpoint-down(md) {
+          padding-top: 0.6rem;
+          padding-bottom: 0.6rem;
+          border-bottom: 3px solid #fff;
+          max-height: 1000px;
+          opacity: 1;
+        }
+      }
+    }
+  }
+  &.disable-folding {
+    .pmt-row {
+      margin-bottom: 4px;
+      .pmt-col {
+        max-height: 1000px;
+        opacity: 1;
+      }
+    }
+  }
+}
+
+
+@include media-breakpoint-up(lg) {
+  .pmt {
+    display: table;
+    width: 100%;
+    table-layout:fixed;
+    &-row {
+      display: table-row;
+    }
+    &-col {
+      display: table-cell;
+      opacity: 1;
+      border-bottom: 3px solid #fff;
+      border-right: 3px solid #fff;
+      vertical-align: middle;
+      &:last-child {
+        border-right: 0;
+      }
+    }
+  }
+}

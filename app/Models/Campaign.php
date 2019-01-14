@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Traits\LogsActivity;
@@ -30,7 +31,7 @@ class Campaign extends Model
         'phone_number_id',
         'expires_at',
         'sms_on_callback',
-        'sms_on_callback_number'
+        'sms_on_callback_number',
     ];
 
     protected $dates = [
@@ -39,10 +40,12 @@ class Campaign extends Model
         'deleted_at',
         'starts_at',
         'ends_at',
-        'expires_at'
+        'expires_at',
     ];
 
     protected static $logAttributes = ['id', 'agency_id', 'dealership_id', 'name'];
+
+    protected $appends = ['is_expired'];
 
     public function agency()
     {
@@ -79,6 +82,7 @@ class Campaign extends Model
                         $emailObject->bounced) / $emailObject->sent * 100) - 100), 2);
             $stats = collect([$emailObject]);
         }
+
         return $stats;
     }
 
@@ -93,6 +97,7 @@ class Campaign extends Model
                 sum(wrong_number) as wrong_number,
                 sum(car_sold) as car_sold,
                 count(*) as total");
+
         return $stats->get();
     }
 
@@ -120,7 +125,7 @@ class Campaign extends Model
     {
         return
             self::whereNull('deleted_at')
-                ->where(function($query) use ($companyId) {
+                ->where(function ($query) use ($companyId) {
                     $query->where('agency_id', $companyId)
                         ->orWhere('dealership_id', $companyId);
                 })->get();
@@ -138,28 +143,38 @@ class Campaign extends Model
         }
         $template .= ucwords($this->name);
         if (!empty($this->starts_at) && !empty($this->ends_at)) {
-            $template .= "<br><small>From <code> " . show_date($this->starts_at, 'm/d/Y') . "</code> to <code>" . show_date($this->ends_at, 'm/d/Y') . "</code></small><br>";
+            $template .= "<br><small>From <code> " . show_date($this->starts_at,
+                    'm/d/Y') . "</code> to <code>" . show_date($this->ends_at, 'm/d/Y') . "</code></small><br>";
         } else {
             $template = "<br><small>No Dates</small><br>";
         }
         $template .= '<span class="badge badge-outline';
         if ($this->status === 'Upcoming') {
             $template .= ' badge-primary';
-        } else if ($this->status == 'Completed' || $this->status == 'Expired') {
-            $template .= ' badge-default';
         } else {
-            $template .= ' badge-success';
+            if ($this->status == 'Completed' || $this->status == 'Expired') {
+                $template .= ' badge-default';
+            } else {
+                $template .= ' badge-success';
+            }
         }
         $template .= '">' . $this->status . '</span>';
         $template .= '</h5>';
         $template .= '<div class="campaign-links">';
-        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-view" href="' . route('campaign.view', ['campaign' => $this->id]) . '"><i class="fa fa-search"></i></a>';
-        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-drops" href="' . route('campaign.drop.index', ['campaign' => $this->id]) . '"><i class="icon icon-lg wi-raindrops" style="font-size: 28px; margin: -5px"></i></a>';
-        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-recipients" href="' . route('campaign.recipient.index', ['campaign' => $this->id]) . '"><i class="fa fa-users"></i></a>';
-        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-console" href="' . route('campaign.response-console.index', ['campaign' => $this->id]) . '"><i class="fa fa-terminal"></i></a>';
-        $template .= '<a class="btn btn-pure btn-warning btn-round campaign-edit" href="' . route('campaign.edit', ['campaign' => $this->id]) . '"><i class="fa fa-pencil"></i></a>';
-        $template .= '<button class="btn btn-pure btn-danger btn-round delete-button" data-deleteUrl="' . route('campaign.delete', ['campaign' => $this->id]) . '"><i class="fa fa-trash"></i></button>';
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-view" href="' . route('campaign.view',
+                ['campaign' => $this->id]) . '"><i class="fa fa-search"></i></a>';
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-drops" href="' . route('campaign.drop.index',
+                ['campaign' => $this->id]) . '"><i class="icon icon-lg wi-raindrops" style="font-size: 28px; margin: -5px"></i></a>';
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-recipients" href="' . route('campaign.recipient.index',
+                ['campaign' => $this->id]) . '"><i class="fa fa-users"></i></a>';
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-console" href="' . route('campaign.response-console.index',
+                ['campaign' => $this->id]) . '"><i class="fa fa-terminal"></i></a>';
+        $template .= '<a class="btn btn-pure btn-warning btn-round campaign-edit" href="' . route('campaign.edit',
+                ['campaign' => $this->id]) . '"><i class="fa fa-pencil"></i></a>';
+        $template .= '<button class="btn btn-pure btn-danger btn-round delete-button" data-deleteUrl="' . route('campaign.delete',
+                ['campaign' => $this->id]) . '"><i class="fa fa-trash"></i></button>';
         $template .= '</div>';
+
         return $template;
     }
 
@@ -249,7 +264,7 @@ class Campaign extends Model
 
     public function isExpired()
     {
-        return $this->expires_at && $this->expires_at <= \Carbon\Carbon::now('UTC');
+        return $this->expires_at && $this->expires_at <= Carbon::now('UTC');
     }
 
     public function schedules()
@@ -259,11 +274,11 @@ class Campaign extends Model
 
     public function getIsExpiredAttribute()
     {
-        return $this->expires_at && $this->expires_at <= \Carbon\Carbon::now('UTC');
+        return $this->expires_at && $this->expires_at <= Carbon::now('UTC');
     }
 
     public function getIsNotExpiredAttribute()
     {
-        return $this->expires_at && ! $this->isExpired;
+        return $this->expires_at && !$this->isExpired;
     }
 }
