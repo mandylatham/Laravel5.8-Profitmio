@@ -169,7 +169,7 @@
                                         <small>Active Campaigns</small>
                                         <div>
                                             <span class="pm-font-campaigns-icon"></span>
-                                            <span class="company-active-campaigns--counter">@{{ company.active_campaigns }}</span>
+                                            <span class="company-active-campaigns--counter">@{{ company.active_campaigns_for_user }}</span>
                                         </div>
                                     </div>
                                 </div>

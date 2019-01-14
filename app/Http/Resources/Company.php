@@ -32,6 +32,7 @@ class Company extends JsonResource
             $userModel = UserModel::findOrFail($request->input('user'));
             $data['role'] = $userModel->getRole($this->resource);
             $data['timezone'] = $userModel->getTimezone($this->resource);
+            $data['active_campaigns_for_user'] = count($userModel->getActiveCampaignsForCompany($this->resource));
         }
         $this->whenPivotLoaded('company_user', function () use (&$data) {
             $data['role'] = $this->pivot->role;

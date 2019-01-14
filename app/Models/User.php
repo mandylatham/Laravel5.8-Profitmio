@@ -73,6 +73,22 @@ class User extends Authenticatable implements HasMedia
         $rel->save();
     }
 
+    public function getActiveCampaignsForCompany(Company $company)
+    {
+        $campaignsId = \DB::table('campaign_user')
+            ->where('user_id', $this->id)
+            ->select('campaign_user.campaign_id')
+            ->get()
+            ->pluck('campaign_id');
+        return Campaign::whereIn('id', $campaignsId)
+            ->where('status', 'Active')
+            ->where(function ($query) use ($company) {
+                $query->where('dealership_id', $company->id)
+                    ->orWhere('agency_id', $company->id);
+            })
+            ->get();
+    }
+
     /**
      * Return the company that is selected by the logged user
      *

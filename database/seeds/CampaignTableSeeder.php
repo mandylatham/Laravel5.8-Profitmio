@@ -16,8 +16,9 @@ class CampaignTableSeeder extends Seeder
         factory(Campaign::class, 20)
             ->create()
             ->each(function ($campaign) use ($faker) {
+                $dealership = $campaign->dealership;
                 // Add users to this campaign
-                $users = \App\Models\User::inRandomOrder()->take(10)->get();
+                $users = $dealership->users()->inRandomOrder()->take(10)->get();
                 foreach ($users as $user) {
                     \App\Models\CampaignUser::insert([
                         'user_id' => $user->id,
