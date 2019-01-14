@@ -68,7 +68,7 @@
         </div>
         <div class="form-group">
             <label for="phone_number">Phone Number</label>
-            <input type="text" class="form-control" name="phone_number" placeholder="Phone Number" v-model="editUserForm.phone_number" required v-if="enableInputs">
+            <input type="text" class="form-control" name="phone_number" placeholder="Phone Number" v-model="editUserForm.phone_number" v-if="enableInputs">
             <p class="form-control panel-data" v-if="!enableInputs">@{{ user.phone_number }}</p>
         </div>
         <button class="btn pm-btn pm-btn-purple float-left mt-4" type="submit" :disabled="loading" v-if="enableInputs">
