@@ -1,5 +1,6 @@
 <?php
 
+Route::impersonate();
 
 //region OUTSIDE API CALLS
 Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->name('pub-api.text-response-inbound')->middleware(null);
