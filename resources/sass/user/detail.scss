@@ -3,6 +3,7 @@
 @import './../components/status';
 @import './../components/campaign';
 @import './../components/pm-pagination';
+@import '~vue2-dropzone/dist/vue2Dropzone.min.css';
 
 #user-view {
     margin-top: 1rem;
@@ -184,6 +185,7 @@
             height: 30px;
             width: 30px;
             background-color: #fff;
+            cursor: pointer;
             border-radius: 50%;
             border: 2px solid $brand-purple;
             top: 0;
@@ -237,5 +239,13 @@
                 background-color: #fff;
             }
         }
+    }
+    .vue-dropzone {
+        background-color: #fff;
+        border-radius: 4px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 }

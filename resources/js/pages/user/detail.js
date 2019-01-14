@@ -8,6 +8,7 @@ import Chart from 'chart.js'
 import {filter} from 'lodash';
 import './../../filters/user-role.filter';
 import {generateRoute} from './../../common/helpers';
+import vue2Dropzone from 'vue2-dropzone';
 
 Vue.use(VueChartkick, {adapter: Chart});
 
@@ -16,7 +17,7 @@ window['app'] = new Vue({
     components: {
         'campaign': require('./../../components/campaign/campaign'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
     },
     computed: {
         countCompanies: function () {
@@ -172,6 +173,9 @@ window['app'] = new Vue({
                 }, () => {
                     this.$toastr.error('Unable to process your request');
                 });
+        },
+        updatePhoto() {
+
         }
     }
 });
@@ -180,30 +184,28 @@ window['sidebar'] = new Vue({
     el: '#sidebar',
     components: {
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'vue-dropzone': vue2Dropzone
     },
     data: {
-        loading: false,
+        dropzoneOptions: {
+            url: window.updateUserPhotoUrl,
+            thumbnailWidth: 150,
+            headers: {
+                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+            },
+            method: 'post',
+            paramName: 'image',
+            maxFiles: 1,
+            acceptedFiles: 'image/*'
+        },
         enableInputs: false,
         editUserForm: new Form(window.user),
+        loading: false,
+        loggedUserRole: '',
+        showAvatarImage: true,
         user: {},
-        loggedUserRole: ''
     },
     methods: {
-        saveUser: function () {
-            this.loading = true;
-            this.editUserForm
-                .post(generateRoute(window.updateUserUrl, {userId: window.user.id}))
-                .then(() => {
-                    this.enableInputs = false;
-                    this.$toastr.success('User updated!');
-                    this.loading = false;
-                    this.user = this.editUserForm.data();
-                })
-                .catch(e => {
-                    this.$toastr.error("Unable to process your request");
-                    this.loading = false;
-                });
-        },
         deleteUser: function () {
             this.$swal({
                 title: "Are you sure?",
@@ -231,7 +233,32 @@ window['sidebar'] = new Vue({
             }, error => {
                 this.$toastr.error('Unable to process your request');
             });
+        },
+        profileImageUploaded: function () {
+            console.log('response', arguments);
+            this.$toastr.success('Image uploaded!');
+            this.showAvatarImage = true;
+        },
+        profileImageError: function () {
+            this.$toastr.error('Unable to process your request');
+            this.showAvatarImage = true;
+        },
+        saveUser: function () {
+            this.loading = true;
+            this.editUserForm
+                .post(generateRoute(window.updateUserUrl, {userId: window.user.id}))
+                .then(() => {
+                    this.enableInputs = false;
+                    this.$toastr.success('User updated!');
+                    this.loading = false;
+                    this.user = this.editUserForm.data();
+                })
+                .catch(e => {
+                    this.$toastr.error("Unable to process your request");
+                    this.loading = false;
+                });
         }
+
     },
     mounted: function () {
         this.user = window.user;

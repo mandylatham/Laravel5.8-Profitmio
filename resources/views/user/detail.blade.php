@@ -3,7 +3,7 @@
 ])
 
 @section('head-styles')
-    <link href="{{ asset('css/user-view.css') }}" rel="stylesheet">
+    <link href="{{ asset('css/user-detail.css') }}" rel="stylesheet">
 @endsection
 
 @section('body-script')
@@ -17,6 +17,7 @@
         window.updateCompanyDataUrl = "{{ route('user.update-company-data', ['user' => ':userId']) }}";
         window.user = @json($user);
         window.deleteUserUrl = "{{ route('user.delete', ['user' => $user->id]) }}";
+        window.updateUserPhotoUrl = "{{ route('user.update-avatar', ['user' => $user->id]) }}";
         window.q = @json($q);
         @if (auth()->user()->isAdmin())
             window.userRole = 'site_admin';
@@ -25,7 +26,7 @@
         @endif
         window.userIndexUrl = "{{ route('user.index') }}";
     </script>
-    <script src="{{ asset('js/user-view.js') }}"></script>
+    <script src="{{ asset('js/user-detail.js') }}"></script>
 @endsection
 
 @section('sidebar-toggle-content')
@@ -34,13 +35,19 @@
 
 @section('sidebar-content')
     <div class="avatar">
-        <div class="avatar--image">
-            <button class="avatar--edit" v-if="enableInputs">
+        <div class="avatar--image" :style="{backgroundImage: 'url(\'' + user.image_url + '\')'}" v-if="showAvatarImage">
+            <button class="avatar--edit" v-if="enableInputs" @click="showAvatarImage = false">
                 <i class="fas fa-pencil-alt"></i>
             </button>
         </div>
+        <vue-dropzone id="profile-image" :options="dropzoneOptions" :useCustomSlot="true" @vdropzone-success="profileImageUploaded" @vdropzone-error="profileImageError" v-if="!showAvatarImage">
+            <div class="dropzone-upload-profile-image">
+                <h3 class="dropzone-title">Drag and drop to upload content!</h3>
+                <div class="dropzone-subtitle">...or click to select a file from your computer</div>
+            </div>
+        </vue-dropzone>
     </div>
-    <button class="btn pm-btn pm-btn-blue edit-user" v-if="loggedUserRole === 'site_admin' || (loggedUserRole === 'admin' && user.role !== 'site_admin')" @click="enableInputs = !enableInputs">
+    <button class="btn pm-btn pm-btn-blue edit-user" v-if="!enableInputs && (loggedUserRole === 'site_admin' || (loggedUserRole === 'admin' && user.role !== 'site_admin'))" @click="enableInputs = !enableInputs">
         <i class="fas fa-pencil-alt"></i>
     </button>
     <form class="clearfix form" method="post" action="{{ route('user.update', ['user' => $user->id]) }}" @submit.prevent="saveUser">
@@ -70,6 +77,7 @@
                 <spinner-icon></spinner-icon>
             </div>
         </button>
+        {{--<button class="btn pm-btn pm-btn-blue float-right mt-4" type="button">Change Password</button>--}}
     </form>
     <button v-if="loggedUserRole === 'site_admin'" class="btn pm-btn pm-btn-danger delete-user" type="button" @click="deleteUser"><i class="fas fa-trash-alt"></i></button>
 @endsection

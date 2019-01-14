@@ -9,7 +9,7 @@ use App\Http\Resources\UserCollection;
 use App\Models\Company;
 use App\Mail\InviteUser;
 use App\Models\User;
-use App\Transformers\UserTransformer;
+use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -22,12 +22,15 @@ class UserController extends Controller
     /** @var CompanyUserActivityLog  */
     private $companyUserActivityLog;
 
+    private $storage;
+
     private $user;
 
-    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, User $user)
+    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, FilesystemManager $storage, User $user)
     {
         $this->company = $company;
         $this->companyUserActivityLog = $companyUserActivityLog;
+        $this->storage = $storage;
         $this->user = $user;
     }
 
@@ -62,7 +65,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return view('users.index', [
+        return view('user.index', [
             'companySelected' => $this->company->find(session('filters.user.index.company')),
             'q' => session('filters.user.index.q')
         ]);
@@ -70,7 +73,7 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('users.create', [
+        return view('user.create', [
             'companies' => $this->company->all()
         ]);
     }
@@ -154,7 +157,7 @@ class UserController extends Controller
         $viewData = [
             'companies' => Company::all()
         ];
-        return view('users.new', $viewData);
+        return view('user.new', $viewData);
     }
 
     /**
@@ -165,7 +168,7 @@ class UserController extends Controller
      */
     public function selectActiveCompany(Request $request)
     {
-        return view('users.select-company');
+        return view('user.select-company');
     }
 
     /**
@@ -186,7 +189,7 @@ class UserController extends Controller
             $viewData['campaigns'] = $user->campaigns()->get();
         }
 
-        return view('users.details', $viewData);
+        return view('user.details', $viewData);
     }
 
     /**
@@ -197,7 +200,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('users.edit', [
+        return view('user.edit', [
             'user' => $user,
             'companies' => $user->companies()->orderBy('name', 'asc')->get()
         ]);
@@ -224,7 +227,7 @@ class UserController extends Controller
         $viewData['user'] = $user;
         $viewData['companies'] = Company::all();
 
-        return view('users.edit', $viewData);
+        return view('user.edit', $viewData);
     }
 
     public function updateCompanyData(User $user, UpdateCompanyDataRequest $request)
@@ -255,9 +258,18 @@ class UserController extends Controller
         //
     }
 
+    public function updateAvatar(User $user, Request $request)
+    {
+        if ($request->hasFile('image')) {
+            $user->addMediaFromRequest('image')
+                ->toMediaCollection('profile-photo', 's3');
+        }
+        return response()->json([], 200);
+    }
+
     public function view(User $user)
     {
-        return view('users.view', [
+        return view('user.detail', [
             'user' => $user,
             'timezones' => $user->getPossibleTimezonesForUser(),
             'campaignCompanySelected' => $this->company->find(session('filters.user.view.campaign-company-selected')),

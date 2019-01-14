@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Sofa\Eloquence\Eloquence;
 use Lab404\Impersonate\Models\Impersonate;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, Impersonate, LogsActivity, Eloquence;
+    use Notifiable, Impersonate, LogsActivity, Eloquence, HasMediaTrait;
 
     protected $searchableColumns = ['id', 'first_name', 'last_name', 'email', 'phone_number'];
 
@@ -22,6 +22,8 @@ class User extends Authenticatable
 
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
+
+    protected $appends = ['image_url'];
 
     /**
      * The attributes that are mass assignable.
@@ -86,6 +88,15 @@ class User extends Authenticatable
     public function getActiveCompanies()
     {
         return $this->companies()->where('company_user.is_active', true)->orderBy('companies.name', 'asc')->get();
+    }
+
+    public function getImageUrlAttribute()
+    {
+        $image = $this->getFirstMedia();
+        if ($image) {
+            return $image->getFullUrl();
+        }
+        return '';
     }
 
     public function agencyCampaigns()
