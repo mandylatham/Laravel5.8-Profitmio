@@ -1,7 +1,4 @@
-@import "../../../../sass/variables";
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
+@import "./campaign-console-responses";
 
 $aside-width: 340px;
 
@@ -111,7 +108,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
           > li.all {
             > a {
               &:before {
-                background-image: url('../../../../img/icons/all.png');
+                background-image: url('../../img/icons/all.png');
               }
             }
           }
@@ -119,7 +116,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
           > li.unread {
             > a {
               &:before {
-                background-image: url('../../../../img/icons/unread.png');
+                background-image: url('../../img/icons/unread.png');
               }
             }
           }
@@ -127,7 +124,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
           > li.idle {
             > a {
               &:before {
-                background-image: url('../../../../img/icons/idle.png');
+                background-image: url('../../img/icons/idle.png');
               }
             }
           }
@@ -137,7 +134,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
           > li.calls {
             > a {
               &:before {
-                background-image: url('../../../../img/icons/phone.png');
+                background-image: url('../../img/icons/phone.png');
               }
             }
           }
@@ -145,7 +142,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
           > li.email {
             > a {
               &:before {
-                background-image: url('../../../../img/icons/email.png');
+                background-image: url('../../img/icons/email.png');
               }
             }
           }
@@ -153,7 +150,7 @@ body, body *:not(html):not(style):not(br):not(tr):not(code) {
           > li.sms {
             > a {
               &:before {
-                background-image: url('../../../../img/icons/sms.png');
+                background-image: url('../../img/icons/sms.png');
               }
             }
           }

@@ -253,7 +253,6 @@
 </template>
 
 <script>
-    require("./communication-side-panel.scss");
     export default {
         mounted() {
             this.resetVars();

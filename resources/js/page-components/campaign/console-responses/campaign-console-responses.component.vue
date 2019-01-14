@@ -44,7 +44,7 @@
     </div>
 </template>
 <script>
-    require("./campaign-console-responses.scss");
+    // TODO: use font-awesome instead
     import {ChevronLeftIcon} from 'vue-feather-icons';
     import {SearchIcon} from 'vue-feather-icons';
 
@@ -82,6 +82,7 @@
         components: {
             ChevronLeftIcon,
             SearchIcon,
+            'pm-responsive-table': require('./../../../components/pm-responsive-table/pm-responsive-table')
         },
         methods: {
             showPanel: function (event) {

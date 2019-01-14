@@ -175,10 +175,6 @@ class ResponseConsoleController extends Controller
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
 
-        // dump($viewData);
-        // // dump($viewData['recipients']->toJson());
-        // dd('asd');
-
         return view('campaigns.console', $viewData);
     }
 

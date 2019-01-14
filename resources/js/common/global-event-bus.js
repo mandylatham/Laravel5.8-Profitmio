@@ -5,7 +5,7 @@ window.Event = new class {
         this.vue = new Vue();
     }
 
-    fire(event, data=null) {
+    fire(event, data = null) {
         this.vue.$emit(event, data);
     }
 
