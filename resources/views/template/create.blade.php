@@ -10,6 +10,7 @@
 @section('body-script')
     <script>
         window.createUrl = "{{ route('template.create') }}";
+        window.indexUrl = "{{ route('template.index') }}";
     </script>
     <script src="{{ asset('js/media-template-create.js') }}"></script>
 @endsection
@@ -22,7 +23,7 @@
                     <i class="fas fa-chevron-circle-left mr-1"></i>
                     Back
                 </a>
-                <media-template-create :url="createUrl"></media-template-create>
+                <media-template-create :createUrl="createUrl" :indexUrl="indexUrl"></media-template-create>
             </div>
         </div>
     </div>

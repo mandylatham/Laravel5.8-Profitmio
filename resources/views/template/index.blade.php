@@ -32,9 +32,9 @@
                         <a href="{{ route('template.create-form') }}" class="btn btn-default">
                             <i class="fa fa-code mr-3"></i>
                             Create template normally</a>
-                        <button class="btn btn-default">
+                        <a href="{{ route('template-builder.show-editor') }}" class="btn btn-default">
                             <i class="fa fa-cogs mr-3"></i>
-                            Use email builder app</button>
+                            Use email builder app</a>
                     </div>
                 </b-modal>
             </div>

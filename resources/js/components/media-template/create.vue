@@ -154,7 +154,8 @@
                 </div>
             </div>
             <div class="row mb-4" v-if="template.type == 'email' || template.type == 'sms'">
-                <button class="btn btn-primary" :disabled="this.readyToSubmitForm == false" @click="onSubmit()">Create Template</button>
+                <button class="btn btn-primary mr-2" :disabled="this.readyToSubmitForm == false" @click="onSubmit(true)">Create</button>
+                <button class="btn btn-secondary" :disabled="this.readyToSubmitForm == false" @click="onSubmit()">Create and add another</button>
             </div>
         </div>
     </div>
@@ -171,7 +172,14 @@
             editor: require('vue2-ace-editor'),
         },
         props: {
-            url: {
+            createUrl: {
+                type: String,
+                required: true,
+                default: function () {
+                    return '';
+                }
+            },
+            indexUrl: {
                 type: String,
                 required: true,
                 default: function () {
@@ -301,8 +309,8 @@
                 var controlName = 'show' + this.toRoyalCase(fieldName) + 'Controls';
                 this[controlName] = false;
             },
-            onSubmit: function () {
-                this.createForm.post(this.url)
+            onSubmit: function (redirect=false) {
+                this.createForm.post(createUrl)
                     .then(response => {
                         this.template = {
                             name: '',
@@ -314,7 +322,12 @@
                         };
                         this.oldTemplate = JSON.parse(JSON.stringify(this.template));
                         this.renderedTemplate = JSON.parse(JSON.stringify(this.oldTemplate));
-                        this.$toastr.success("Template created");
+                        if (redirect === true) {
+                            this.$toastr.success("Template created, you will be redirected shortly");
+                            setTimeout(function() { window.location.href = indexUrl; }, 800);
+                        } else {
+                            this.$toastr.success("Template created");
+                        }
                     })
                     .catch(error => {
                         this.$toastr.error("Unable to save");

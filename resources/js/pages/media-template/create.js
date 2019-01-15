@@ -25,9 +25,11 @@ window['app'] = new Vue({
     },
     data: {
         createUrl: '',
+        indexUrl: '',
     },
     mounted() {
         this.createUrl = window.createUrl;
+        this.indexUrl = window.indexUrl;
     },
     methods: {
         onSubmit() {
