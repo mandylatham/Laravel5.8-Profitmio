@@ -5,12 +5,13 @@ import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
 // Toastr Library
 import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
 // Chart Library
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
 import {filter} from 'lodash';
+
+window.toastr = require('toastr');
+Vue.use(VueToastr2);
 
 Vue.use(VueChartkick, {adapter: Chart});
 
@@ -100,7 +101,7 @@ window['app'] = new Vue({
                     this.campaigns = response.data;
                     this.searchCampaignForm.page = response.current_page;
                     this.searchCampaignForm.per_page = response.per_page;
-                    this.total= response.total;
+                    this.total = response.total;
                     this.loadingCampaigns = false;
                 })
                 .catch(error => {
@@ -119,4 +120,4 @@ window['sidebar'] = new Vue({
     data: {
         enableInputs: false
     }
-})
+});

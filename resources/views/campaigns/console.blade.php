@@ -14,6 +14,9 @@
         window.campaign = @json($campaign);
         window.recipients = @json($recipients);
         window.user = @json(auth()->user());
+
+        console.log(this.recipients);
+        console.log(this.recipients.data);
     </script>
     <script src="{{ asset('js/console.js') }}"></script>
 @endsection
@@ -118,18 +121,18 @@
             </div>
         </div>
 
-        <div class="row align-items-end no-gutters">
-            <div class="col-12">
-                <!-- TODO: pass current `recipientId` to `showPanel` method -->
-                <pm-responsive-table :rows="rows" :columns="columns" :disable-folding="true"
-                                     v-on:row-clicked="showPanel">
-                </pm-responsive-table>
+        {{-- TODO: check if we should use this.recipients.data or this.recipients --}}
+        <div class="row no-gutters" v-for="recipient in this.recipients.data">
+            <div class="col-4 col-md-2">
+                <span>@{{ recipient.name }}</span>
             </div>
-        </div>
-
-        <div class="row align-items-end no-gutters">
-            <div class="col-12">
-
+            <div class="col-4 col-md-2">
+                <span>Email</span>
+                <span>@{{ recipient.email }}</span>
+            </div>
+            <div class="col-4 col-md-3">
+                <span>Email</span>
+                <span>@{{ recipient.last_seen_ago }}</span>
             </div>
         </div>
 

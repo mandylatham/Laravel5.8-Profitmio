@@ -1,6 +1,8 @@
 import Vue from 'vue';
 import './../../common';
 import { SearchIcon} from 'vue-feather-icons';
+import VueSlideoutPanel from 'vue2-slideout-panel';
+Vue.use(VueSlideoutPanel);
 
 // SIDEBAR
 window['sidebar'] = new Vue({

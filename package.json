@@ -16,7 +16,8 @@
     "laravel-mix": "^2.0",
     "lodash": "^4.17.5",
     "pretty-checkbox-vue": "^1.1.9",
-    "vue": "^2.5.7"
+    "vue": "^2.5.7",
+    "vue2-slideout-panel": "^2.1.0"
   },
   "dependencies": {
     "bootstrap": "^4.1.3",
