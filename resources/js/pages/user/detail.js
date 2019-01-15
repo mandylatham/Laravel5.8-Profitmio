@@ -83,7 +83,7 @@ window['app'] = new Vue({
     mounted() {
         this.timezones = window.timezones;
         this.campaignCompanySelected = window.campaignCompanySelected;
-        this.searchCampaignForm.q = window.q;
+        this.searchCampaignForm.q = window.campaignQ;
         this.loggedUserRole = window.userRole;
 
         axios

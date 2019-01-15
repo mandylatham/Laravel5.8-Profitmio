@@ -18,7 +18,7 @@
         window.user = @json($user);
         window.deleteUserUrl = "{{ route('user.delete', ['user' => $user->id]) }}";
         window.updateUserPhotoUrl = "{{ route('user.update-avatar', ['user' => $user->id]) }}";
-        window.q = @json($q);
+        window.campaignQ = @json($campaignQ);
         @if (auth()->user()->isAdmin())
             window.userRole = 'site_admin';
         @else

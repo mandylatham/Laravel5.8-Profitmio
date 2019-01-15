@@ -17,8 +17,10 @@ class CampaignTableSeeder extends Seeder
             ->create()
             ->each(function ($campaign) use ($faker) {
                 $dealership = $campaign->dealership;
+                $agency = $campaign->agency;
                 // Add users to this campaign
-                $users = $dealership->users()->inRandomOrder()->take(10)->get();
+                $users = $dealership->users()->inRandomOrder()->take(5)->get();
+                $users->concat($agency->users()->inRandomOrder()->take(5)->get());
                 foreach ($users as $user) {
                     \App\Models\CampaignUser::insert([
                         'user_id' => $user->id,

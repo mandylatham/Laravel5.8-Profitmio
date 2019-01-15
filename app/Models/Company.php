@@ -145,6 +145,7 @@ class Company extends Model
             $query->filterByQuery($request->input('q'));
         } else {
             session()->forget('filters.company.index.q');
+            session()->forget('filters.user.view.company-q');
         }
         return $query;
     }
@@ -152,6 +153,7 @@ class Company extends Model
     public function scopeFilterByQuery($query, $q)
     {
         session(['filters.company.index.q' => $q]);
+        session(['filters.user.view.company-q' => $q]);
         return $query->search($q);
     }
 }
