@@ -27,7 +27,11 @@ class UserTableSeeder extends Seeder
         factory(User::class, 50)
             ->create()
             ->each(function ($user) use ($faker) {
-                $company = Company::inRandomOrder()->first();
+                if ($user->isAdmin()) {
+                    $company = Company::where('type', 'support')->first();
+                } else {
+                    $company = Company::inRandomOrder()->first();
+                }
                 $company->users()->save($user, [
                     'completed_at' => Carbon::now()->toDateTimeString(),
                     'config' => json_encode([

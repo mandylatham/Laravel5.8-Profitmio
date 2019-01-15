@@ -51,14 +51,14 @@ window['app'] = new Vue({
     data: {
         searchCampaignFormUrl: null,
         searchCompanyForm: new Form({
-            q: null,
+            q: localStorage.getItem('companyQ'),
             page: 1,
             per_page: 15,
             user: null
         }),
         searchCampaignForm: new Form({
-            company: null,
-            q: null,
+            company: localStorage.getItem('campaignCompany') ? JSON.parse(localStorage.getItem('campaignCompany')) : undefined,
+            q: localStorage.getItem('campaignQ'),
             page: 1,
             per_page: 15,
             user: null
@@ -66,7 +66,7 @@ window['app'] = new Vue({
         loadingCompanies: true,
         loadingCampaigns: true,
         total: null,
-        totalForCompanies: null,
+        totalCompanies: null,
         campaigns: [],
         companies: [],
         companiesForList: [],
@@ -83,7 +83,7 @@ window['app'] = new Vue({
     mounted() {
         this.timezones = window.timezones;
         this.campaignCompanySelected = window.campaignCompanySelected;
-        this.searchCampaignForm.q = window.q;
+        this.searchCampaignForm.q = window.campaignQ;
         this.loggedUserRole = window.userRole;
 
         axios
@@ -115,9 +115,12 @@ window['app'] = new Vue({
         fetchCampaigns() {
             if (this.campaignCompanySelected) {
                 this.searchCampaignForm.company = this.campaignCompanySelected.id;
+                localStorage.setItem('campaignCompany', JSON.stringify(this.campaignCompanySelected));
             } else {
                 this.searchCampaignForm.company = null;
+                localStorage.removeItem('campaignCompany');
             }
+            localStorage.setItem('campaignQ', this.searchCampaignForm.q);
             this.searchCampaignForm.user = window.user.id;
             this.loadingCampaigns = true;
             this.searchCampaignForm
@@ -136,6 +139,7 @@ window['app'] = new Vue({
         fetchCompanies() {
             this.searchCompanyForm.user = window.user.id;
             this.loadingCompanies = true;
+            localStorage.setItem('companyQ', this.searchCompanyForm.q);
             this.searchCompanyForm
                 .get(window.searchCompaniesFormUrl)
                 .then(response => {
@@ -234,9 +238,9 @@ window['sidebar'] = new Vue({
                 this.$toastr.error('Unable to process your request');
             });
         },
-        profileImageUploaded: function () {
-            console.log('response', arguments);
+        profileImageUploaded: function (file, response) {
             this.$toastr.success('Image uploaded!');
+            this.user.image_url = response.location;
             this.showAvatarImage = true;
         },
         profileImageError: function () {

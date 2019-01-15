@@ -261,19 +261,27 @@ class UserController extends Controller
     public function updateAvatar(User $user, Request $request)
     {
         if ($request->hasFile('image')) {
-            $user->addMediaFromRequest('image')
-                ->toMediaCollection('profile-photo', 's3');
+            $image = $user->addMediaFromRequest('image')
+                ->toMediaCollection('profile-photo');
         }
-        return response()->json([], 200);
+        return response()->json(['location' => $image->getFullUrl()], 201);
     }
 
     public function view(User $user)
     {
+        $loggedUser = auth()->user();
+        if ($loggedUser->isAdmin()) {
+            $hasCampaigns = $user->getCampaigns()->count() > 0;
+        } else {
+            $hasCampaigns = $user->getCampaigns()->where('company_id', get_active_company())->count() > 0;
+        }
         return view('user.detail', [
             'user' => $user,
+            'hasCampaigns' => $hasCampaigns,
             'timezones' => $user->getPossibleTimezonesForUser(),
             'campaignCompanySelected' => $this->company->find(session('filters.user.view.campaign-company-selected')),
-            'q' => session('filters.user.view.campaign-q')
+            'campaignQ' => session('filters.user.view.campaign-q'),
+            'companyQ' => session('filters.user.view.company-q'),
         ]);
     }
 }

@@ -26,6 +26,8 @@ mix.js('resources/js/pages/campaign/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/user/detail.scss', 'public/css/user-detail.css')
     .js('resources/js/pages/user/create.js', 'public/js/user-create.js')
     .sass('resources/sass/user/create.scss', 'public/css/user-create.css')
+    .js('resources/js/pages/auth/login.js', 'public/js/login.js')
+    .sass('resources/sass/auth/login.scss', 'public/css/login.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');

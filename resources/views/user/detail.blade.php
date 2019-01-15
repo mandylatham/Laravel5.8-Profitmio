@@ -18,7 +18,7 @@
         window.user = @json($user);
         window.deleteUserUrl = "{{ route('user.delete', ['user' => $user->id]) }}";
         window.updateUserPhotoUrl = "{{ route('user.update-avatar', ['user' => $user->id]) }}";
-        window.q = @json($q);
+        window.campaignQ = @json($campaignQ);
         @if (auth()->user()->isAdmin())
             window.userRole = 'site_admin';
         @else
@@ -87,7 +87,8 @@
         <b-card no-body>
             <b-tabs card>
                 <b-tab title="CAMPAIGN" active>
-                    <div class="row align-items-end no-gutters mb-md-3" v-if="countActiveCampaigns > 0 || countInactiveCampaigns > 0">
+                    @if($hasCampaigns)
+                    <div class="row align-items-end no-gutters mb-md-3">
                         <div class="col-12 col-sm-5 col-lg-4">
                             <div class="form-group filter--form-group">
                                 <label>Filter By Company</label>
@@ -100,6 +101,7 @@
                                    placeholder="Search" @keyup.enter="fetchCampaigns">
                         </div>
                     </div>
+                    @endif
                     <div class="row align-items-end no-gutters mt-3">
                         <div class="col-12">
                             <div class="loader-spinner" v-if="loadingCampaigns">
@@ -112,12 +114,14 @@
                             <campaign v-for="campaign in campaigns" v-if="campaign.status === 'Active'" :key="campaign.id" :campaign="campaign"></campaign>
                             <div class="campaign-group-label" v-if="countInactiveCampaigns > 0">INACTIVE</div>
                             <campaign v-for="campaign in campaigns" v-if="campaign.status !== 'Active'" :key="campaign.id" :campaign="campaign"></campaign>
-                            <pm-pagination v-if="countActiveCampaigns > 0 || countInactiveCampaigns > 0" :pagination="campaignsPagination" @page-changed="onCampaignPageChanged"></pm-pagination>
+                            @if($hasCampaigns)
+                            <pm-pagination :pagination="campaignsPagination" @page-changed="onCampaignPageChanged"></pm-pagination>
+                            @endif
                         </div>
                     </div>
                 </b-tab>
                 <b-tab title="COMPANY">
-                    <div class="row align-items-end no-gutters mb-md-4" v-if="countCompanies > 0">
+                    <div class="row align-items-end no-gutters mb-md-4">
                         <div class="col-12 col-sm-5 col-lg-4">
                         </div>
                         <div class="col-none col-sm-2 col-lg-4"></div>
@@ -174,7 +178,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <pm-pagination v-if="countCompanies > 0" :pagination="companiesPagination" @page-changed="onCompanyPageChanged"></pm-pagination>
+                            <pm-pagination :pagination="companiesPagination" @page-changed="onCompanyPageChanged"></pm-pagination>
                         </div>
                     </div>
                 </b-tab>
