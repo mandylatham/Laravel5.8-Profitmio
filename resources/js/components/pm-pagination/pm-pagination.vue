@@ -32,7 +32,7 @@
         },
         computed: {
             totalPages: function () {
-                return Math.ceil(this.pagination.total / this.pagination.per_page);
+                return this.pagination.total && this.pagination.per_page ? Math.ceil(this.pagination.total / this.pagination.per_page) : 0;
             }
         },
         methods: {

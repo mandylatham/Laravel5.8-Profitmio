@@ -73,6 +73,12 @@ class User extends Authenticatable implements HasMedia
         $rel->save();
     }
 
+    public function getCampaigns()
+    {
+        return Campaign::join('campaign_user', 'campaign_user.campaign_id', '=', 'campaigns.id')
+            ->where('campaign_user.user_id', $this->id);
+    }
+
     public function getActiveCampaignsForCompany(Company $company)
     {
         $campaignsId = \DB::table('campaign_user')

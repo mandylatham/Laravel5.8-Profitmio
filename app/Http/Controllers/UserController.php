@@ -269,8 +269,15 @@ class UserController extends Controller
 
     public function view(User $user)
     {
+        $loggedUser = auth()->user();
+        if ($loggedUser->isAdmin()) {
+            $hasCampaigns = $user->getCampaigns()->count() > 0;
+        } else {
+            $hasCampaigns = $user->getCampaigns()->where('company_id', get_active_company())->count() > 0;
+        }
         return view('user.detail', [
             'user' => $user,
+            'hasCampaigns' => $hasCampaigns,
             'timezones' => $user->getPossibleTimezonesForUser(),
             'campaignCompanySelected' => $this->company->find(session('filters.user.view.campaign-company-selected')),
             'campaignQ' => session('filters.user.view.campaign-q'),
