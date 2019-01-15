@@ -2,74 +2,98 @@
 <div>
     <div class="card">
         <div class="card-body p-5">
-            <div class="row mb-4">
+            <div class="row">
+                <div class="col-12 mb-4">
+                    <h1>Create new template</h1>
+                </div>
+            </div>
+            <div class="row mb-4" v-if="template.type != 'email' && template.type != 'sms'">
                 <div class="col-12">
-                    <h1><input name="name" class="form-control" v-model="template.name" aria-label="Template Name" aria-describedby="save-name-button" placeholder="Template Name"></h1>
+                    <div class="type-buttons-container">
+                        <button class="btn btn-outline-primary type-buttons" @click="selectType('sms')">
+                            <i class="fa fa-comment"></i>
+                            SMS
+                        </button>
+                        <button class="btn btn-outline-primary type-buttons" @click="selectType('email')">
+                            <i class="fa fa-envelope"></i>
+                            Email
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="row mb-4" v-if="template.type == 'email' || template.type == 'sms'">
+                <div class="col-12">
+                    <div>
+                        <div class="form-group mb-1">
+                            <h1>
+                                <input name="name" class="form-control" v-model="template.name" 
+                                       aria-label="Template Name" aria-describedby="save-name-button"
+                                       placeholder="Template Name" @keyup="showNameControls = true">
+                            </h1>
+                        </div>
+                        <div class="form-group" v-if="showNameControls">
+                            <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveField('name')">
+                                Preview
+                            </button>
+                            <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelField('name')">
+                                Undo
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="row mb-4" v-if="template.type == 'sms'">
                 <div class="col-12">
                     <strong>Text Message</strong>
                 </div>
-                <div class="col-6">
+                <div class="col-12 col-md-6">
                     <div class="box">
-                        <p v-if="!textMessageInput" @click="toggleTextMessageInput()" class="editable">{{ template.text_message }}</p>
-                        <div v-if="textMessageInput">
+                        <div>
                             <div class="form-group mb-1">
-                                <p><textarea name="text_message" class="form-control" v-model="template.text_message"></textarea></p>
+                                <p><textarea name="text_message" class="form-control" v-model="template.text_message" @keyup="showTextMessageControls = true"></textarea></p>
                             </div>
-                            <div class="form-group">
-                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveTextMessageField()">
-                                    Save
+                            <div class="form-group" v-if="showTextMessageControls">
+                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveField('text_message')">
+                                    Preview
                                 </button>
-                                <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelTextMessageField()">
-                                    Cancel
+                                <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelField('text_message')">
+                                    Undo
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-6">
-                    <div class="card card-primary">
+                <div class="col-12 col-md-6">
+                    <div class="card card-primary preview-window">
+                        <div class="card-header"><p>Text Message Preview</p></div>
                         <div class="card-body" v-html="renderedTemplate.text_message"></div>
                     </div>
                 </div>
             </div>
             <div class="row mb-4" v-if="template.type == 'email'">
-                <div class="col-12 pb-3">
-                        </div>
-                        <div class="form-group">
-                            <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveNameField()">
-                                Save
-                            </button>
-                            <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelNameField()">
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
+                <div class="col-12">
                     <strong>Email Subject</strong>
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="box">
-                        <p v-if="!emailSubjectInput" @click="toggleEmailSubjectInput()" class="editable">{{ template.email_subject }}</p>
-                        <div v-if="emailSubjectInput">
+                        <div>
                             <div class="form-group mb-1">
-                                <p><textarea name="email_subject" class="form-control" v-model="template.email_subject"></textarea></p>
+                                <p><textarea name="email_subject" class="form-control" v-model="template.email_subject" @keyup="showEmailSubjectControls = true"></textarea></p>
                             </div>
-                            <div class="form-group">
-                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveEmailSubjectField()">
-                                    Save
+                            <div class="form-group" v-if="showEmailSubjectControls">
+                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveField('email_subject')">
+                                    Preview
                                 </button>
-                                <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelEmailSubjectField()">
-                                    Cancel
+                                <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelField('email_subject')">
+                                    Undo
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
+                    <div class="card card-primary preview-window">
                         <div class="card-header"><p>Email Subject Preview</p></div>
-                    <div class="card card-primary">
                         <div class="card-body" v-html="renderedTemplate.email_subject"></div>
                     </div>
                 </div>
@@ -80,24 +104,23 @@
                 </div>
                 <div class="col-12 col-md-6">
                     <div class="box">
-                        <p v-if="!emailTextInput" @click="toggleEmailTextInput()" class="editable">{{ template.email_text }}</p>
-                        <div v-if="emailTextInput">
+                        <div>
                             <div class="form-group mb-1">
-                                <p><textarea name="email_text" class="form-control" v-model="template.email_text"></textarea></p>
+                                <p><textarea name="email_text" class="form-control" v-model="template.email_text" @keyup="showEmailTextControls = true"></textarea></p>
                             </div>
-                            <div class="form-group">
-                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveEmailTextField()">
-                                    Save
+                            <div class="form-group" v-if="showEmailTextControls">
+                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveField('email_text')">
+                                    Preview
                                 </button>
-                                <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelEmailTextField()">
-                                    Cancel
+                                <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelField('email_text')">
+                                    Undo
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
-                    <div class="card card-primary">
+                    <div class="card card-primary preview-window">
                         <div class="card-header"><p>Email Short-Text Preview</p></div>
                         <div class="card-body" v-html="renderedTemplate.email_text"></div>
                     </div>
@@ -108,27 +131,30 @@
                     <strong>Email HTML</strong>
                 </div>
                 <div class="col-12 col-md-6">
-                    <button class="btn btn-outline-info" v-if="!emailHtmlInput" @click="emailHtmlInput = !emailHtmlInput">Edit HTML</button>
-                    <div v-if="emailHtmlInput">
+                    <button class="btn btn-outline-info" v-if="!showEmailHtmlControls" @click="showEmailHtmlControls = !showEmailHtmlControls">Edit HTML</button>
+                    <div v-if="showEmailHtmlControls">
                         <div class="form-group mb-1">
                             <editor v-model="template.email_html" lang="html" height="500" @init="initEditor"></editor>
                         </div>
                         <div class="form-group">
-                            <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveEmailHtmlField()">
-                                Save
+                            <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="saveField('email_html')">
+                                Preview
                             </button>
-                            <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelEmailHtmlField()">
-                                Cancel
+                            <button id="save-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="cancelField('email_html')">
+                                Undo
                             </button>
                         </div>
                     </div>
                 </div>
                 <div class="col-12 col-md-6">
-                    <div class="card card-primary email-preview">
+                    <div class="card card-primary preview-window email-preview">
                         <div class="card-header"><p>Email HTML Preview</p></div>
                         <div class="card-body" v-html="renderedTemplate.email_html"></div>
                     </div>
                 </div>
+            </div>
+            <div class="row mb-4" v-if="template.type == 'email' || template.type == 'sms'">
+                <button class="btn btn-primary" :disabled="this.readyToSubmitForm == false" @click="onSubmit()">Create Template</button>
             </div>
         </div>
     </div>
@@ -161,20 +187,20 @@
                     text_message: '',
                     email_subject: '',
                     email_text: '',
-                    email_html: '',
+                    email_html: ''
                 },
-                mediaTemplateClosed: true,
-                templateEdit: '',
-                templateDelete: '',
-                nameInput: false,
-                textMessageInput: false,
-                emailSubjectInput: false,
-                emailTextInput: false,
-                emailHtmlInput: false,
                 oldTemplate: '',
                 renderedTemplate: '',
-                updateForm: new Form({
+
+                showNameControls: true,
+                showTextMessageControls: true,
+                showEmailSubjectControls: true,
+                showEmailTextControls: true,
+                showEmailHtmlControls: false,
+
+                createForm: new Form({
                     name: '',
+                    type: '',
                     text_message: '',
                     email_subject: '',
                     email_text: '',
@@ -182,35 +208,63 @@
                 }),
             };
         },
+        computed: {
+            readyToSubmitForm: function () {
+                return this.oldTemplate.name.length > 0 && 
+                (
+                    (
+                        this.oldTemplate.type == 'email' &&
+                        this.oldTemplate.email_subject.length > 0 &&
+                        this.oldTemplate.email_text.length > 0 &&
+                        this.oldTemplate.email_html.length > 0
+                    ) || (
+                        this.oldTemplate.type == 'sms' &&
+                        this.oldTemplate.text_message.length > 0
+                    )
+                );
+            }
+        },
         mounted: function () {
-            this.oldTemplate = JSON.parse(JSON.stringify(template));
+            this.oldTemplate = JSON.parse(JSON.stringify(this.template));
             this.renderedTemplate = JSON.parse(JSON.stringify(this.oldTemplate));
             this.renderedTemplate.text_message = this.htmlify(this.oldTemplate.text_message);
             this.renderedTemplate.email_subject = this.htmlify(this.oldTemplate.email_subject);
             this.renderedTemplate.email_text = this.htmlify(this.oldTemplate.email_text);
             this.renderedTemplate.email_html = this.htmlify(this.oldTemplate.email_html);
 
-            this.updateForm.name = this.oldTemplate.name;
-            this.updateForm.text_message = this.oldTemplate.text_message;
-            this.updateForm.email_subject = this.oldTemplate.email_subject;
-            this.updateForm.email_text = this.oldTemplate.email_text;
-            this.updateForm.email_html = this.oldTemplate.email_html;
+            this.createForm.name = this.oldTemplate.name;
+            this.createForm.text_message = this.oldTemplate.text_message;
+            this.createForm.email_subject = this.oldTemplate.email_subject;
+            this.createForm.email_text = this.oldTemplate.email_text;
+            this.createForm.email_html = this.oldTemplate.email_html;
         },
         methods: {
+            selectType: function (value) {
+                this.template.type = value;
+                this.oldTemplate.type = value;
+                this.createForm.type = value;
+            },
             updateFields: function () {
-                this.updateForm.name = this.oldTemplate.name;
-                this.updateForm.text_message = this.oldTemplate.text_message;
-                this.updateForm.email_subject = this.oldTemplate.email_subject;
-                this.updateForm.email_text = this.oldTemplate.email_text;
-                this.updateForm.email_html = this.oldTemplate.email_html;
+                // update the form
+                this.createForm.name = this.oldTemplate.name;
+                this.createForm.text_message = this.oldTemplate.text_message;
+                this.createForm.email_subject = this.oldTemplate.email_subject;
+                this.createForm.email_text = this.oldTemplate.email_text;
+                this.createForm.email_html = this.oldTemplate.email_html;
+
+                // style the previews
+                this.renderedTemplate.text_message = this.htmlify(this.oldTemplate.text_message);
+                this.renderedTemplate.email_subject = this.htmlify(this.oldTemplate.email_subject);
+                this.renderedTemplate.email_text = this.htmlify(this.oldTemplate.email_text);
+                this.renderedTemplate.email_html = this.htmlify(this.oldTemplate.email_html);
             },
             initEditor: function (editor) {
                 require('brace/mode/html');
                 require('brace/theme/chrome');
             },
             htmlify: function (value) {
-                if (value === null) return;
-                if (value.length === 0) return;
+                if (value === undefined || value === null || value.length === 0) return;
+
                 let replacableValues = {
                     first_name: 'John',
                     last_name: 'Doe',
@@ -229,105 +283,42 @@
 
                 return value;
             },
-            toggleNameInput: function () {
-                this.nameInput = !this.nameInput;
+            toRoyalCase: function (data) {
+                var royal = '';
+                var parts = data.split('_');
+                for (var key in parts) {
+                    royal += parts[key].charAt(0).toUpperCase() + parts[key].slice(1);
+                }
+                return royal;
             },
-            toggleTextMessageInput: function () {
-                this.textMessageInput = !this.textMessageInput;
-            },
-            toggleEmailSubjectInput: function () {
-                this.emailSubjectInput = !this.emailSubjectInput;
-            },
-            toggleEmailTextInput: function () {
-                this.emailTextInput = !this.emailTextInput;
-            },
-            toggleEmailHtmlInput: function () {
-                this.emailHtmlInput = !this.emailHtmlInput;
-            },
-            saveNameField: function () {
-                this.oldTemplate = JSON.parse(JSON.stringify(template));
+            saveField: function (fieldName) {
+                this.oldTemplate[fieldName] = this.template[fieldName];
                 this.updateFields();
-                this.updateForm.post(this.url)
+                var controlName = 'show' + this.toRoyalCase(fieldName) + 'Controls';
+                this[controlName] = false;
+            },
+            cancelField: function (fieldName) {
+                var controlName = 'show' + this.toRoyalCase(fieldName) + 'Controls';
+                this[controlName] = false;
+            },
+            onSubmit: function () {
+                this.createForm.post(this.url)
                     .then(response => {
-                        this.renderedTemplate.text_message = this.htmlify(this.oldTemplate.text_message);
-                        this.toggleNameInput();
-                        this.$toastr.success("Update successful");
+                        this.template = {
+                            name: '',
+                            type: '',
+                            text_message: '',
+                            email_subject: '',
+                            email_text: '',
+                            email_html: ''
+                        };
+                        this.oldTemplate = JSON.parse(JSON.stringify(this.template));
+                        this.renderedTemplate = JSON.parse(JSON.stringify(this.oldTemplate));
+                        this.$toastr.success("Template created");
                     })
                     .catch(error => {
                         this.$toastr.error("Unable to save");
                     });
-            },
-            cancelNameField: function () {
-                this.template.name = this.oldTemplate.name;
-                this.toggleNameInput();
-            },
-            saveTextMessageField: function () {
-                this.oldTemplate.text_message = JSON.parse(JSON.stringify(template.text_message));
-                this.updateFields();
-                this.updateForm.post(this.url)
-                    .then(response => {
-                        this.renderedTemplate.text_message = this.htmlify(this.oldTemplate.text_message);
-                        this.toggleTextMessageInput();
-                        this.$toastr.success("Update successful");
-                    })
-                    .catch(error => {
-                        this.$toastr.error("Unable to save");
-                    });
-            },
-            cancelTextMessageField: function () {
-                this.template.text_message = this.oldTemplate.text_message;
-                this.toggleTextMessageInput();
-            },
-            saveEmailSubjectField: function () {
-                this.oldTemplate.email_subject = JSON.parse(JSON.stringify(template.email_subject));
-                this.updateFields();
-                this.updateForm.post(this.url)
-                    .then(response => {
-                        this.renderedTemplate.email_subject = this.htmlify(this.oldTemplate.email_subject);
-                        this.toggleEmailSubjectInput();
-                        this.$toastr.success("Update successful");
-                    })
-                    .catch(error => {
-                        this.$toastr.error("Unable to save");
-                    });
-            },
-            cancelEmailSubjectField: function () {
-                this.template.email_subject = this.oldTemplate.email_subject;
-                this.toggleEmailSubjectInput();
-            },
-            saveEmailTextField: function () {
-                this.oldTemplate.email_text = JSON.parse(JSON.stringify(template.email_text));
-                this.updateFields();
-                this.updateForm.post(this.url)
-                    .then(response => {
-                        this.renderedTemplate.email_text = this.htmlify(this.oldTemplate.email_text);
-                        this.toggleEmailTextInput();
-                        this.$toastr.success("Update successful");
-                    })
-                    .catch(error => {
-                        this.$toastr.error("Unable to save");
-                    });
-            },
-            cancelEmailTextField: function () {
-                this.template.email_text = this.oldTemplate.email_text;
-                this.toggleEmailTextInput();
-            },
-            saveEmailHtmlField: function () {
-                this.oldTemplate.email_html = JSON.parse(JSON.stringify(template.email_html));
-                this.updateFields();
-                this.updateForm.post(this.url)
-                    .then(response => {
-                        this.renderedTemplate.email_html = this.htmlify(this.oldTemplate.email_html);
-                        this.toggleEmailHtmlInput();
-                        this.$toastr.success("Update successful");
-                    })
-                    .catch(error => {
-                        this.$toastr.error("Unable to save");
-                    });
-            },
-            cancelEmailHtmlField: function () {
-                this.template.email_html = this.oldTemplate.email_html;
-                this.toggleEmailHtmlInput();
             },
             generateRoute
         }

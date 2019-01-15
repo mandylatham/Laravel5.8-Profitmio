@@ -18,8 +18,8 @@
     <div class="container" id="template-create">
         <div class="row no-gutters mt-3">
             <div class="col-12 no-gutters">
-                <a href="{{ route('template.index') }}" class="btn btn-outline-primary mb-4">
-                    <i class="fas fa-chevron-left mr-1"></i>
+                <a href="{{ route('template.index') }}" class="btn btn-primary mb-4">
+                    <i class="fas fa-chevron-circle-left mr-1"></i>
                     Back
                 </a>
                 <media-template-create :url="createUrl"></media-template-create>

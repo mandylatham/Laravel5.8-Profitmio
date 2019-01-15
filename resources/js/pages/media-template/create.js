@@ -16,48 +16,18 @@ Vue.use(Button);
 Vue.use(InputGroup);
 Vue.use(FormInput);
 
-Vue.directive('template-variable-swap', function (el, binding) {
-    let values = {
-        first_name: 'John',
-        last_name: 'Doe',
-        email: 'test@example.com',
-        phone: '555-555-5555',
-        year: '2016',
-        make: 'Mazda',
-        model: 'Miata'
-    };
-    for (var key in values) {
-        var reggie = new RegExp('\{\{\s*(' + key + '\s*\}\}');
-        el.innerHTML = el.innerHTML.replace(reggie, values.key);
-    }
-    return;
-});
-
 window['app'] = new Vue({
-    el: '#template-details',
+    el: '#template-create',
     components: {
         'media-template-create': require('./../../components/media-template/create'),
     },
     computed: {
     },
     data: {
-        template: {},
-        toggleInputs: false,
-        toggleNameInput: false,
-        updateUrl: '',
-        deleteUrl: '',
-        updateForm: new Form({
-            name: null,
-            text_message: null,
-            email_subject: null,
-            email_text: null,
-            email_html: null
-        })
+        createUrl: '',
     },
     mounted() {
-        this.updateUrl = window.updateUrl;
-        this.deleteUrl = window.deleteUrl;
-        this.template = window.template;
+        this.createUrl = window.createUrl;
     },
     methods: {
         onSubmit() {

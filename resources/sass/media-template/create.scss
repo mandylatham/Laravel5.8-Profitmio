@@ -4,7 +4,7 @@
 @import './../components/media-template';
 @import './../components/pm-pagination';
 
-#template-details {
+#template-create {
     p.form-control {
         background-color: transparent;
         border: 0;
@@ -20,6 +20,8 @@
         text-align: center;
     }
     .editable {
+        min-height: 1.8rem;
+        border-left: 3px solid $brand-purple;
         padding: 4px 8px;
         &:hover {
             padding: 3px 7px;
@@ -47,12 +49,35 @@
         }
     }
     .template-name {
+        min-height: 3rem;
         border-left: 3px solid $brand-purple;
     }
     .card-header {
         padding: 2px 0px 2px 12px;
+        background-color: $brand-purple;
+        color: #fff;
         p {
             margin-bottom: 0;
+        }
+    }
+    .type-buttons-container {
+        display: flex;
+        justify-content: left;
+        align-items: center;
+        margin-top: 1.5rem;
+        .type-buttons {
+            font-size: 1.8rem;
+            margin-right: 1.5rem;
+            padding: 6px 24px;
+            i {
+                // display: block;
+                margin-right: 0.4em;
+            }
+        }
+    }
+    .preview-window {
+        @include media-breakpoint-up(md) {
+            margin-top: -15px;
         }
     }
 }
