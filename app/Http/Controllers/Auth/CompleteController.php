@@ -51,15 +51,25 @@ class CompleteController extends Controller
                 abort(403);
             }
         }
-
         $sufix = $user->isProfileCompleted() ? '-full' : '';
+        dd($company);
         return view('auth.complete' . $sufix, [
             'user' => $user,
             'completeRegistrationSignedUrl' => $this->url->temporarySignedRoute('registration.complete.store', $this->carbon::now()->addMinutes(5), [
                 'user' => $user->id,
                 'company' => $company ? $company->id : null
             ]),
-            'company' => $company
+            'company' => $company,
+            'data' => [
+                'company_id' =>  $company->id,
+                'first_name' =>  $user->first_name,
+                'last_name' =>  $user->last_name,
+                'email' =>  $user->email,
+                'phone' =>  $user->phone,
+                'timezone' =>  $user->companies()->whereId($company->id),
+                'password' =>  '',
+                'password_confirmation' =>  '',
+            ]
         ]);
     }
 
