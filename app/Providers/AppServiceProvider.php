@@ -33,8 +33,12 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('s3.client', $adapter);
         $this->app->bind('mailgun.client', $adapter);
 
-        if ($this->app->environment('local', 'testing')) {
+        if ($this->app->environgment('local', 'testing')) {
             $this->app->register(DuskServiceProvider::class);
         }
+
+        View::composer('*', function ($view) {
+            $view->with('loggedUser', auth()->user());
+        });
     }
 }
