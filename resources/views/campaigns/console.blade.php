@@ -12,11 +12,8 @@
         window.label = @json($label);
         window.counters = @json($counters);
         window.campaign = @json($campaign);
-        window.recipients = @json($recipients);
+        window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
         window.user = @json(auth()->user());
-
-        console.log(this.recipients);
-        console.log(this.recipients.data);
     </script>
     <script src="{{ asset('js/console.js') }}"></script>
 @endsection
@@ -109,7 +106,7 @@
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
             <div class="col-12 col-sm-5 col-lg-3">
-                <input type="text" v-model="searchText" class="form-control filter--search-box" aria-describedby="search"
+                <input type="text" v-model="searchForm.q" class="form-control filter--search-box" aria-describedby="search"
                        placeholder="Search">
             </div>
         </div>
@@ -122,7 +119,11 @@
         </div>
 
         {{-- TODO: check if we should use this.recipients.data or this.recipients --}}
-        <div class="row no-gutters" v-for="recipient in this.recipients.data">
+
+        <div class="loader-spinner" v-if="loading">
+            <spinner-icon></spinner-icon>
+        </div>
+        <div class="row no-gutters" v-for="recipient in recipients">
             <div class="col-4 col-md-2">
                 <span>@{{ recipient.name }}</span>
             </div>
