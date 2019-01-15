@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 //region OUTSIDE API CALLS
 Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->name('pub-api.text-response-inbound')->middleware(null);
@@ -58,8 +60,18 @@ Route::get('/new-response-console', function () {
     return view('campaign.console');
 });
 
+// TODO: remove me when original route is done
+Route::get('/new-response-console', function () {
+    return view('campaign.console');
+});
+
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
+
+    // TODO: move to better location
+    Route::get('/current-user', function (){
+        return Auth::user();
+    });
 
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
@@ -208,7 +220,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
         Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
         Route::any('/get-response-list', 'ResponseController@getResponseList');
-        Route::get('/response/{recipient}', 'ResponseController@getResponse');
+        // TODO: old route
+        // Route::get('/response/{recipient}', 'ResponseController@getResponse');
+        Route::get('/response/{recipient}', 'ResponseController@getResponseJson');
         Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply');
         Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console');
         Route::get('/response-console', 'ResponseConsoleController@show')->name('campaign.response-console.index');
