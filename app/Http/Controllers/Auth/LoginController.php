@@ -52,22 +52,22 @@ class LoginController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $field = filter_var($request->input('login'), FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
-        $request->merge([$field => $request->input('login')]);
-        if (auth()->attempt($request->only($field, 'password'))) {
+        if (auth()->attempt($request->only('email', 'password'))) {
             if (auth()->user()->isAdmin()) {
-                return redirect()->route('campaign.index');
+                return response()->json(['redirect_url' => route('campaign.index')]);
+//                return redirect()->route('campaign.index');
             } else if (auth()->user()->hasActiveCompanies()) {
-                return redirect()->route('dashboard');
+                return response()->json(['redirect_url' => route('dashboard')]);
+//                return redirect()->route('dashboard');
             } else {
                 auth()->logout();
-                return redirect()->route('login')->withErrors('Your account does not have any available company.');
+                return response()->json(['error' => 'Your account does not have any available company.'], 403);
             }
         }
 
-        return redirect()->route('login')->withErrors([
+        return response()->json([
             'error' => 'These credentials do not match our records.',
-        ]);
+        ], 403);
     }
 
     /**
