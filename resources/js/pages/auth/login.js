@@ -32,7 +32,7 @@ window['app'] = new Vue({
                             });
                         }
                         this.errors = errs;
-                    } else {
+                    } else if (error.message) {
                         this.errorMessage = error.message;
                     }
                     this.loading = false;

@@ -61,12 +61,12 @@ class LoginController extends Controller
 //                return redirect()->route('dashboard');
             } else {
                 auth()->logout();
-                return response()->json(['error' => 'Your account does not have any available company.'], 403);
+                return response()->json(['message' => 'Your account does not have any available company.'], 403);
             }
         }
 
         return response()->json([
-            'error' => 'These credentials do not match our records.',
+            'message' => 'These credentials do not match our records.',
         ], 403);
     }
 
