@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Dusk\DuskServiceProvider;
+use Illuminate\Support\Facades\View;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,7 +34,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('s3.client', $adapter);
         $this->app->bind('mailgun.client', $adapter);
 
-        if ($this->app->environgment('local', 'testing')) {
+        if ($this->app->environment('local', 'testing')) {
             $this->app->register(DuskServiceProvider::class);
         }
 
