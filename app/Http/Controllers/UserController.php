@@ -261,10 +261,10 @@ class UserController extends Controller
     public function updateAvatar(User $user, Request $request)
     {
         if ($request->hasFile('image')) {
-            $user->addMediaFromRequest('image')
-                ->toMediaCollection('profile-photo', 's3');
+            $image = $user->addMediaFromRequest('image')
+                ->toMediaCollection('profile-photo');
         }
-        return response()->json([], 200);
+        return response()->json(['location' => $image->getFullUrl()], 201);
     }
 
     public function view(User $user)

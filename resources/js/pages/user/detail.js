@@ -238,8 +238,9 @@ window['sidebar'] = new Vue({
                 this.$toastr.error('Unable to process your request');
             });
         },
-        profileImageUploaded: function () {
+        profileImageUploaded: function (file, response) {
             this.$toastr.success('Image uploaded!');
+            this.user.image_url = response.location;
             this.showAvatarImage = true;
         },
         profileImageError: function () {

@@ -89,8 +89,8 @@
                 </b-nav-item-dropdown>
                 <b-nav-item-dropdown class="profile" right variant="link" size="lg" no-caret>
                     <template slot="button-content">
-                        <img src="http://lorempixel.com/60/60/" alt="Avatar">
-                        <span>{{ auth()->user()->first_name }}</span>
+                        <img :src="loggedUser.image_url" alt="Avatar">
+                        <span>@{{ loggedUser.first_name }}</span>
                     </template>
                     <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>
                     <b-dropdown-item href="{{ route('logout') }}">Signout</b-dropdown-item>
