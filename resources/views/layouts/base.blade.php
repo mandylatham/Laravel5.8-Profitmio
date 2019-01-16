@@ -10,11 +10,6 @@
 
     @yield('head-styles')
     @yield('head-script')
-
-    <style type="text/css">
-    [v-cloak] { display: none; }
-    [v-cloak]::before { content: "loading..."; }
-    </style>
 </head>
 <body>
     <div id="app" class="clearfix {{ $hasSidebar ? 'has-sidebar' : 'no-sidebar' }}">
