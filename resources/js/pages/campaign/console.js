@@ -1,12 +1,12 @@
 import Vue from 'vue';
 import './../../common';
-import axios from 'axios';
 import Form from './../../common/form';
-import { SearchIcon} from 'vue-feather-icons';
+import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
+
 Vue.use(VueSlideoutPanel);
 
-// SIDEBAR
+// Sidebar
 window['sidebar'] = new Vue({
     el: '#sidebar-nav-content',
     data: {
@@ -45,7 +45,8 @@ window['app'] = new Vue({
     components: {
         SearchIcon,
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'communication-side-panel': require('./../../page-components/campaign/communication-side-panel/communication-side-panel.component')
     },
     computed: {
         pagination: function () {
@@ -79,18 +80,18 @@ window['app'] = new Vue({
             this.loading = true;
             this.searchForm.get(window.getRecipientsUrl)
                 .then(response => {
-                    this.recipients = response.data;
-                    this.searchForm.page = response.current_page;
-                    this.searchForm.per_page = response.per_page;
-                    this.total = response.total;
+                    this.recipients = response.recipients.data;
+                    this.searchForm.page = response.recipients.current_page;
+                    this.searchForm.per_page = response.recipients.per_page;
+                    this.total = response.recipients.total;
                     this.loading = false;
                 })
                 .catch(error => {
                     this.$toastr.error('Unable to get recipient');
                 });
         },
-        showPanel: function (event) {
-            this.currentRecipientId = event.row.id;
+        showPanel: function (recipient) {
+            this.currentRecipientId = recipient.id;
             const panel = this.$showPanel({
                 component: 'communication-side-panel',
                 cssClass: 'communication-side-panel',

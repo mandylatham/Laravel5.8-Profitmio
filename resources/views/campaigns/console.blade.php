@@ -123,7 +123,7 @@
         <div class="loader-spinner" v-if="loading">
             <spinner-icon></spinner-icon>
         </div>
-        <div class="row no-gutters" v-for="recipient in recipients">
+        <div class="row no-gutters" v-for="recipient in recipients" @click="showPanel(recipient)">
             <div class="col-4 col-md-2">
                 <span>@{{ recipient.name }}</span>
             </div>
@@ -132,7 +132,7 @@
                 <span>@{{ recipient.email }}</span>
             </div>
             <div class="col-4 col-md-3">
-                <span>Email</span>
+                <span>Ago</span>
                 <span>@{{ recipient.last_seen_ago }}</span>
             </div>
         </div>

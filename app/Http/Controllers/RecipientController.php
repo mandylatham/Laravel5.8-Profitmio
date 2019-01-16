@@ -192,11 +192,6 @@ class RecipientController extends Controller
         return '';
     }
 
-    public function getForUserDisplay(Request $request)
-    {
-        return [];
-    }
-
     /**
      * @param \App\Models\Campaign $campaign
      *

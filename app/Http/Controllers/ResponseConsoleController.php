@@ -181,6 +181,20 @@ class ResponseConsoleController extends Controller
     /**
      * @param Request  $request
      * @param Campaign $campaign
+     * @return mixed
+     */
+    public function getRecipientsForUserDisplay(Request $request, Campaign $campaign)
+    {
+        $viewData = $this->getRecipientData($request, $campaign, 'all');
+
+        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+
+        return $viewData;
+    }
+
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
     public function showUnread(Request $request, Campaign $campaign)
