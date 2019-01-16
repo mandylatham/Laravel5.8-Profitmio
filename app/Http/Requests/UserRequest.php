@@ -30,7 +30,6 @@ class UserRequest extends FormRequest
             'first_name' => 'required',
             'last_name' => 'required',
             'email' => 'required|email',
-            'username' => 'required',
             'phone_number' => 'required',
             'password' => 'nullable',
             'timezone' => 'required',

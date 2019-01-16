@@ -29,7 +29,6 @@ class NewClientRequest extends FormRequest
             'last_name' => 'required',
             'email' => 'required|email',
             'phone_number' => 'required',
-            'username' => 'required|unique:users,username',
             'password' => 'required',
             'timezone' => 'required',
             'verify_password' => 'required|same:password'

@@ -39,7 +39,6 @@ class User extends Authenticatable implements HasMedia
         'phone_number',
         'password',
         'is_admin',
-        'username'
     ];
 
     protected $casts = [
@@ -271,7 +270,7 @@ class User extends Authenticatable implements HasMedia
 
     public function isProfileCompleted()
     {
-        return $this->password !== '' && $this->username !== 'username';
+        return $this->password !== '';
     }
 
     public function isCompanyProfileReady(Company $company)

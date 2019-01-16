@@ -45,7 +45,6 @@ class AgencyController extends Controller
             'organization' => $request->organization,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'username' => $request->username,
             'email' => $request->email,
             'access' => 'Agency',
             'password' => sha1($request->password),

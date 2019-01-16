@@ -54,7 +54,6 @@ class ClientController extends Controller
             'organization' => $request->organization,
             'first_name' => $request->first_name,
             'last_name' => $request->last_name,
-            'username' => $request->username,
             'email' => $request->email,
             'access' => 'Client',
             'password' => sha1($request->password),

@@ -19,6 +19,8 @@ window['app'] = new Vue({
     methods: {
         login() {
             this.loading = true;
+            this.errors = [];
+            this.errorMessage = null;
             this.userForm
                 .post(window.authUrl)
                 .then(response => {

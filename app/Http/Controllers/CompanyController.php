@@ -265,7 +265,6 @@ class CompanyController extends Controller
             $user = new $this->user();
             $user->is_admin = $request->input('role') == 'site_admin' ? true : false;
             $user->password = '';
-            $user->username = $request->input('email');
             $user->first_name = $request->input('first_name');
             $user->last_name = $request->input('last_name');
             $user->email = $request->input('email');
