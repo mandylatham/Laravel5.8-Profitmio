@@ -36,9 +36,5 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local', 'testing')) {
             $this->app->register(DuskServiceProvider::class);
         }
-
-        View::composer('*', function ($view) {
-            $view->with('loggedUser', auth()->user());
-        });
     }
 }
