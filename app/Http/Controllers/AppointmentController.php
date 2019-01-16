@@ -2,20 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\MailgunService;
+use App\Mail\CrmNotification;
+use App\Mail\LeadNotification;
 use App\Models\Appointment;
 use App\Models\Campaign;
 use App\Models\Company;
-use App\Classes\MailgunService;
-use App\Events\CampaignResponseUpdated;
-use App\Mail\CrmNotification;
-use App\Mail\LeadNotification;
 use App\Models\Recipient;
 use App\Services\TwilioClient;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Log\Logger;
 use Illuminate\Mail\Mailer;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -277,7 +276,9 @@ class AppointmentController extends Controller
 
         $appointment->save();
 
-        return $appointment->called_back;
+        return response()->json([
+            'called_back' => $appointment->called_back,
+        ]);
     }
 
     /**

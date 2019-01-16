@@ -16,15 +16,15 @@
                             <small><em>{{ this.recipient.location }}</em></small>
                         </div>
                         <div class="vehicle" v-if="this.recipient.vehicle">
-                            <i class="icon fa-car"></i>
+                            <i class="fas fa-car"></i>
                             {{ this.recipient.vehicle }}
                         </div>
                         <div class="email" v-if="this.recipient.email">
-                            <i class="icon fa-envelope"></i>
+                            <i class="fas fa-envelope"></i>
                             {{ this.recipient.email }}
                         </div>
                         <div class="phone" v-if="this.recipient.phone">
-                            <i class="icon fa-phone"></i>
+                            <i class="fas fa-phone"></i>
                             {{ this.recipient.phone }}
                         </div>
                     </div>
@@ -66,7 +66,7 @@
                         <li class="list-group-item" v-for="appointment in appointments">
 
                             <div v-if="appointment.type === 'callback'">
-                                <i class="icon fa-phone"></i>
+                                <i class="fas fa-phone"></i>
                                 {{ appointment.name }} @ {{ appointment.phone_number }}
                                 <div class="checkbox" style="padding-top: 6px; margin-left: 8px;">
                                     <label>
@@ -77,7 +77,7 @@
                                 </div>
                             </div>
                             <div v-else>
-                                <i class="icon fa-calendar"></i>
+                                <i class="fas fa-calendar"></i>
                                 {{ appointment.appointment_at_formatted }}
                             </div>
                         </li>
@@ -113,7 +113,7 @@
                     <ul class="list-group">
 
                         <li class="list-group-item" v-for="call in threads.phone">
-                            <i class="icon fa-phone"></i>
+                            <i class="fas fa-phone"></i>
                             Called at {{ call.created_at }}
 
                             <div v-if="currentUser.is_admin === 1">
@@ -179,7 +179,7 @@
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-primary waves-effect send-sms"
                                             @click="sendText(campaign.id, recipientId)">
-                                        <i class="icon md-mail-send" aria-hidden="true"></i> Send
+                                        <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
                             </div>
@@ -196,9 +196,7 @@
                     <div class="panel-body">
 
                         <div v-if="threads.emailDrop">
-                            <div class="message-time" style="margin-left: 25px">{{ threads.emailDrop.send_at_formatted
-                                }}
-                            </div>
+                            <div class="message-time" style="margin-left: 25px">{{ threads.emailDrop.send_at_formatted }}</div>
                             <strong class="vertical-text">Original Message</strong>
 
                             <div class="message original-message">
@@ -240,7 +238,7 @@
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-primary waves-effect send-email"
                                             @click="sendEmail(campaign.id, recipientId)">
-                                        <i class="icon md-mail-send" aria-hidden="true"></i> Send
+                                        <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
                             </div>
@@ -253,11 +251,15 @@
 </template>
 
 <script>
+    import axios from 'axios';
     export default {
         mounted() {
             this.resetVars();
             this.getResponses(this.campaign.id, this.recipientId);
             console.log(this.recipientId);
+        },
+        components: {
+            'date-pick': require('./../../../components/date-pick/date-pick')
         },
         data() {
             return {
@@ -350,6 +352,8 @@
                     .then(function (response) {
                         // TODO: success
                         console.log(response);
+                        // TODO: add notifications
+                        this.$toastr.success('');
                     })
                     .catch(function (response) {
                         // TODO: error

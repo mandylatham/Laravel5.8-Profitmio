@@ -12,7 +12,6 @@ window['sidebar'] = new Vue({
     data: {
         // TODO: PUT EVERYTHING THAT NEEDS TO BE HERE
         activeFilterSection: 'all',
-        activeMediaTypeSection: '',
         activeLabelSection: '',
         filter: '',
         label: '',
@@ -24,20 +23,22 @@ window['sidebar'] = new Vue({
         this.counters = window.counters;
     },
     methods: {
-        changeFilter: function (item) {
-            this.activeFilterSection = item;
-            this.asideOpen = false;
-        },
-        changeMediaType: function (item) {
-            this.activeMediaTypeSection = item;
-            this.asideOpen = false;
-        },
-        changeLabel: function (item) {
-            this.activeLabelSection = item;
-            this.asideOpen = false;
+        changeFilter: function (filter, label) {
+            this.activeFilterSection = filter;
+
+            if (label) {
+                this.activeLabelSection = label;
+            }
+
+            window.Event.fire('filters.filter-changed', {
+                filter: filter,
+                label: label ? label : ''
+            });
         }
     }
 });
+
+Vue.component('communication-side-panel', require('./../../page-components/campaign/communication-side-panel/communication-side-panel.component'));
 
 // Main vue
 window['app'] = new Vue({
@@ -45,8 +46,7 @@ window['app'] = new Vue({
     components: {
         SearchIcon,
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'communication-side-panel': require('./../../page-components/campaign/communication-side-panel/communication-side-panel.component')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
     },
     computed: {
         pagination: function () {
@@ -67,11 +67,14 @@ window['app'] = new Vue({
         },
         recipients: [],
         rowsTest: [],
-        searchText: '',
+        // searchText: '',
         searchForm: new Form({
-            q: null,
+            search: null,
             page: 1,
             per_page: 15,
+            filter: null,
+            label: null,
+            mediaType: null
         }),
         total: null
     },
@@ -105,8 +108,17 @@ window['app'] = new Vue({
         }
     },
     mounted: function () {
+        const vm = this;
         this.campaign = window.campaign;
         this.currentUser = window.user;
         this.fetchRecipients();
+
+        // Events
+        window.Event.listen('filters.filter-changed', function (data) {
+            vm.searchForm.filter = data.filter;
+            vm.searchForm.label = data.label;
+
+            vm.fetchRecipients();
+        });
     }
 });

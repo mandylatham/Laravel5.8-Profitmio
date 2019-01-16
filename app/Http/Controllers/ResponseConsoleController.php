@@ -2,18 +2,18 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Campaign;
+use App\Classes\MailgunService;
 use App\Events\CampaignCountsUpdated;
 use App\Events\CampaignResponseUpdated;
-use App\Classes\MailgunService;
+use App\Models\Campaign;
 use App\Models\EmailLog;
 use App\Models\PhoneNumber;
 use App\Models\Recipient;
 use App\Models\Response;
 use App\Services\TwilioClient;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ResponseConsoleController extends Controller
@@ -185,7 +185,10 @@ class ResponseConsoleController extends Controller
      */
     public function getRecipientsForUserDisplay(Request $request, Campaign $campaign)
     {
-        $viewData = $this->getRecipientData($request, $campaign, 'all');
+        $filter = $request->get('filter') ?: 'all';
+        $label = $request->get('label') ?: null;
+
+        $viewData = $this->getRecipientData($request, $campaign, $filter, $label);
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
 
@@ -458,7 +461,8 @@ class ResponseConsoleController extends Controller
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
-        $reply = (new TwilioClient)->sendSms($campaign->phone->phone_number, $recipient->phone, $request->get('message'));
+        $reply = (new TwilioClient)->sendSms($campaign->phone->phone_number, $recipient->phone,
+            $request->get('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'text')

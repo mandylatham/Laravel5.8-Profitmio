@@ -23,17 +23,17 @@
         <ul class="filter">
             <li class="all">
                 <a :class="{'active': activeFilterSection === 'all'}" href="javascript:;"
-                   @click="changeFilter('all')">All
+                   @click="changeFilter('all')"><i class="fas fa-expand-arrows-alt"></i> All
                     <span class="counter">@{{ this.counters.totalCount }}</span></a>
             </li>
             <li class="unread">
                 <a :class="{'active': activeFilterSection === 'unread'}" href="javascript:;"
-                   @click="changeFilter('unread')">Unread
+                   @click="changeFilter('unread')"><i class="far fa-flag"></i> Unread
                     <span class="counter">@{{ this.counters.unread }}</span></a>
             </li>
             <li class="idle">
                 <a :class="{'active': activeFilterSection === 'idle'}" href="javascript:;"
-                   @click="changeFilter('idle')">Idle
+                   @click="changeFilter('idle')"><i class="far fa-hourglass"></i> Idle
                     <span class="counter">@{{ this.counters.idle }}</span></a>
             </li>
         </ul>
@@ -43,18 +43,18 @@
 
         <ul class="media-type">
             <li class="calls">
-                <a :class="{'active': activeMediaTypeSection === 'calls'}" href="javascript:;"
-                   @click="changeMediaType('calls')">Calls
+                <a :class="{'active': activeFilterSection === 'calls'}" href="javascript:;"
+                   @click="changeFilter('calls')"><i class="fas fa-phone"></i> Calls
                     <span class="counter">@{{ this.counters.calls }}</span></a>
             </li>
             <li class="email">
-                <a :class="{'active': activeMediaTypeSection === 'email'}" href="javascript:;"
-                   @click="changeMediaType('email')">Email
+                <a :class="{'active': activeFilterSection === 'email'}" href="javascript:;"
+                   @click="changeFilter('email')"><i class="far fa-envelope"></i> Email
                     <span class="counter">@{{ this.counters.email }}</span></a>
             </li>
             <li class="sms">
-                <a :class="{'active': activeMediaTypeSection === 'sms'}" href="javascript:;"
-                   @click="changeMediaType('sms')">SMS
+                <a :class="{'active': activeFilterSection === 'sms'}" href="javascript:;"
+                   @click="changeFilter('sms')"><i class="far fa-comment-alt"></i> SMS
                     <span class="counter">@{{ this.counters.sms }}</span></a>
             </li>
         </ul>
@@ -65,31 +65,31 @@
         <ul class="labels">
             <li class="no-label">
                 <a :class="{'active': activeLabelSection === 'no-label'}" href="javascript:;"
-                   @click="changeLabel('no-label')">No Label</a>
+                   @click="changeFilter('labelled', 'no-label')">No Label</a>
             </li>
             <li class="interested">
                 <a :class="{'active': activeLabelSection === 'interested'}" href="javascript:;"
-                   @click="changeLabel('interested')">Interested</a>
+                   @click="changeFilter('labelled', 'interested')">Interested</a>
             </li>
             <li class="appointment">
                 <a :class="{'active': activeLabelSection === 'appointment'}" href="javascript:;"
-                   @click="changeLabel('appointment')">Appointment</a>
+                   @click="changeFilter('labelled', 'appointment')">Appointment</a>
             </li>
             <li class="callback">
                 <a :class="{'active': activeLabelSection === 'callback'}" href="javascript:;"
-                   @click="changeLabel('callback')">Callback</a>
+                   @click="changeFilter('labelled', 'callback')">Callback</a>
             </li>
             <li class="service-dept">
                 <a :class="{'active': activeLabelSection === 'service-dept'}" href="javascript:;"
-                   @click="changeLabel('service-dept')">Service Dept</a>
+                   @click="changeFilter('labelled', 'service-dept')">Service Dept</a>
             </li>
             <li class="not-interested">
                 <a :class="{'active': activeLabelSection === 'not-interested'}" href="javascript:;"
-                   @click="changeLabel('not-interested')">Not Interested</a>
+                   @click="changeFilter('labelled', 'not-interested')">Not Interested</a>
             </li>
             <li class="wrong-tag">
                 <a :class="{'active': activeLabelSection === 'wrong-tag'}" href="javascript:;"
-                   @click="changeLabel('wrong-tag')">Wrong #</a>
+                   @click="changeFilter('labelled', 'wrong-tag')">Wrong #</a>
             </li>
         </ul>
     </nav>
@@ -99,42 +99,35 @@
     <div id="console" class="container-fluid list-campaign-container">
         <div class="row align-items-end no-gutters">
             <div class="col-12 col-sm-5 col-lg-3">
-                <button class="btn pm-btn pm-btn-blue">
-                    <i class="fas fa-chevron-left mr-2"></i>
-                    Home
-                </button>
+                <a href="{{ route('campaign.index') }}" class="btn pm-btn pm-btn-blue">
+                    <i class="fas fa-chevron-left mr-2"></i>Home</a>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
             <div class="col-12 col-sm-5 col-lg-3">
-                <input type="text" v-model="searchForm.q" class="form-control filter--search-box" aria-describedby="search"
-                       placeholder="Search">
+                <input type="text" v-model="searchForm.search" class="form-control filter--search-box"
+                       aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
             </div>
         </div>
-
-        <div class="row align-items-end no-gutters mt-4 mb-3">
-            <div class="col-12">
-                <a class="icon" href="javascript:;"><img src="../../../../img/icons/folder.png" alt="folder"></a>
-                <a class="icon" href="javascript:;"><img src="../../../../img/icons/tag.png" alt="tag"></a>
-            </div>
-        </div>
-
-        {{-- TODO: check if we should use this.recipients.data or this.recipients --}}
 
         <div class="loader-spinner" v-if="loading">
             <spinner-icon></spinner-icon>
         </div>
-        <div class="row no-gutters" v-for="recipient in recipients" @click="showPanel(recipient)">
-            <div class="col-4 col-md-2">
-                <span>@{{ recipient.name }}</span>
+
+        <div id="recipients-list" v-if="recipients.length">
+            <div class="row no-gutters" v-for="recipient in recipients" @click="showPanel(recipient)">
+                <div class="col-4">
+                    <span>@{{ recipient.name }}</span>
+                </div>
+                <div class="col-4">
+                    <span>@{{ recipient.email }}</span>
+                </div>
+                <div class="col-4">
+                    <span>@{{ recipient.last_seen_ago }}</span>
+                </div>
             </div>
-            <div class="col-4 col-md-2">
-                <span>Email</span>
-                <span>@{{ recipient.email }}</span>
-            </div>
-            <div class="col-4 col-md-3">
-                <span>Ago</span>
-                <span>@{{ recipient.last_seen_ago }}</span>
-            </div>
+        </div>
+        <div id="recipients-list" v-else>
+            <p>No recipients found.</p>
         </div>
 
         <slideout-panel></slideout-panel>
