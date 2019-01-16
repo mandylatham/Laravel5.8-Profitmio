@@ -28,6 +28,8 @@ mix.js('resources/js/pages/campaign/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/auth/login.scss', 'public/css/login.css')
     .js('resources/js/pages/auth/registration.js', 'public/js/registration.js')
     .sass('resources/sass/auth/registration.scss', 'public/css/registration.css')
+    .js('resources/js/pages/auth/registration-full.js', 'public/js/registration-full.js')
+    .sass('resources/sass/auth/registration-full.scss', 'public/css/registration-full.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');
