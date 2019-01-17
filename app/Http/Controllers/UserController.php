@@ -238,7 +238,7 @@ class UserController extends Controller
             $config['timezone'] = $request->input('timezone');
             $invitation->config = $config;
         }
-        if ($request->has('role')) {
+        if ($request->has('role') && $request->input('role') !== 'site_admin') {
             $invitation->role = $request->input('role');
         }
         $invitation->save();

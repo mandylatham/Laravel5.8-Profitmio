@@ -178,11 +178,7 @@ class User extends Authenticatable implements HasMedia
 
     public function getTimezone(Company $company)
     {
-        if ($this->isAdmin()) {
-            return null;
-        } else {
-            return $this->invitations()->where('company_id', $company->id)->firstOrFail()->config['timezone'];
-        }
+        return $this->invitations()->where('company_id', $company->id)->firstOrFail()->config['timezone'];
     }
 
     public function countActiveCompanies()

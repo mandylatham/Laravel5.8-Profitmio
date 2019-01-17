@@ -82,13 +82,13 @@
                         </div>
                         <div class="col-12 col-lg-4 col-xl-2">
                             <div class="user-row--options justify-content-center align-items-xl-start">
-                                <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit" v-if="!user.is_admin">
+                                <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit">
                                     <i class="far fa-eye mr-3"></i> View
                                 </a>
-                                <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="!user.is_admin && user.has_active_companies">
+                                <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="user.has_active_companies">
                                     <i class="fas fa-lock-open mr-3"></i> Impersonate
                                 </a>
-                                <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-black" title="Has Pending Invitations" v-if="!user.is_admin && user.has_pending_invitations">
+                                <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-black" title="Has Pending Invitations" v-if="user.has_pending_invitations">
                                     <i class="fas fa-envelope mr-3"></i> Has Pending Invitations
                                 </a>
                             </div>

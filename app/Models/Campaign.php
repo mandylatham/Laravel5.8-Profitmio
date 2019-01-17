@@ -11,7 +11,7 @@ class Campaign extends Model
 {
     use LogsActivity, Eloquence;
 
-    protected $searchableColumns = ['name', 'id', 'starts_at', 'ends_at', 'order_id'];
+    protected $searchableColumns = ['id', 'name', 'order_id'];
 
     protected $fillable = [
         'agency_id',
@@ -194,7 +194,6 @@ class Campaign extends Model
     {
         $loggedUser = auth()->user();
         $query = self::query()
-            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at');
 

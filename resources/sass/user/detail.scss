@@ -7,6 +7,12 @@
 
 #user-view {
     margin-top: 1rem;
+    .badge-primary {
+        display: inline-block;
+        width: 100px;
+        margin: 0 auto;
+        padding: 0.5rem;
+    }
     .campaign-component {
         .campaign-postcard {
             background-color: $brand-white;

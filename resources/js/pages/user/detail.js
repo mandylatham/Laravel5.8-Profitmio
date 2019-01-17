@@ -17,7 +17,8 @@ window['app'] = new Vue({
     components: {
         'campaign': require('./../../components/campaign/campaign'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'user-role': require('./../../components/user-role/user-role')
     },
     computed: {
         countCompanies: function () {

@@ -27,6 +27,9 @@ class UpdateCompanyDataRequest extends FormRequest
     public function rules()
     {
         $possibleRoles = ['admin', 'user'];
+        if (auth()->user()->isAdmin()) {
+            $possibleRoles[] = 'site_admin';
+        }
         return [
             'company' => 'required',
             'role' => [

@@ -84,7 +84,7 @@
 
 @section('main-content')
     <div class="container" id="user-view">
-        <a class="btn pm-btn pm-btn-blue go-back" href="{{ route('user.index') }}">
+        <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ route('user.index') }}">
             <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
         </a>
         <b-card no-body>
@@ -153,6 +153,7 @@
                                         </div>
                                     </div>
                                     <div class="col-4 col-md-3 company-role">
+                                        @if (!$user->isAdmin())
                                         <v-select :options="roles" :disabled="!canEditCompanyData(company)" v-model="company.role" class="filter--v-select" @input="updateCompanyData(company)" :clearable="false">
                                             <template slot="selected-option" slot-scope="option">
                                                 @{{ option.label | userRole }}
@@ -161,6 +162,9 @@
                                                 @{{ option.label | userRole }}
                                             </template>
                                         </v-select>
+                                        @else
+                                            <user-role :short-version="false" :role="'site_admin'"></user-role>
+                                        @endif
                                     </div>
                                     <div class="col-4 col-md-3 company-timezone">
                                         <v-select :options="timezones" :disabled="!canEditCompanyData(company)" v-model="company.timezone" class="filter--v-select" @input="updateCompanyData(company)" :clearable="false">
