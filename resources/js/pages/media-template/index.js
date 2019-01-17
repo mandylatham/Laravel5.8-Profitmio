@@ -108,7 +108,8 @@ window['app'] = new Vue({
                     this.$toastr.error("Unable to get templates");
                 });
         },
-        deleteTemplate: function (id, idx) {
+        deleteTemplate: function (id, index) {
+            var idx = index;
             var route = generateRoute(this.templateDelete, {templateId: id});
             this.$swal({
                 title: "Are you sure?",
@@ -127,7 +128,7 @@ window['app'] = new Vue({
                 if (result.value) {
                     this.$toastr.success("User deleted");
                     setTimeout(function () {
-                        this.templates.splice(index, 1);
+                        window.app.templates.splice(idx, 1);
                     }, 800);
                 }
             }, error => {
