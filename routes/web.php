@@ -38,6 +38,38 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 //    });
 //});
 
+// TODO: remove me after testing
+Route::get('/pusher-test', function () {
+
+    $labelCounts = App\Models\Recipient::withResponses(20)
+        ->selectRaw("sum(interested) as interested, sum(not_interested) as not_interested,
+                sum(appointment) as appointment, sum(service) as service, sum(wrong_number) as wrong_number,
+                sum(car_sold) as car_sold, sum(heat) as heat_case, sum(callback) as callback,
+                sum(case when (interested = 0 and not_interested = 0 and appointment = 0 and service = 0 and
+                wrong_number = 0 and car_sold = 0 and heat = 0) then 1 else 0 end) as not_labelled")
+        ->first();
+
+    $data = [
+        'labelCounts' => array_map('intval', $labelCounts->toArray()),
+    ];
+
+    // $data['message'] = 'hello world ' . time();
+
+    $pusher = new Pusher\Pusher(
+        env('PUSHER_APP_KEY'),
+        env('PUSHER_APP_SECRET'),
+        env('PUSHER_APP_ID'),
+        [
+            'cluster' => env('PUSHER_CLUSTER'),
+            'useTLS'  => true,
+        ]
+    );
+
+    $pusher->trigger('response-console', 'counters.update', $data);
+
+    return ['success' => true];
+});
+
 Route::get('/layout', function () {
     return view('layouts.base');
 });
@@ -55,9 +87,6 @@ Route::get('/user-dashboard', function () {
 });
 Route::get('/user-view', function () {
     return view('user.view');
-});
-Route::get('/new-response-console', function () {
-    return view('campaign.console');
 });
 
 // TODO: remove me when original route is done

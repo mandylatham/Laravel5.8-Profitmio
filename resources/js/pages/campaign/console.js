@@ -10,17 +10,23 @@ Vue.use(VueSlideoutPanel);
 window['sidebar'] = new Vue({
     el: '#sidebar-nav-content',
     data: {
-        // TODO: PUT EVERYTHING THAT NEEDS TO BE HERE
         activeFilterSection: 'all',
         activeLabelSection: '',
         filter: '',
         label: '',
-        counters: []
+        counters: [],
+        labelCounts: [],
+        pusherKey: '',
+        campaign: {},
     },
     mounted: function () {
         this.filter = window.filter;
         this.label = window.label;
         this.counters = window.counters;
+        this.labelCounts = window.counters.labelCounts;
+        this.pusherKey = window.pusherKey;
+        this.campaign = window.campaign;
+        this.updateCounters();
     },
     methods: {
         changeFilter: function (filter, label) {
@@ -34,7 +40,28 @@ window['sidebar'] = new Vue({
                 filter: filter,
                 label: label ? label : ''
             });
-        }
+        },
+        pusher: function (channelName, eventName, callback) {
+            // TODO: remove me when done
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+
+            let pusher = new Pusher(this.pusherKey, {
+                cluster: 'eu',
+                forceTLS: true
+            });
+
+            let channel = pusher.subscribe(channelName);
+            channel.bind(eventName, function (data) {
+                callback(data);
+            });
+        },
+        updateCounters: function () {
+            const vm = this;
+            this.pusher('response-console', 'counters.update.' + this.campaign.id, function (data) {
+                vm.labelCounts = data.labelCounts
+            });
+        },
     }
 });
 
@@ -67,7 +94,6 @@ window['app'] = new Vue({
         },
         recipients: [],
         rowsTest: [],
-        // searchText: '',
         searchForm: new Form({
             search: null,
             page: 1,
@@ -105,6 +131,10 @@ window['app'] = new Vue({
                     currentUser: this.currentUser,
                 }
             });
+        },
+        clearSearch: function () {
+            this.searchForm.search = '';
+            this.fetchRecipients();
         }
     },
     mounted: function () {

@@ -141,7 +141,7 @@ class ResponseConsoleController extends Controller
         $recipients->labelCounts = Recipient::withResponses($campaign->id)
             ->selectRaw("sum(interested) as interested, sum(not_interested) as not_interested,
                 sum(appointment) as appointment, sum(service) as service, sum(wrong_number) as wrong_number,
-                sum(car_sold) as car_sold, sum(heat) as heat_case,
+                sum(car_sold) as car_sold, sum(heat) as heat_case, sum(callback) as callback,
                 sum(case when (interested = 0 and not_interested = 0 and appointment = 0 and service = 0 and
                 wrong_number = 0 and car_sold = 0 and heat = 0) then 1 else 0 end) as not_labelled")
             ->first();
@@ -158,7 +158,7 @@ class ResponseConsoleController extends Controller
             'email'       => $recipients->email,
             'calls'       => $recipients->calls,
             'sms'         => $recipients->sms,
-            'labelCounts' => $recipients->labelCounts->toArray(),
+            'labelCounts' => array_map('intval', $recipients->labelCounts->toArray()),
         ];
 
         return $viewData;
