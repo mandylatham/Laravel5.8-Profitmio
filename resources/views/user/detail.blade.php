@@ -84,6 +84,9 @@
 
 @section('main-content')
     <div class="container" id="user-view">
+        <a class="btn pm-btn pm-btn-blue go-back" href="{{ route('user.index') }}">
+            <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
+        </a>
         <b-card no-body>
             <b-tabs card>
                 <b-tab title="CAMPAIGN" active>
@@ -150,7 +153,7 @@
                                         </div>
                                     </div>
                                     <div class="col-4 col-md-3 company-role">
-                                        <v-select :options="roles" :disabled="!canEditCompanyData(company)" v-model="company.role" class="filter--v-select" @input="updateCompanyData(company)">
+                                        <v-select :options="roles" :disabled="!canEditCompanyData(company)" v-model="company.role" class="filter--v-select" @input="updateCompanyData(company)" :clearable="false">
                                             <template slot="selected-option" slot-scope="option">
                                                 @{{ option.label | userRole }}
                                             </template>
@@ -160,7 +163,7 @@
                                         </v-select>
                                     </div>
                                     <div class="col-4 col-md-3 company-timezone">
-                                        <v-select :options="timezones" :disabled="!canEditCompanyData(company)" v-model="company.timezone" class="filter--v-select" @input="updateCompanyData(company)">
+                                        <v-select :options="timezones" :disabled="!canEditCompanyData(company)" v-model="company.timezone" class="filter--v-select" @input="updateCompanyData(company)" :clearable="false">
                                             <template slot="selected-option" slot-scope="option">
                                                 @{{ option.label }}
                                             </template>
