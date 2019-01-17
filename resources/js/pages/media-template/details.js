@@ -137,7 +137,6 @@ window['app'] = new Vue({
         },
         saveField: function (fieldName) {
             this.oldTemplate[fieldName] = this.template[fieldName];
-            this.updateFields();
             this.update(fieldName);
         },
         cancelField: function (fieldName) {
@@ -145,10 +144,10 @@ window['app'] = new Vue({
             this[controlName] = false;
         },
         update: function (fieldName) {
+            this.updateFields();
             this.updateForm.post(updateUrl)
                 .then(response => {
                     this.oldTemplate = JSON.parse(JSON.stringify(this.template));
-                    this.renderedTemplate = JSON.parse(JSON.stringify(this.oldTemplate));
                     var controlName = 'show' + this.toRoyalCase(fieldName) + 'Controls';
                     this[controlName] = false;
                     this.$toastr.success("Update successful");
