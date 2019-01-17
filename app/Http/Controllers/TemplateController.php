@@ -88,6 +88,6 @@ class TemplateController extends Controller
     public function delete(CampaignScheduleTemplate $template)
     {
         $template->delete();
-        return redirect()->route('template.index');
+        return response()->json(['status' => 'success']);
     }
 }

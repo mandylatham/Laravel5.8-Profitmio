@@ -85,11 +85,11 @@ window['app'] = new Vue({
         this.fetchData();
     },
     methods: {
-        onCompanySelected() {
+        onCompanySelected: function () {
             this.searchForm.page = 1;
             return this.fetchData();
         },
-        fetchData() {
+        fetchData: function () {
             if (this.companySelected) {
                 this.searchForm.companySelected = this.companySelected.id;
             } else {
@@ -108,7 +108,33 @@ window['app'] = new Vue({
                     this.$toastr.error("Unable to get templates");
                 });
         },
-        onPageChanged(event) {
+        deleteTemplate: function (id, idx) {
+            var route = generateRoute(this.templateDelete, {templateId: id});
+            this.$swal({
+                title: "Are you sure?",
+                text: "You will not be able to undo this operation!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                allowOutsideClick: false,
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return axios.delete(route);
+                }
+            }).then(result => {
+                if (result.value) {
+                    this.$toastr.success("User deleted");
+                    setTimeout(function () {
+                        this.templates.splice(index, 1);
+                    }, 800);
+                }
+            }, error => {
+                this.$toastr.error("Unable to delete user");
+            });
+        },
+        onPageChanged: function (event) {
             this.searchForm.page = event.page;
             return this.fetchData();
         },
