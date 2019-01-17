@@ -17,8 +17,10 @@
         window.companySelected = @json($companySelected);
         window.userEditUrl = "{{ route('user.view', ['user' => ':userId']) }}";
         window.userImpersonateUrl = "{{ route('admin.impersonate', ['user' => ':userId']) }}";
-        window.userActivateUrl = "{{ route('user.activate', ['user' => ':userId']) }}";
-        window.userDeactivateUrl = "{{ route('user.deactivate', ['user' => ':userId']) }}";
+        @if (!auth()->user()->isAdmin())
+        window.userActivateUrl = "{{ route('user.activate', ['user' => ':userId', 'company' => get_active_company()]) }}";
+        window.userDeactivateUrl = "{{ route('user.deactivate', ['user' => ':userId', 'company' => get_active_company()]) }}";
+        @endif
         window.q = @json($q);
     </script>
     @if (auth()->user()->isAdmin())
@@ -102,7 +104,7 @@
         <div class="container" id="company-user-index">
             <div class="row">
                 <div class="col">
-                    <a class="btn pm-btn pm-btn-blue float-right" href="{{ route('user.create') }}"><i class="fas fa-plus mr-3"></i>New User</a>
+                    <a class="btn pm-btn pm-btn-blue float-left" href="{{ route('user.create') }}"><i class="fas fa-plus mr-3"></i>New User</a>
                 </div>
             </div>
             <div class="row align-items-end mb-3">
@@ -124,14 +126,14 @@
                 <div class="user-row" v-for="user in users">
                     <div class="row no-gutters">
                         <div class="col-12 col-md-8 col-xl-3">
-                            <div class="user-row--id justify-content-center justify-content-xl-start">
+                            <div class="user-row--id justify-content-center justify-content-xl-">
                                 <strong class="mr-2">ID: @{{ user.id }}</strong>
                                 <span class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
-                                <user-role class="ml-3" :role="'site_admin'" v-if="user.is_admin"></user-role>
+                                <user-status class="ml-3" :is-active="user.is_active"></user-status>
                             </div>
                         </div>
                         <div class="col-12 col-md-4 col-xl-2">
-                            <div class="user-row--role justify-content-center justify-content-xl-start">
+                            <div class="user-row--role justify-content-center">
                                 <user-role :role="user.role" :short-version="false"></user-role>
                             </div>
                         </div>
@@ -153,10 +155,10 @@
                                 <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-black" title="Has Pending Invitations" v-if="user.role !== 'site_admin' && user.has_pending_invitations">
                                     <i class="fas fa-envelope mr-3"></i> Has Pending Invitations
                                 </a>
-                                <a :href="generateRoute(userActivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-green" title="Activate" v-if="!user.is_active">
+                                <a href="javascript:;" @click="activateUser(user)" class="btn btn-link pm-btn-link pm-btn-link-green" title="Activate" v-if="!user.is_active">
                                     <i class="far fa-check-circle mr-3"></i> Activate
                                 </a>
-                                <a :href="generateRoute(userDeactivateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-danger" title="Deactivate" v-if="user.is_active">
+                                <a href="javascript:;" @click="deactivateUser(user)" class="btn btn-link pm-btn-link pm-btn-link-danger" title="Deactivate" v-if="user.is_active">
                                     <i class="far fa-times-circle mr-3"></i> Deactivate
                                 </a>
                             </div>

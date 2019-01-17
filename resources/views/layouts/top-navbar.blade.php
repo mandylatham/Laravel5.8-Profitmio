@@ -93,7 +93,7 @@
                         <span>@{{ loggedUser.first_name }}</span>
                     </template>
                     <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>
-                    <b-dropdown-item href="{{ route('logout') }}">Signout</b-dropdown-item>
+                    <b-dropdown-item @click="signout('{{ route('logout') }}')">Signout</b-dropdown-item>
                 </b-nav-item-dropdown>
             </b-navbar-nav>
         </b-collapse>

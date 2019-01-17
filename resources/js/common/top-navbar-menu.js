@@ -12,5 +12,11 @@ new Vue({
     },
     data: {
         loggedUser: {}
+    },
+    methods: {
+        signout(url) {
+            localStorage.clear();
+            window.location.replace(url);
+        }
     }
 });

@@ -2,13 +2,15 @@ import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
 import {generateRoute} from './../../common/helpers'
+import axios from "axios";
 
 window['app'] = new Vue({
     el: '#company-user-index',
     components: {
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'user-role': require('./../../components/user-role/user-role')
+        'user-role': require('./../../components/user-role/user-role'),
+        'user-status': require('./../../components/user-status/user-status')
     },
     filters: {
         'userRole': require('./../../filters/user-role.filter')
@@ -53,6 +55,63 @@ window['app'] = new Vue({
     },
     methods: {
         generateRoute,
+        deactivateUser: function (user) {
+            this.$swal({
+                title: "Are you sure?",
+                text: "You want to deactivate this user?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                allowOutsideClick: false,
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return axios.get(generateRoute(window.userDeactivateUrl, {'userId': user.id}));
+                }
+            }).then(result => {
+                if (result.value) {
+                    this.$set(user, 'is_active', false);
+                    this.$swal({
+                        title: 'User Deactivated',
+                        type: 'success',
+                        allowOutsideClick: true
+                    }).then(() => {
+                    });
+                }
+            }, error => {
+                this.$toastr.error('Unable to process your request');
+            });
+        },
+
+        activateUser: function (user) {
+            this.$swal({
+                title: "Are you sure?",
+                text: "You want to activate this user?",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#38c172",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                allowOutsideClick: false,
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    return axios.get(generateRoute(window.userActivateUrl, {'userId': user.id}));
+                }
+            }).then(result => {
+                if (result.value) {
+                    this.$set(user, 'is_active', true);
+                    this.$swal({
+                        title: 'User Activated',
+                        type: 'success',
+                        allowOutsideClick: true
+                    }).then(() => {
+                    });
+                }
+            }, error => {
+                this.$toastr.error('Unable to process your request');
+            });
+        },
         fetchData() {
             this.isLoading = true;
             this.searchForm

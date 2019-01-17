@@ -103,8 +103,6 @@ class Campaign extends Model
 
     public function scopeFilterByCompany($query, Company $company)
     {
-        session(['filters.campaign.index.company' => $company->id]);
-        session(['filters.user.view.campaign-company-selected' => $company->id]);
         return $query->where(function ($query) use ($company) {
             $query->orWhere('agency_id', $company->id);
             $query->orWhere('dealership_id', $company->id);
@@ -113,8 +111,6 @@ class Campaign extends Model
 
     public function scopeFilterByQuery($query, $q)
     {
-        session(['filters.campaign.index.q' => $q]);
-        session(['filters.user.view.campaign-q' => $q]);
         return $query->search($q);
     }
 
@@ -217,16 +213,10 @@ class Campaign extends Model
 
         if ($request->has('q')) {
             $query->filterByQuery($request->input('q'));
-        } else {
-            session()->forget('filters.campaign.index.q');
-            session()->forget('filters.user.view.campaign-q');
         }
 
         if ($request->has('company')) {
             $query->filterByCompany(Company::findOrFail($request->input('company')));
-        } else {
-            session()->forget('filters.campaign.index.company');
-            session()->forget('filters.user.view.campaign-company-selected');
         }
         return $query;
     }

@@ -37,8 +37,7 @@ class UserController extends Controller
     public function activate(User $user, Request $request)
     {
         $user->activate($request->input('company'));
-
-        return redirect()->back();
+        return response()->json(['message' => 'User activated.']);
     }
 
     /**
@@ -81,8 +80,7 @@ class UserController extends Controller
     public function deactivate(User $user, Request $request)
     {
         $user->deactivate($request->input('company'));
-
-        return redirect()->back();
+        return response()->json(['message' => 'User deactivated.']);
     }
 
     public function delete(User $user, Request $request)
