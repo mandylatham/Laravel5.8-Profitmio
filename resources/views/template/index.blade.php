@@ -53,7 +53,25 @@
                 <div class="no-items-row" v-if="templates.length === 0">
                     No Items
                 </div>
-                <media-template v-if="templates.length > 0" v-for="template in templates" :key="template.id" :media_template="template"></media-template>
+                <div class="row no-gutters media-template-component inactive" v-for="template in templates" :key="template.id">
+                    <div class="col-12 col-md-5 media-template-header">
+                        <div class="media-template-header--title">
+                            <p>Template @{{ template.id }}</p>
+                            <strong>@{{ template.name }}</strong>
+                        </div>
+                    </div>
+                    <div class="col-4 col-md-2 media-template-postcard">
+                        <media-type no-label :media_type="template.type"></media-type>
+                    </div>
+                    <div class="col-4 col-md-2 media-template-date">
+                        <span>Created On</span>
+                        <span>@{{ template.created_at | amDateFormat('MM.DD.YY') }}</span>
+                    </div>
+                    <div class="col-4 col-md-3 media-template-links">
+                        <a :href="generateRoute(templateEdit, {'templateId': template.id})"><span class="fa fa-edit"></span> Edit</a>
+                        <a :href="generateRoute(templateDelete, {'templateId': template.id})"><span class="fa fa-trash"></span> Delete</a>
+                    </div>
+                </div>
                 <pm-pagination v-if="templates.length > 0" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
             </div>
         </div>

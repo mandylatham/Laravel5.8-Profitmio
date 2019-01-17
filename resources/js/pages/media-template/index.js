@@ -3,6 +3,8 @@ import './../../common';
 import Form from './../../common/form';
 import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
+import {generateRoute} from './../../common/helpers'
+
 // Toastr Library
 import VueToastr2 from 'vue-toastr-2'
 window.toastr = require('toastr');
@@ -15,10 +17,9 @@ Vue.use(Modal);
 window['app'] = new Vue({
     el: '#template-index',
     components: {
-        'media-template': require('./../../components/media-template/index'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'pm-responsive-table': require('./../../components/media-template/index'),
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'media-type': require('./../../components/media-type/media-type'),
     },
     computed: {
         pagination: function () {
@@ -27,6 +28,16 @@ window['app'] = new Vue({
                 per_page: this.searchForm.per_page,
                 total: this.total
             };
+        },
+        template_text: function () {
+            if (this.media_template.type == 'sms') {
+                return this.media_template.text_message;
+            }
+            if (this.media_template.type == 'email') {
+                return this.media_template.email_text;
+            }
+
+            return;
         }
     },
     data: {
@@ -45,9 +56,14 @@ window['app'] = new Vue({
         companySelected: null,
         tableOptions: {
             mobile: 'lg'
-        }
+        },
+        mediaTemplateClosed: true,
+        templateEdit: '',
+        templateDelete: ''
     },
     mounted() {
+        this.templateEdit = window.templateEdit;
+        this.templateDelete = window.templateDelete;
         this.searchFormUrl = window.searchFormUrl;
         this.companySelected = window.companySelected;
         this.searchForm.q = window.q;
@@ -95,6 +111,7 @@ window['app'] = new Vue({
         onPageChanged(event) {
             this.searchForm.page = event.page;
             return this.fetchData();
-        }
+        },
+        generateRoute
     }
 });
