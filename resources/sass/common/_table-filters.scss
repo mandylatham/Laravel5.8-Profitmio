@@ -1,0 +1,97 @@
+.filter-- {
+    &v-select.v-select {
+        border: none;
+        border-radius: 5px;
+        width: 100%;
+        //overflow: hidden;
+        input[type=search], input[type=search]:focus {
+            margin: 0;
+            padding: 0;
+            font-size: 0.9rem;
+            height: $form-control-height;
+        }
+
+        .vs__selected-options {
+            order: 2;
+            background-color: #fff;
+            border-radius: 0 5px 5px 0;
+            border: 1px solid $brand-gray;
+        }
+
+        &.disabled {
+            .dropdown-toggle, .dropdown-toggle .clear, .dropdown-toggle input, .open-indicator, .selected-tag .close{
+                background-color: inherit;
+            }
+        }
+
+        &.open {
+            .open-indicator:before {
+                transform: rotate(315deg) translate(-2px, 3px);
+            }
+        }
+
+        .open-indicator:before {
+            border-width: 1px 1px 0 0;
+            border-color: #fff;
+            transform: rotate(133deg) translate(-2px, 1px);
+        }
+
+        .vs__actions {
+            order: 1;
+            margin: 0;
+            padding: 0 10px;
+            text-align: center;
+            justify-content: center;
+            background-color: $brand-purple;
+            border-radius: 5px 0 0 5px;
+        }
+
+        .dropdown-toggle .clear {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            padding: 0 10px;
+            background-color: #572E8D;
+            border-radius: 0 5px 5px 0;
+            margin: 0;
+            color: #fff;
+        }
+
+        .dropdown-toggle {
+            border: none;
+            padding: 0;
+
+            &:after {
+                display: none;
+            }
+        }
+
+        .dropdown-menu {
+            z-index: 100;
+        }
+    }
+
+    &search-box {
+        border-radius: 15px;
+        font-size: 0.9rem;
+        height: 2rem;
+        border-color: #ddd;
+
+        &:focus {
+            box-shadow: 0 0 0 0.2rem rgba(darken($brand-blue, 10%), 0.25);
+            border-color: inherit;
+        }
+    }
+
+    &form-group {
+        label {
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+        }
+
+        @include media-breakpoint-up(sm) {
+            margin-bottom: 0;
+        }
+    }
+}

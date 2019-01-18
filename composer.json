@@ -23,7 +23,8 @@
         "sofa/eloquence-base": "^5.6",
         "spatie/laravel-activitylog": "^3.1",
         "spatie/laravel-medialibrary": "^7.5",
-        "twilio/sdk": "^5.24"
+        "twilio/sdk": "^5.24",
+        "pusher/pusher-php-server": "~3.0"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",

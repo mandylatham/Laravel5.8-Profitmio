@@ -4,14 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Models\Appointment;
 use App\Models\Campaign;
+use App\Models\Company;
 use App\Classes\MailgunService;
+use App\Events\CampaignResponseUpdated;
 use App\Mail\CrmNotification;
 use App\Mail\LeadNotification;
 use App\Models\Recipient;
+use App\Services\TwilioClient;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Log\Logger;
 use Illuminate\Mail\Mailer;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Appointment Controller
@@ -26,20 +31,61 @@ class AppointmentController extends Controller
 
     private $campaign;
 
+    private $company;
+
     private $log;
 
     private $recipient;
 
     private $mail;
 
-    public function __construct(Appointment $appointment, Carbon $carbon, Campaign $campaign, Recipient $recipient, Logger $log, Mailer $mail)
+    /**
+     * AppointmentController constructor.
+     * @param Appointment $appointment
+     * @param Carbon      $carbon
+     * @param Campaign    $campaign
+     * @param Recipient   $recipient
+     * @param Logger      $log
+     * @param Mailer      $mail
+     */
+    public function __construct(Appointment $appointment, Carbon $carbon, Campaign $campaign, Company $company, Recipient $recipient, Logger $log, Mailer $mail)
     {
         $this->appointment = $appointment;
         $this->carbon = $carbon;
         $this->campaign = $campaign;
+        $this->company = $company;
         $this->log = $log;
         $this->recipient = $recipient;
         $this->mail = $mail;
+    }
+
+    public function getCampaignIds()
+    {
+        $ids = $this->campaign->select('id');
+        $company = $this->company->findOrFail(get_active_company());
+
+        if ($company->isDealership()) {
+            $ids->where('dealership_id', $company->id);
+        } else if ($company->isAgency()) {
+            $ids->where('agency_id', $company->id);
+        }
+
+        return $ids->get()->toArray();
+    }
+
+    public function getForCalendarDisplay(Request $request)
+    {
+        $ids = $this->getCampaignIds();
+
+        $appointments = $this->appointment
+            ->where('called_back', 0)
+            ->whereIn('campaign_id', $ids)
+            ->where('type', 'appointment')
+            ->whereNotNull('appointment_at')
+            ->selectRaw("concat('Campaign ', campaign_id, ': ', first_name,' ',last_name,': ',phone_number) as title, appointment_at as start, DATE(appointment_at) as date")
+            ->get();
+
+        return $appointments;
     }
 
     /**
@@ -64,11 +110,11 @@ class AppointmentController extends Controller
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
         }
 
-        $phone_number = \Twilio::getFormattedPhoneNumber($request->json()->get('phone_number'));
+        $phone_number = TwilioClient::getFormattedPhoneNumber($request->json()->get('phone_number'));
         if ($phone_number) {
             $phone_number = $phone_number->phoneNumber;
         }
-        $alt_phone_number = \Twilio::getFormattedPhoneNumber($request->json()->get('alt_phone_number'));
+        $alt_phone_number = TwilioClient::getFormattedPhoneNumber($request->json()->get('alt_phone_number'));
         if ($alt_phone_number) {
             $alt_phone_number = $alt_phone_number->phoneNumber;
         }
@@ -121,7 +167,8 @@ class AppointmentController extends Controller
 
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
 
-            abort(406);
+            // TODO: Unreachable statement
+            // abort(406);
         }
 
         if ($appointment->type == 'appointment') {
@@ -177,9 +224,9 @@ class AppointmentController extends Controller
                 $to = $campaign->sms_on_callback_number;
                 try {
                     $message = $this->getCallbackMessage($appointment);
-                    Twilio::sendSms($from, $to, $message);
+                    TwilioClient::sendSms($from, $to, $message);
                 } catch (\Exception $exception){
-                    \Log::error("Unable to send callback SMS: " . $e->getMessage());
+                    Log::error("Unable to send callback SMS: " . $e->getMessage());
                 }
             }
 
@@ -188,6 +235,10 @@ class AppointmentController extends Controller
         return response()->json(['error' => 0, 'message' => 'The appointment has been saved.']);
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function save(Request $request)
     {
         $data = $request->all();
@@ -216,22 +267,28 @@ class AppointmentController extends Controller
 
     /**
      * Add Call Data
-     * @param  Appointment
-     * @param  Request
-     * @return [type]
+     * @param Appointment $appointment
+     * @param Request     $request
+     * @return int|mixed [type]
      */
     public function updateCalledStatus(Appointment $appointment, Request $request)
     {
-        $appointment->called_back = $request->called_back == 'true' ? 1 : 0;
+        $appointment->called_back = (int)$request->called_back;
 
         $appointment->save();
 
         return $appointment->called_back;
     }
 
+    /**
+     * @param Campaign  $campaign
+     * @param Recipient $recipient
+     * @param Request   $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function addAppointmentFromConsole(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'), \Auth::user()->timezone);
+        $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'), Auth::user()->timezone);
 
         $appointment = Appointment::create([
             'recipient_id' => $recipient->id,
@@ -247,10 +304,14 @@ class AppointmentController extends Controller
         $recipient->update(['appointment' => true]);
 
         return response()->json([
-            'appointment_at' => $appointment_at->timezone(\Auth::user()->timezone)->format("m/d/Y h:i A T"),
+            'appointment_at' => $appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y h:i A T"),
         ]);
     }
 
+    /**
+     * @param Appointment $appointment
+     * @return string
+     */
     private function getCallbackMessage(Appointment $appointment): string
     {
         $name = $appointment->first_name.' '.$appointment->last_name;

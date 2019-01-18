@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CompanyCollection;
 use App\Models\Campaign;
 use App\Classes\CampaignUserActivityLog;
 use App\Classes\CompanyUserActivityLog;
@@ -65,6 +66,34 @@ class CompanyController extends Controller
     }
 
     /**
+     * Returns all companies for dropdown
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForDropdown(Request $request)
+    {
+        return $this->company
+            ->searchByRequest($request)
+            ->orderBy('id', 'desc')
+            ->paginate($request->input('per_page', 15));
+    }
+
+    /**
+     * Return all companies for user display
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForUserDisplay(Request $request)
+    {
+        $companies = $this->company
+            ->searchByRequest($request)
+            ->orderBy('id', 'desc')
+            ->paginate(15);
+
+        return new CompanyCollection($companies);
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @param Request $request
@@ -72,12 +101,9 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
-        $companies = $this->company->orderBy('id', 'desc');
-        if ($request->has('q')) {
-            $companies->search($request->input('q'));
-        }
-
-        return view('company.index', ['companies' => $companies->paginate(15)]);
+        return view('company.index', [
+            'q' => session('filters.company.index.q')
+        ]);
     }
 
     /**
@@ -239,7 +265,6 @@ class CompanyController extends Controller
             $user = new $this->user();
             $user->is_admin = $request->input('role') == 'site_admin' ? true : false;
             $user->password = '';
-            $user->username = $request->input('email');
             $user->first_name = $request->input('first_name');
             $user->last_name = $request->input('last_name');
             $user->email = $request->input('email');

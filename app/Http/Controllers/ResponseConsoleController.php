@@ -1,14 +1,20 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Campaign;
+use App\Events\CampaignCountsUpdated;
+use App\Events\CampaignResponseUpdated;
 use App\Classes\MailgunService;
 use App\Models\EmailLog;
 use App\Models\PhoneNumber;
 use App\Models\Recipient;
-use App\Models\≈Response;
+use App\Models\Response;
+use App\Services\TwilioClient;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ResponseConsoleController extends Controller
 {
@@ -17,12 +23,23 @@ class ResponseConsoleController extends Controller
      */
     protected $mailgun;
 
+    /**
+     * ResponseConsoleController constructor.
+     * @param MailgunService $mailgun
+     */
     public function __construct(MailgunService $mailgun)
     {
         $this->mailgun = $mailgun;
         $this->pages = 15;
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @param string   $filter
+     * @param null     $label
+     * @return mixed
+     */
     protected function getRecipientData(Request $request, Campaign $campaign, $filter = 'all', $label = null)
     {
         if ($filter == 'all') {
@@ -45,7 +62,7 @@ class ResponseConsoleController extends Controller
             $recipients = Recipient::withResponses($campaign->id)->whereIn(
                 'recipients.id',
                 result_array_values(
-                    \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
                 )
             );
         }
@@ -53,7 +70,7 @@ class ResponseConsoleController extends Controller
             $recipients = Recipient::withResponses($campaign->id)->whereIn(
                 'recipients.id',
                 result_array_values(
-                    \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
                 )
             );
         }
@@ -61,7 +78,7 @@ class ResponseConsoleController extends Controller
             $recipients = Recipient::withResponses($campaign->id)->whereIn(
                 'recipients.id',
                 result_array_values(
-                    \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
                 )
             );
         }
@@ -72,22 +89,22 @@ class ResponseConsoleController extends Controller
 
         if ($request->has('search')) {
             $recipients->where(function ($query) use ($request) {
-				$keywords = explode(' ', $request->search);
-				foreach ($keywords as $keyword) {
-					$query->orWhere('first_name', 'like', '%' . $keyword . '%')
-						->orWhere('last_name', 'like', '%' . $keyword . '%')
-						->orWhere('email', 'like', '%' . $keyword . '%')
-						->orWhere('phone', 'like', '%' . $keyword . '%')
-						->orWhere('make', 'like', '%' . $keyword . '%')
-						->orWhere('model', 'like', '%' . $keyword . '%')
-						->orWhere('year', 'like', '%' . $keyword . '%');
-				}
+                $keywords = explode(' ', $request->search);
+                foreach ($keywords as $keyword) {
+                    $query->orWhere('first_name', 'like', '%' . $keyword . '%')
+                        ->orWhere('last_name', 'like', '%' . $keyword . '%')
+                        ->orWhere('email', 'like', '%' . $keyword . '%')
+                        ->orWhere('phone', 'like', '%' . $keyword . '%')
+                        ->orWhere('make', 'like', '%' . $keyword . '%')
+                        ->orWhere('model', 'like', '%' . $keyword . '%')
+                        ->orWhere('year', 'like', '%' . $keyword . '%');
+                }
             });
         }
 
         $recipients->join('responses as r1', function ($join) {
-                $join->on('recipients.id', '=', 'r1.id');
-            })
+            $join->on('recipients.id', '=', 'r1.id');
+        })
             ->leftJoin('responses as r2', function ($join) {
                 $join->on('r1.id', '=', 'r2.id')
                     ->on('r1.created_at', '<', 'r2.created_at');
@@ -105,19 +122,19 @@ class ResponseConsoleController extends Controller
         $recipients->email = Recipient::withResponses($campaign->id)->whereIn(
             'recipients.id',
             result_array_values(
-                \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
             )
         )->count();
         $recipients->calls = Recipient::withResponses($campaign->id)->whereIn(
             'recipients.id',
             result_array_values(
-                \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
             )
         )->count();
         $recipients->sms = Recipient::withResponses($campaign->id)->whereIn(
             'recipients.id',
             result_array_values(
-                \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
             )
         )->count();
 
@@ -133,10 +150,25 @@ class ResponseConsoleController extends Controller
         $viewData['recipients'] = $recipients;
         $viewData['filter'] = $filter;
         $viewData['label'] = $label;
+        $viewData['counters'] = [
+            'totalCount'  => $recipients->totalCount,
+            'unread'      => $recipients->unread,
+            'idle'        => $recipients->idle,
+            'archived'    => $recipients->archived,
+            'email'       => $recipients->email,
+            'calls'       => $recipients->calls,
+            'sms'         => $recipients->sms,
+            'labelCounts' => $recipients->labelCounts->toArray(),
+        ];
 
         return $viewData;
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function show(Request $request, Campaign $campaign)
     {
         $viewData = $this->getRecipientData($request, $campaign, 'all');
@@ -146,6 +178,11 @@ class ResponseConsoleController extends Controller
         return view('campaigns.console', $viewData);
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showUnread(Request $request, Campaign $campaign)
     {
         $viewData = $this->getRecipientData($request, $campaign, 'unread');
@@ -155,6 +192,11 @@ class ResponseConsoleController extends Controller
         return view('campaigns.console', $viewData);
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showIdle(Request $request, Campaign $campaign)
     {
         $viewData = $this->getRecipientData($request, $campaign, 'idle');
@@ -164,6 +206,11 @@ class ResponseConsoleController extends Controller
         return view('campaigns.console', $viewData);
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showArchived(Request $request, Campaign $campaign)
     {
         $viewData = $this->getRecipientData($request, $campaign, 'archived');
@@ -173,6 +220,12 @@ class ResponseConsoleController extends Controller
         return view('campaigns.console', $viewData);
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @param string   $label
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showLabelled(Request $request, Campaign $campaign, $label = 'none')
     {
         $viewData = $this->getRecipientData($request, $campaign, 'labelled', $label);
@@ -182,6 +235,11 @@ class ResponseConsoleController extends Controller
         return view('campaigns.console', $viewData);
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showCalls(Request $request, Campaign $campaign)
     {
         $viewData = $this->getRecipientData($request, $campaign, 'calls');
@@ -191,6 +249,11 @@ class ResponseConsoleController extends Controller
         return view('campaigns.console', $viewData);
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showEmails(Request $request, Campaign $campaign)
     {
         $viewData = $this->getRecipientData($request, $campaign, 'email');
@@ -200,6 +263,11 @@ class ResponseConsoleController extends Controller
         return view('campaigns.console', $viewData);
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     */
     public function showTexts(Request $request, Campaign $campaign)
     {
         $viewData = $this->getRecipientData($request, $campaign, 'text');
@@ -227,12 +295,13 @@ class ResponseConsoleController extends Controller
             $messageId = $request->get('message-id');
             $log->message_id = $request->get('message-id');
         } else {
-            \Log::error('Received bad request from Mailgun: ' . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+            Log::error('Received bad request from Mailgun: ' . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
 
             abort(406);
         }
 
-        $existing = EmailLog::where('message_id', $messageId)->where('campaign_id', '!=', 0)->orderBy('email_log_id', 'ASC')->first();
+        $existing = EmailLog::where('message_id', $messageId)->where('campaign_id', '!=', 0)->orderBy('email_log_id',
+            'ASC')->first();
 
         if ($existing) {
             $log->campaign_id = $existing->campaign_id;
@@ -241,11 +310,11 @@ class ResponseConsoleController extends Controller
             $from = $this->parseMailgunFromField($request->get('from'));
             $log->campaign_id = $from->campaign_id;
             $log->recipient_id = $from->recipient_id;
-	    if (! $from->campaign_id || ! $from->recipient_id) {
-		\Log::error('Received bad request from Mailgun ' . json_encode($request->all, JSON_UNESCAPED_SLASHES));
+            if (!$from->campaign_id || !$from->recipient_id) {
+                Log::error('Received bad request from Mailgun ' . json_encode($request->all, JSON_UNESCAPED_SLASHES));
 
-		abort(406);
-	    }
+                abort(406);
+            }
         }
 
         $log->code = $request->get('code') ?: '000';
@@ -267,21 +336,22 @@ class ResponseConsoleController extends Controller
         $recipient = Recipient::findOrFail($recipient_id);
 
         $response = new Response([
-            'campaign_id' => $campaign->id,
-            'recipient_id' => $recipient->id,
-            'message' => $request->get('stripped-text'),
-            'message_id' => $request->get('Message-Id'),
-            'in_reply_to' => $request->get('In-Reply-To'),
-            'subject' => $request->get('subject'),
-            'type' => 'email',
+            'campaign_id'   => $campaign->id,
+            'recipient_id'  => $recipient->id,
+            'message'       => $request->get('stripped-text'),
+            'message_id'    => $request->get('Message-Id'),
+            'in_reply_to'   => $request->get('In-Reply-To'),
+            'subject'       => $request->get('subject'),
+            'type'          => 'email',
             'recording_sid' => 0,
-            'incoming' => 1,
+            'incoming'      => 1,
         ]);
 
         $response->save();
 
         $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
         $recipient->save();
+        broadcast(new CampaignCountsUpdated($campaign));
 
         if ($campaign->client_passthrough && !empty($campaign->client_passthrough_email)) {
             $this->mailgun->sendPassthroughEmail(
@@ -297,8 +367,8 @@ class ResponseConsoleController extends Controller
     /**
      * Reply to a previous email
      *
-     * @param \App\Models\Campaign            $campaign
-     * @param \App\Models\Recipient           $recipient
+     * @param \App\Models\Campaign     $campaign
+     * @param \App\Models\Recipient    $recipient
      * @param \Illuminate\Http\Request $request
      *
      * @return string
@@ -321,7 +391,8 @@ class ResponseConsoleController extends Controller
         $subject = 'Re: ' . $lastMessage->subject;
 
         # Send off the email
-        $reply = $this->mailgun->sendClientEmail($campaign, $recipient, $subject, $request->get('message'), $request->get('message'));
+        $reply = $this->mailgun->sendClientEmail($campaign, $recipient, $subject, $request->get('message'),
+            $request->get('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'email')
@@ -331,26 +402,26 @@ class ResponseConsoleController extends Controller
 
         # Save the response
         $response = new Response([
-            'campaign_id' => $campaign->id,
-            'recipient_id' => $recipient->id,
-            'message' => $request->get('message'),
-            'message_id' => $reply->getId(),
-            'in_reply_to' => $lastMessage->message_id,
-            'subject' => $subject,
-            'incoming' => 0,
-            'type' => 'email',
+            'campaign_id'   => $campaign->id,
+            'recipient_id'  => $recipient->id,
+            'message'       => $request->get('message'),
+            'message_id'    => $reply->getId(),
+            'in_reply_to'   => $lastMessage->message_id,
+            'subject'       => $subject,
+            'incoming'      => 0,
+            'type'          => 'email',
             'recording_sid' => 0,
         ]);
         $response->save();
 
         # Log the transaction
         $log = new EmailLog([
-            'message_id' => str_replace(['<', '>'], '', $reply->getId()),
-            'code' => 0,
-            'campaign_id' => $campaign->id,
+            'message_id'   => str_replace(['<', '>'], '', $reply->getId()),
+            'code'         => 0,
+            'campaign_id'  => $campaign->id,
             'recipient_id' => $recipient->id,
-            'event' => 'reply',
-            'recipient' => $recipient->email,
+            'event'        => 'reply',
+            'recipient'    => $recipient->email,
         ]);
         $log->save();
 
@@ -360,19 +431,20 @@ class ResponseConsoleController extends Controller
 
     /**
      * Send an SMS reply
-     * @param \App\Models\Campaign            $campaign
-     * @param \App\Models\Recipient           $recipient
+     * @param \App\Models\Campaign     $campaign
+     * @param \App\Models\Recipient    $recipient
      * @param \Illuminate\Http\Request $request
      *
      * @return mixed
+     * @throws \Twilio\Exceptions\ConfigurationException
      */
     public function smsReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        if (! $campaign->isExpired()) {
+        if (!$campaign->isExpired()) {
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
-        $reply = \Twilio::sendSms($campaign->phone->phone_number, $recipient->phone, $request->get('message'));
+        $reply = (new TwilioClient)->sendSms($campaign->phone->phone_number, $recipient->phone, $request->get('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'text')
@@ -381,12 +453,12 @@ class ResponseConsoleController extends Controller
             ->update(['read' => true]);
 
         $response = new Response([
-            'campaign_id' => $campaign->id,
-            'recipient_id' => $recipient->id,
-            'message' => $request->get('message'),
-            'incoming' => 0,
-            'read' => 1,
-            'type' => 'text',
+            'campaign_id'   => $campaign->id,
+            'recipient_id'  => $recipient->id,
+            'message'       => $request->get('message'),
+            'incoming'      => 0,
+            'read'          => 1,
+            'type'          => 'text',
             'recording_sid' => 0,
         ]);
         $response->save();
@@ -399,6 +471,7 @@ class ResponseConsoleController extends Controller
      * Process inbound phone stuff
      *
      * @param \Illuminate\Http\Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
      */
     public function inboundPhone(Request $request)
     {
@@ -415,13 +488,13 @@ class ResponseConsoleController extends Controller
 
             if (!$response) {
                 $response = new Response([
-                    'call_sid' => $request->get('CallSid'),
+                    'call_sid'             => $request->get('CallSid'),
                     'call_phone_number_id' => $phone_number_id,
-                    'incoming' => 1,
-                    'type' => 'phone',
-                    'duration' => $request->get('CallDuration'),
-                    'campaign_id' => $campaign->id,
-                    'response_source' => $request->get('From'),
+                    'incoming'             => 1,
+                    'type'                 => 'phone',
+                    'duration'             => $request->get('CallDuration'),
+                    'campaign_id'          => $campaign->id,
+                    'response_source'      => $request->get('From'),
                     'response_destination' => $request->get('To'),
                 ]);
             }
@@ -438,16 +511,23 @@ class ResponseConsoleController extends Controller
                 '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
                 ->header('Content-Type', 'text/xml');
         } catch (\Exception $e) {
-\Log::error("inboundPhone(): {$e->getMessage()}");
+            Log::error("inboundPhone(): {$e->getMessage()}");
+
             return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                '<Response><Reject>'.$e->getMessage().'</Reject></Response>', 401)
+                '<Response><Reject>' . $e->getMessage() . '</Reject></Response>', 401)
                 ->header('Content-Type', 'text/xml');
         }
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     * @throws \Twilio\Exceptions\ConfigurationException
+     * @throws \Twilio\Exceptions\TwilioException
+     */
     public function inboundPhoneStatus(Request $request)
     {
-        $recording = \Twilio::getRecordingFromSid($request->get('CallSid'));
+        $recording = (new TwilioClient)->getRecordingFromSid($request->get('CallSid'));
         if (empty($recording)) {
             return response('<Response>No recordings found, none processed</Response>')
                 ->header('Content-Type', 'text/xml');
@@ -465,6 +545,10 @@ class ResponseConsoleController extends Controller
             ->header('Content-Type', 'text/xml');
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|\Illuminate\Http\Response
+     */
     public function inboundText(Request $request)
     {
         try {
@@ -474,11 +558,11 @@ class ResponseConsoleController extends Controller
             $message = preg_replace($invalidCharacters, '', $request->get('Body'));
 
             $response = new Response([
-                'message' => $message,
-                'incoming' => 1,
-                'type' => 'text',
+                'message'       => $message,
+                'incoming'      => 1,
+                'type'          => 'text',
                 'recording_sid' => 0,
-                'campaign_id' => $campaign->id,
+                'campaign_id'   => $campaign->id,
             ]);
 
             if (!$recipient) {
@@ -501,10 +585,14 @@ class ResponseConsoleController extends Controller
 
             $response->recipient_id = $recipient->id;
             $response->save();
+            broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
 
-            if ( $this->isUnsubscribeMessage($message)) {
-                \Log::debug('unsubscribing recipient #'.$recipient->id);
-                $suppress = new \App\SmsSuppression(['phone' => substr($recipient->phone, -10, 10), 'suppressed_at' => \Carbon\Carbon::now('UTC')]);
+            if ($this->isUnsubscribeMessage($message)) {
+                Log::debug('unsubscribing recipient #' . $recipient->id);
+                $suppress = new \App\SmsSuppression([
+                    'phone'         => substr($recipient->phone, -10, 10),
+                    'suppressed_at' => \Carbon\Carbon::now('UTC'),
+                ]);
                 $suppress->save();
             }
 
@@ -512,12 +600,14 @@ class ResponseConsoleController extends Controller
                 '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
                 ->header('Content-Type', 'text/xml');
         } catch (ModelNotFoundException $e) {
-\Log::error("Model not found: " . $e->getMessage());
+            Log::error("Model not found: " . $e->getMessage());
+
             return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
                 '<Response><Reject /></Response>', 401)
                 ->header('Content-Type', 'text/xml');
         } catch (\Exception $e) {
-\Log::error("Exception: " . $e->getMessage());
+            Log::error("Exception: " . $e->getMessage());
+
             return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
                 "<Response>{$e->getMessage()}</Response>", 401)
                 ->header('Content-Type', 'text/xml');
@@ -538,7 +628,7 @@ class ResponseConsoleController extends Controller
         $campaign_id = $metadata[1];
         $recipient_id = $metadata[2];
 
-        return array($campaign_id, $recipient_id);
+        return [$campaign_id, $recipient_id];
     }
 
     /**
@@ -564,7 +654,7 @@ class ResponseConsoleController extends Controller
             })
             ->first();
 
-        return array($phoneNumber, $campaign, $recipient);
+        return [$phoneNumber, $campaign, $recipient];
     }
 
     /**
@@ -572,24 +662,30 @@ class ResponseConsoleController extends Controller
      * @param                          $campaign
      *
      * @return \App\Models\Recipient
+     * @throws \Twilio\Exceptions\ConfigurationException
      */
     protected function createRecipientFromSender(Request $request, $campaign)
     {
         # Lookup caller's "caller-name" from Twilio
-        $sender = (object) \Twilio::getNameFromPhoneNumber($request->get('From'));
+        $sender = (object)(new TwilioClient)->getNameFromPhoneNumber($request->get('From'));
 
         # Create a new Recipient and add it to the campaign for the person
         $recipient = new Recipient([
-            'first_name' => $sender->first_name,
-            'last_name' => $sender->last_name,
-            'phone' => $request->get('From'),
+            'first_name'  => $sender->first_name,
+            'last_name'   => $sender->last_name,
+            'phone'       => $request->get('From'),
             'campaign_id' => $campaign->id,
         ]);
 
         $recipient->save();
+
         return $recipient;
     }
 
+    /**
+     * @param $from
+     * @return mixed
+     */
     private function parseMailgunFromField($from)
     {
         $data = new class()
@@ -599,6 +695,7 @@ class ResponseConsoleController extends Controller
                 if (!isset($this->name)) {
                     return null;
                 }
+
                 return $this->name;
             }
         };
@@ -617,6 +714,10 @@ class ResponseConsoleController extends Controller
         return $data;
     }
 
+    /**
+     * @param $message
+     * @return bool
+     */
     private function isUnsubscribeMessage($message)
     {
         $message = $this->simplifySmsMessage($message);
@@ -628,13 +729,21 @@ class ResponseConsoleController extends Controller
         return false;
     }
 
+    /**
+     * @param $message
+     * @return bool
+     */
     private function containsUnsubscribeVerbage($message)
     {
         return in_array($message, ['stop', 'unsubscribe', 'stopall', 'cancel', 'end', 'quit']);
     }
 
+    /**
+     * @param $message
+     * @return string|string[]|null
+     */
     private function simplifySmsMessage($message)
     {
-        return preg_replace('/[^A-Za-z0-9]*/', '', strtolower( trim( $message )));
+        return preg_replace('/[^A-Za-z0-9]*/', '', strtolower(trim($message)));
     }
 }

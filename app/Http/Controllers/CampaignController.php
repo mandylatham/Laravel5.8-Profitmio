@@ -17,35 +17,40 @@ class CampaignController extends Controller
 
     private $campaign;
 
+    private $company;
+
     private $recipient;
 
-    public function __construct(Campaign $campaign, EmailLog $emailLog, Recipient $recipient)
+    public function __construct(Campaign $campaign, Company $company, EmailLog $emailLog, Recipient $recipient)
     {
         $this->campaign = $campaign;
+        $this->company = $company;
         $this->emailLog = $emailLog;
         $this->recipient = $recipient;
     }
 
     public function index(Request $request)
     {
-        $campaigns = Campaign::query()
-            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
-            ->with(['dealership', 'agency', 'mailers'])
-            ->whereNull('deleted_at');
+        return view('campaign.index', [
+            'companySelected' => $this->company->find(session('filters.campaign.index.company')),
+            'q' => session('filters.campaign.index.q')
+        ]);
+    }
 
-        if ($request->has('q')) {
-            $likeQ = '%' . $request->get('q') . '%';
-            $campaigns->where('name', 'like', $likeQ)
-                ->orWhere('id', 'like', $likeQ)
-                ->orWhere('starts_at', 'like', $likeQ)
-                ->orWhere('ends_at', 'like', $likeQ)
-                ->orWhere('order_id', 'like', $likeQ);
-        }
-
-        $campaigns = $campaigns->orderBy('campaigns.id', 'desc')
+    /**
+     * Return all campaigns for user display
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForUserDisplay(Request $request)
+    {
+        $campaignQuery = Campaign::searchByRequest($request);
+        $campaigns = $campaignQuery
+            ->orderBy('status', 'asc')
+            ->orderBy('campaigns.id', 'desc')
             ->paginate(15);
 
-        return view('campaigns.index', ['campaigns' => $campaigns]);
+        return $campaigns;
     }
 
     public function getList(Request $request)

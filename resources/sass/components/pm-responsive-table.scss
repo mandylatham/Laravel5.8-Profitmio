@@ -1,0 +1,171 @@
+@import './pm-pagination';
+@import './spinner-icon';
+
+$pmrt-col-background-color: #fff;
+$pmrt-col-color: $brand-black;
+$pmrt-col-border-width: 3px;
+$pmrt-manager-col-background-color: $brand-purple;
+$pmrt-manager-col-color: #fff;
+$pmrt-border-color: $brand-white;
+
+.pmt {
+    $rootParent: &;
+    margin-top: 15px;
+    position: relative;
+
+    .pmt-spinner {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255, 255, 255, 0.75);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &-row {
+        $tableRow: &;
+        display: flex;
+        flex-flow: column;
+        overflow: hidden;
+        margin-bottom: 3px;
+    }
+
+    &-col {
+        font-size: 0.95rem;
+        opacity: 0;
+        max-height: 0;
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+        transition: max-height 100ms linear, opacity 100ms linear, padding 100ms linear;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: $pmrt-col-background-color;
+        color: $pmrt-col-color;
+
+        span.icon-value {
+            margin-left: 10px;
+        }
+
+        svg {
+            height: 1.2rem;
+        }
+
+        &.manager {
+            cursor: pointer;
+            background-color: $pmrt-manager-col-background-color;
+            color: $pmrt-manager-col-color;
+        }
+
+        &.manager-footer {
+            .btn-transparent {
+                margin-right: 10px;
+
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+
+        }
+
+        &:first-child {
+            border-radius: 5px 5px 0 0;
+            overflow: hidden;
+            @include media-breakpoint-up(lg) {
+                border-radius: 5px 0 0 5px;
+                border-bottom: $pmrt-col-border-width solid $pmrt-border-color;
+            }
+        }
+
+        &:last-child {
+            border-bottom: none;
+            border-radius: 0 0 5px 5px;
+            overflow: hidden;
+            @include media-breakpoint-up(lg) {
+                border-radius: 0 5px 5px 0;
+                border-bottom: $pmrt-col-border-width solid $pmrt-border-color;
+            }
+        }
+    }
+
+    &-row.open &-col, &-row &-col.manager, &-row &-col.manager-footer {
+        @include media-breakpoint-down(md) {
+            padding-top: 0.6rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 3px solid $pmrt-border-color;
+            max-height: 1000px;
+            opacity: 1;
+        }
+    }
+
+    &-pagination {
+        .paginator-content {
+            width: 50%;
+            margin: 15px auto 0 auto;
+            display: flex;
+            flex-flow: row;
+            align-items: stretch;
+            justify-content: center;
+            @include media-breakpoint-down(xs) {
+                width: 100%;
+            }
+        }
+        .paginator-input {
+            flex-flow: row;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5px 10px;
+            input {
+                width: 80px;
+                margin-right: 5px;
+            }
+        }
+        .paginator-left, .paginator-right {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+        }
+        .paginator-left {
+            border-right: none;
+            border-radius: 5px 0 0 5px;
+        }
+        .paginator-right {
+            border-left: none;
+            border-radius: 0 5px 5px 0;
+        }
+    }
+}
+
+
+@include media-breakpoint-up(lg) {
+    .pmt {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+
+        &-row {
+            flex-flow: row;
+            display: table-row;
+        }
+
+        &-col {
+            display: table-cell;
+            opacity: 1;
+            border-bottom: 3px solid $pmrt-border-color;
+            border-right: 3px solid $pmrt-border-color;
+            vertical-align: middle;
+
+            &:last-child {
+                border-right: 0;
+            }
+        }
+    }
+}

@@ -75,7 +75,8 @@ class AuthServiceProvider extends ServiceProvider
             }
 
             if ($user->isImpersonated()) {
-                return ImpersonatedUser::findOrCreateImpersonatedUser($user->id, $user->getImpersonatorId());
+                $manager = app('impersonate');
+                return ImpersonatedUser::findOrCreateImpersonatedUser($user->id, $manager->getImpersonatorId());
             } else {
                 return $user;
             }

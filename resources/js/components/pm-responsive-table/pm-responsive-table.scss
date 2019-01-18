@@ -61,6 +61,15 @@
       }
     }
   }
+  &.disable-folding {
+    .pmt-row {
+      margin-bottom: 4px;
+      .pmt-col {
+        max-height: 1000px;
+        opacity: 1;
+      }
+    }
+  }
 }
 
 

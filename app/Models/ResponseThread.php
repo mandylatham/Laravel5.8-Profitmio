@@ -75,7 +75,7 @@ class ResponseThread
             ->whereStatus('Completed')
             ->orderBy('send_at', 'desc')
             ->first();
-        // TODO: Get actualy time the sms was sent!
+        // TODO: Get actually time the sms was sent!
 
         \Log::debug(json_encode($viewData['textDrop']) . "\n" . json_encode($this->recipient));
 

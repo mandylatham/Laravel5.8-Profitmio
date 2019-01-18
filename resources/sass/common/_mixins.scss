@@ -1,0 +1,10 @@
+@mixin background_gradient($primary_gradient:#cedce7,$secondary_gradient:#596a72,$default:#cedce7){
+  background: $default; /* Old browsers */
+  background: -moz-linear-gradient(top,  $primary_gradient 0%, $secondary_gradient 100%); /* FF3.6+ */
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$primary_gradient), color-stop(100%,$secondary_gradient)); /* Chrome,Safari4+ */
+  background: -webkit-linear-gradient(top,  $primary_gradient 0%,$secondary_gradient 100%); /* Chrome10+,Safari5.1+ */
+  background: -o-linear-gradient(top,  $primary_gradient 0%,$secondary_gradient 100%); /* Opera 11.10+ */
+  background: -ms-linear-gradient(top,  $primary_gradient 0%,$secondary_gradient 100%); /* IE10+ */
+  background: linear-gradient(to bottom,  $primary_gradient 0%,$secondary_gradient 100%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$primary_gradient', endColorstr='$secondary_gradient',GradientType=0 ); /* IE6-9 */
+}

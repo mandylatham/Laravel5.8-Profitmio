@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Sofa\Eloquence\Eloquence;
 
@@ -33,9 +34,30 @@ class Company extends Model
 
     protected static $logAttributes = ['id', 'name', 'type'];
 
+    public function activeCampaigns()
+    {
+        return $this->campaigns()->where('status', 'Active');
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class)->withPivot('role');
+    }
+
+    public function templates()
+    {
+        return $this->hasMany(CampaignScheduleTemplate::class);
+    }
+
+    public function campaigns()
+    {
+        return Campaign::where(function ($query) {
+                if ($this->isAgency()) {
+                    $query->where('agency_id', $this->id);
+                } else if ($this->isDealership()) {
+                    $query->where('dealership_id', $this->id);
+                }
+            });
     }
 
     public static function getAgencies()
@@ -61,6 +83,11 @@ class Company extends Model
     public function isSupport()
     {
         return $this->type === self::TYPE_SUPPORT;
+    }
+
+    public function isUserProfileReady($userId)
+    {
+        return $this->users()->where('user_id', $userId)->whereNotNull('company_user.completed_at')->count() > 0;
     }
 
     public function getCampaigns($q = null)
@@ -90,5 +117,43 @@ class Company extends Model
         $campaigns->orderBy('campaigns.id', 'desc');
 
         return $campaigns;
+    }
+
+    public static function searchByRequest(Request $request)
+    {
+        $loggedUser = auth()->user();
+        $query = self::query();
+        if ($loggedUser->isAdmin() && $request->has('user')) {
+            $companiesId = User::findOrFail($request->input('user'))
+                ->companies()
+                ->select('companies.id')
+                ->get()
+                ->pluck('id');
+            $query->whereIn('id', $companiesId);
+        } else if (!$loggedUser->isAdmin() && $request->has('user')) {
+            $query->where('id', get_active_company());
+        } else if (!$loggedUser->isAdmin()) {
+            $campaignsCompanyIds = Campaign::select('dealership_id', 'agency_id')
+                ->where(function ($query) {
+                    return $query->where('agency_id', get_active_company())
+                        ->orWhere('dealership_id', get_active_company());
+                })
+                ->get()
+                ->toArray();
+            $campaignsCompanyIds = array_where(array_unique(array_flatten($campaignsCompanyIds)), function ($id) {
+                return $id !== get_active_company();
+            });
+            $query->whereIn('id', $campaignsCompanyIds);
+        }
+
+        if ($request->has('q')) {
+            $query->filterByQuery($request->input('q'));
+        }
+        return $query;
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        return $query->search($q);
     }
 }

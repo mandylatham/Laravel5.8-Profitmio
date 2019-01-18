@@ -1,0 +1,41 @@
+@import './variables';
+@import './mixins';
+/////////////////////////////
+// Plugin
+// Bootstrap
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/badge";
+@import "~bootstrap/scss/nav";
+@import "~bootstrap/scss/card";
+@import "~bootstrap/scss/dropdown";
+@import "~bootstrap/scss/modal";
+@import "~bootstrap/scss/nav";
+@import "~bootstrap/scss/navbar";
+// Bootstrap Vue
+@import "~bootstrap-vue/es/components/dropdown/dropdown.css";
+@import '~vue-good-table/dist/vue-good-table.css';
+// Font Awesome
+@import '~@fortawesome/fontawesome-free/scss/brands';
+@import '~@fortawesome/fontawesome-free/scss/regular';
+@import '~@fortawesome/fontawesome-free/scss/solid';
+@import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
+// Pretty checkbox
+@import '~pretty-checkbox/src/pretty-checkbox.scss';
+// Toastr
+@import '~vue-toastr-2/dist/vue-toastr-2.min.css';
+///////////////////////////
+@import './custom';
+@import './top-navbar';
+@import './sidebar';
+@import './icons';
+@import './table-filters';
+@import './pm-buttons';
