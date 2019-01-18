@@ -24,12 +24,8 @@
                     Back
                 </a>
                <div class="card">
+                   <div class="card-header">Create new template</div>
                     <div class="card-body p-5">
-                        <div class="row">
-                            <div class="col-12 mb-4">
-                                <h1>Create new template</h1>
-                            </div>
-                        </div>
                         <div class="row mb-4" v-if="template.type != 'email' && template.type != 'sms'">
                             <div class="col-12">
                                 <div class="type-buttons-container">

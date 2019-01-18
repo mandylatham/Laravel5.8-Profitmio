@@ -62,13 +62,11 @@
     }
     .type-buttons-container {
         display: flex;
-        justify-content: left;
+        justify-content: center;
         align-items: center;
         margin-top: 1.5rem;
         .type-buttons {
-            font-size: 1.8rem;
-            margin-right: 1.5rem;
-            padding: 6px 24px;
+            margin-right: 0.5rem;
             i {
                 // display: block;
                 margin-right: 0.4em;
