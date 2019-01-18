@@ -18,5 +18,6 @@ class DatabaseSeeder extends Seeder
 //        $this->call(RecipientListTableSeeder::class);
 //        $this->call(RecipientTableSeeder::class);
         $this->call(AppointmentTableSeeder::class);
+        $this->call(CampaignScheduleTemplateTableSeeder::class);
     }
 }

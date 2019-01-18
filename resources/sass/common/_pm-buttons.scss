@@ -4,6 +4,7 @@
     align-items: center;
     padding: 0.5rem 1rem;
     line-height: 1em;
+    cursor: pointer;
 
     svg {
         height: 15px;
@@ -24,9 +25,34 @@
         color: #fff !important;
     }
 
+    &-outline-blue {
+        @include button-variant($brand-blue, $brand-blue);
+        color: $brand-blue;
+        background-color: transparent;
+        border: 1px solid $brand-blue;
+        &:hover {
+            background-color: $brand-blue;
+            color: #fff;
+            border: 1px solid #fff;
+        }
+    }
+
+
     &-purple {
         @include button-variant($brand-purple, $brand-purple);
         color: #fff !important;
+    }
+
+    &-outline-purple {
+        @include button-variant($brand-purple, $brand-purple);
+        color: $brand-purple;
+        background-color: transparent;
+        border: 1px solid $brand-purple;
+        &:hover {
+            background-color: $brand-purple;
+            color: #fff;
+            border: 1px solid #fff;
+        }
     }
 
     &-danger {
