@@ -1,3 +1,5 @@
+import Vue from 'vue';
+
 export default class ErrorBag {
     constructor() {
         this.errors = {};
@@ -11,9 +13,14 @@ export default class ErrorBag {
         return this.errors.hasOwnProperty(field);
     }
 
+    add(field, message) {
+        this.errors[field] = this.errors[field] || [];
+        this.errors[field].push(message);
+    }
+
     get(field) {
         if (this.errors[field]) {
-            return this.errors[field][0];
+            return this.errors[field];
         }
     }
 
@@ -23,8 +30,7 @@ export default class ErrorBag {
 
     clear(field=null) {
         if (field) {
-            delete this.errors[field];
-
+            Vue.delete(this.errors, field);
             return;
         }
 

@@ -9,7 +9,7 @@ use App\Http\Resources\UserCollection;
 use App\Models\Company;
 use App\Mail\InviteUser;
 use App\Models\User;
-use App\Transformers\UserTransformer;
+use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
@@ -22,20 +22,22 @@ class UserController extends Controller
     /** @var CompanyUserActivityLog  */
     private $companyUserActivityLog;
 
+    private $storage;
+
     private $user;
 
-    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, User $user)
+    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, FilesystemManager $storage, User $user)
     {
         $this->company = $company;
         $this->companyUserActivityLog = $companyUserActivityLog;
+        $this->storage = $storage;
         $this->user = $user;
     }
 
     public function activate(User $user, Request $request)
     {
         $user->activate($request->input('company'));
-
-        return redirect()->back();
+        return response()->json(['message' => 'User activated.']);
     }
 
     /**
@@ -62,7 +64,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return view('users.index', [
+        return view('user.index', [
             'companySelected' => $this->company->find(session('filters.user.index.company')),
             'q' => session('filters.user.index.q')
         ]);
@@ -70,7 +72,7 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('users.create', [
+        return view('user.create', [
             'companies' => $this->company->all()
         ]);
     }
@@ -78,8 +80,12 @@ class UserController extends Controller
     public function deactivate(User $user, Request $request)
     {
         $user->deactivate($request->input('company'));
+        return response()->json(['message' => 'User deactivated.']);
+    }
 
-        return redirect()->back();
+    public function delete(User $user, Request $request)
+    {
+        $user->delete();
     }
 
     /**
@@ -93,13 +99,12 @@ class UserController extends Controller
             ->first();
 
         if (($request->input('role') == 'site_admin' && !is_null($user)) || ($user && $user->isAdmin())) {
-            return redirect()->back()->withErrors('The email has already been taken.');
+            return response()->json(['error' => 'The email has already been taken.'], 400);
         }
         if (!$user) {
             $user = new $this->user();
             $user->is_admin = $request->input('role') == 'site_admin' ? true : false;
             $user->password = '';
-            $user->username = $request->input('email');
             $user->first_name = $request->input('first_name');
             $user->last_name = $request->input('last_name');
             $user->email = $request->input('email');
@@ -135,7 +140,8 @@ class UserController extends Controller
 
         Mail::to($user)->send(new InviteUser($user, $processRegistration));
 
-        return redirect()->route('user.index');
+        return response()->json([], 201);
+//        return redirect()->route('user.index');
     }
 
     /**
@@ -148,7 +154,7 @@ class UserController extends Controller
         $viewData = [
             'companies' => Company::all()
         ];
-        return view('users.new', $viewData);
+        return view('user.new', $viewData);
     }
 
     /**
@@ -159,7 +165,7 @@ class UserController extends Controller
      */
     public function selectActiveCompany(Request $request)
     {
-        return view('users.select-company');
+        return view('user.select-company');
     }
 
     /**
@@ -180,7 +186,7 @@ class UserController extends Controller
             $viewData['campaigns'] = $user->campaigns()->get();
         }
 
-        return view('users.details', $viewData);
+        return view('user.details', $viewData);
     }
 
     /**
@@ -191,7 +197,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('users.edit', [
+        return view('user.edit', [
             'user' => $user,
             'companies' => $user->companies()->orderBy('name', 'asc')->get()
         ]);
@@ -208,7 +214,9 @@ class UserController extends Controller
     {
         $user->update($request->except(['password']));
 
-        return response()->redirectToRoute('user.edit', ['user' => $user->id]);
+        return response()->json([]);
+
+//        return response()->redirectToRoute('user.edit', ['user' => $user->id]);
     }
 
     public function updateForm(User $user)
@@ -216,18 +224,21 @@ class UserController extends Controller
         $viewData['user'] = $user;
         $viewData['companies'] = Company::all();
 
-        return view('users.edit', $viewData);
+        return view('user.edit', $viewData);
     }
 
     public function updateCompanyData(User $user, UpdateCompanyDataRequest $request)
     {
         $invitation = $user->invitations()->where('company_id', $request->input('company'))->firstOrFail();
 
-        $config = $invitation->config;
-        $config['timezone'] = $request->input('timezone');
-
-        $invitation->config = $config;
-        $invitation->role = $request->input('role');
+        if ($request->has('timezone')) {
+            $config = $invitation->config;
+            $config['timezone'] = $request->input('timezone');
+            $invitation->config = $config;
+        }
+        if ($request->has('role') && $request->input('role') !== 'site_admin') {
+            $invitation->role = $request->input('role');
+        }
         $invitation->save();
 
         return response()->json('Resource updated.');
@@ -244,12 +255,30 @@ class UserController extends Controller
         //
     }
 
+    public function updateAvatar(User $user, Request $request)
+    {
+        if ($request->hasFile('image')) {
+            $image = $user->addMediaFromRequest('image')
+                ->toMediaCollection('profile-photo');
+        }
+        return response()->json(['location' => $image->getFullUrl()], 201);
+    }
+
     public function view(User $user)
     {
-        return view('users.view', [
+        $loggedUser = auth()->user();
+        if ($loggedUser->isAdmin()) {
+            $hasCampaigns = $user->getCampaigns()->count() > 0;
+        } else {
+            $hasCampaigns = $user->getCampaigns()->where('company_id', get_active_company())->count() > 0;
+        }
+        return view('user.detail', [
             'user' => $user,
+            'hasCampaigns' => $hasCampaigns,
+            'timezones' => $user->getPossibleTimezonesForUser(),
             'campaignCompanySelected' => $this->company->find(session('filters.user.view.campaign-company-selected')),
-            'q' => session('filters.user.view.campaign-q')
+            'campaignQ' => session('filters.user.view.campaign-q'),
+            'companyQ' => session('filters.user.view.company-q'),
         ]);
     }
 }

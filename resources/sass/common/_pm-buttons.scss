@@ -15,6 +15,11 @@
         margin-left: 5px;
     }
 
+    &-md {
+        font-size: 1rem;
+        padding: 0.5rem 1.5rem;
+    }
+
     &-blue {
         @include button-variant($brand-blue, $brand-blue);
         color: #fff !important;
@@ -54,6 +59,11 @@
         @include button-variant($red, $red);
         color: #fff !important;
     }
+
+    &-black {
+        @include button-variant($brand-black, $brand-black);
+        color: #fff !important;
+    }
 }
 
 .pm-btn-link {
@@ -89,6 +99,14 @@
 
         &:hover {
             color: darken($orange, 15%);
+        }
+    }
+
+    &-black {
+        color: $brand-black;
+
+        &:hover {
+            color: darken ($brand-black, 15%);
         }
     }
 }

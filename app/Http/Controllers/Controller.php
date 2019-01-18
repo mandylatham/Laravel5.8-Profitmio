@@ -11,4 +11,9 @@ use Illuminate\Support\Facades\View;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
+    public function __construct()
+    {
+        View::share('loggedUser', auth()->user());
+    }
 }
