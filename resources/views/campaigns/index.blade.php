@@ -22,6 +22,13 @@
 
 @section('main-content')
     <div class="container" id="campaign-index" v-cloak>
+        <div class="row">
+            <div class="col">
+                <a href="{{ route('campaigns.create') }}" class="btn pm-btn pm-btn-blue mb-3">
+                    <i class="fas fa-plus mr-3"></i>New Campaign
+                </a>
+            </div>
+        </div>
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-3">
                 <div class="form-group filter--form-group">
