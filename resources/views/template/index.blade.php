@@ -68,7 +68,7 @@
                         <span>@{{ template.created_at | amDateFormat('MM.DD.YY') }}</span>
                     </div>
                     <div class="col-4 col-md-3 media-template-links">
-                        <a class="btn pm-btn-purple" :href="generateRoute(templateEdit, {'templateId': template.id})"><span class="fa fa-edit"></span> Edit</a>
+                        <a class="btn pm-btn pm-btn-purple" :href="generateRoute(templateEdit, {'templateId': template.id})"><span class="fa fa-edit"></span> Edit</a>
                         <button @click="deleteTemplate(template.id, index)" class="btn pm-btn-danger" :data-url="generateRoute(templateDelete, {'templateId': template.id})"><span class="fa fa-trash"></span> Delete</button>
                     </div>
                 </div>
