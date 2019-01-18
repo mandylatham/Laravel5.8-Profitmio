@@ -1,18 +1,14 @@
 import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
-import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
-// Toastr Library
-import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
 import {generateRoute} from './../../common/helpers'
 
 window['app'] = new Vue({
     el: '#user-index',
     components: {
-        'pm-responsive-table': require('./../../components/pm-responsive-table/pm-responsive-table'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
         'user-role': require('./../../components/user-role/user-role')
     },
     filters: {
@@ -40,43 +36,8 @@ window['app'] = new Vue({
         total: null,
         users: [],
         companies: [],
-        columnData: [
-            {
-                slot: 'id',
-                is_manager: true,
-                widths: {
-
-                }
-            }, {
-                slot: 'companies',
-                widths: {
-                    'lg': '240px'
-                }
-            }, {
-                field: 'email',
-                widths: {
-                    'lg': '200px'
-                }
-            }, {
-                slot: 'phone_number',
-                classes: ['text-center'],
-                widths: {
-                    'lg': '160px'
-                }
-            }, {
-                slot: 'options',
-                is_manager_footer: true,
-                classes: ['text-center'],
-                widths: {
-                    'lg': '140px'
-                }
-            }
-        ],
         searchTerm: '',
         companySelected: null,
-        tableOptions: {
-            mobile: 'lg'
-        },
         formUrl: '',
         userEditUrl: '',
         userImpersonateUrl: '',
@@ -133,7 +94,6 @@ window['app'] = new Vue({
             this.searchForm.get(this.searchFormUrl)
                 .then(response => {
                     this.users = response.data;
-                    console.log('this.users', this.users);
                     this.searchForm.page = response.meta.current_page;
                     this.searchForm.per_page = response.meta.per_page;
                     this.total = response.meta.total;

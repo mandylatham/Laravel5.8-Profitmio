@@ -9,6 +9,9 @@
     <title>Profit Miner</title>
 
     @yield('head-styles')
+    <script>
+        window.loggedUser = @json($loggedUser);
+    </script>
     @yield('head-script')
 </head>
 <body>

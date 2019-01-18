@@ -2,6 +2,7 @@
     &v-select.v-select {
         border: none;
         border-radius: 5px;
+        width: 100%;
         //overflow: hidden;
         input[type=search], input[type=search]:focus {
             margin: 0;
@@ -14,6 +15,13 @@
             order: 2;
             background-color: #fff;
             border-radius: 0 5px 5px 0;
+            border: 1px solid $brand-gray;
+        }
+
+        &.disabled {
+            .dropdown-toggle, .dropdown-toggle .clear, .dropdown-toggle input, .open-indicator, .selected-tag .close{
+                background-color: inherit;
+            }
         }
 
         &.open {
@@ -58,6 +66,10 @@
                 display: none;
             }
         }
+
+        .dropdown-menu {
+            z-index: 100;
+        }
     }
 
     &search-box {
@@ -67,7 +79,7 @@
         border-color: #ddd;
 
         &:focus {
-            box-shadow: 0 0 0 0.2rem rgba($brand-purple, 0.25);
+            box-shadow: 0 0 0 0.2rem rgba(darken($brand-blue, 10%), 0.25);
             border-color: inherit;
         }
     }

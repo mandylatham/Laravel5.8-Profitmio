@@ -1,5 +1,6 @@
 <?php
 
+Route::impersonate();
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -129,8 +130,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{user}/deactivate', 'UserController@deactivate')->name('user.deactivate')->middleware(['check.active.company', 'can:edit-user,user']);
         Route::post('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
         Route::post('{user}', 'UserController@update')->name('user.update')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::post('{user}/avatar', 'UserController@updateAvatar')->name('user.update-avatar')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
         Route::post('{user}/company-data', 'UserController@updateCompanyData')->name('user.update-company-data')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
-        Route::delete('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::delete('/{user}', 'UserController@delete')->name('user.delete')->middleware(['check.active.company', 'can:delete-user,App\Models\User']);
     });
     //endregion
 
@@ -279,7 +281,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'companies'], function () {
         Route::get('', 'CompanyController@index')->middleware('can:create')->name('company.index');
         Route::get('for-dropdown', 'CompanyController@getForDropdown')->name('company.for-dropdown');
-        Route::get('for-user-display', 'CompanyController@getForUserDisplay')->middleware('can:create')->name('company.for-user-display');
+        Route::get('for-user-display', 'CompanyController@getForUserDisplay')->name('company.for-user-display');
         Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
         Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');
         Route::post('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');
