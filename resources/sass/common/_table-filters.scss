@@ -76,7 +76,8 @@
         border-radius: 15px;
         font-size: 0.9rem;
         height: 2rem;
-        border-color: $brand-blue;
+        border-color: #ddd;
+
         &:focus {
             box-shadow: 0 0 0 0.2rem rgba(darken($brand-blue, 10%), 0.25);
             border-color: inherit;

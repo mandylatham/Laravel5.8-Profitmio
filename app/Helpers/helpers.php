@@ -1,4 +1,9 @@
 <?php
+
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 /**
  * Created by PhpStorm.
  * User: brett
@@ -11,7 +16,7 @@ function result_array($result)
     $output = [];
 
     foreach ($result as $row) {
-        $output[] = (array) $row;
+        $output[] = (array)$row;
     }
 
     return $output;
@@ -22,7 +27,7 @@ function result_array_values($result)
     $output = [];
 
     foreach ($result as $row) {
-        $array = (array) $row;
+        $array = (array)$row;
         $values = array_values($array);
         $output[] = $values[0];
     }
@@ -32,11 +37,11 @@ function result_array_values($result)
 
 function show_date($date, $format = 'm/d/Y g:i A T')
 {
-    if (!($date instanceof \Carbon\Carbon)) {
+    if (!($date instanceof Carbon)) {
         if (is_numeric($date)) {
-            $date = \Carbon\Carbon::createFromTimestamp($date);
+            $date = Carbon::createFromTimestamp($date);
         } else {
-            $date = \Carbon\Carbon::parse($date);
+            $date = Carbon::parse($date);
         }
     }
 
@@ -46,16 +51,16 @@ function show_date($date, $format = 'm/d/Y g:i A T')
 function getDateWithTimezone($date, $timezone, $format = 'm/d/Y g:i A T')
 {
     if (!isValidTimezoneId($timezone)) {
-        \Log::error("helpers@getDateWithTimezone(): invalid timezone provided, {$timezone}");
+        Log::error("helpers@getDateWithTimezone(): invalid timezone provided, {$timezone}");
 
         return $date;
     }
 
-    if (!($date instanceof \Carbon\Carbon)) {
+    if (!($date instanceof Carbon)) {
         if (is_numeric($date)) {
-            $date = \Carbon\Carbon::createFromTimestamp($date);
+            $date = Carbon::createFromTimestamp($date);
         } else {
-            $date = \Carbon\Carbon::parse($date);
+            $date = Carbon::parse($date);
         }
     }
 
@@ -69,6 +74,7 @@ function isValidTimezoneId($timezoneId)
     } catch (Exception $e) {
         return false;
     }
+
     return true;
 }
 
@@ -77,19 +83,22 @@ function get_active_company()
     return session()->get('activeCompany');
 }
 
-function get_times( $default = '19:00', $interval = '+30 minutes' ) {
-
+function get_times($default = '19:00', $interval = '+30 minutes', $firstElement = '')
+{
     $output = '';
+    if (!empty($firstElement)) {
+        $output .= $firstElement;
+    }
 
-    $current = strtotime( '00:00' );
-    $end = strtotime( '23:59' );
+    $current = strtotime('00:00');
+    $end = strtotime('23:59');
 
-    while( $current <= $end ) {
-        $time = date( 'H:i', $current );
-        $sel = ( $time == $default ) ? ' selected' : '';
+    while ($current <= $end) {
+        $time = date('H:i', $current);
+        $sel = ($time == $default) ? ' selected' : '';
 
-        $output .= "<option value=\"{$time}\"{$sel}>" . date( 'h.i A', $current ) .'</option>';
-        $current = strtotime( $interval, $current );
+        $output .= "<option value=\"{$time}\"{$sel}>" . date('h.i A', $current) . '</option>';
+        $current = strtotime($interval, $current);
     }
 
     return $output;

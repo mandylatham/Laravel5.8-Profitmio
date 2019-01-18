@@ -42,3 +42,6 @@ body {
     text-align: center;
     border-radius: 5px;
 }
+
+[v-cloak] { display: none; }
+[v-cloak]::before { content: "loading..."; }

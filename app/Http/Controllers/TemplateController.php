@@ -2,33 +2,37 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\CampaignScheduleTemplate;
 use App\Http\Requests\NewTemplateRequest;
 use Illuminate\Http\Request;
 
 class TemplateController extends Controller
 {
-    public function newForm()
+    public function createForm()
     {
         $viewData = [];
 
-        return view('templates.new', $viewData);
+        return view('template.create', $viewData);
     }
 
-    public function create(NewTemplateRequest $request)
+    public function create(Request $request)
     {
-        $data = $request->only(['name', 'type', 'email_subject', 'email_text',
+        if (! $request->has('params')) {
+            abort(422, 'Invalid Parameters');
+        }
+
+        $params = collect($request->input('params'));
+        $data = $params->only(['name', 'type', 'email_subject', 'email_text',
             'email_html', 'text_message', 'text_message_image', 'send_vehicle_image']);
 
         $template = new CampaignScheduleTemplate([
-            'name' => $request->name,
-            'type' => $request->type,
-            'email_subject' => $request->email_subject,
-            'email_text' => $request->email_text,
-            'email_html' => $request->email_html,
-            'text_message' => $request->text_message,
-            'text_message_image' => $request->text_message_image,
-            'send_vehicle_image' => (int)$request->send_vehicle_image
+            'name' => $params->get('name'),
+            'type' => $params->get('type'),
+            'email_subject' => $params->get('email_subject'),
+            'email_text' => $params->get('email_text'),
+            'email_html' => $params->get('email_html'),
+            'text_message' => $params->get('text_message'),
         ]);
 
         // dd($template);
@@ -42,12 +46,12 @@ class TemplateController extends Controller
     {
         $viewData['template'] = $template;
 
-        return view('templates.edit', $viewData);
+        return view('template.details', $viewData);
     }
 
-    public function update(CampaignScheduleTemplate $template, NewTemplateRequest $request)
+    public function update(CampaignScheduleTemplate $template, Request $request)
     {
-        $template->fill($request->all());
+        $template->fill($request->input('params'));
 
         $template->save();
 
@@ -66,16 +70,24 @@ class TemplateController extends Controller
 
     public function index()
     {
-        $templates = CampaignScheduleTemplate::all();
+        return view('template.index', [
+            'companySelected' => Company::find(session('filters.template.index.company')),
+            'q' => session('filters.template.index.q')
+        ]);
+    }
 
-        $viewData['templates'] = $templates;
+    public function getForUserDisplay(Request $request)
+    {
+        $templates = CampaignScheduleTemplate::searchByRequest($request)
+            ->orderBy('created_at', 'desc')
+            ->paginate(15);
 
-        return view('templates.index', $viewData);
+        return $templates;
     }
 
     public function delete(CampaignScheduleTemplate $template)
     {
         $template->delete();
-        return redirect()->route('template.index');
+        return response()->json(['status' => 'success']);
     }
 }

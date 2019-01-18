@@ -186,7 +186,7 @@ window['app'] = new Vue({
 });
 
 window['sidebar'] = new Vue({
-    el: '#sidebar',
+    el: '#sidebar-content',
     components: {
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
         'vue-dropzone': vue2Dropzone

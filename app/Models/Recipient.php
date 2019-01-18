@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -12,30 +15,59 @@ class Recipient extends Model
     protected $table = 'recipients';
 
     protected $dates = [
-        'created_at', 'updated_at', 'deleted_at', 'archived_at',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'archived_at',
     ];
 
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state',
-        'zip', 'year', 'make', 'model', 'campaign_id', 'interested', 'not_interested',
-        'service', 'wrong_number', 'car_sold', 'heat', 'appointment', 'notes', 'last_responded_at',
-        'carrier', 'subgroup', 'from_dealer_db', 'callback'
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'address1',
+        'city',
+        'state',
+        'zip',
+        'year',
+        'make',
+        'model',
+        'campaign_id',
+        'interested',
+        'not_interested',
+        'service',
+        'wrong_number',
+        'car_sold',
+        'heat',
+        'appointment',
+        'notes',
+        'last_responded_at',
+        'carrier',
+        'subgroup',
+        'from_dealer_db',
+        'callback',
     ];
+
+    protected $appends = ['last_seen_ago', 'name', 'vehicle', 'location'];
 
     public static $mappable = [
-        'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip',
-        'make', 'model', 'vin'
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'address1',
+        'city',
+        'state',
+        'zip',
+        'make',
+        'model',
+        'vin',
     ];
-
 
     public function list()
     {
         return $this->belongsTo(RecipientList::class, 'recipient_list_id');
-    }
-
-    public function getVehicleAttribute()
-    {
-        return $this->year . ' ' . $this->make . ' ' . $this->model;
     }
 
     public function campaign()
@@ -63,26 +95,59 @@ class Recipient extends Model
         return $this->hasMany(SmsSuppression::class, 'phone', 'phone');
     }
 
+    /**
+     * Accessors
+     */
+    public function getVehicleAttribute()
+    {
+        return $this->year . ' ' . $this->make . ' ' . $this->model;
+    }
+
     public function getNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function getLastSeenAgoAttribute()
+    {
+        return $this->last_seen ? (new Carbon($this->last_seen))->timezone(Auth::user()->timezone)->diffForHumans(Carbon::now(),
+                true) . ' ago' : '';
+    }
+
+    public function getLocationAttribute()
+    {
+        $location = [];
+        if (!empty($this->city)) {
+            $location[] = $this->city;
+        }
+        if (!empty($this->state)) {
+            $location[] = $this->state;
+        }
+
+        return implode(', ', $location);
+    }
+
+    public function getEmailAttribute()
+    {
+        return strtolower($this->attributes['email']);
     }
 
     public function scopeWithResponses($query, $campaignId)
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
+                DB::select("
                     select distinct(recipient_id) from responses where campaign_id = {$campaignId}
                 ")
             )
         );
     }
+
     public function scopeUnread($query, $campaignId)
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
+                DB::select("
                     select recipient_id from responses where id in (
                     select max(id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
                     ) and incoming = 1 and `read` = 0
@@ -95,7 +160,7 @@ class Recipient extends Model
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
+                DB::select("
                     select recipient_id from responses where id in (
                     select max(id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
                     ) and incoming = 0
@@ -113,8 +178,14 @@ class Recipient extends Model
     {
         if ($label == 'none') {
             return $query->where('recipients.campaign_id', $campaignId)->where([
-                'interested' => 0, 'not_interested' => 0, 'service' => 0, 'heat' => 0,
-                'appointment' => 0, 'car_sold' => 0, 'wrong_number' => 0, 'callback' => 0.
+                'interested'     => 0,
+                'not_interested' => 0,
+                'service'        => 0,
+                'heat'           => 0,
+                'appointment'    => 0,
+                'car_sold'       => 0,
+                'wrong_number'   => 0,
+                'callback'       => 0.,
             ]);
         }
 

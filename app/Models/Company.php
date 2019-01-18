@@ -44,6 +44,11 @@ class Company extends Model
         return $this->belongsToMany(User::class)->withPivot('role');
     }
 
+    public function templates()
+    {
+        return $this->hasMany(CampaignScheduleTemplate::class);
+    }
+
     public function campaigns()
     {
         return Campaign::where(function ($query) {

@@ -32,7 +32,7 @@
 
 @section('main-content')
     @if (auth()->user()->isAdmin())
-        <div class="container" id="user-index">
+        <div class="container" id="user-index" v-cloak>
             <div class="row">
                 <div class="col">
                     <a class="btn pm-btn pm-btn-blue float-right" href="{{ route('user.create') }}"><i class="fas fa-plus mr-3"></i>New User</a>
@@ -101,7 +101,7 @@
             </div>
         </div>
     @else
-        <div class="container" id="company-user-index">
+        <div class="container" id="company-user-index" v-cloak>
             <div class="row">
                 <div class="col">
                     <a class="btn pm-btn pm-btn-blue float-left" href="{{ route('user.create') }}"><i class="fas fa-plus mr-3"></i>New User</a>
