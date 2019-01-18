@@ -65,7 +65,8 @@ Route::get('/pusher-test', function () {
         ]
     );
 
-    $pusher->trigger('response-console', 'counters.update', $data);
+    // $pusher->trigger("private-campaign.20", 'counts.updated', $data);
+    $pusher->trigger("campaign.20", 'counts.updated', $data);
 
     return ['success' => true];
 });

@@ -15,6 +15,8 @@
         window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
         window.user = @json(auth()->user());
         window.pusherKey = "{{env('PUSHER_APP_KEY')}}";
+        window.pusherCluster = "{{env('PUSHER_CLUSTER')}}";
+        window.pusherAuthEndpoint = "{{ url('/broadcasting/auth') }}";
     </script>
     <script src="//js.pusher.com/4.3/pusher.min.js"></script>
     <script src="{{ asset('js/console.js') }}"></script>

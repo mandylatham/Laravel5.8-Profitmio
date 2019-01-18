@@ -6,66 +6,14 @@ import VueSlideoutPanel from 'vue2-slideout-panel';
 
 Vue.use(VueSlideoutPanel);
 
-// Sidebar
-window['sidebar'] = new Vue({
-    el: '#sidebar-nav-content',
-    data: {
-        activeFilterSection: 'all',
-        activeLabelSection: '',
-        filter: '',
-        label: '',
-        counters: [],
-        labelCounts: [],
-        pusherKey: '',
-        campaign: {},
-    },
-    mounted: function () {
-        this.filter = window.filter;
-        this.label = window.label;
-        this.counters = window.counters;
-        this.labelCounts = window.counters.labelCounts;
-        this.pusherKey = window.pusherKey;
-        this.campaign = window.campaign;
-        this.updateCounters();
-    },
-    methods: {
-        changeFilter: function (filter, label) {
-            this.activeFilterSection = filter;
+import Echo from "laravel-echo"
 
-            if (label) {
-                this.activeLabelSection = label;
-            }
-
-            window.Event.fire('filters.filter-changed', {
-                filter: filter,
-                label: label ? label : ''
-            });
-        },
-        pusher: function (channelName, eventName, callback) {
-            // TODO: remove me when done
-            // Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true;
-
-            let pusher = new Pusher(this.pusherKey, {
-                cluster: 'eu',
-                forceTLS: true
-            });
-
-            let channel = pusher.subscribe(channelName);
-            channel.bind(eventName, function (data) {
-                callback(data);
-            });
-        },
-        updateCounters: function () {
-            const vm = this;
-            this.pusher('response-console', 'counters.update.' + this.campaign.id, function (data) {
-                vm.labelCounts = data.labelCounts
-            });
-        },
-    }
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: '233f4defc4104dbbbb30',
+    cluster: 'eu',
+    encrypted: true
 });
-
-Vue.component('communication-side-panel', require('./../../page-components/campaign/communication-side-panel/communication-side-panel.component'));
 
 // Main vue
 window['app'] = new Vue({
@@ -102,7 +50,10 @@ window['app'] = new Vue({
             label: null,
             mediaType: null
         }),
-        total: null
+        total: null,
+        pusherKey: '',
+        pusherCluster: '',
+        pusherAuthEndpoint: '',
     },
     methods: {
         fetchRecipients: function () {
@@ -135,13 +86,33 @@ window['app'] = new Vue({
         clearSearch: function () {
             this.searchForm.search = '';
             this.fetchRecipients();
-        }
+        },
+        pusher: function (channelName, eventName, callback) {
+            // TODO: remove me when done
+            // Enable pusher logging - don't include this in production
+            Pusher.logToConsole = true;
+
+            let pusher = new Pusher(this.pusherKey, {
+                cluster: this.pusherCluster,
+                forceTLS: true,
+                authEndpoint: this.pusherAuthEndpoint
+            });
+
+            let channel = pusher.subscribe(channelName);
+            channel.bind(eventName, function (data) {
+                callback(data);
+            });
+        },
     },
     mounted: function () {
         const vm = this;
         this.campaign = window.campaign;
         this.currentUser = window.user;
         this.fetchRecipients();
+
+        this.pusherKey = window.pusherKey;
+        this.pusherCluster = window.pusherCluster;
+        this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
         // Events
         window.Event.listen('filters.filter-changed', function (data) {
@@ -152,3 +123,48 @@ window['app'] = new Vue({
         });
     }
 });
+
+
+// Sidebar
+window['sidebar'] = new Vue({
+    el: '#sidebar-nav-content',
+    data: {
+        activeFilterSection: 'all',
+        activeLabelSection: '',
+        filter: '',
+        label: '',
+        counters: [],
+        labelCounts: [],
+        campaign: {},
+    },
+    mounted: function () {
+        this.filter = window.filter;
+        this.label = window.label;
+        this.counters = window.counters;
+        this.labelCounts = window.counters.labelCounts;
+        this.campaign = window.campaign;
+        this.updateCounters();
+    },
+    methods: {
+        changeFilter: function (filter, label) {
+            this.activeFilterSection = filter;
+
+            if (label) {
+                this.activeLabelSection = label;
+            }
+
+            window.Event.fire('filters.filter-changed', {
+                filter: filter,
+                label: label ? label : ''
+            });
+        },
+        updateCounters: function () {
+            const vm = this;
+            window['app'].pusher('private-campaign.' + this.campaign.id, 'counts.updated', function (data) {
+                vm.labelCounts = data.labelCounts
+            });
+        },
+    }
+});
+
+Vue.component('communication-side-panel', require('./../../page-components/campaign/communication-side-panel/communication-side-panel.component'));

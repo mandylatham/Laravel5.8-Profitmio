@@ -38,7 +38,8 @@ class RecipientObserver
             ]
         );
 
-        $pusher->trigger('response-console', "counters.update.{$recipient->campaign_id}", $data);
+        // $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'counts.updated', $data);
+        $pusher->trigger("campaign.{$recipient->campaign_id}", 'counts.updated', $data);
     }
 
     /**
@@ -72,7 +73,8 @@ class RecipientObserver
             ]
         );
 
-        $pusher->trigger('response-console', "counters.update.{$recipient->campaign_id}", $data);
+        // $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'counts.updated', $data);
+        $pusher->trigger("campaign.{$recipient->campaign_id}", 'counts.updated', $data);
     }
 
     /**
