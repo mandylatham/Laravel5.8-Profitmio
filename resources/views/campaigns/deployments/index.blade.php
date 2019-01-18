@@ -5,11 +5,16 @@
 @endsection
 
 @section('body-script')
+    <script>
+        window.searchDropsUrl = "{{ route('campaigns.drops.for-user-display', ['campaign' => $campaign->id]) }}";
+        window.deleteDropUrl = "{{ route('campaigns.drops.delete', ['campaign' => $campaign->id, 'drop' => ':dropId']) }}";
+        window.dropIndexUrl = "{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}";
+    </script>
     <script src="{{ asset('js/deployments-index.js') }}"></script>
 @endsection
 
 @section('main-content')
-    <div class="container" id="deployments-index">
+    <div class="container" id="drops-index">
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-4">
                 <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.create') }}">
@@ -18,16 +23,16 @@
             </div>
             <div class="col-none col-sm-2 col-lg-4"></div>
             <div class="col-12 col-sm-5 col-lg-4">
-                <input type="text" v-model="searchCampaignForm.q" class="form-control filter--search-box" aria-describedby="search"
-                       placeholder="Search" @keyup.enter="fetchCampaigns">
+                <input type="text" v-model="searchDropForm.q" class="form-control filter--search-box" aria-describedby="search"
+                       placeholder="Search" @keyup.enter="fetchData">
             </div>
         </div>
         <div class="row">
             <div class="col-12">
-                <div class="loader-spinner" v-if="loadingCampaigns">
+                <div class="table-loader-spinner" v-if="loading">
                     <spinner-icon></spinner-icon>
                 </div>
-                <div class="no-items-row" v-if="countActiveCampaigns === 0 && countInactiveCampaigns === 0">
+                <div class="no-items-row" v-if="drops.length === 0">
                     No Items
                 </div>
                 <div class="drop" v-for="drop in drops">
@@ -54,14 +59,14 @@
                                 <a :href="generateRoute(dropEditUrl, {'dropId': drop.id})" class="btn btn-link pm-btn-link pm-btn-link-primary">
                                     <i class="pm-font-edit-icon mr-3"></i> Edit
                                 </a>
-                                <a :href="generateRoute(dropDeleteUrl, {'dropId': drop.id})" class="btn btn-link pm-btn-link pm-btn-link-warning">
+                                <a href="javascript:;" @click.prevent="deleteDrop(drop)" class="btn btn-link pm-btn-link pm-btn-link-warning">
                                     <i class="far fa-trash-alt mr-3"></i> Delete
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                <pm-pagination :pagination="campaignsPagination" @page-changed="onCampaignPageChanged"></pm-pagination>
+                <pm-pagination :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
             </div>
         </div>
     </div>

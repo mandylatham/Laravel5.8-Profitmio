@@ -1,2 +1,10 @@
 @import './../../common/index';
 @import './../base';
+@import './../../components/pm-pagination';
+@import './../../components/spinner-icon';
+
+#drops-index {
+    padding: 2rem 1rem;
+    .loader-spinner {
+    }
+}

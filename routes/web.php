@@ -203,7 +203,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('phone/{phone}/release', 'PhoneController@release')->middleware('can:change-campaigns')->name('phone-number.release');
 //        Route::get('/drops', 'DeploymentController@index')->middleware('can:view-campaigns');
         Route::get('/drops', 'DeploymentController@forCampaign')->name('campaigns.drops.index');
+        Route::get('/drops/for-user-display', 'DeploymentController@getForUserDisplay')->name('campaigns.drops.for-user-display');
         Route::get('/drop/{drop}', 'DeploymentController@show');
+        Route::delete('/drop/{drop}', 'DeploymentController@delete')->name('campaigns.drops.delete');
         Route::post('/drop/{deployment}/update', 'DeploymentController@update');
         Route::get('/drops/new', 'DeploymentController@createNew')->name('campaign.drop.create');
         Route::post('/drops/create', 'DeploymentController@create');

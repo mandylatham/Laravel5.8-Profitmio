@@ -186,27 +186,22 @@ class DeploymentController extends Controller
 
     public function forCampaign(Campaign $campaign)
     {
-        $drops = CampaignSchedule::select([
-                'send_at', 'type', 'started_at', 'recipient_group', 'status', 'text_message', 'percentage_complete', 'completed_at', 'campaign_schedules.id',
-                \DB::raw("case when type in ('email', 'sms') then
-                (select count(*) from deployment_recipients where deployment_id = campaign_schedules.id)
-                else
-                (select count(*) from recipients where campaign_id = " . $campaign->id . " and subgroup = recipient_group)
-                end as recipients")
-            ])
-            ->where('campaign_id', $campaign->id)
-            ->whereNull('deleted_at')
+        return view('campaigns.deployments.index', [
+            'campaign' => $campaign
+        ]);
+    }
+
+    public function getForUserDisplay(Campaign $campaign, Request $request)
+    {
+        $drops = CampaignSchedule::searchByRequest($request, $campaign)
             ->orderBy('campaign_schedules.id', 'desc')
-            ->get();
+            ->paginate(15);
 
         $drops->each(function ($item) {
             return $item->text_message = str_replace('}}', '</span>', str_replace('{{', '<span class="badge badge-outline badge-primary">', $item->text_message));
         });
 
-        $viewData['drops'] = $drops;
-        $viewData['campaign'] = $campaign;
-
-        return view('campaigns.deployments.index', $viewData);
+        return $drops;
     }
 
     public function saveGroups(Campaign $campaign, Request $request)
@@ -225,6 +220,11 @@ class DeploymentController extends Controller
         $request->session()->put($campaign->id . "_recipient_info", $info);
 
         return json_encode(['code' => 200, 'message' => $info]);
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        return $query->search($q);
     }
 
     public function show(Campaign $campaign, Drop $drop)
