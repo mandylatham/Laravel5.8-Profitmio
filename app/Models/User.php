@@ -113,7 +113,7 @@ class User extends Authenticatable implements HasMedia
 
     public function getImageUrlAttribute()
     {
-        $image = $this->getFirstMedia();
+        $image = $this->getMedia('profile-photo')->last();
         if ($image) {
             return $image->getFullUrl();
         }
