@@ -1,16 +1,10 @@
 import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
-import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
 import {generateRoute} from './../../common/helpers'
 
-// Toastr Library
-import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
-// Chart Library
-import {filter} from 'lodash';
+// Bootstrap Vue
 import Modal from 'bootstrap-vue'
 Vue.use(Modal);
 
