@@ -29,12 +29,12 @@
                         <div class="row mb-4" v-if="template.type != 'email' && template.type != 'sms'">
                             <div class="col-12">
                                 <div class="type-buttons-container">
-                                    <button class="btn btn-outline-primary type-buttons" @click="selectType('sms')">
-                                        <i class="fa fa-comment"></i>
+                                    <button class="pm-btn-outline-purple mr-2 pl-4 pr-4 pt-2 pb-2" @click="selectType('sms')">
+                                        <i class="fa fa-comment mr-2"></i>
                                         SMS
                                     </button>
-                                    <button class="btn btn-outline-primary type-buttons" @click="selectType('email')">
-                                        <i class="fa fa-envelope"></i>
+                                    <button class="pm-btn-outline-purple pl-4 pr-4 pt-2 pb-2" @click="selectType('email')">
+                                        <i class="fa fa-envelope mr-2"></i>
                                         Email
                                     </button>
                                 </div>
