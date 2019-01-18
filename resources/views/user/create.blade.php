@@ -17,7 +17,7 @@
 @endsection
 
 @section('main-content')
-    <div class="container" id="user-create">
+    <div class="container" id="user-create" v-cloak>
         <div class="row">
             <div class="col-12 col-sm-8 offset-sm-2 col-md-4 offset-md-4">
                 <form action="" @submit.prevent="saveCompany">
