@@ -10,8 +10,8 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/pages/campaign/index.js', 'public/js/campaign-index.js')
-    .sass('resources/sass/campaign/index.scss', 'public/css/campaign-index.css')
+mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
+    .sass('resources/sass/campaigns/index.scss', 'public/css/campaign-index.css')
     .js('resources/js/pages/dashboard/dashboard.js', 'public/js/dashboard.js')
     .sass('resources/sass/dashboard/dashboard.scss', 'public/css/dashboard.css')
     .js('resources/js/pages/company/index.js', 'public/js/company-index.js')
@@ -22,8 +22,10 @@ mix.js('resources/js/pages/campaign/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/user/company-admin-index.scss', 'public/css/company-admin-user-index.css')
     .js('resources/js/pages/user/view.js', 'public/js/user-view.js')
     .sass('resources/sass/user/view.scss', 'public/css/user-view.css')
-    .js('resources/js/pages/campaign/console.js', 'public/js/console.js')
-    .sass('resources/sass/campaign/console.scss', 'public/css/console.css')
+    .js('resources/js/pages/campaigns/console.js', 'public/js/console.js')
+    .sass('resources/sass/campaigns/console.scss', 'public/css/console.css')
+    .js('resources/js/pages/campaigns/deployments/index.js', 'public/js/deployments-index.js')
+    .sass('resources/sass/campaigns/deployments/index.scss', 'public/css/deployments-index.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');

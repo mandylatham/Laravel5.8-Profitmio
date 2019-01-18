@@ -186,9 +186,7 @@ class DeploymentController extends Controller
 
     public function forCampaign(Campaign $campaign)
     {
-        // $schedules = CampaignSchedule::where('campaign_id', $campaign->id)->get();
-        $drops = \DB::table('campaign_schedules')
-            ->select([
+        $drops = CampaignSchedule::select([
                 'send_at', 'type', 'started_at', 'recipient_group', 'status', 'text_message', 'percentage_complete', 'completed_at', 'campaign_schedules.id',
                 \DB::raw("case when type in ('email', 'sms') then
                 (select count(*) from deployment_recipients where deployment_id = campaign_schedules.id)

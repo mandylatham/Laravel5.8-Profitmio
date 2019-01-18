@@ -42,7 +42,7 @@
             @endcan
             @can('list', \App\Models\User::class)
             <b-nav-item href="{{ route('user.index') }}">
-                <span class="pm-font-phone-icon"></span>
+                <span class="pm-font-user-icon"></span>
                 <span>Users</span>
             </b-nav-item>
             @endcan

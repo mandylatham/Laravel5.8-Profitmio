@@ -31,7 +31,7 @@ class CampaignController extends Controller
 
     public function index(Request $request)
     {
-        return view('campaign.index', [
+        return view('campaigns.index', [
             'companySelected' => $this->company->find(session('filters.campaign.index.company')),
             'q' => session('filters.campaign.index.q')
         ]);

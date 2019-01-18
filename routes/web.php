@@ -168,7 +168,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/campaigns', 'CampaignController@index')->name('campaign.index')->middleware('can:view-campaigns');
     Route::get('/campaigns/for-user-display', 'CampaignController@getForUserDisplay')->name('campaign.for-user-display');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
-    Route::get('/campaigns/new', 'CampaignController@createNew')->middleware('can:change-campaigns');
+    Route::get('/campaigns/new', 'CampaignController@createNew')->name('campaigns.create')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['check.active.company','can:view,campaign']], function () {
         Route::get('/', 'CampaignController@show')->name('campaign.view');
@@ -199,8 +199,8 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('phone-list-json', 'PhoneController@fromCampaignAsJson')->middleware('can:view-campaigns');
         Route::post('phone/{phone}/edit', 'PhoneController@edit')->middleware('can:change-campaigns')->name('phone-number.edit');
         Route::post('phone/{phone}/release', 'PhoneController@release')->middleware('can:change-campaigns')->name('phone-number.release');
-        Route::get('/drops', 'DeploymentController@forCampaign')->middleware('can:view-campaigns');
-        Route::get('/drops', 'DeploymentController@forCampaign')->name('campaign.drop.index');
+//        Route::get('/drops', 'DeploymentController@index')->middleware('can:view-campaigns');
+        Route::get('/drops', 'DeploymentController@forCampaign')->name('campaigns.drops.index');
         Route::get('/drop/{drop}', 'DeploymentController@show');
         Route::post('/drop/{deployment}/update', 'DeploymentController@update');
         Route::get('/drops/new', 'DeploymentController@createNew')->name('campaign.drop.create');
