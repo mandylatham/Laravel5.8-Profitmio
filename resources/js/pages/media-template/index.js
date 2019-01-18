@@ -109,7 +109,6 @@ window['app'] = new Vue({
                 });
         },
         deleteTemplate: function (id, index) {
-            var idx = index;
             var route = generateRoute(this.templateDelete, {templateId: id});
             this.$swal({
                 title: "Are you sure?",
@@ -127,9 +126,7 @@ window['app'] = new Vue({
             }).then(result => {
                 if (result.value) {
                     this.$toastr.success("User deleted");
-                    setTimeout(function () {
-                        window.app.templates.splice(idx, 1);
-                    }, 800);
+                    this.templates.splice(index, 1);
                 }
             }, error => {
                 this.$toastr.error("Unable to delete user");
