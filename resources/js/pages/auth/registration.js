@@ -43,7 +43,7 @@ window['app'] = new Vue({
             if (!window.userIsAdmin && !this.userForm.timezone) {
                 this.userForm.errors.add('timezone', 'This field is required.');
             }
-            return !!(!window.userIsAdmin && this.userForm.timezone);
+            return !!(window.userIsAdmin || (!window.userIsAdmin && this.userForm.timezone));
         },
         validateAuthTab: function () {
             this.userForm.errors.clear();
