@@ -1,17 +1,15 @@
 import Vue from 'vue';
 import './../../common';
+import axios from 'axios';
 import Form from './../../common/form';
-import 'vue-toastr-2/dist/vue-toastr-2.min.css'
-// Toastr Library
-import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
 import {generateRoute} from './../../common/helpers'
 
 window['app'] = new Vue({
     el: '#company-index',
     components: {
-        'pm-responsive-table': require('./../../components/pm-responsive-table/pm-responsive-table'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'company-type': require('./../../components/company-type/company-type'),
     },
     computed: {
         pagination: function () {
@@ -30,6 +28,8 @@ window['app'] = new Vue({
             page: 1,
             per_page: 15,
         }),
+        companyEdit: '',
+        companyDelete: '',
         isLoading: true,
         total: null,
         companies: [],
@@ -58,7 +58,8 @@ window['app'] = new Vue({
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
         this.searchForm.q = window.q;
-        this.companyEditUrl = window.companyEditUrl;
+        this.companyEdit = window.companyEdit;
+        this.companyDelete = window.companyDelete;
 
         this.fetchData();
     },
@@ -73,14 +74,39 @@ window['app'] = new Vue({
             this.searchForm.get(this.searchFormUrl)
                 .then(response => {
                     this.companies = response.data;
-                    this.searchForm.page = response.current_page;
-                    this.searchForm.per_page = response.per_page;
-                    this.total= response.total;
+                    this.searchForm.page = response.meta.current_page;
+                    this.searchForm.per_page = response.meta.per_page;
+                    this.total= response.meta.total;
                     this.isLoading = false;
                 })
                 .catch(error => {
                     this.$toastr.error("Unable to get companies");
                 });
+        },
+        deleteCompany: function (id, index) {
+            var route = generateRoute(this.companyDelete, {companyId: id});
+            this.$swal({
+                title: "Are you sure?",
+                text: "You will not be able to undo this operation!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#DD6B55",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                allowOutsideClick: false,
+                showLoaderOnConfirm: true,
+                preConfirm: () => {
+                    console.log(route);
+                    return axios.delete(route);
+                }
+            }).then(result => {
+                if (result.value) {
+                    this.$toastr.success("Company deleted");
+                    this.companies.splice(index, 1);
+                }
+            }, error => {
+                this.$toastr.error("Unable to delete company");
+            });
         },
         onPageChanged(event) {
             this.searchForm.page = event.page;

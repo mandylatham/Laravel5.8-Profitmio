@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Sofa\Eloquence\Eloquence;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
 {
-    use LogsActivity, Eloquence;
+    use LogsActivity, Eloquence, SoftDeletes;
 
     const TYPE_SUPPORT = 'support';
     const TYPE_AGENCY = 'agency';

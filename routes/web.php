@@ -281,7 +281,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('for-dropdown', 'CompanyController@getForDropdown')->name('company.for-dropdown');
         Route::get('for-user-display', 'CompanyController@getForUserDisplay')->name('company.for-user-display');
         Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
-        Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');
         Route::post('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');
         Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
         Route::get('/{company}/campaign', 'CompanyController@campaignIndex')->middleware('can:viewForPreferences,company')->name('company.campaign.index');

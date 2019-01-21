@@ -110,10 +110,11 @@ class CompanyController extends Controller
      * Check if this model can be deleted
      * @return bool
      */
-    public function canBeDeleted()
+    public function canBeDeleted(Company $company)
     {
         // TODO: Add code to verify if this model can be deleted
-        return false;
+        if ($company->type == 'support') return false;
+        return true;
     }
 
     /**
@@ -128,8 +129,9 @@ class CompanyController extends Controller
 
     public function delete(Company $company)
     {
-        if ($this->canBeDeleted()) {
+        if ($this->canBeDeleted($company)) {
             $company->delete();
+            return response()->json(['company deleted']);
         }
         return response()->json('Imposible delete this company', 403);
     }

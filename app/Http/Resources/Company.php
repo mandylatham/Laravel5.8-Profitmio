@@ -18,7 +18,9 @@ class Company extends JsonResource
         $data = [
             'id' => $this->id,
             'name' => $this->name,
+            'type' => $this->type,
             'address' => $this->address,
+            'created_at' => (string)$this->created_at,
             'active_campaigns' => $this->when(auth()->user()->isAdmin() || auth()->user()->isCompanyAdmin($this->id), $this->activeCampaigns()->count()),
             'is_active' => $this->whenPivotLoaded('company_user', function () {
                 return (bool) $this->pivot->is_active;
