@@ -11,7 +11,7 @@
         window.searchFormUrl = "{{ route('campaign.for-user-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
         window.companySelected = @json($companySelected);
-        window.campaignViewUrl = "{{ route('campaign.view', ['campaign' => ':campaignId']) }}";
+        window.campaignStatsUrl = "{{ route('campaigns.stats', ['campaign' => ':campaignId']) }}";
         window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
         window.campaignRecipientIndex = "{{ route('campaign.recipient.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";

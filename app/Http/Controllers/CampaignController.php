@@ -92,6 +92,15 @@ class CampaignController extends Controller
         return view('campaigns.dashboard', $viewData);
     }
 
+
+    public function showStats(Campaign $campaign, Request $request)
+    {
+        return view('campaigns.stats', [
+            'campaign' => $campaign
+        ]);
+    }
+
+
     public function details(Campaign $campaign)
     {
         return view('campaigns.details', [

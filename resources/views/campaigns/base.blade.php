@@ -10,7 +10,7 @@
     <nav class="company-navigation">
         <ul>
             <li>
-                <a href="">
+                <a class="{{ \Route::current()->getName() === 'campaigns.stats' ? 'active' : '' }}" href="{{ route('campaigns.stats', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-stats-icon"></i>
                     <span>STATS</span>
                 </a>

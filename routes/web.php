@@ -175,6 +175,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/campaigns/new', 'CampaignController@createNew')->name('campaigns.create')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns')->name('campaigns.store');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['check.active.company','can:view,campaign']], function () {
+        Route::get('/stats', 'CampaignController@showStats')->name('campaigns.stats');
         Route::get('/', 'CampaignController@show')->name('campaign.view');
         Route::delete('/', 'CampaignController@delete');
         Route::get('/details', 'CampaignController@details');

@@ -12,14 +12,15 @@
     h3 {
         line-height: 1em;
         margin: 0;
-        font-size: 1.4rem;
+        font-size: 1.2rem;
         color: #fff;
         margin-bottom: 0.8rem;
     }
 }
 .company-navigation {
-    margin-top: 3rem;
+    margin-top: 2rem;
     margin-bottom: 2rem;
+    font-size: 0.9rem;
     ul {
         list-style: none;
         margin: 0;
@@ -53,11 +54,11 @@
     }
 
     .pm-font-companies-icon {
-        font-size: 1.25rem !important;
+        font-size: 1.25em !important;
     }
 
     [class^="pm-font-"], [class*=" pm-font-"] {
-        font-size: 1.5rem;
+        font-size: 1.5em;
         width: 40px;
     }
 }
