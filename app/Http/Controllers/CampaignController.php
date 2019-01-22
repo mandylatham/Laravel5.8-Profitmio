@@ -108,7 +108,7 @@ class CampaignController extends Controller
             'agencies' => $agencies,
         ];
 
-        return view('campaigns.new', $viewData);
+        return view('campaigns.create', $viewData);
     }
 
     public function create(NewCampaignRequest $request)
@@ -137,13 +137,17 @@ class CampaignController extends Controller
             'starts_at' => $starts_at,
             'ends_at' => $ends_at,
             'agency_id' => $request->input('agency'),
-            'dealership_id' => $request->input('client'),
+            'dealership_id' => $request->input('dealership'),
             'adf_crm_export' => (bool) $request->input('adf_crm_export'),
-            'adf_crm_export_email' => $request->input('adf_crm_export_email'),
+            'adf_crm_export_email' => join(',', $request->input('adf_crm_export_email', [])),
             'lead_alerts' => (bool) $request->input('lead_alerts'),
-            'lead_alert_email' => $request->input('lead_alert_email'),
+            'lead_alert_email' => join(',', $request->input('lead_alert_email', [])),
+            'service_dept' => (bool) $request->input('service_dept'),
+            'service_dept_email' => join(',', $request->input('service_dept_email', [])),
+            'sms_on_callback' => (bool) $request->input('service_dept'),
+            'sms_on_callback_number' => join(',', $request->input('sms_on_callback_number', [])),
             'client_passthrough' => (bool) $request->input('client_passthrough'),
-            'client_passthrough_email' => $request->input('client_passthrough_email'),
+            'client_passthrough_email' => join(',', $request->input('client_passthrough_email', [])),
             'phone_number_id' => $request->input('phone_number_id'),
         ]);
 
@@ -159,7 +163,7 @@ class CampaignController extends Controller
             $phone->save();
         }
 
-        return redirect()->route('campaign.index');
+        return response()->json(['message' => 'Resource created']);
     }
 
 

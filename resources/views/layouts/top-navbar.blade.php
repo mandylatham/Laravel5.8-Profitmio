@@ -29,7 +29,7 @@
             </b-nav-item>
             @endif
             @can('list', \App\Models\Campaign::class)
-            <b-nav-item href="{{ route('campaign.index') }}" active>
+            <b-nav-item href="{{ route('campaigns.index') }}" active>
                 <span class="pm-font-campaigns-icon"></span>
                 <span>Campaigns</span>
             </b-nav-item>

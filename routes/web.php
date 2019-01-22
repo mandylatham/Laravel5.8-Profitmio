@@ -169,11 +169,11 @@ Route::group(['middleware' => 'auth'], function () {
     //endregion
 
     //region CAMPAIGN
-    Route::get('/campaigns', 'CampaignController@index')->name('campaign.index')->middleware('can:view-campaigns');
+    Route::get('/campaigns', 'CampaignController@index')->name('campaigns.index')->middleware('can:view-campaigns');
     Route::get('/campaigns/for-user-display', 'CampaignController@getForUserDisplay')->name('campaign.for-user-display');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->name('campaigns.create')->middleware('can:change-campaigns');
-    Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns');
+    Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns')->name('campaigns.store');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['check.active.company','can:view,campaign']], function () {
         Route::get('/', 'CampaignController@show')->name('campaign.view');
         Route::delete('/', 'CampaignController@delete');
