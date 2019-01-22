@@ -28,7 +28,7 @@
                 </a>
             </li>
             <li>
-                <a href="">
+                <a class="{{ \Route::current()->getName() === 'campaigns.responses.index' ? 'active' : '' }}" href="{{ route('campaigns.responses.index', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-responses-icon"></i>
                     <span>RESPONSES</span>
                 </a>

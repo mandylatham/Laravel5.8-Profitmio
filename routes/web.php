@@ -215,7 +215,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/drops/add-groups', 'DeploymentController@saveGroups');
         Route::post('/drop/{drop}/send-sms/{recipient}', 'DeploymentController@deploySms');
         Route::get('/drop/{drop}/edit', 'DeploymentController@updateForm');
-        Route::get('/responses', 'ResponseController@getCampaignResponses');
+        Route::get('/responses', 'ResponseController@getCampaignResponses')->name('campaigns.responses.index');
         Route::get('/responses/export-responders', 'ResponseController@getAllResponders');
         Route::get('/responses/export-nonresponders', 'ResponseController@getNonResponders');
         Route::any('/get-responses-hash', 'ResponseController@getResponsesHash');

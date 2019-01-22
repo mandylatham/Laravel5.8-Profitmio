@@ -44,6 +44,8 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/campaigns/create.scss', 'public/css/campaigns-create.css')
     .js('resources/js/pages/campaigns/stats.js', 'public/js/campaigns-stats.js')
     .sass('resources/sass/campaigns/stats.scss', 'public/css/campaigns-stats.css')
+    .js('resources/js/pages/campaigns/responses.js', 'public/js/campaigns-responses.js')
+    .sass('resources/sass/campaigns/responses.scss', 'public/css/campaigns-responses.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');
