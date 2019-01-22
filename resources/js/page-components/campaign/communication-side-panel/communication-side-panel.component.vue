@@ -45,6 +45,13 @@
                         </select>
 
                     </div>
+
+                    <div class="col-12" v-if="this.recipient.labels_list">
+                        <ul class="labels">
+                            <li :class="index" v-for="(label, index) in this.recipient.labels_list">{{ label }}<i
+                                    class="fas fa-times" @click="removeLabel(index)"></i></li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="mail-content">
@@ -196,12 +203,12 @@
                     <div class="panel-body">
 
                         <div v-if="threads.emailDrop">
-                            <div class="message-time" style="margin-left: 25px">{{ threads.emailDrop.send_at_formatted }}</div>
+                            <div class="message-time" style="margin-left: 25px">{{ threads.emailDrop.send_at_formatted
+                                }}
+                            </div>
                             <strong class="vertical-text">Original Message</strong>
 
-                            <div class="message original-message">
-                                Original Message
-                                <iframe class="email-original" :src="threads.emailDrop.email_html"></iframe>
+                            <div class="message original-message email-original" v-html="threads.emailDrop.email_html">
                             </div>
                         </div>
 
@@ -252,11 +259,11 @@
 
 <script>
     import axios from 'axios';
+
     export default {
         mounted() {
             this.resetVars();
             this.getResponses(this.campaign.id, this.recipientId);
-            console.log(this.recipientId);
         },
         components: {
             'date-pick': require('./../../../components/date-pick/date-pick')
@@ -314,9 +321,8 @@
                         vm.rest = response.data.rest;
                         vm.notes = response.data.recipient.notes;
 
-                        // TODO: remove me
-                        console.log(vm.recipient);
-                        console.log(vm.threads);
+                        // TODO: Check this out
+                        // this.updateResponses(vm.recipient);
 
                         vm.setLoading(false);
                     })
@@ -336,12 +342,12 @@
                         notes: vm.notes
                     })
                     .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                        this.$toastr.success('Note added.');
                     })
                     .catch(function (response) {
                         // TODO: error
                         console.log(response);
+                        // this.$toastr.error("MESSAGE");
                     });
             },
             appointmentCalledBackToggle: function (event, appointmentId) {
@@ -350,10 +356,7 @@
                         called_back: event.target.checked
                     })
                     .then(function (response) {
-                        // TODO: success
-                        console.log(response);
-                        // TODO: add notifications
-                        this.$toastr.success('');
+                        this.$toastr.success('Called status updated.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -369,8 +372,7 @@
                         appointment_time: vm.appointmentSelectedTime
                     })
                     .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                        this.$toastr.success('Appointment added.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -383,8 +385,7 @@
                         read: event.target.checked
                     })
                     .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                        this.$toastr.success('Read status updated.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -399,8 +400,7 @@
                         message: vm.textMessage
                     })
                     .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                        this.$toastr.success('Text sent.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -415,8 +415,7 @@
                         message: vm.emailMessage
                     })
                     .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                        this.$toastr.success('Email sent.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -431,30 +430,46 @@
                         label: vm.selectedLabel
                     })
                     .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                        this.$toastr.success('Label added.');
                     })
                     .catch(function (response) {
                         // TODO: error
                         console.log(response);
                     });
             },
-            removeLabel: function (recipientId) {
-                // TODO: click on displayed label should remove it
+            removeLabel: function (label) {
                 const vm = this;
 
-                axios.post('/recipient/' + recipientId + '/remove-label',
+                let selectedLabel = vm.selectedLabel;
+                if (label) {
+                    selectedLabel = label;
+                }
+
+                axios.post('/recipient/' + vm.recipientId + '/remove-label',
                     {
-                        label: vm.selectedLabel
+                        label: selectedLabel
                     })
                     .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                        this.$toastr.success('Label removed.');
                     })
                     .catch(function (response) {
                         // TODO: error
                         console.log(response);
                     });
+            },
+            updateResponses: function (recipient) {
+                const vm = this;
+                // TODO: check this out
+                if (recipient) {
+
+                    window['app'].pusher('private-campaign.' + vm.campaign.id, 'response.' + recipient.id + '.updated', function (data) {
+                        console.log(data);
+
+                        vm.appointments = data.appointments;
+                        vm.threads = data.threads;
+                        vm.recipient = data.recipient;
+                    });
+                }
             },
         }
     }

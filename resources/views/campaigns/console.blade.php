@@ -17,6 +17,7 @@
         window.pusherKey = "{{env('PUSHER_APP_KEY')}}";
         window.pusherCluster = "{{env('PUSHER_CLUSTER')}}";
         window.pusherAuthEndpoint = "{{ url('/broadcasting/auth') }}";
+        window.csrfToken = "{{ csrf_token() }}";
     </script>
     <script src="//js.pusher.com/4.3/pusher.min.js"></script>
     <script src="{{ asset('js/console.js') }}"></script>
@@ -130,7 +131,13 @@
         <div id="recipients-list" v-if="recipients.length">
             <div class="row no-gutters" v-for="recipient in recipients" @click="showPanel(recipient)">
                 <div class="col-4">
-                    <span>@{{ recipient.name }}</span>
+                    <div class="name-wrapper" :class="{'half': recipient.labels_list_text.length}">
+                        <span>@{{ recipient.name }}</span>
+                    </div>
+                    <div class="label-wrapper" :class="{'half': recipient.labels_list_text.length}"
+                         v-if="recipient.labels_list_text.length">
+                        <span>Labels: @{{ recipient.labels_list_text }}</span>
+                    </div>
                 </div>
                 <div class="col-4">
                     <span>@{{ recipient.email }}</span>

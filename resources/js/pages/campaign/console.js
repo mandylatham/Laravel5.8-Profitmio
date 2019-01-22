@@ -3,17 +3,13 @@ import './../../common';
 import Form from './../../common/form';
 import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
+// TODO: how to include VueToastr2?
+// import 'vue-toastr-2/dist/vue-toastr-2.min.css'
+// import VueToastr2 from 'vue-toastr-2';
+// window.toastr = require('toastr');
+// Vue.use(VueToastr2);
 
 Vue.use(VueSlideoutPanel);
-
-import Echo from "laravel-echo"
-
-window.Echo = new Echo({
-    broadcaster: 'pusher',
-    key: '233f4defc4104dbbbb30',
-    cluster: 'eu',
-    encrypted: true
-});
 
 // Main vue
 window['app'] = new Vue({
@@ -64,6 +60,9 @@ window['app'] = new Vue({
                     this.searchForm.page = response.recipients.current_page;
                     this.searchForm.per_page = response.recipients.per_page;
                     this.total = response.recipients.total;
+
+                    // this.updateRecipients(this.recipients);
+
                     this.loading = false;
                 })
                 .catch(error => {
@@ -95,7 +94,12 @@ window['app'] = new Vue({
             let pusher = new Pusher(this.pusherKey, {
                 cluster: this.pusherCluster,
                 forceTLS: true,
-                authEndpoint: this.pusherAuthEndpoint
+                authEndpoint: this.pusherAuthEndpoint,
+                auth: {
+                    headers: {
+                        'X-CSRF-Token': window.csrfToken
+                    }
+                }
             });
 
             let channel = pusher.subscribe(channelName);
@@ -103,16 +107,29 @@ window['app'] = new Vue({
                 callback(data);
             });
         },
+        updateRecipients: function () {
+            // TODO: check this out
+            const vm = this;
+            this.pusher('private-campaign.' + this.campaign.id, 'recipients.updated', function (data) {
+                console.log(data);
+
+                vm.recipients = data.recipients.data;
+                vm.searchForm.page = data.recipients.current_page;
+                vm.searchForm.per_page = data.recipients.per_page;
+                vm.total = data.recipients.total;
+            });
+        }
     },
     mounted: function () {
         const vm = this;
         this.campaign = window.campaign;
         this.currentUser = window.user;
-        this.fetchRecipients();
-
         this.pusherKey = window.pusherKey;
         this.pusherCluster = window.pusherCluster;
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
+
+        this.fetchRecipients();
+        this.updateRecipients();
 
         // Events
         window.Event.listen('filters.filter-changed', function (data) {

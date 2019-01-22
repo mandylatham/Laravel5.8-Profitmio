@@ -2,7 +2,11 @@
 
 namespace App\Observers;
 
+use App\Classes\MailgunService;
+use App\Http\Controllers\ResponseConsoleController;
+use App\Models\Campaign;
 use App\Models\Recipient;
+use Illuminate\Http\Request;
 use Pusher\Pusher;
 
 class RecipientObserver
@@ -24,9 +28,13 @@ class RecipientObserver
                 wrong_number = 0 and car_sold = 0 and heat = 0) then 1 else 0 end) as not_labelled")
             ->first();
 
-        $data = [
+        $labelData = [
             'labelCounts' => array_map('intval', $labelCounts->toArray()),
         ];
+
+        $campaign = Campaign::findOrFail($recipient->campaign_id);
+        $recipientsData = (new ResponseConsoleController(new MailgunService()))->getRecipientData(new Request(),
+            $campaign);
 
         $pusher = new Pusher(
             env('PUSHER_APP_KEY'),
@@ -38,8 +46,8 @@ class RecipientObserver
             ]
         );
 
-        // $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'counts.updated', $data);
-        $pusher->trigger("campaign.{$recipient->campaign_id}", 'counts.updated', $data);
+        $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'counts.updated', $labelData);
+        $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'recipients.updated', $recipientsData);
     }
 
     /**
@@ -59,9 +67,15 @@ class RecipientObserver
                 wrong_number = 0 and car_sold = 0 and heat = 0) then 1 else 0 end) as not_labelled")
             ->first();
 
-        $data = [
+        $labelData = [
             'labelCounts' => array_map('intval', $labelCounts->toArray()),
         ];
+
+        $campaign = Campaign::findOrFail($recipient->campaign_id);
+        $recipientsData = (new ResponseConsoleController(new MailgunService()))->getRecipientData(new Request(),
+            $campaign);
+
+        // dd($recipientsData->recipients);
 
         $pusher = new Pusher(
             env('PUSHER_APP_KEY'),
@@ -73,8 +87,8 @@ class RecipientObserver
             ]
         );
 
-        // $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'counts.updated', $data);
-        $pusher->trigger("campaign.{$recipient->campaign_id}", 'counts.updated', $data);
+        $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'counts.updated', $labelData);
+        $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'recipients.updated', $recipientsData);
     }
 
     /**

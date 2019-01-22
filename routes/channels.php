@@ -19,20 +19,6 @@ Broadcast::channel('App.User.{id}', function ($user, $id) {
 });
 
 Broadcast::channel('campaign.{campaign}', function ($user, $campaign) {
-    dd('1111');
-    if ($user->is_admin) {
-        return true;
-    }
-    $campaign = Campaign::find($campaign);
-    if (empty($campaign)) {
-        return false;
-    }
-
-    return ($campaign->agency_id == $user->id);
-});
-
-Broadcast::channel('private-campaign.{campaign}', function ($user, $campaign) {
-    dd(2222);
     if ($user->is_admin) {
         return true;
     }

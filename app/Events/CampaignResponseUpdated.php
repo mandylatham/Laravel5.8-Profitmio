@@ -49,7 +49,7 @@ class CampaignResponseUpdated implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'response.' . $this->recipient->target_id . '.updated';
+        return 'response.' . $this->recipient->id . '.updated';
     }
 
     public function broadcastWith()
@@ -63,16 +63,15 @@ class CampaignResponseUpdated implements ShouldBroadcast
         ];
     }
 
-    // TODO: fix me, 'target_id' doesn't exist
     private function getAppointments()
     {
-        return Appointment::where('target_id', $this->recipient->target_id)->get()->toArray();
+        return Appointment::where('recipient_id', $this->recipient->id)->get()->toArray();
     }
 
     private function getEmailThreads()
     {
         return Response::where('campaign_id', $this->campaign->id)
-            ->where('target_id', $this->recipient->id)
+            ->where('id', $this->recipient->id)
             ->where('type', 'email')
             ->get()
             ->toArray();
@@ -81,7 +80,7 @@ class CampaignResponseUpdated implements ShouldBroadcast
     private function getTextThreads()
     {
         return Response::where('campaign_id', $this->campaign->id)
-            ->where('target_id', $this->recipient->id)
+            ->where('id', $this->recipient->id)
             ->where('type', 'text')
             ->get()
             ->toArray();
@@ -90,7 +89,7 @@ class CampaignResponseUpdated implements ShouldBroadcast
     private function getPhoneThreads()
     {
         return Response::where('campaign_id', $this->campaign->id)
-            ->where('target_id', $this->recipient->id)
+            ->where('id', $this->recipient->id)
             ->where('type', 'phone')
             ->get()
             ->toArray();

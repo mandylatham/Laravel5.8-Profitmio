@@ -9,6 +9,7 @@ use App\Models\Appointment;
 use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\Recipient;
+use App\Models\Response;
 use App\Services\TwilioClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,6 +17,7 @@ use Illuminate\Log\Logger;
 use Illuminate\Mail\Mailer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Pusher\Pusher;
 
 /**
  * Appointment Controller
@@ -237,6 +239,7 @@ class AppointmentController extends Controller
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Pusher\PusherException
      */
     public function save(Request $request)
     {
@@ -261,6 +264,8 @@ class AppointmentController extends Controller
 
         $appt->save();
 
+        $this->broadcastCampaignResponseUpdated($appt->recipient);
+
         return response()->json($appt->toJson());
     }
 
@@ -269,6 +274,7 @@ class AppointmentController extends Controller
      * @param Appointment $appointment
      * @param Request     $request
      * @return int|mixed [type]
+     * @throws \Pusher\PusherException
      */
     public function updateCalledStatus(Appointment $appointment, Request $request)
     {
@@ -276,9 +282,60 @@ class AppointmentController extends Controller
 
         $appointment->save();
 
+        $this->broadcastCampaignResponseUpdated($appointment->recipient);
+
         return response()->json([
             'called_back' => $appointment->called_back,
         ]);
+    }
+
+    /**
+     * @param Recipient $recipient
+     * @throws \Pusher\PusherException
+     */
+    private function broadcastCampaignResponseUpdated(Recipient $recipient)
+    {
+        // TODO: fix `CampaignResponseUpdated` and use it
+        // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
+
+        $appointments = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
+        $emailThreads = Response::where('campaign_id', $recipient->campaign->id)
+            ->where('id', $recipient->id)
+            ->where('type', 'email')
+            ->get()
+            ->toArray();
+        $textThreads = Response::where('campaign_id', $recipient->campaign->id)
+            ->where('id', $recipient->id)
+            ->where('type', 'text')
+            ->get()
+            ->toArray();
+        $phoneThreads = Response::where('campaign_id', $recipient->campaign->id)
+            ->where('id', $recipient->id)
+            ->where('type', 'phone')
+            ->get()
+            ->toArray();
+
+        $data = [
+            'appointments' => $appointments,
+            'threads'      => [
+                'email' => $emailThreads,
+                'text'  => $textThreads,
+                'phone' => $phoneThreads,
+            ],
+            'recipient'    => $recipient->toArray(),
+        ];
+
+        $pusher = new Pusher(
+            env('PUSHER_APP_KEY'),
+            env('PUSHER_APP_SECRET'),
+            env('PUSHER_APP_ID'),
+            [
+                'cluster' => env('PUSHER_CLUSTER'),
+                'useTLS'  => true,
+            ]
+        );
+
+        $pusher->trigger("private-campaign.{$recipient->campaign->id}", "response.{$recipient->id}.updated", $data);
     }
 
     /**
@@ -286,6 +343,7 @@ class AppointmentController extends Controller
      * @param Recipient $recipient
      * @param Request   $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Pusher\PusherException
      */
     public function addAppointmentFromConsole(Campaign $campaign, Recipient $recipient, Request $request)
     {
@@ -303,6 +361,8 @@ class AppointmentController extends Controller
         ]);
 
         $recipient->update(['appointment' => true]);
+
+        $this->broadcastCampaignResponseUpdated($recipient);
 
         return response()->json([
             'appointment_at' => $appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y h:i A T"),

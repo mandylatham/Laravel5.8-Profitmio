@@ -1,6 +1,9 @@
 <?php
 
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 //region OUTSIDE API CALLS
@@ -65,8 +68,8 @@ Route::get('/pusher-test', function () {
         ]
     );
 
-    // $pusher->trigger("private-campaign.20", 'counts.updated', $data);
-    $pusher->trigger("campaign.20", 'counts.updated', $data);
+    $pusher->trigger("private-campaign.20", 'counts.updated', $data);
+    // $pusher->trigger("campaign.20", 'counts.updated', $data);
 
     return ['success' => true];
 });
