@@ -1,149 +1,100 @@
-@extends('layouts.remark')
+@extends('layouts.base', [
+    'hasSidebar' => false
+])
 
-@section('header')
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/dropify/dropify.css') }}">
+@section('head-styles')
+    <link href="{{ asset('css/company-create.css') }}" rel="stylesheet">
 @endsection
 
-@section('manualStyle')
-    .company-image {
-    width: 220px;
-    margin: 0 auto;
-    }
+@section('body-script')
+    <script>
+        window.createUrl = "{{ route('company.store') }}";
+        window.indexUrl = "{{ route('company.index') }}";
+    </script>
+    <script src="{{ asset('js/company-create.js') }}"></script>
 @endsection
 
-@section('content')
-    <div class="page">
-        <div class="page-header container-fluid">
-            <div class="row-fluid">
-                <div class="col-md-6 offset-md-3">
-                    <button type="button" role="button"
-                            data-url="{{ route('company.index') }}"
-                            class="btn btn-sm float-left btn-default waves-effect campaign-edit-button"
-                            data-toggle="tooltip" data-original-title="Go Back"
-                            style="margin-right: 15px; background: rgba(255, 255, 255, 0.2); border-size: 0.5px;">
-                        <i class="icon fa-angle-left" style="color: #efefef" aria-hidden="true"></i>
-                    </button>
-                    <h3 class="page-title text-default">
-                        New Company
-                    </h3>
-                    <div class="page-header-actions">
-                    </div>
-                </div>
+@section('main-content')
+    <div class="container" id="company-create">
+        <div class="row mb-3">
+            <div class="col-6">
+                <button type="button" role="button" class="btn pm-btn pm-outline-purple">
+                    <i class="fa fa-chevron-left"></i>
+                </button>
             </div>
         </div>
-        <div class="page-content container-fluid">
-            <div class="row-fluid" data-plugin="matchHeight" data-by-row="true">
-                <div class="col-md-6 offset-md-3">
-                    <div class="panel">
-                        <div class="panel-body" data-fv-live="enabled">
-                            @if ($errors->count() > 0)
-                                <div class="alert alert-danger">
-                                    <h3>There were some errors:</h3>
-                                    <ul>
-                                        @foreach ($errors->all() as $message)
-                                            <li>{{ $message }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-                            <form class="form" method="post" action="{{ route('company.store') }}">
-                                {{ csrf_field() }}
-                                <div class="form-group">
-                                    <div class="company-image">
-                                        <input type="file" name="image" data-plugin="dropify" class="dropify"
-                                               data-height="200" data-width="200"
-                                               data-allowed-file-extensions="jpg jpeg png gif"/>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <label for="name" class="floating-label">Company Name</label>
-                                    <input type="text" class="form-control empty" name="name" placeholder="Company Name"
-                                           value="{{ old('name') }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="type" class="floating-label">Type</label>
-                                    <select name="type" class="form-control" data-fv-field="type" required>
-                                        <option value='support' {{ old('type') === 'support' ? 'selected' : '' }}>
-                                            Support
-                                        </option>
-                                        <option value='agency' {{ old('type') == 'agency' ? 'selected' : '' }}>Agency
-                                        </option>
-                                        <option value='dealership' {{ old('type') == 'dealership' ? 'selected' : '' }}>
-                                            Dealership
-                                        </option>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <label for="phone" class="floating-label">Phone</label>
-                                    <input type="text" class="form-control empty" name="phone" autocomplete="off"
-                                           value="{{ old('phone') }}" data-plugin="formatter"
-                                           data-pattern="([[999]]) [[999]]-[[9999]]" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="address" class="floating-label">Address 1</label>
-                                    <textarea class="form-control empty" name="address" placeholder="Address 1"
-                                              autocomplete="off">{{ old('address') }}</textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="address2" class="floating-label">Address 2</label>
-                                    <textarea class="form-control empty" name="address2" placeholder="Address 2"
-                                              autocomplete="off">{{ old('address2') }}</textarea>
-                                </div>
-                                <div class="form-group">
-                                    <label for="city" class="floating-label">City</label>
-                                    <input type="text" class="form-control empty" name="city" placeholder="City"
-                                           value="{{ old('city') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="state" class="floating-label">State</label>
-                                    <input type="text" class="form-control empty" name="state" placeholder="State"
-                                           value="{{ old('state') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="country" class="floating-label">Country</label>
-                                    <input type="text" class="form-control empty" name="country" placeholder="Country"
-                                           value="{{ old('country') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="zip" class="floating-label">Zip</label>
-                                    <input type="text" class="form-control empty" name="zip" placeholder="Zip"
-                                           value="{{ old('zip') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="url" class="floating-label">Url</label>
-                                    <input type="text" class="form-control empty" name="url" placeholder="Url"
-                                           value="{{ old('url') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="facebook" class="floating-label">Facebook</label>
-                                    <input type="text" class="form-control empty" name="facebook" placeholder="Facebook"
-                                           value="{{ old('facebook') }}">
-                                </div>
-                                <div class="form-group">
-                                    <label for="twitter" class="floating-label">Twitter</label>
-                                    <input type="text" class="form-control empty" name="twitter" placeholder="Twitter"
-                                           value="{{ old('twitter') }}">
-                                </div>
-                                <button type="submit" class="btn btn-success">Add Company</button>
-                            </form>
+        <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+                <div class="card">
+                    <div class="card-header">New Company</div>
+                    <div class="card-body">
+                        <div class="alert alert-default" v-if="createForm.errors.any()">
+                            <p class="text-danger">There are errors!</p>
                         </div>
+                        <div class="form-group">
+                            <div class="company-image">
+                                <input type="file" name="image">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="name" class="form-label">Company Name</label>
+                            <input type="text" v-model="createForm.name" class="form-control" name="name" placeholder="Company Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="type" class="form-label">Type</label>
+                            <select name="type" v-model="createForm.type" class="form-control" required>
+                                <option value='support'>Support</option>
+                                <option value='agency'>Agency</option>
+                                <option value='dealership'>Dealership</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" v-model="createForm.phone" class="form-control" name="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="country" class="form-label">Country</label>
+                            <select v-model="createForm.country" class="form-control" name="country">
+                                <option value="us">United States</option>
+                                <option value="ca">Canada</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="address" class="floating-label">Address</label>
+                            <textarea class="form-control" v-model="createForm.address" name="address" placeholder="Address 1"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="address2" class="form-label">Address 2</label>
+                            <textarea class="form-control" v-model="createForm.address2" name="address2" placeholder="Address 2"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="city" class="form-label">City</label>
+                            <input type="text" v-model="createForm.city" class="form-control" name="city" placeholder="City">
+                        </div>
+                        <div class="form-group">
+                            <label for="state" class="form-label">State</label>
+                            <input type="text" v-model="createForm.state" class="form-control" name="state" placeholder="State">
+                        </div>
+                        <div class="form-group">
+                            <label for="zip" class="form-label">Zip</label>
+                            <input type="text" v-model="createForm.zip" class="form-control" name="zip" placeholder="Zip">
+                        </div>
+                        <div class="form-group">
+                            <label for="url" class="form-label">Url</label>
+                            <input type="text" v-model="createForm.url" class="form-control" name="url" placeholder="Url">
+                        </div>
+                        <div class="form-group">
+                            <label for="facebook" class="form-label">Facebook</label>
+                            <input type="text" v-model="createForm.facebook" class="form-control" name="facebook" placeholder="Facebook">
+                        </div>
+                        <div class="form-group">
+                            <label for="twitter" class="form-label">Twitter</label>
+                            <input type="text" v-model="createForm.twitter" class="form-control" name="twitter" placeholder="Twitter">
+                        </div>
+                        <button @click="onSubmit()" class="btn pm-btn btn-success">Add Company</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-@endsection
-
-@section('scriptTags')
-    <script src="{{ secure_url('vendor/dropify/dropify.js') }}"></script>
-    <script src="{{ secure_url('js/Plugin/formatter.js') }}"></script>
-    <script src="{{ secure_url('vendor/formatter/jquery.formatter.js') }}"></script>
-@endsection
-
-@section('scripts')
-    $('.dropify').dropify({
-    messages: {
-    'default': 'Drag and drop a file here or click to upload an image'
-    }
-    });
 @endsection

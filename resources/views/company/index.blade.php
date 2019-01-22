@@ -18,8 +18,12 @@
 
 @section('main-content')
     <div class="container" id="company-index">
-        <div class="row align-items-end no-gutters mb-md-3">
+        <div class="row align-items-end no-gutters mb-md-3 mb-3">
             <div class="col-12 col-sm-5 col-lg-3">
+                <a href="{{ route('company.create') }}" class="btn pm-btn btn-success">
+                    <i class="fa fa-plus mr-2"></i>
+                    Add Company
+                </a>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
             <div class="col-12 col-sm-5 col-lg-3">
@@ -28,6 +32,9 @@
             </div>
         </div>
         <div class="row no-gutters company-component inactive" v-for="(company, index) in companies" :key="company.id">
+            <div class="alert alert-default" v-if="createForm.errors">
+                <p class="text-danger">There are errors!</p>
+            </div>
             <div class="col-12 col-md-5 company-header">
                 <div class="company-header--title">
                     <p>Company @{{ company.id }}</p>
