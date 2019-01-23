@@ -11,7 +11,7 @@
 @section('main-content')
     <div class="container" id="campaign-responses" v-cloak>
         <div class="row">
-            <div class="col-12 col-sm-10 col-md-8">
+            <div class="col-12 col-sm-10">
                 <a href="{{ url('/campaign/' . $campaign->id . '/responses/export-responders') }}" class="download-response mb-3">
             <span class="icon">
                 <download-icon></download-icon>

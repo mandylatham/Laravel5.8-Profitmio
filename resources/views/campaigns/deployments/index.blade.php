@@ -14,7 +14,7 @@
 @endsection
 
 @section('main-content')
-    <div class="container" id="drops-index">
+    <div class="container" id="drops-index" v-cloak>
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-4">
                 <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.create') }}">
