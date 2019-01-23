@@ -42,6 +42,8 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     // Campaigns
     .js('resources/js/pages/campaigns/create.js', 'public/js/campaigns-create.js')
     .sass('resources/sass/campaigns/create.scss', 'public/css/campaigns-create.css')
+    .js('resources/js/pages/campaigns/edit.js', 'public/js/campaigns-edit.js')
+    .sass('resources/sass/campaigns/edit.scss', 'public/css/campaigns-edit.css')
     .js('resources/js/pages/campaigns/stats.js', 'public/js/campaigns-stats.js')
     .sass('resources/sass/campaigns/stats.scss', 'public/css/campaigns-stats.css')
     .js('resources/js/pages/campaigns/responses.js', 'public/js/campaigns-responses.js')

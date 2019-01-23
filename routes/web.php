@@ -176,12 +176,12 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns')->name('campaigns.store');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['check.active.company','can:view,campaign']], function () {
         Route::get('/stats', 'CampaignController@showStats')->name('campaigns.stats');
-        Route::get('/', 'CampaignController@show')->name('campaign.view');
+        Route::get('/', 'CampaignController@show')->name('campaigns.view');
         Route::delete('/', 'CampaignController@delete');
         Route::get('/details', 'CampaignController@details');
-        Route::get('/edit', 'CampaignController@edit')->name('campaign.edit');
-        Route::get('/delete', 'CampaignController@delete')->name('campaign.delete');
-        Route::post('/update', 'CampaignController@update');
+        Route::get('/edit', 'CampaignController@edit')->name('campaigns.edit');
+        Route::get('/delete', 'CampaignController@delete')->name('campaigns.delete');
+        Route::post('/update', 'CampaignController@update')->name('campaigns.update');
         // Recipient list pages
         Route::get('/recipients', 'RecipientController@show')->name('campaigns.recipients.index');
         Route::get('/recipients/for-user-display', 'RecipientController@show')->name('campaigns.recipients.index');

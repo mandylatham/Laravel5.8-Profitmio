@@ -221,17 +221,17 @@ class CampaignController extends Controller
             'ends_at' => $ends_at,
             'expires_at' => $expires_at,
             'agency_id' => $request->agency,
-            'dealership_id' => $request->client,
-            'adf_crm_export' => (bool) $request->adf_crm_export,
-            'adf_crm_export_email' => $request->adf_crm_export_email,
-            'lead_alerts' => (bool) $request->lead_alerts,
-            'lead_alert_email' => $request->lead_alert_email,
-            'client_passthrough' => (bool) $request->client_passthrough,
-            'client_passthrough_email' => $request->client_passthrough_email,
-            'service_dept' => (bool) $request->service_dept,
-            'service_dept_email' => $request->service_dept_email,
-            'sms_on_callback' => (bool) $request->sms_on_callback,
-            'sms_on_callback_number' => $request->sms_on_callback_number,
+            'dealership_id' => $request->dealership,
+            'adf_crm_export' => (bool) $request->input('adf_crm_export'),
+            'adf_crm_export_email' => join(',', $request->input('adf_crm_export_email', [])),
+            'lead_alerts' => (bool) $request->input('lead_alerts'),
+            'lead_alert_email' => join(',', $request->input('lead_alert_email', [])),
+            'service_dept' => (bool) $request->input('service_dept'),
+            'service_dept_email' => join(',', $request->input('service_dept_email', [])),
+            'sms_on_callback' => (bool) $request->input('service_dept'),
+            'sms_on_callback_number' => join(',', $request->input('sms_on_callback_number', [])),
+            'client_passthrough' => (bool) $request->input('client_passthrough'),
+            'client_passthrough_email' => join(',', $request->input('client_passthrough_email', [])),
             'phone_number_id' => $request->phone_number_id,
         ]);
 
@@ -241,7 +241,7 @@ class CampaignController extends Controller
 
         $campaign->save();
 
-        return redirect()->route('campaign.edit', ['campaign' => $campaign->id]);
+        return response()->json(['message' => 'Resource updated.']);
     }
 
     public function delete(Campaign $campaign)

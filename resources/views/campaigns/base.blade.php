@@ -34,7 +34,7 @@
                 </a>
             </li>
             <li>
-                <a href="">
+                <a class="{{ \Route::current()->getName() === 'campaigns.edit' ? 'active' : '' }}" href="{{ route('campaigns.edit', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-edit-icon"></i>
                     <span>EDIT</span>
                 </a>
