@@ -83,54 +83,8 @@
                             </div>
                         </div>
                     </tab-content>
-                    <tab-content title="Contact" icon="fas fa-phone fa-rotate-90">
-                        <h4 class="mb-3">Lead Management</h4>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <p-check color="primary" class="p-default" name="adf_crm_export" v-model="campaignForm.adf_crm_export">Enable ADF CRM Export</p-check>
-                                <div class="form-group mt-3 mb-0" v-if="campaignForm.adf_crm_export">
-                                    <label for="adf_crm_export_email">ADF CRM EXPORT <small class="ml-2">Add multiple emails seperated by commas</small></label>
-                                    <input-tag name="adf_crm_export_email" v-model="campaignForm.adf_crm_export_email" :add-tag-on-blur="true" :validate="'email'"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <p-check color="primary" class="p-default" name="lead_alerts" v-model="campaignForm.lead_alerts">Enable Lead Alerts</p-check>
-                                <div class="form-group mt-3 mb-0" v-if="campaignForm.lead_alerts">
-                                    <label for="lead_alert_emails">Lead Alert Emails <small class="ml-2">Add multiple emails seperated by commas</small></label>
-                                    <input-tag name="lead_alert_emails" v-model="campaignForm.lead_alert_emails" :add-tag-on-blur="true" :validate="'email'"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <p-check color="primary" class="p-default" name="service_dept" v-model="campaignForm.service_dept">Service Dept Notifications</p-check>
-                                <div class="form-group mt-3 mb-0" v-if="campaignForm.service_dept">
-                                    <label for="service_dept_email">Service Dept Email(s) <small class="ml-2">Add multiple emails seperated by commas</small></label>
-                                    <input-tag name="service_dept_email" v-model="campaignForm.service_dept_email" :add-tag-on-blur="true" :validate="'email'"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <p-check color="primary" class="p-default" name="client_passthrough" v-model="campaignForm.client_passthrough">Enable Client Passthrough</p-check>
-                                <div class="form-group mt-3 mb-0" v-if="campaignForm.client_passthrough">
-                                    <label for="client_passthrough_email">Client Passthrough Email<small class="ml-2">Add multiple emails seperated by commas</small></label>
-                                    <input-tag name="client_passthrough_email" v-model="campaignForm.client_passthrough_email" :add-tag-on-blur="true" :validate="'email'"/>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card mb-3">
-                            <div class="card-body">
-                                <p-check color="primary" class="p-default" name="sms_on_callback" v-model="campaignForm.sms_on_callback">SMS On Callback</p-check>
-                                <div class="form-group mt-3 mb-0" v-if="campaignForm.sms_on_callback">
-                                    <label for="sms_on_callback_number">SMS On Callback Number<small class="ml-2">Add multiple numbers seperated by commas</small></label>
-                                    <input-tag name="sms_on_callback_number" v-model="campaignForm.sms_on_callback_number" :add-tag-on-blur="true" :validate="'digits'"/>
-                                </div>
-                            </div>
-                        </div>
-                        <h4 class="mt-4 mb-3">Phone Numbers <button class="btn pm-btn pm-btn-purple float-right" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Generate Phone Number</button>
+                    <tab-content title="Phone Numbers" icon="fas fa-phone fa-rotate-90">
+                        <h4 class="mt-4 mb-3"><button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Generate Phone Number</button>
                         </h4>
                         <table class="table table-sm table-bordered">
                             <thead>
@@ -151,6 +105,229 @@
                             </tr>
                             </tbody>
                         </table>
+                    </tab-content>
+                    <tab-content title="Contact" icon="fas fa-cog">
+                        <h4 class="mb-3">Additional Features</h4>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row no-gutters">
+                                    <div class="col-12 col-md-6">
+                                        <div class="feature-input">
+                                            <p-check color="primary" class="p-default" name="adf_crm_export" v-model="campaignForm.adf_crm_export">Enable ADF CRM Export</p-check>
+                                            <form @submit.prevent="addFieldToAdditionalFeature('addCrmExportEmail', campaignForm.adf_crm_export_email)">
+                                                <div class="input-group mt-3 mb-0" v-if="campaignForm.adf_crm_export">
+                                                    <input type="email" class="form-control" required v-model="addCrmExportEmail">
+                                                    <div class="input-group-append">
+                                                        <button class="btn pm-btn pm-btn-purple" type="submit">Add</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.adf_crm_export">
+                                        <div class="feature-table">
+                                            <table class="table table-sm m-0">
+                                                <thead>
+                                                <tr>
+                                                    <th>Emails to Notify</th>
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="(email, index) in campaignForm.adf_crm_export_email">
+                                                    <td>@{{ email }}</td>
+                                                    <td class="text-center align-middle">
+                                                        <a href="javascript:;" @click="removeAdditionalFeature(index, campaignForm.adf_crm_export_email)">
+                                                            <i class="far fa-times-circle"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="campaignForm.adf_crm_export_email.length === 0">
+                                                    <td colspan="2" class="text-center">No items.</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row no-gutters">
+                                    <div class="col-12 col-md-6">
+                                        <div class="feature-input">
+                                            <p-check color="primary" class="p-default" name="lead_alerts" v-model="campaignForm.lead_alerts">Enable Lead Alerts</p-check>
+                                            <form @submit.prevent="addFieldToAdditionalFeature('leadAlertEmail', campaignForm.lead_alert_emails)">
+                                                <div class="input-group mt-3 mb-0" v-if="campaignForm.lead_alerts">
+                                                    <input type="email" class="form-control" required v-model="leadAlertEmail">
+                                                    <div class="input-group-append">
+                                                        <button class="btn pm-btn pm-btn-purple" type="submit">Add</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.lead_alerts">
+                                        <div class="feature-table">
+                                            <table class="table table-sm m-0">
+                                                <thead>
+                                                <tr>
+                                                    <th>Emails to Notify</th>
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="(email, index) in campaignForm.lead_alert_emails">
+                                                    <td>@{{ email }}</td>
+                                                    <td class="text-center align-middle">
+                                                        <a href="javascript:;" @click="removeAdditionalFeature(index, campaignForm.lead_alert_emails)">
+                                                            <i class="far fa-times-circle"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="campaignForm.lead_alert_emails.length === 0">
+                                                    <td colspan="2" class="text-center">No items.</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row no-gutters">
+                                    <div class="col-12 col-md-6">
+                                        <div class="feature-input">
+                                            <p-check color="primary" class="p-default" name="service_dept" v-model="campaignForm.service_dept">Service Dept Notifications</p-check>
+                                            <form @submit.prevent="addFieldToAdditionalFeature('serviceDeptEmail', campaignForm.service_dept_email)">
+                                                <div class="input-group mt-3 mb-0" v-if="campaignForm.service_dept">
+                                                    <input type="email" class="form-control" required v-model="serviceDeptEmail">
+                                                    <div class="input-group-append">
+                                                        <button class="btn pm-btn pm-btn-purple" type="submit">Add</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.service_dept">
+                                        <div class="feature-table">
+                                            <table class="table table-sm m-0">
+                                                <thead>
+                                                <tr>
+                                                    <th>Emails to Notify</th>
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="(email, index) in campaignForm.service_dept_email">
+                                                    <td>@{{ email }}</td>
+                                                    <td class="text-center align-middle">
+                                                        <a href="javascript:;" @click="removeAdditionalFeature(index, campaignForm.service_dept_email)">
+                                                            <i class="far fa-times-circle"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="campaignForm.service_dept_email.length === 0">
+                                                    <td colspan="2" class="text-center">No items.</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row no-gutters">
+                                    <div class="col-12 col-md-6">
+                                        <div class="feature-input">
+                                            <p-check color="primary" class="p-default" name="client_passthrough" v-model="campaignForm.client_passthrough">Enable Client Passthrough</p-check>
+                                            <form @submit.prevent="addFieldToAdditionalFeature('clientPassThroughEmail', campaignForm.client_passthrough_email)">
+                                                <div class="input-group mt-3 mb-0" v-if="campaignForm.client_passthrough">
+                                                    <input type="email" class="form-control" required v-model="clientPassThroughEmail">
+                                                    <div class="input-group-append">
+                                                        <button class="btn pm-btn pm-btn-purple" type="submit">Add</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.client_passthrough">
+                                        <div class="feature-table">
+                                            <table class="table table-sm m-0">
+                                                <thead>
+                                                <tr>
+                                                    <th>Emails to Notify</th>
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="(email, index) in campaignForm.client_passthrough_email">
+                                                    <td>@{{ email }}</td>
+                                                    <td class="text-center align-middle">
+                                                        <a href="javascript:;" @click="removeAdditionalFeature(index, campaignForm.client_passthrough_email)">
+                                                            <i class="far fa-times-circle"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="campaignForm.client_passthrough_email.length === 0">
+                                                    <td colspan="2" class="text-center">No items.</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row no-gutters">
+                                    <div class="col-12 col-md-6">
+                                        <div class="feature-input">
+                                            <p-check color="primary" class="p-default" name="sms_on_callback" v-model="campaignForm.sms_on_callback">SMS On Callback</p-check>
+                                            <form @submit.prevent="addFieldToAdditionalFeature('smsOnCallbackNumber', campaignForm.sms_on_callback_number)">
+                                                <div class="input-group mt-3 mb-0" v-if="campaignForm.sms_on_callback">
+                                                    <input type="tel" class="form-control" required v-model="smsOnCallbackNumber">
+                                                    <div class="input-group-append">
+                                                        <button class="btn pm-btn pm-btn-purple" type="submit">Add</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.sms_on_callback">
+                                        <div class="feature-table">
+                                            <table class="table table-sm m-0">
+                                                <thead>
+                                                <tr>
+                                                    <th>Phones to Notify</th>
+                                                    <th></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr v-for="(phone, index) in campaignForm.sms_on_callback_number">
+                                                    <td>@{{ phone }}</td>
+                                                    <td class="text-center align-middle">
+                                                        <a href="javascript:;" @click="removeAdditionalFeature(index, campaignForm.sms_on_callback_number)">
+                                                            <i class="far fa-times-circle"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="campaignForm.sms_on_callback_number.length === 0">
+                                                    <td colspan="2" class="text-center">No items.</td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </tab-content>
                     <template slot="finish">
                         <button type="button" class="wizard-btn" :disabled="loading">

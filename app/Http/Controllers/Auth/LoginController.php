@@ -54,7 +54,7 @@ class LoginController extends Controller
     {
         if (auth()->attempt($request->only('email', 'password'))) {
             if (auth()->user()->isAdmin()) {
-                return response()->json(['redirect_url' => route('campaign.index')]);
+                return response()->json(['redirect_url' => route('campaigns.index')]);
 //                return redirect()->route('campaign.index');
             } else if (auth()->user()->hasActiveCompanies()) {
                 return response()->json(['redirect_url' => route('dashboard')]);

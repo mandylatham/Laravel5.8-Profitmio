@@ -1,5 +1,6 @@
 @import './../common/index';
 @import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/input-group";
 @import './../components/date-pick';
 @import './../components/spinner-icon';
 @import "~vue-form-wizard/dist/vue-form-wizard.min.css";
@@ -7,6 +8,30 @@
 #campaign-create {
     padding-top: 2rem;
     padding-bottom: 2rem;
+
+    .card-body {
+        padding: 0;
+    }
+
+    .feature-input {
+        padding: 1.25rem;
+    }
+
+    .feature-table-col {
+        border-left: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .feature-table {
+        padding: 1.25rem;
+        color: $brand-purple;
+        .table th {
+            border-bottom: none;
+        }
+        a {
+            color: $brand-purple;
+            display: inline-block;
+        }
+    }
 
     .close-modal-header {
         cursor: pointer;

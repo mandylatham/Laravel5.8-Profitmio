@@ -248,6 +248,6 @@ class CampaignController extends Controller
     {
         $campaign->delete();
 
-        return redirect()->route('campaign.index');
+        return redirect()->route('campaigns.index');
     }
 }

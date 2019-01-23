@@ -16,9 +16,11 @@ window['app'] = new Vue({
         InputTag
     },
     data: {
+        addCrmExportEmail: '',
         adfCrmExportEmail: '',
         agencySelected: null,
         availablePhoneNumbers: [],
+        clientPassThroughEmail: '',
         dealershipSelected: null,
         agencies: [],
         datePickInputClasses: {
@@ -46,6 +48,7 @@ window['app'] = new Vue({
             start: null,
             status: 'Active',
         }),
+        leadAlertEmail: '',
         loadingPhoneModal: false,
         loadingPurchaseNumber: false,
         phoneNumbers: [],
@@ -54,6 +57,7 @@ window['app'] = new Vue({
             forward: '',
             call_source: ''
         }),
+        serviceDeptEmail: '',
         searchPhoneNumberForm: new Form({
             country: 'US',
             postal_code: '',
@@ -61,6 +65,7 @@ window['app'] = new Vue({
             area_code: '',
         }),
         showAvailablePhoneNumbers: false,
+        smsOnCallbackNumber: '',
         validation: [{
             classes: 'asdf',
             rule: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
@@ -71,6 +76,11 @@ window['app'] = new Vue({
         this.dealerships = window.dealerships;
     },
     methods: {
+        addFieldToAdditionalFeature: function (field, list) {
+            if (!this[field]) return;
+            list.push(this[field]);
+            this[field] = null;
+        },
         clearError: function (form, field) {
             form.errors.clear(field);
         },
@@ -98,6 +108,11 @@ window['app'] = new Vue({
                     this.loadingPurchaseNumber = false;
                     this.$toastr.error('Unable to process your request.');
                 })
+        },
+        removeAdditionalFeature: function (index, list) {
+          if (list[index]) {
+              list.splice(index, 1);
+          }
         },
         saveCampaign: function () {
             this.loading = true;
@@ -159,7 +174,7 @@ window['app'] = new Vue({
         validateBasicTab: function () {
             let valid = true;
             this.campaignForm.errors.clear();
-            ['name', 'order', 'status', 'start', 'end', 'expires'].forEach(field => {
+            ['name', 'order', 'status', 'start', 'end'].forEach(field => {
                 if (!this.campaignForm[field]) {
                     this.campaignForm.errors.add(field, 'This field is required.');
                     valid = false;
