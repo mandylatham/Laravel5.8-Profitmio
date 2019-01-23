@@ -32,9 +32,6 @@
             </div>
         </div>
         <div class="row no-gutters company-component inactive" v-for="(company, index) in companies" :key="company.id">
-            <div class="alert alert-default" v-if="createForm.errors">
-                <p class="text-danger">There are errors!</p>
-            </div>
             <div class="col-12 col-md-5 company-header">
                 <div class="company-header--title">
                     <p>Company @{{ company.id }}</p>

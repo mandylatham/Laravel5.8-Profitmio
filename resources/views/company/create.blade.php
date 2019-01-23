@@ -18,9 +18,9 @@
     <div class="container" id="company-create">
         <div class="row mb-3">
             <div class="col-6">
-                <button type="button" role="button" class="btn pm-btn pm-outline-purple">
+                <a href="{{ route('company.index') }}" type="button" role="button" class="btn pm-btn pm-outline-purple">
                     <i class="fa fa-chevron-left"></i>
-                </button>
+                </a>
             </div>
         </div>
         <div class="row">
