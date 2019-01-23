@@ -21,7 +21,7 @@
 @section('main-content')
     <div class="container" id="campaign-create" v-cloak>
         <div class="row">
-            <div class="col-12 col-sm-10 offset-sm-1 col-md-8 offset-md-2 wizard-container">
+            <div class="col-12 col-lg-10 offset-lg-1 col-xl-8 offset-xl-2 wizard-container">
                 <form-wizard :title="''" :subtitle="''" :step-size="'sm'" :color="'#572E8D'" @on-complete="saveCampaign">
                     <tab-content title="Basics" icon="fas fa-list-ul" :before-change="validateBasicTab">
                         <div class="form-group">
