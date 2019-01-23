@@ -48,9 +48,11 @@ export default class Form {
     }
 
     submit(method, url) {
-        return new Promise((resolve, reject) =>  {
-            if (method === 'post') {
-                axios[method](url, this.data())
+        return new Promise((resolve, reject) => {
+            if (method === 'get') {
+                axios[method](url, {
+                    params: this.data()
+                })
                     .then(response => {
                         this.onSuccess(response.data);
 
@@ -62,12 +64,10 @@ export default class Form {
                         reject(error.response.data);
                     });
             } else {
-                axios[method](url, {
-                    params: this.data()
-                })
+
+                axios[method](url, this.data())
                     .then(response => {
                         this.onSuccess(response.data);
-
                         resolve(response.data);
                     })
                     .catch(error => {
