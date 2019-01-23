@@ -46,6 +46,9 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/campaigns/stats.scss', 'public/css/campaigns-stats.css')
     .js('resources/js/pages/campaigns/responses.js', 'public/js/campaigns-responses.js')
     .sass('resources/sass/campaigns/responses.scss', 'public/css/campaigns-responses.css')
+    // Recipients
+    .js('resources/js/pages/campaigns/recipients/index.js', 'public/js/recipients-index.js')
+    .sass('resources/sass/campaigns/recipients/index.scss', 'public/css/recipients-index.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');

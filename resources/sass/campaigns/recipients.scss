@@ -3,6 +3,89 @@
 
 #campaign-recipients {
     padding: 2rem 1rem;
+    .recipients-containe {
+        position: relative;
+    }
+    .recipient-name {
+        &--container {
+            display: flex;
+            width: 100%;
+            @include media-breakpoint-up(sm) {
+                width: auto;
+            }
+        }
+        &--data {
+            flex-grow: 5;
+            small {
+                display: block;
+                font-weight: 300;
+            }
+        }
+        &--icon {
+            padding: 0 20px 0 10px;
+            flex-grow: 1;
+            font-size: 2.5rem;
+        }
+        &--id {
+            margin-top: 12px;
+        }
+        svg {
+            height: 42px;
+            width: 35px;
+            line-height: 1em;
+        }
+        @include media-breakpoint-up(lg) {
+            width: 30%;
+        }
+    }
+    .recipient-stats{
+        &1, &2 {
+            text-align: center;
+            @include media-breakpoint-up(lg) {
+                width: 25%;
+            }
+        }
+        &--container {
+            display: inline-flex;
+            flex-flow: column;
+            text-align: left;
+        }
+        &--stat {
+            margin-bottom: 5px;
+            [class^="pm-font-"], [class*=" pm-font-"] {
+                width: 40px;
+
+                font-size: 1.2rem;
+            }
+            .pm-font-companies-icon {
+                font-size: 1.1rem;
+            }
+            span {
+                display: inline-block;
+                width: 80px;
+                margin-right: 10px;
+            }
+        }
+    }
+    .recipient-options {
+        flex-flow: column;
+        text-align: center;
+        .btn-action {
+            color: $brand-blue;
+            border: 1px solid $brand-blue;
+            border-radius: 0;
+        }
+        .options-group {
+            margin-top: 10px;
+            .btn {
+                padding: 8px;
+                margin-right: 20px;
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
 }
 
 //@import "../../../../sass/variables";

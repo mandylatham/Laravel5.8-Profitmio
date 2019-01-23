@@ -24,6 +24,11 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 
 class RecipientController extends Controller
 {
+    public function forUserDisplay()
+    {
+        return [];
+    }
+
     public function searchForDeployment(Campaign $campaign, Request $request)
     {
         $contact = $request->has('contact') ? $request->contact : false;

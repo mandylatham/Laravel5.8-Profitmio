@@ -22,7 +22,7 @@
                 </a>
             </li>
             <li>
-                <a href="">
+                <a class="{{ \Route::current()->getName() === 'campaigns.recipients.index' ? 'active' : '' }}" href="{{ route('campaigns.recipients.index', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-recipients-icon"></i>
                     <span>RECIPIENTS</span>
                 </a>
