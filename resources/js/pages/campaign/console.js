@@ -73,7 +73,12 @@ window['app'] = new Vue({
         showPanel: function (recipient) {
             this.currentRecipientId = recipient.id;
 
-            // TODO: close sidebar on showPanel
+            // Close sidebar when opening panel on smaller screens
+            let app = document.getElementById('app');
+            if (window.innerWidth <= 1200 && app.classList.contains('side-menu-open')) {
+                this.toggleSidebar();
+            }
+
             const panel = this.$showPanel({
                 component: 'communication-side-panel',
                 cssClass: 'communication-side-panel',
