@@ -30,6 +30,7 @@
     "vue-feather-icons": "^4.7.1",
     "vue-form-wizard": "^0.8.4",
     "vue-good-table": "^2.16.0",
+    "vue-input-tag": "^2.0.1",
     "vue-select": "^2.5.1",
     "vue-sweetalert2": "^1.6.3",
     "vue-toastr-2": "^0.0.10",

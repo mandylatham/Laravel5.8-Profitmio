@@ -1,7 +1,9 @@
 @import './../common/index';
-@import './../components/pm-responsive-table';
-@import './../components/pm-pagination';
-@import './../components/companies';
+@import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/input-group";
+@import './../components/date-pick';
+@import './../components/spinner-icon';
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
 
 #company-create {
   padding: 2rem 1rem;
@@ -21,6 +23,13 @@
     font-size: 3rem;
     color: #fff;
   }
+  .wizard-container {
+        background-color: #fff;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        border-radius: 5px;
+        border: 1px solid #fafafa;
+    }
   .loader-spinner {
       position: absolute;
       top: 0;
