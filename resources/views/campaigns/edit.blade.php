@@ -13,6 +13,7 @@
         window.dealershipSelected = @json($campaign->dealership);
         window.saveCampaignUrl = @json(route('campaigns.update', ['campaign' => $campaign->id]));
         window.campaignStatsUrl = @json(route('campaigns.stats', ['campaign' => $campaign->id]));
+        console.log(window.campaign);
     </script>
     <script src="{{ asset('js/campaigns-edit.js') }}"></script>
 @endsection
