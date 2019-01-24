@@ -1,15 +1,15 @@
 <template>
     <div class="pm-pagination">
-        <a class="paginator-left" href="javascript:;" @click="goBack">
+        <button class="paginator-left" type="button" @click="goBack" :disabled="totalPages <= 1 || pagination.page <= 1">
             <chevron-left-icon></chevron-left-icon>
-        </a>
+        </button>
         <div class="paginator-input">
             <input tyspe="text" v-model="pagination.page" class="form-control" @keyup.enter="changePage">
             <span>of {{ totalPages }}</span>
         </div>
-        <a class="paginator-right" href="javascript:;" @click="goUp">
+        <button class="paginator-right" type="button" @click="goUp" :disabled="totalPages <= 1 || pagination.page >= totalPages">
             <chevron-right-icon></chevron-right-icon>
-        </a>
+        </button>
     </div>
 </template>
 <script>
@@ -32,7 +32,7 @@
         },
         computed: {
             totalPages: function () {
-                return Math.ceil(this.pagination.total / this.pagination.per_page);
+                return this.pagination.total && this.pagination.per_page ? Math.ceil(this.pagination.total / this.pagination.per_page) : 0;
             }
         },
         methods: {

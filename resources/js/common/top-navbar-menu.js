@@ -6,5 +6,17 @@ Vue.use(Dropdown);
 Vue.use(Navbar);
 
 new Vue({
-    el: '#top-navbar-menu'
+    el: '#top-navbar-menu',
+    mounted: function () {
+        this.loggedUser = window.loggedUser;
+    },
+    data: {
+        loggedUser: {}
+    },
+    methods: {
+        signout(url) {
+            localStorage.clear();
+            window.location.replace(url);
+        }
+    }
 });

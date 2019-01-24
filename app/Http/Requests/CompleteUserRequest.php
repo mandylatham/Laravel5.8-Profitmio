@@ -32,7 +32,6 @@ class CompleteUserRequest extends FormRequest
             return [
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'username' => 'required',
                 'timezone' => 'required',
                 'password' => 'required|string|min:6|confirmed',
             ];

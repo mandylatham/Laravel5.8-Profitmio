@@ -1,5 +1,6 @@
 <?php
 
+Route::impersonate();
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Broadcast;
@@ -92,6 +93,9 @@ Route::get('/user-dashboard', function () {
 Route::get('/user-view', function () {
     return view('user.view');
 });
+Route::get('/new-response-console', function () {
+    return view('campaign.console');
+});
 
 // TODO: remove me when original route is done
 Route::get('/new-response-console', function () {
@@ -162,22 +166,25 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{user}/deactivate', 'UserController@deactivate')->name('user.deactivate')->middleware(['check.active.company', 'can:edit-user,user']);
         Route::post('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
         Route::post('{user}', 'UserController@update')->name('user.update')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::post('{user}/avatar', 'UserController@updateAvatar')->name('user.update-avatar')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
         Route::post('{user}/company-data', 'UserController@updateCompanyData')->name('user.update-company-data')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
-        Route::delete('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
+        Route::delete('/{user}', 'UserController@delete')->name('user.delete')->middleware(['check.active.company', 'can:delete-user,App\Models\User']);
     });
     //endregion
 
     //region TEMPLATES
+    Route::get('/templates', 'TemplateController@index')->name('template.index')->middleware('can:view-templates');
+    Route::get('/templates/for-user-display', 'TemplateController@getForUserDisplay')->name('template.for-user-display')->middleware('can:view-templates');
     Route::group(['prefix' => 'template'], function () {
         Route::get('', 'TemplateController@index')->name('template.index')->middleware('can:view-templates');
-        Route::get('/new', 'TemplateController@newForm')->name('template.create')->middleware('can:change-templates');
-        Route::post('', 'TemplateController@create')->name('template.store')->middleware('can:change-templates');
+        Route::get('/create-form', 'TemplateController@createForm')->name('template.create-form')->middleware('can:change-templates');
+        Route::post('/create', 'TemplateController@create')->name('template.create')->middleware('can:change-templates');
         Route::group(['prefix' => '{template}', 'middleware' => 'can:view-templates'], function () {
             Route::get('/', 'TemplateController@show')->name('template.show');
             Route::post('/json', 'TemplateController@showJson')->name('template.show-json');
             Route::get('/edit', 'TemplateController@editForm')->name('template.edit')->middleware('can:change-templates');
             Route::post('/update', 'TemplateController@update')->name('template.update')->middleware('can:change-templates');
-            Route::get('/delete', 'TemplateController@delete')->name('template.delete')->middleware('can:change-templates');
+            Route::delete('/delete', 'TemplateController@delete')->name('template.delete')->middleware('can:change-templates');
         });
     });
     //endregion
@@ -309,7 +316,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'companies'], function () {
         Route::get('', 'CompanyController@index')->middleware('can:create')->name('company.index');
         Route::get('for-dropdown', 'CompanyController@getForDropdown')->name('company.for-dropdown');
-        Route::get('for-user-display', 'CompanyController@getForUserDisplay')->middleware('can:create')->name('company.for-user-display');
+        Route::get('for-user-display', 'CompanyController@getForUserDisplay')->name('company.for-user-display');
         Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
         Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');
         Route::post('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');

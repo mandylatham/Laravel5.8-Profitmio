@@ -49,19 +49,33 @@ export default class Form {
 
     submit(method, url) {
         return new Promise((resolve, reject) =>  {
-            axios[method](url, {
-                params: this.data()
-            })
-                .then(response => {
-                    this.onSuccess(response.data);
+            if (method === 'post') {
+                axios[method](url, this.data())
+                    .then(response => {
+                        this.onSuccess(response.data);
 
-                    resolve(response.data);
+                        resolve(response.data);
+                    })
+                    .catch(error => {
+                        this.onFail(error.response.data);
+
+                        reject(error.response.data);
+                    });
+            } else {
+                axios[method](url, {
+                    params: this.data()
                 })
-                .catch(error => {
-                    this.onFail(error.response.data);
+                    .then(response => {
+                        this.onSuccess(response.data);
 
-                    reject(error.response.data);
-                });
+                        resolve(response.data);
+                    })
+                    .catch(error => {
+                        this.onFail(error.response.data);
+
+                        reject(error.response.data);
+                    });
+            }
         });
     }
 

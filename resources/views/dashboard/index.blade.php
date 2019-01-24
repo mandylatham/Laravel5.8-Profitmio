@@ -62,7 +62,7 @@
                 <div class="loader-spinner" v-if="isLoading">
                     <spinner-icon></spinner-icon>
                 </div>
-                <div class="no-items-row" v-if="countActiveCampaigns.length === 0 && countInactiveCampaigns === 0">
+                <div class="no-items-row" v-if="countActiveCampaigns === 0 && countInactiveCampaigns === 0">
                     No Items
                 </div>
                 <div class="campaign-group-label" v-if="countActiveCampaigns > 0">ACTIVE</div>
