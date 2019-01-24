@@ -819,7 +819,7 @@ class RecipientController extends Controller
     {
         Recipient::where('campaign_id', $campaign->id)->delete();
 
-        return redirect()->route('campaign.recipient.index', ['campaign' => $campaign->id]);
+        return redirect()->route('campaigns.recipients.index', ['campaign' => $campaign->id]);
     }
 
     private function abortBadFields()

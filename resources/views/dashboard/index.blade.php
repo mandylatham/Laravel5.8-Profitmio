@@ -11,7 +11,7 @@
         window.appointmentsUrl = "{{ route('appointment.for-calendar-display') }}";
         window.campaignViewUrl = "{{ route('campaign.view', ['campaign' => ':campaignId']) }}";
         window.campaignDropIndex = "{{ route('campaign.drop.index', ['campaign' => ':campaignId']) }}";
-        window.campaignRecipientIndex = "{{ route('campaign.recipient.index', ['campaign' => ':campaignId']) }}";
+        window.campaignRecipientIndex = "{{ route('campaigns.recipients.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.dropsUrl = "{{ route('drop.for-calendar-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
