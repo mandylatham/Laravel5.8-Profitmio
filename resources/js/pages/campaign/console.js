@@ -3,11 +3,11 @@ import './../../common';
 import Form from './../../common/form';
 import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
-// TODO: how to include VueToastr2?
-// import 'vue-toastr-2/dist/vue-toastr-2.min.css'
-// import VueToastr2 from 'vue-toastr-2';
-// window.toastr = require('toastr');
-// Vue.use(VueToastr2);
+import 'vue-toastr-2/dist/vue-toastr-2.min.css'
+import VueToastr2 from 'vue-toastr-2';
+
+window.toastr = require('toastr');
+Vue.use(VueToastr2);
 
 Vue.use(VueSlideoutPanel);
 
@@ -61,7 +61,8 @@ window['app'] = new Vue({
                     this.searchForm.per_page = response.recipients.per_page;
                     this.total = response.recipients.total;
 
-                    // this.updateRecipients(this.recipients);
+                    // TODO: check this out
+                    // this.updateRecipients();
 
                     this.loading = false;
                 })
@@ -71,6 +72,8 @@ window['app'] = new Vue({
         },
         showPanel: function (recipient) {
             this.currentRecipientId = recipient.id;
+
+            // TODO: close sidebar on showPanel
             const panel = this.$showPanel({
                 component: 'communication-side-panel',
                 cssClass: 'communication-side-panel',
@@ -85,6 +88,17 @@ window['app'] = new Vue({
         clearSearch: function () {
             this.searchForm.search = '';
             this.fetchRecipients();
+        },
+        toggleSidebar: function () {
+            let app = document.getElementById('app');
+
+            if (app.classList.contains('side-menu-open')) {
+                app.classList.add('navbar-side-menu-fix');
+                app.classList.remove('side-menu-open');
+                app.classList.remove('navbar-side-menu-fix');
+            } else {
+                app.classList.add('side-menu-open');
+            }
         },
         pusher: function (channelName, eventName, callback) {
             // TODO: remove me when done

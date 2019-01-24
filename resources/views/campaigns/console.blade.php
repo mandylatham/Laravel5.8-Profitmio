@@ -111,6 +111,9 @@
     <div id="console" class="container-fluid list-campaign-container">
         <div class="row align-items-end no-gutters mb-4 ">
             <div class="col-12 col-sm-5 col-lg-3">
+                <a href="javascript:;" class="btn pm-btn pm-btn-blue toggle-sidebar" @click="toggleSidebar"><i
+                            class="fa fa-bars"></i></a>
+
                 <a href="{{ route('campaign.index') }}" class="btn pm-btn pm-btn-blue">
                     <i class="fas fa-chevron-left mr-2"></i>Home</a>
             </div>

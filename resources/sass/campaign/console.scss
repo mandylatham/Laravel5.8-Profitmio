@@ -61,6 +61,14 @@
 #console {
   padding: 2rem 1rem;
 
+  .toggle-sidebar {
+    display: inline-flex;
+
+    @include media-breakpoint-up(xl) {
+      display: none;
+    }
+  }
+
   #recipients-list {
 
     .row {
@@ -164,5 +172,24 @@
     display: flex;
     align-items: center;
     justify-content: center;
+  }
+}
+
+@include media-breakpoint-up(sm) {
+  .main-content-container {
+    .main-content {
+      .sidebar-toggler {
+        visibility: hidden;
+        display: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 1200px) {
+  #sidebar {
+    .sidebar-wrapper {
+      margin-top: 20px;
+    }
   }
 }

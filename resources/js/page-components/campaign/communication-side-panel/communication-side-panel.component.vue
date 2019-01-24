@@ -294,6 +294,7 @@
         methods: {
             closePanel() {
                 this.$emit('closePanel', {});
+                // TODO: open sidebar on closePanel
             },
             resetVars() {
                 this.recipient = [];
@@ -322,7 +323,7 @@
                         vm.notes = response.data.recipient.notes;
 
                         // TODO: Check this out
-                        // this.updateResponses(vm.recipient);
+                        vm.updateResponses(vm.recipient);
 
                         vm.setLoading(false);
                     })
@@ -332,7 +333,10 @@
                     });
             },
             setLoading: function (bool) {
+                // Local loading variable
                 this.loading = bool;
+                // Main vue instance loading variable
+                this.$set(window['app'], 'loading', bool);
             },
             addNotes: function (recipientId) {
                 const vm = this;
@@ -342,7 +346,7 @@
                         notes: vm.notes
                     })
                     .then(function (response) {
-                        this.$toastr.success('Note added.');
+                        vm.$toastr.success('Note added.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -351,12 +355,13 @@
                     });
             },
             appointmentCalledBackToggle: function (event, appointmentId) {
+                const vm = this;
                 axios.post('/appointment/' + appointmentId + '/update-called-status',
                     {
                         called_back: event.target.checked
                     })
                     .then(function (response) {
-                        this.$toastr.success('Called status updated.');
+                        vm.$toastr.success('Called status updated.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -372,7 +377,7 @@
                         appointment_time: vm.appointmentSelectedTime
                     })
                     .then(function (response) {
-                        this.$toastr.success('Appointment added.');
+                        vm.$toastr.success('Appointment added.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -380,12 +385,13 @@
                     });
             },
             messageUpdateReadStatus: function (event, textId) {
+                const vm = this;
                 axios.post('/response/' + textId + '/update-read-status',
                     {
                         read: event.target.checked
                     })
                     .then(function (response) {
-                        this.$toastr.success('Read status updated.');
+                        vm.$toastr.success('Read status updated.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -400,7 +406,7 @@
                         message: vm.textMessage
                     })
                     .then(function (response) {
-                        this.$toastr.success('Text sent.');
+                        vm.$toastr.success('Text sent.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -415,7 +421,7 @@
                         message: vm.emailMessage
                     })
                     .then(function (response) {
-                        this.$toastr.success('Email sent.');
+                        vm.$toastr.success('Email sent.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -430,7 +436,7 @@
                         label: vm.selectedLabel
                     })
                     .then(function (response) {
-                        this.$toastr.success('Label added.');
+                        vm.$toastr.success('Label added.');
                     })
                     .catch(function (response) {
                         // TODO: error
@@ -450,7 +456,7 @@
                         label: selectedLabel
                     })
                     .then(function (response) {
-                        this.$toastr.success('Label removed.');
+                        vm.$toastr.success('Label removed.');
                     })
                     .catch(function (response) {
                         // TODO: error
