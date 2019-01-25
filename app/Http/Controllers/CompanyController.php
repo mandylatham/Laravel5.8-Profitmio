@@ -19,6 +19,11 @@ use Illuminate\Filesystem\FilesystemManager;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
+use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
+use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
+use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
+use Mockery\ReceivedMethodCalls;
 
 class CompanyController extends Controller
 {
@@ -171,8 +176,7 @@ class CompanyController extends Controller
             'twitter' => $request->input('twitter'),
         ]);
         if ($request->hasFile('image')) {
-            $company->image_url = $request->file('image')->store('company-image', 's3');
-            $this->storage->disk('s3')->setVisibility($company->image_url, 'public');
+            $company->image_url = $request->file('image')->store('company-image', 'public');
         }
         $company->save();
         return redirect()->route('company.campaign.index', ['company' => $company->id]);
@@ -207,6 +211,45 @@ class CompanyController extends Controller
         }
         $company->save();
         return response()->redirectToRoute('company.campaign.index', ['company' => $company->id]);
+    }
+
+    public function uploadImage(FileReceiver $receiver)
+    {
+        // check if the upload is success, throw exception or return response you need
+        if ($receiver->isUploaded() === false) {
+            throw new UploadMissingFileException();
+        }
+        // receive the file
+        $save = $receiver->receive();
+
+        // check if the upload has finished (in chunk mode it will send smaller files)
+        if ($save->isFinished()) {
+        // save the file and return any response you need
+            return $this->saveFile($save->getFile());
+        }
+
+        // we are in chunk mode, lets send the current progress
+        /** @var AbstractHandler $handler */
+        $handler = $save->handler();
+        return response()->json([
+            "done" => $handler->getPercentageDone()
+        ]);
+    }
+
+    protected function saveFile(UploadedFile $file)
+    {
+        $fileName = $this->createFilename($file);
+        // Group files by mime type
+        $mime = str_replace('/', '-', $file->getMimeType());
+        // Group files by the date (week
+        $dateFolder = date("Y-m-W");
+        // Build the file path
+        // $filePath = "upload/{$mime}/{$dateFolder}/";
+        $filePath = "temporary_uploads/";
+        $finalPath = storage_path("app/".$filePath);
+
+        // move the file name
+        $file->move($finalPath, $fileName);
     }
 
     //region User Resource

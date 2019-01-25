@@ -10,6 +10,7 @@
     <script>
         window.createUrl = "{{ route('company.store') }}";
         window.indexUrl = "{{ route('company.index') }}";
+        window.imageUploadUrl = "{{ route('company.upload-image') }}";
     </script>
     <script src="{{ asset('js/company-create.js') }}"></script>
 @endsection
@@ -30,9 +31,9 @@
                 <form-wizard :title="''" :subtitle="''" :step-size="'sm'" :color="'#572E8D'" @on-complete="saveCompany">
                     <tab-content title="Description" icon="fas fa-list-ul" :before-change="validateBasicTab">
                         <div class="form-group">
-                            <div class="company-image">
+                            <label class="well well-sm">
                                 <input type="file" name="image">
-                            </div>
+                            </label>
                         </div>
                         <div class="form-group">
                             <label for="name" class="form-label">Company Name</label>

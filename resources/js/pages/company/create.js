@@ -2,8 +2,6 @@ import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
 import {generateRoute} from './../../common/helpers'
-// Error Display
-import InputTag from 'vue-input-tag'
 // Wizard
 import VueFormWizard from 'vue-form-wizard';
 Vue.use(VueFormWizard);
@@ -18,7 +16,6 @@ window['app'] = new Vue({
     el: '#app',
     components: {
         'input-errors': require('./../../components/input-errors/input-errors'),
-        InputTag
     },
     data: {
         companyIndex: '',
@@ -36,6 +33,7 @@ window['app'] = new Vue({
             url: '',
             facebook: '',
             twitter: '',
+            image: '',
         }),
     },
     mounted() {
