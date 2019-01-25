@@ -55,8 +55,7 @@ class Recipient extends Model
         'vehicle',
         'location',
         'labels_list',
-        'labels_list_text',
-        'labels_list_html',
+        'labels_list_text'
     ];
 
     public static $mappable = [

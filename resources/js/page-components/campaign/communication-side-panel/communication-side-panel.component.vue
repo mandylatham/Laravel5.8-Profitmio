@@ -46,9 +46,9 @@
 
                     </div>
 
-                    <div class="col-12" v-if="this.recipient.labels_list">
+                    <div class="col-12" v-if="this.labels">
                         <ul class="labels">
-                            <li :class="index" v-for="(label, index) in this.recipient.labels_list">{{ label }}<i
+                            <li :class="index" v-for="(label, index) in this.labels">{{ label }}<i
                                     class="fas fa-times" @click="removeLabel(index)"></i></li>
                         </ul>
                     </div>
@@ -281,10 +281,11 @@
                 appointmentSelectedTime: '',
                 textMessage: '',
                 emailMessage: '',
-                selectedLabel: ''
+                selectedLabel: '',
+                labels: []
             }
         },
-        props: ['campaign', 'recipientId', 'currentUser'],
+        props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
         computed: {
             //
         },
@@ -293,8 +294,8 @@
         },
         methods: {
             closePanel() {
+                window['app'].pusherUnbindEvent('private-campaign.' + this.campaign.id, 'response.' + this.recipientId + '.updated');
                 this.$emit('closePanel', {});
-                // TODO: open sidebar on closePanel
             },
             resetVars() {
                 this.recipient = [];
@@ -309,6 +310,7 @@
                 this.textMessage = '';
                 this.emailMessage = '';
                 this.selectedLabel = '';
+                this.labels = [];
             },
             getResponses: function (campaignId, recipientId) {
                 const vm = this;
@@ -321,15 +323,14 @@
                         vm.appointments = response.data.appointments;
                         vm.rest = response.data.rest;
                         vm.notes = response.data.recipient.notes;
+                        vm.labels = response.data.recipient.labels_list;
 
-                        // TODO: Check this out
                         vm.updateResponses(vm.recipient);
 
                         vm.setLoading(false);
                     })
                     .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                        vm.$toastr.error("Couldn't fetch responses.");
                     });
             },
             setLoading: function (bool) {
@@ -465,15 +466,58 @@
             },
             updateResponses: function (recipient) {
                 const vm = this;
+
                 // TODO: check this out
                 if (recipient) {
 
                     window['app'].pusher('private-campaign.' + vm.campaign.id, 'response.' + recipient.id + '.updated', function (data) {
+                        console.log('updateResponses:');
                         console.log(data);
+                        // console.log(data.recipient.labels_list);
+                        // console.log(data.labels);
 
-                        vm.appointments = data.appointments;
-                        vm.threads = data.threads;
-                        vm.recipient = data.recipient;
+                        if (data) {
+                            axios.get('/recipient/' + vm.recipientId + '/get-responses-by-recipient',
+                                {
+                                    params: {
+                                        list: data
+                                    }
+                                })
+                                .then(function (response) {
+                                    console.log(response.data);
+                                    // TODO: success message
+                                    // vm.$toastr.success('Label removed.');
+
+                                    if (response.data.appointments) {
+                                        vm.appointments = response.data.appointments;
+                                    }
+                                    if (response.data.threads) {
+                                        vm.threads = response.data.threads;
+                                    }
+                                    if (response.data.recipient) {
+                                        vm.recipient = response.data.recipient;
+                                    }
+                                    if (response.data.recipient.labels_list) {
+                                        // vm.labels = response.data.labels;
+                                        vm.labels = response.data.recipient.labels_list;
+                                    }
+                                    if (response.data.recipient.labels_list) {
+                                        // vm.labels = response.data.labels;
+                                        vm.labels = response.data.recipient.labels_list;
+                                    }
+                                    if (response.data.recipient.labels_list_text) {
+                                        this.$set(window['app'].recipients, 'recipients', bool);
+
+                                        example1.items = example1.items.filter(function (item) {
+                                            return item.message.match(/Foo/)
+                                        });
+                                    }
+                                })
+                                .catch(function (response) {
+                                    // TODO: error
+                                    console.log(response);
+                                });
+                        }
                     });
                 }
             },

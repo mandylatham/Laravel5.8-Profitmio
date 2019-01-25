@@ -6,6 +6,7 @@ use App\Classes\MailgunService;
 use App\Http\Controllers\ResponseConsoleController;
 use App\Models\Campaign;
 use App\Models\Recipient;
+use App\Services\PusherBroadcastingService;
 use Illuminate\Http\Request;
 use Pusher\Pusher;
 
@@ -48,6 +49,8 @@ class RecipientObserver
 
         $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'counts.updated', $labelData);
         $pusher->trigger("private-campaign.{$recipient->campaign_id}", 'recipients.updated', $recipientsData);
+
+        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
     }
 
     /**

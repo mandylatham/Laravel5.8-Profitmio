@@ -11,6 +11,7 @@ use App\Models\Campaign;
 use App\Models\Recipient;
 use App\Models\RecipientList;
 use App\Models\Response;
+use App\Services\PusherBroadcastingService;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +23,6 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
-use Pusher\Pusher;
 
 class RecipientController extends Controller
 {
@@ -136,7 +136,7 @@ class RecipientController extends Controller
 
         // TODO: fix me
         // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-        $this->broadcastCampaignResponseUpdated($recipient);
+        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
 
         return $recipient->toJson();
     }
@@ -166,7 +166,7 @@ class RecipientController extends Controller
             $recipient->save();
             // TODO: fix me
             // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-            $this->broadcastCampaignResponseUpdated($recipient);
+            PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
 
             $class = 'badge-danger';
             if (in_array($request->label, ['interested', 'appointment', 'service', 'callback'])) {
@@ -203,9 +203,9 @@ class RecipientController extends Controller
             ]);
 
             $recipient->save();
-            // TODO: fix me
-            // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-            $this->broadcastCampaignResponseUpdated($recipient);
+            // TODO: TEST LATER WITH EVENT
+            // event(new CampaignResponseUpdated($recipient->campaign, $recipient));
+            PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
 
             $class = 'badge-danger';
             if (in_array($request->label, ['interested', 'appointment', 'service'])) {
@@ -224,55 +224,6 @@ class RecipientController extends Controller
         }
 
         return '';
-    }
-
-    /**
-     * @param Recipient $recipient
-     * @throws \Pusher\PusherException
-     */
-    private function broadcastCampaignResponseUpdated(Recipient $recipient)
-    {
-        // TODO: fix `CampaignResponseUpdated` and use it
-        // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-
-        $appointments = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
-        $emailThreads = Response::where('campaign_id', $recipient->campaign->id)
-            ->where('id', $recipient->id)
-            ->where('type', 'email')
-            ->get()
-            ->toArray();
-        $textThreads = Response::where('campaign_id', $recipient->campaign->id)
-            ->where('id', $recipient->id)
-            ->where('type', 'text')
-            ->get()
-            ->toArray();
-        $phoneThreads = Response::where('campaign_id', $recipient->campaign->id)
-            ->where('id', $recipient->id)
-            ->where('type', 'phone')
-            ->get()
-            ->toArray();
-
-        $data = [
-            'appointments' => $appointments,
-            'threads'      => [
-                'email' => $emailThreads,
-                'text'  => $textThreads,
-                'phone' => $phoneThreads,
-            ],
-            'recipient'    => $recipient->toArray(),
-        ];
-
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            [
-                'cluster' => env('PUSHER_CLUSTER'),
-                'useTLS'  => true,
-            ]
-        );
-
-        $pusher->trigger("private-campaign.{$recipient->campaign->id}", "response.{$recipient->id}.updated", $data);
     }
 
     /**
@@ -1009,5 +960,78 @@ class RecipientController extends Controller
             'deletable'  => $deletable,
             'delete_url' => route("recipient-list.delete", [$campaign->id, $list->id]),
         ];
+    }
+
+    /**
+     * @param Recipient $recipient
+     * @param array     $list
+     * @return array
+     */
+    public function fetchResponsesByRecipient(Recipient $recipient, array $list = [])
+    {
+        $data = [];
+
+        if (empty($list)) {
+            $appointments = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
+            $emailThreads = Response::where('campaign_id', $recipient->campaign->id)
+                ->where('recipient_id', $recipient->id)
+                ->where('type', 'email')
+                ->get()
+                ->toArray();
+            $textThreads = Response::where('campaign_id', $recipient->campaign->id)
+                ->where('recipient_id', $recipient->id)
+                ->where('type', 'text')
+                ->get()
+                ->toArray();
+            $phoneThreads = Response::where('campaign_id', $recipient->campaign->id)
+                ->where('recipient_id', $recipient->id)
+                ->where('type', 'phone')
+                ->get()
+                ->toArray();
+
+            $data = [
+                'appointments' => $appointments,
+                'threads'      => [
+                    'email' => $emailThreads,
+                    'text'  => $textThreads,
+                    'phone' => $phoneThreads,
+                ],
+                'recipient'    => $recipient->toArray(),
+            ];
+        } else {
+            foreach ($list as $item) {
+                switch ($item) {
+                    case 'appointments':
+                        $data['appointments'] = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
+                        break;
+                    case 'emails':
+                        $data['threads']['email'] = Response::where('campaign_id', $recipient->campaign->id)
+                            ->where('recipient_id', $recipient->id)
+                            ->where('type', 'email')
+                            ->get()
+                            ->toArray();
+                        break;
+                    case 'texts':
+                        $data['threads']['text'] = Response::where('campaign_id', $recipient->campaign->id)
+                            ->where('recipient_id', $recipient->id)
+                            ->where('type', 'text')
+                            ->get()
+                            ->toArray();
+                        break;
+                    case 'calls':
+                        $data['threads']['phone'] = Response::where('campaign_id', $recipient->campaign->id)
+                            ->where('recipient_id', $recipient->id)
+                            ->where('type', 'phone')
+                            ->get()
+                            ->toArray();
+                        break;
+                    case 'recipient':
+                        $data['recipient'] = $recipient->toArray();
+                        break;
+                }
+            }
+        }
+
+        return $data;
     }
 }

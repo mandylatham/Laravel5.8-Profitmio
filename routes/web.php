@@ -273,6 +273,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/add-label', 'RecipientController@addLabel')->name('recipient.add-label');
         Route::post('/remove-label', 'RecipientController@removeLabel')->name('recipient.remove-label');
         Route::post('/update-notes', 'RecipientController@updateNotes')->name('recipient.update-notes');
+        Route::get('/get-responses-by-recipient', 'RecipientController@fetchResponsesByRecipient')->name('recipient.get-responses');
     });
     //endregion
 

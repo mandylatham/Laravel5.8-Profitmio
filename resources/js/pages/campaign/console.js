@@ -32,6 +32,7 @@ window['app'] = new Vue({
         campaign: {},
         currentRecipientId: null,
         currentUser: {},
+        recipientKey: null,
         loading: false,
         panel1Form: {
             openOn: 'right'
@@ -70,7 +71,9 @@ window['app'] = new Vue({
                     this.$toastr.error('Unable to get recipient');
                 });
         },
-        showPanel: function (recipient) {
+        showPanel: function (recipient, event) {
+            console.log(event.target);
+            console.log(event);
             this.currentRecipientId = recipient.id;
 
             // Close sidebar when opening panel on smaller screens
@@ -87,6 +90,7 @@ window['app'] = new Vue({
                     campaign: this.campaign,
                     recipientId: this.currentRecipientId,
                     currentUser: this.currentUser,
+                    recipientKey: this.recipientKey
                 }
             });
         },
@@ -105,12 +109,12 @@ window['app'] = new Vue({
                 app.classList.add('side-menu-open');
             }
         },
-        pusher: function (channelName, eventName, callback) {
+        pusherInit: function () {
             // TODO: remove me when done
             // Enable pusher logging - don't include this in production
             Pusher.logToConsole = true;
 
-            let pusher = new Pusher(this.pusherKey, {
+            return new Pusher(this.pusherKey, {
                 cluster: this.pusherCluster,
                 forceTLS: true,
                 authEndpoint: this.pusherAuthEndpoint,
@@ -120,11 +124,20 @@ window['app'] = new Vue({
                     }
                 }
             });
+        },
+        pusher: function (channelName, eventName, callback) {
+            let pusher = this.pusherInit();
 
             let channel = pusher.subscribe(channelName);
             channel.bind(eventName, function (data) {
                 callback(data);
             });
+        },
+        pusherUnbindEvent: function (channelName, eventName) {
+            let pusher = this.pusherInit();
+
+            let channel = pusher.subscribe(channelName);
+            channel.unbind(eventName);
         },
         updateRecipients: function () {
             // TODO: check this out

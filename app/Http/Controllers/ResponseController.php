@@ -8,10 +8,10 @@ use App\Classes\MailgunService;
 use App\Models\Recipient;
 use App\Models\Response;
 use App\Models\ResponseThread;
+use App\Services\PusherBroadcastingService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use League\Csv\Writer;
-use Pusher\Pusher;
 
 
 class ResponseController extends Controller
@@ -42,58 +42,9 @@ class ResponseController extends Controller
 
         $response->save();
 
-        $this->broadcastCampaignResponseUpdated($response->recipient);
+        PusherBroadcastingService::broadcastRecipientResponseUpdated($response->recipient);
 
         return $response->toJson();
-    }
-
-    /**
-     * @param Recipient $recipient
-     * @throws \Pusher\PusherException
-     */
-    private function broadcastCampaignResponseUpdated(Recipient $recipient)
-    {
-        // TODO: fix `CampaignResponseUpdated` and use it
-        // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-
-        $appointments = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
-        $emailThreads = Response::where('campaign_id', $recipient->campaign->id)
-            ->where('id', $recipient->id)
-            ->where('type', 'email')
-            ->get()
-            ->toArray();
-        $textThreads = Response::where('campaign_id', $recipient->campaign->id)
-            ->where('id', $recipient->id)
-            ->where('type', 'text')
-            ->get()
-            ->toArray();
-        $phoneThreads = Response::where('campaign_id', $recipient->campaign->id)
-            ->where('id', $recipient->id)
-            ->where('type', 'phone')
-            ->get()
-            ->toArray();
-
-        $data = [
-            'appointments' => $appointments,
-            'threads'      => [
-                'email' => $emailThreads,
-                'text'  => $textThreads,
-                'phone' => $phoneThreads,
-            ],
-            'recipient'    => $recipient->toArray(),
-        ];
-
-        $pusher = new Pusher(
-            env('PUSHER_APP_KEY'),
-            env('PUSHER_APP_SECRET'),
-            env('PUSHER_APP_ID'),
-            [
-                'cluster' => env('PUSHER_CLUSTER'),
-                'useTLS'  => true,
-            ]
-        );
-
-        $pusher->trigger("private-campaign.{$recipient->campaign->id}", "response.{$recipient->id}.updated", $data);
     }
 
     /**
