@@ -31,6 +31,7 @@ class Company extends Model
         'url',
         'facebook',
         'twitter',
+        'image_url',
     ];
 
     protected static $logAttributes = ['id', 'name', 'type'];

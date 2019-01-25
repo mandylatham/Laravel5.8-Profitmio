@@ -103,6 +103,8 @@
                             <input type="text" v-model="createForm.zip" :class="{ 'form-control': true, 'is-invalid': $v.createForm.zip.$error }" name="zip" placeholder="Zip">
                             <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.zip.$error">
                                 <div v-if="!$v.createForm.zip.required">Postal Code is required</div>
+                                <div v-if="$v.createForm.zip.isUnitedStatesPostalCode !== undefined && !$v.createForm.zip.isUnitedStatesPostalCode">Must be valid US Postal Code</div>
+                                <div v-if="$v.createForm.zip.isCanadianPostalCode !== undefined && !$v.createForm.zip.isCanadianPostalCode">Must be valid CA Postal Code</div>
                             </div>
                         </div>
                     </tab-content>

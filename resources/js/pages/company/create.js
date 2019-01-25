@@ -20,12 +20,6 @@ window['app'] = new Vue({
         'input-errors': require('./../../components/input-errors/input-errors'),
         InputTag
     },
-    computed: {
-        zipRules () {
-            return '';
-            return { minLength: minLength(5) };
-        }
-    },
     data: {
         companyIndex: '',
         createFormUrl: null,
@@ -49,7 +43,6 @@ window['app'] = new Vue({
         this.companyIndex = window.indexUrl;
     },
     methods: {
-        generateRoute,
         validateBasicTab() {
             let valid = true;
             ['name','type'].forEach(field => {
@@ -80,20 +73,7 @@ window['app'] = new Vue({
                 .then(response => {
                     this.isLoading = false;
                     this.$toastr.success("Company Added");
-                    setTimeout(function () { window.location = this.companyIndex; }, 400);
-                })
-                .catch(error => {
-                    this.createForm.errors = error.errors;
-                    this.$toastr.error("Unable to create company");
-                });
-        },
-        onSubmit() {
-            this.isLoading = true;
-            this.createForm.post(this.createFormUrl)
-                .then(response => {
-                    this.isLoading = false;
-                    this.$toastr.success("Company Added");
-                    setTimeout(function () { window.location = this.companyIndex; }, 400);
+                    window.location.replace(this.companyIndex);
                 })
                 .catch(error => {
                     this.createForm.errors = error.errors;
@@ -112,7 +92,7 @@ window['app'] = new Vue({
                 address2: {},
                 city: { required },
                 state: { required, },
-                zip: this.zipRules,
+                zip: this.createForm.country == 'us' ? { required, isUnitedStatesPostalCode } : { required, isCanadianPostalCode },
                 url: { url },
                 facebook: { url },
                 twitter: { url },
