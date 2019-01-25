@@ -185,7 +185,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Recipient list pages
         Route::get('/recipients', 'RecipientController@show')->name('campaigns.recipients.index');
         Route::get('/recipients/for-user-display', 'RecipientController@show')->name('campaigns.recipients.for-user-display');
-        Route::post('/recipient-list/upload', 'RecipientController@forUserDisplay')->name('campaigns.recipients.for-user-display');
+        Route::post('/recipient-list/upload', 'RecipientController@uploadFile')->name('campaigns.recipients.upload');
         Route::get('/recipient-list/{id}', 'RecipientController@showRecipientList')->name('recipient-list.show');
         Route::get('/recipient-list/delete/{list}', 'RecipientController@deleteRecipientList')->name('recipient-list.delete');
         Route::post('/recipient-list/{list}/delete-stats', 'RecipientController@recipientListDeleteStats')->name('recipient-list.delete-stats');

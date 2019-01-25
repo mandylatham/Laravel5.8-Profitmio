@@ -1,0 +1,30 @@
+.resumable-component {
+    padding: 4rem;
+    background-color: #fff;
+    border-radius: 5px;
+    border: 3px dashed #dadada;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+    .resumable-drop {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 50;
+    }
+    .resumable-browse {
+        z-index: 100;
+        position: relative;
+    }
+    .resumable-loader {
+        height: 20px;
+        border-radius: 3px;
+        background-color: $green;
+        z-index: 60;
+        position: relative;
+        margin-top: 0.5rem;
+        height: 1rem;
+    }
+}

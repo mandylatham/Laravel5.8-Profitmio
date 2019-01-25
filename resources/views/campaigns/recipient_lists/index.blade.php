@@ -7,6 +7,7 @@
 @section('body-script')
     <script>
         window.searchRecipientsUrl = "{{ route('campaigns.recipients.for-user-display', ['campaign' => $campaign->id]) }}";
+        window.uploadRecipientsUrl = @json(route('campaigns.recipients.upload', ['campaign' => $campaign->id]));
 {{--        window.deleteRecipientUrl = "{{ route('campaigns.recipients.delete', ['campaign' => $campaign->id, 'drop' => ':dropId']) }}";--}}
 {{--        window.downloadRecipientUrl = "{{ route('campaigns.recipients.index', ['campaign' => $campaign->id]) }}";--}}
     </script>
@@ -17,7 +18,7 @@
     <div class="container" id="recipients-index" v-cloak>
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-4">
-                <a class="btn pm-btn pm-btn-blue">
+                <a class="btn pm-btn pm-btn-blue" :class="{'asdf': true, 'asdfs': false}" v-b-modal.upload-recipient-modal href="javascript:;">
                     <i class="fas fa-plus mr-2"></i> UPLOAD NEW LIST
                 </a>
             </div>
@@ -101,5 +102,14 @@
                 </div>
             </div>
         </div>
+        <upload-recipient :target-url="uploadRecipientsUrl"></upload-recipient>
+        <b-modal ref="addPhoneModalRef" id="upload-recipient-modal" size="lg" hide-footer>
+            <template slot="modal-header">
+                <h4>Upload Recipients</h4>
+                <span class="close-modal-header float-right" @click="closeModal()">
+                    <i class="fas fa-times float-right"></i>
+                </span>
+            </template>
+        </b-modal>
     </div>
 @endsection

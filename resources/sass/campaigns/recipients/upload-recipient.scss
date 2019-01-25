@@ -1,0 +1,11 @@
+@import './../../components/resumable';
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+
+.upload-recipient-component {
+    background-color: #fff;
+    padding: 0 1.5rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    border-radius: 5px;
+    border: 1px solid #fafafa;
+}

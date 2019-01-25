@@ -25,6 +25,7 @@
     "brace": "^0.11.1",
     "chart.js": "^2.7.3",
     "moment": "^2.22.2",
+    "resumablejs": "^1.1.0",
     "toastr": "^2.1.4",
     "v-click-outside": "^2.0.2",
     "vue-chartkick": "^0.5.0",

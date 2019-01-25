@@ -2,6 +2,8 @@ import Vue from 'vue';
 import './../../../common';
 import Form from "../../../common/form";
 import axios from "axios";
+import Modal from 'bootstrap-vue';
+Vue.use(Modal);
 import {generateRoute} from '../../../common/helpers';
 
 window['app'] = new Vue({
@@ -18,16 +20,18 @@ window['app'] = new Vue({
     components: {
         'pm-pagination': require('./../../../components/pm-pagination/pm-pagination'),
         'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
+        'upload-recipient': require('./upload-recipient')
     },
     data: {
         recipientList: [],
-        loading: false,
         searchRecipientsForm: new Form({
             q: null,
             page: 1,
             per_page: 15
         }),
-        total: 0
+        loading: false,
+        total: 0,
+        uploadRecipientsUrl: ''
     },
     methods: {
         deleteDrop(drop) {
@@ -63,10 +67,10 @@ window['app'] = new Vue({
             this.searchRecipientsForm
                 .get(window.searchRecipientsUrl)
                 .then(response => {
-                    this.recipientList = response.data;
-                    this.searchRecipientsForm.page = response.current_page;
-                    this.searchRecipientsForm.per_page = response.per_page;
-                    this.total = response.total;
+                    // this.recipientList = response.data;
+                    // this.searchRecipientsForm.page = response.current_page;
+                    // this.searchRecipientsForm.per_page = response.per_page;
+                    // this.total = response.total;
                     this.loading = false;
                 })
                 .catch(error => {
@@ -81,5 +85,6 @@ window['app'] = new Vue({
     },
     mounted() {
         this.fetchData();
+        this.uploadRecipientsUrl = window.uploadRecipientsUrl;
     }
 });
