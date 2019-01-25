@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\User as UserModel;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class Company extends JsonResource
@@ -14,12 +15,11 @@ class Company extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             'id' => $this->id,
             'name' => $this->name,
-            'role' => $this->whenPivotLoaded('company_user', function () {
-                return $this->pivot->role;
-            }),
+            'address' => $this->address,
+            'active_campaigns' => $this->when(auth()->user()->isAdmin() || auth()->user()->isCompanyAdmin($this->id), $this->activeCampaigns()->count()),
             'is_active' => $this->whenPivotLoaded('company_user', function () {
                 return (bool) $this->pivot->is_active;
             }),
@@ -27,5 +27,16 @@ class Company extends JsonResource
                 return $this->isUserProfileReady($this->pivot->user_id);
             }),
         ];
+        // Verify if role field should be added
+        if ((auth()->user()->isAdmin() || auth()->user()->isCompanyAdmin($this->id)) && $request->has('user')) {
+            $userModel = UserModel::findOrFail($request->input('user'));
+            $data['role'] = $userModel->getRole($this->resource);
+            $data['timezone'] = $userModel->getTimezone($this->resource);
+            $data['active_campaigns_for_user'] = count($userModel->getActiveCampaignsForCompany($this->resource));
+        }
+        $this->whenPivotLoaded('company_user', function () use (&$data) {
+            $data['role'] = $this->pivot->role;
+        });
+        return $data;
     }
 }

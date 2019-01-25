@@ -1,4 +1,4 @@
-<div class="top-navbar" id="top-navbar-menu">
+<div class="top-navbar" id="top-navbar-menu" v-cloak>
     <b-navbar toggleable="sm" class="top-navigation-bar justify-content-space-between justify-content-sm-start">
 
         <b-navbar-toggle target="sidebar-menu" class="sidebar-toggle js-toggle-navbar-menu d-inline-flex d-md-none">
@@ -89,11 +89,11 @@
                 </b-nav-item-dropdown>
                 <b-nav-item-dropdown class="profile" right variant="link" size="lg" no-caret>
                     <template slot="button-content">
-                        <img src="http://lorempixel.com/60/60/" alt="Avatar">
-                        <span>{{ auth()->user()->first_name }}</span>
+                        <img :src="loggedUser.image_url" alt="Avatar">
+                        <span>@{{ loggedUser.first_name }}</span>
                     </template>
                     <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>
-                    <b-dropdown-item href="{{ route('logout') }}">Signout</b-dropdown-item>
+                    <b-dropdown-item @click="signout('{{ route('logout') }}')">Signout</b-dropdown-item>
                 </b-nav-item-dropdown>
             </b-navbar-nav>
         </b-collapse>

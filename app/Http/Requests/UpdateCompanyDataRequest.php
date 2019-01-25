@@ -27,14 +27,17 @@ class UpdateCompanyDataRequest extends FormRequest
     public function rules()
     {
         $possibleRoles = ['admin', 'user'];
+        if (auth()->user()->isAdmin()) {
+            $possibleRoles[] = 'site_admin';
+        }
         return [
             'company' => 'required',
             'role' => [
-                'required',
+                'sometimes',
                 Rule::in($possibleRoles)
             ],
             'timezone' => [
-                'required',
+                'sometimes',
                 Rule::in(User::getPossibleTimezonesForUser())
             ]
         ];

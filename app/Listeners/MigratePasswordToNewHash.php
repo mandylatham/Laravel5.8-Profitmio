@@ -27,7 +27,7 @@ class MigratePasswordToNewHash
      */
     public function handle(Attempting $event)
     {
-        $login = isset($event->credentials['email']) ? 'email' : 'username';
+        $login = 'email';
         $user = User::where($login, $event->credentials[$login])->get();
         $password = $event->credentials['password'];
 

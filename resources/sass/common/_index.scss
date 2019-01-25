@@ -17,11 +17,9 @@
 @import "~bootstrap/scss/nav";
 @import "~bootstrap/scss/card";
 @import "~bootstrap/scss/dropdown";
+@import "~bootstrap/scss/modal";
 @import "~bootstrap/scss/nav";
 @import "~bootstrap/scss/navbar";
-@import "~bootstrap/scss/functions";
-@import "~bootstrap/scss/variables";
-@import "~bootstrap/scss/mixins";
 // Bootstrap Vue
 @import "~bootstrap-vue/es/components/dropdown/dropdown.css";
 @import '~vue-good-table/dist/vue-good-table.css';
@@ -32,6 +30,8 @@
 @import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
 // Pretty checkbox
 @import '~pretty-checkbox/src/pretty-checkbox.scss';
+// Toastr
+@import '~vue-toastr-2/dist/vue-toastr-2.min.css';
 ///////////////////////////
 @import './custom';
 @import './top-navbar';

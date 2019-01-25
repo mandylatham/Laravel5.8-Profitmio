@@ -20,7 +20,7 @@ use Carbon\Carbon;
 $factory->define(Campaign::class, function (Faker $faker) {
     return [
         'agency_id' => Company::where('type', 'agency')->inRandomOrder()->first()->id,
-        'dealership_id' => Company::where('type', 'dealership')->first()->id,
+        'dealership_id' => Company::where('type', 'dealership')->inRandomOrder()->first()->id,
         'phone_number_id' => PhoneNumber::inRandomOrder()->first()->id,
         'name' => $faker->name,
         'order_id' => $faker->numberBetween(1, 10),

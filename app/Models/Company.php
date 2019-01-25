@@ -34,9 +34,30 @@ class Company extends Model
 
     protected static $logAttributes = ['id', 'name', 'type'];
 
+    public function activeCampaigns()
+    {
+        return $this->campaigns()->where('status', 'Active');
+    }
+
     public function users()
     {
         return $this->belongsToMany(User::class)->withPivot('role');
+    }
+
+    public function templates()
+    {
+        return $this->hasMany(CampaignScheduleTemplate::class);
+    }
+
+    public function campaigns()
+    {
+        return Campaign::where(function ($query) {
+                if ($this->isAgency()) {
+                    $query->where('agency_id', $this->id);
+                } else if ($this->isDealership()) {
+                    $query->where('dealership_id', $this->id);
+                }
+            });
     }
 
     public static function getAgencies()
@@ -102,7 +123,16 @@ class Company extends Model
     {
         $loggedUser = auth()->user();
         $query = self::query();
-        if (!$loggedUser->isAdmin()) {
+        if ($loggedUser->isAdmin() && $request->has('user')) {
+            $companiesId = User::findOrFail($request->input('user'))
+                ->companies()
+                ->select('companies.id')
+                ->get()
+                ->pluck('id');
+            $query->whereIn('id', $companiesId);
+        } else if (!$loggedUser->isAdmin() && $request->has('user')) {
+            $query->where('id', get_active_company());
+        } else if (!$loggedUser->isAdmin()) {
             $campaignsCompanyIds = Campaign::select('dealership_id', 'agency_id')
                 ->where(function ($query) {
                     return $query->where('agency_id', get_active_company())
@@ -115,6 +145,15 @@ class Company extends Model
             });
             $query->whereIn('id', $campaignsCompanyIds);
         }
+
+        if ($request->has('q')) {
+            $query->filterByQuery($request->input('q'));
+        }
         return $query;
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        return $query->search($q);
     }
 }

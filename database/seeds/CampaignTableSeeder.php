@@ -16,7 +16,17 @@ class CampaignTableSeeder extends Seeder
         factory(Campaign::class, 20)
             ->create()
             ->each(function ($campaign) use ($faker) {
-                // TODO: Add users to this campaign
+                $dealership = $campaign->dealership;
+                $agency = $campaign->agency;
+                // Add users to this campaign
+                $users = $dealership->users()->inRandomOrder()->take(5)->get();
+                $users->concat($agency->users()->inRandomOrder()->take(5)->get());
+                foreach ($users as $user) {
+                    \App\Models\CampaignUser::insert([
+                        'user_id' => $user->id,
+                        'campaign_id' => $campaign->id
+                    ]);
+                }
                 // Create recipient lists
                 factory(\App\Models\RecipientList::class, $faker->numberBetween(1, 5))
                     ->create([

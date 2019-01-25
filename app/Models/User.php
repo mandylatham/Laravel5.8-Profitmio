@@ -4,17 +4,17 @@ namespace App\Models;
 
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Sofa\Eloquence\Eloquence;
 use Lab404\Impersonate\Models\Impersonate;
 use Spatie\Activitylog\Traits\LogsActivity;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class User extends Authenticatable
+class User extends Authenticatable implements HasMedia
 {
-    use Notifiable, Impersonate, LogsActivity, Eloquence;
+    use Notifiable, Impersonate, LogsActivity, Eloquence, HasMediaTrait;
 
     protected $searchableColumns = ['id', 'first_name', 'last_name', 'email', 'phone_number'];
 
@@ -22,6 +22,8 @@ class User extends Authenticatable
 
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
+
+    protected $appends = ['image_url'];
 
     /**
      * The attributes that are mass assignable.
@@ -37,7 +39,6 @@ class User extends Authenticatable
         'phone_number',
         'password',
         'is_admin',
-        'username'
     ];
 
     protected $casts = [
@@ -71,6 +72,28 @@ class User extends Authenticatable
         $rel->save();
     }
 
+    public function getCampaigns()
+    {
+        return Campaign::join('campaign_user', 'campaign_user.campaign_id', '=', 'campaigns.id')
+            ->where('campaign_user.user_id', $this->id);
+    }
+
+    public function getActiveCampaignsForCompany(Company $company)
+    {
+        $campaignsId = \DB::table('campaign_user')
+            ->where('user_id', $this->id)
+            ->select('campaign_user.campaign_id')
+            ->get()
+            ->pluck('campaign_id');
+        return Campaign::whereIn('id', $campaignsId)
+            ->where('status', 'Active')
+            ->where(function ($query) use ($company) {
+                $query->where('dealership_id', $company->id)
+                    ->orWhere('agency_id', $company->id);
+            })
+            ->get();
+    }
+
     /**
      * Return the company that is selected by the logged user
      *
@@ -86,6 +109,15 @@ class User extends Authenticatable
     public function getActiveCompanies()
     {
         return $this->companies()->where('company_user.is_active', true)->orderBy('companies.name', 'asc')->get();
+    }
+
+    public function getImageUrlAttribute()
+    {
+        $image = $this->getMedia('profile-photo')->last();
+        if ($image) {
+            return $image->getFullUrl();
+        }
+        return '';
     }
 
     public function agencyCampaigns()
@@ -146,11 +178,12 @@ class User extends Authenticatable
 
     public function getTimezone(Company $company)
     {
-        if ($this->isAdmin()) {
-            return null;
-        } else {
-            return $this->invitations()->where('company_id', $company->id)->firstOrFail()->config['timezone'];
-        }
+        return $this->invitations()->where('company_id', $company->id)->firstOrFail()->config['timezone'];
+    }
+
+    public function countActiveCompanies()
+    {
+        return $this->invitations()->where('is_active', 1)->count();
     }
 
     public function hasActiveCompanies()
@@ -233,7 +266,7 @@ class User extends Authenticatable
 
     public function isProfileCompleted()
     {
-        return $this->password !== '' && $this->username !== 'username';
+        return $this->password !== '';
     }
 
     public function isCompanyProfileReady(Company $company)

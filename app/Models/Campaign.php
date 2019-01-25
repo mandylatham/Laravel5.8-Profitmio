@@ -12,7 +12,7 @@ class Campaign extends Model
 {
     use LogsActivity, Eloquence;
 
-    protected $searchableColumns = ['name', 'id', 'starts_at', 'ends_at', 'order_id'];
+    protected $searchableColumns = ['id', 'name', 'order_id'];
 
     protected $fillable = [
         'agency_id',
@@ -108,7 +108,6 @@ class Campaign extends Model
 
     public function scopeFilterByCompany($query, Company $company)
     {
-        session(['filters.campaign.index.company' => $company->id]);
         return $query->where(function ($query) use ($company) {
             $query->orWhere('agency_id', $company->id);
             $query->orWhere('dealership_id', $company->id);
@@ -117,7 +116,6 @@ class Campaign extends Model
 
     public function scopeFilterByQuery($query, $q)
     {
-        session(['filters.campaign.index.q' => $q]);
         return $query->search($q);
     }
 
@@ -207,17 +205,17 @@ class Campaign extends Model
     {
         $loggedUser = auth()->user();
         $query = self::query()
-            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at');
 
         if (!$loggedUser->isAdmin()) {
-            $company = Company::findOrFail(get_active_company());
-            if ($company->isDealership()) {
-                $query->where('dealership_id', $company->id);
-            } else if ($company->isAgency()) {
-                $query->where('agency_id', $company->id);
-            }
+            $campaignsId = \DB::table('campaign_user')
+                ->whereUserId($loggedUser->id)
+                ->select('campaign_id')
+                ->get()
+                ->pluck('campaign_id')
+                ->toArray();
+            $query->whereIn('id', $campaignsId);
         } else if ($loggedUser->isAdmin() && $request->has('user')) {
             $campaignsId = \DB::table('campaign_user')
                 ->whereUserId($request->input('user'))
@@ -230,14 +228,10 @@ class Campaign extends Model
 
         if ($request->has('q')) {
             $query->filterByQuery($request->input('q'));
-        } else {
-            session()->forget('filters.campaign.index.q');
         }
 
         if ($request->has('company')) {
             $query->filterByCompany(Company::findOrFail($request->input('company')));
-        } else {
-            session()->forget('filters.campaign.index.company');
         }
         return $query;
     }
