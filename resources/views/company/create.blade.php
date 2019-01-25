@@ -36,72 +36,97 @@
                         </div>
                         <div class="form-group">
                             <label for="name" class="form-label">Company Name</label>
-                            <input type="text" v-model="createForm.name" class="form-control" name="name" placeholder="Company Name" required>
-                            <input-errors :error-bag="createForm.errors" :field="'name'"></input-errors>
+                            <input id="name" type="text" v-model="createForm.name" :class="{ 'form-control': true,  'is-invalid': $v.createForm.name.$error }" name="name" placeholder="Company Name" required>
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.name.$error">
+                                <div v-if="!$v.createForm.name.required">Name is required</div>
+                                <div v-if="!$v.createForm.name.minLength">Name must be more than 1 character long</div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="type" class="form-label">Type</label>
-                            <select name="type" v-model="createForm.type" class="form-control" required>
-                                <option value='support'>Support</option>
+                            <select name="type" v-model="createForm.type" :class="{ 'form-control': true, 'is-invalid': $v.createForm.type.$error }" required>
                                 <option value='agency'>Agency</option>
                                 <option value='dealership'>Dealership</option>
                             </select>
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.type.$error">
+                                <div v-if="!$v.createForm.type.required">Name is required</div>
+                            </div>
                         </div>
                     </tab-content>
                     <tab-content title="Contact" icon="fas fa-phone" :before-change="validateContactTab">
                         <div class="form-group">
-                            <label for="phone" class="form-label">Phone</label>
-                            <input type="text" v-model="createForm.phone" class="form-control" name="phone" required>
-                            <input-errors :error-bag="createForm.errors" :field="'phone'"></input-errors>
-                        </div>
-                        <div class="form-group">
                             <label for="country" class="form-label">Country</label>
-                            <select v-model="createForm.country" class="form-control" name="country">
+                            <select v-model="createForm.country" :class="{ 'form-control': true, 'is-invalid': $v.createForm.country.$error }" name="country">
                                 <option value="us">United States</option>
                                 <option value="ca">Canada</option>
                             </select>
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.country.$error">
+                                <div v-if="!$v.createForm.country.required">Country is required</div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone" class="form-label">Phone</label>
+                            <input type="text" v-model="createForm.phone" :class="{ 'form-control': true, 'is-invalid': $v.createForm.phone.$error }" name="phone" required>
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.phone.$error">
+                                <div v-if="!$v.createForm.phone.required">Phone Number is required</div>
+                                <div v-if="!$v.createForm.phone.isNorthAmericanPhoneNumber">Phone Number must be a valid North American number</div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="address" class="floating-label">Address</label>
-                            <input class="form-control" v-model="createForm.address" name="address" placeholder="Address 1">
-                            <input-errors :error-bag="createForm.errors" :field="'address'"></input-errors>
+                            <input v-model="createForm.address" :class="{ 'form-control': true, 'is-invalid': $v.createForm.address.$error }" name="address" placeholder="Address 1">
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.address.$error">
+                                <div v-if="!$v.createForm.address.required">Address is required</div>
+                                <div v-if="!$v.createForm.address.looseAddressMatch">Must be a valid address</div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="address2" class="form-label">Address 2</label>
                             <input class="form-control" v-model="createForm.address2" name="address2" placeholder="Address 2">
-                            <input-errors :error-bag="createForm.errors" :field="'address2'"></input-errors>
                         </div>
                         <div class="form-group">
                             <label for="city" class="form-label">City</label>
-                            <input type="text" v-model="createForm.city" class="form-control" name="city" placeholder="City">
-                            <input-errors :error-bag="createForm.errors" :field="'city'"></input-errors>
+                            <input type="text" v-model="createForm.city" :class="{ 'form-control': true, 'is-invalid': $v.createForm.city.$error }" name="city" placeholder="City">
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.city.$error">
+                                <div v-if="!$v.createForm.city.required">City is required</div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="state" class="form-label">State</label>
-                            <input type="text" v-model="createForm.state" class="form-control" name="state" placeholder="State">
-                            <input-errors :error-bag="createForm.errors" :field="'state'"></input-errors>
+                            <input type="text" v-model="createForm.state" :class="{ 'form-control': true, 'is-invalid': $v.createForm.state.$error }" name="state" placeholder="State">
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.state.$error">
+                                <div v-if="!$v.createForm.state.required">State is required</div>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="zip" class="form-label">Zip</label>
-                            <input type="text" v-model="createForm.zip" class="form-control" name="zip" placeholder="Zip">
-                            <input-errors :error-bag="createForm.errors" :field="'zip'"></input-errors>
+                            <label for="zip" class="form-label">Postal Code</label>
+                            <input type="text" v-model="createForm.zip" :class="{ 'form-control': true, 'is-invalid': $v.createForm.zip.$error }" name="zip" placeholder="Zip">
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.zip.$error">
+                                <div v-if="!$v.createForm.zip.required">Postal Code is required</div>
+                            </div>
                         </div>
                     </tab-content>
                     <tab-content title="Social" icon="fas fa-globe-americas" :before-change="validateSocialTab">
                         <div class="form-group">
                             <label for="url" class="form-label">Url</label>
-                            <input type="text" v-model="createForm.url" class="form-control" name="url" placeholder="Url">
-                            <input-errors :error-bag="createForm.errors" :field="'url'"></input-errors>
+                            <input type="text" v-model="createForm.url" :class="{ 'form-control': true, 'is-invalid': $v.createForm.url.$error }" name="url" placeholder="Url">
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.url.$error">
+                                <div v-if="!$v.createForm.url.required">Url is required</div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="facebook" class="form-label">Facebook</label>
-                            <input type="text" v-model="createForm.facebook" class="form-control" name="facebook" placeholder="Facebook">
-                            <input-errors :error-bag="createForm.errors" :field="'facebook'"></input-errors>
+                            <input type="text" v-model="createForm.facebook" :class="{ 'form-control': true, 'is-invalid': $v.createForm.facebook.$error }" name="facebook" placeholder="Facebook">
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.facebook.$error">
+                                <div v-if="!$v.createForm.facebook.required">Must be a full Url</div>
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="twitter" class="form-label">Twitter</label>
-                            <input type="text" v-model="createForm.twitter" class="form-control" name="twitter" placeholder="Twitter">
-                            <input-errors :error-bag="createForm.errors" :field="'twitter'"></input-errors>
+                            <input type="text" v-model="createForm.twitter" :class="{ 'form-control': true, 'is-invalid': $v.createForm.twitter.$error }" name="twitter" placeholder="Twitter">
+                            <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.createForm.twitter.$error">
+                                <div v-if="!$v.createForm.twitter.required">Must be a full Url</div>
+                            </div>
                         </div>
                     </tab-content>
                 </form-wizard>
