@@ -13,7 +13,7 @@
         window.companySelected = @json($companySelected);
         window.campaignStatsUrl = "{{ route('campaigns.stats', ['campaign' => ':campaignId']) }}";
         window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
-        window.campaignRecipientIndex = "{{ route('campaigns.recipients.index', ['campaign' => ':campaignId']) }}";
+        window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.q = @json($q);
     </script>

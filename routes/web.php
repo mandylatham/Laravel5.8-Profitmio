@@ -182,21 +182,22 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/edit', 'CampaignController@edit')->name('campaigns.edit');
         Route::get('/delete', 'CampaignController@delete')->name('campaigns.delete');
         Route::post('/update', 'CampaignController@update')->name('campaigns.update');
-        // Recipient list pages
-        Route::get('/recipients', 'RecipientController@show')->name('campaigns.recipients.index');
-        Route::get('/recipients/for-user-display', 'RecipientController@show')->name('campaigns.recipients.for-user-display');
-        Route::post('/recipient-list/upload', 'RecipientController@uploadFile')->name('campaigns.recipients.upload');
-        Route::get('/recipient-list/{id}', 'RecipientController@showRecipientList')->name('recipient-list.show');
-        Route::get('/recipient-list/delete/{list}', 'RecipientController@deleteRecipientList')->name('recipient-list.delete');
-        Route::post('/recipient-list/{list}/delete-stats', 'RecipientController@recipientListDeleteStats')->name('recipient-list.delete-stats');
-        Route::post('/recipient-list', 'RecipientController@fromCampaign');
+        // Recipient list
+        Route::get('/recipient-lists', 'RecipientController@show')->name('campaigns.recipient-lists.index');
+        Route::get('/recipient-list/for-user-display', 'RecipientController@forUserDisplay')->name('campaigns.recipient-lists.for-user-display');
+        Route::post('/recipient-list/upload', 'RecipientController@uploadFile')->name('campaigns.recipient-lists.upload');
+        Route::get('/recipient-list/{id}', 'RecipientController@showRecipientList')->name('campaigns.recipient-lists.show');
+        Route::delete('/recipient-lists/{list}', 'RecipientController@deleteRecipientList')->name('campaigns.recipient-lists.delete');
+        Route::get('/recipient-list/{list}/delete-stats', 'RecipientController@recipientListDeleteStats')->name('campaigns.recipient-lists.delete-stats');
+        Route::post('/recipient-list/from-campaign', 'RecipientController@fromCampaign');
+        Route::post('/recipient-lists', 'RecipientController@createRecipientList')->name('campaigns.recipient-lists.store');
+        // Recipients
         Route::post('/add-recipient', 'RecipientController@add');
+        Route::delete('/remove-recipient', 'RecipientController@delete');
         Route::put('/update-recipient', 'RecipientController@update');
-        Route::delete('/remove-recipient', 'RecipientController@delete')->name('recipient.delete');
         Route::get('/recipients/partialByField', 'RecipientController@getPartialRecipientsByField');
         Route::post('/recipients/deletePartialByField', 'RecipientController@deletePartialRecipientsByField');
         Route::get('/recipients/search', 'RecipientController@searchForDeployment');
-        Route::post('/recipients/upload', 'RecipientController@createRecipientList');
         Route::any('/recipients/finalize_upload', 'RecipientController@finishUpload');
         Route::get('/recipients/download', 'RecipientController@download');
         Route::get('/recipients/delete-all', 'RecipientController@deleteAll');

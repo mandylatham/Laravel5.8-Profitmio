@@ -1,4 +1,5 @@
 @import './../../common/index';
+@import './../../components/pm-pagination';
 @import './../base';
 @import './upload-recipient';
 
@@ -8,12 +9,14 @@
         position: relative;
     }
     .recipient-name {
-        &--container {
-            display: flex;
-            width: 100%;
-            @include media-breakpoint-up(sm) {
-                width: auto;
-            }
+        display: flex;
+        background-color: $brand-purple;
+        padding: 1rem 1.25rem;
+        color: #fff;
+        &--icon {
+            padding: 0 20px 0 10px;
+            flex-grow: 1;
+            font-size: 2.5rem;
         }
         &--data {
             flex-grow: 5;
@@ -22,41 +25,24 @@
                 font-weight: 300;
             }
         }
-        &--icon {
-            padding: 0 20px 0 10px;
-            flex-grow: 1;
-            font-size: 2.5rem;
-        }
         &--id {
             margin-top: 12px;
         }
-        svg {
-            height: 42px;
-            width: 35px;
-            line-height: 1em;
-        }
-        @include media-breakpoint-up(lg) {
-            width: 30%;
-        }
     }
     .recipient-stats{
-        &1, &2 {
-            text-align: center;
-            @include media-breakpoint-up(lg) {
-                width: 25%;
-            }
-        }
-        &--container {
-            display: inline-flex;
-            flex-flow: column;
-            text-align: left;
-        }
+        display: flex;
+        flex-flow: column;
+        text-align: left;
+        background: #fff;
+        justify-content: center;
+        padding: 1rem 1.25rem;
+        border-right: 2px solid $brand-white;
         &--stat {
             margin-bottom: 5px;
             [class^="pm-font-"], [class*=" pm-font-"] {
                 width: 40px;
-
                 font-size: 1.2rem;
+                color: $brand-purple;
             }
             .pm-font-companies-icon {
                 font-size: 1.1rem;
@@ -66,11 +52,20 @@
                 width: 80px;
                 margin-right: 10px;
             }
+            strong {
+                color: $brand-black;
+            }
+            &.last-child {
+                margin-bottom: 0;
+            }
         }
     }
     .recipient-options {
         flex-flow: column;
         text-align: center;
+        background: #fff;
+        padding: 1rem 1.25rem;
+        display: flex;
         .btn-action {
             color: $brand-blue;
             border: 1px solid $brand-blue;
@@ -81,6 +76,7 @@
             .btn {
                 padding: 8px;
                 margin-right: 20px;
+                color: $brand-purple;
                 &:last-child {
                     margin-right: 0;
                 }

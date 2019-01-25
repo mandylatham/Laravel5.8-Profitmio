@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddRecipientRequest;
+use App\Http\Requests\CreateRecipientListRequest;
 use App\Events\CampaignResponseUpdated;
 use App\Events\ServiceDeptLabelAdded;
 use App\Models\Recipient;
@@ -24,9 +25,11 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 
 class RecipientController extends Controller
 {
-    public function forUserDisplay()
+    public function forUserDisplay(Campaign $campaign)
     {
-        return [];
+        return RecipientList::whereCampaignId($campaign->id)
+            ->with('recipients')
+            ->paginate(15);
     }
 
     public function searchForDeployment(Campaign $campaign, Request $request)
@@ -204,9 +207,7 @@ class RecipientController extends Controller
      */
     public function show(Campaign $campaign)
     {
-        $lists = RecipientList::whereCampaignId($campaign->id)->with('recipients')->get();
         $viewData['campaign'] = $campaign;
-        $viewData['lists'] = $lists;
 
         return view('campaigns.recipient_lists.index', $viewData);
     }
@@ -626,7 +627,6 @@ class RecipientController extends Controller
     public function deleteRecipientList(Request $request, Campaign $campaign, RecipientList $list)
     {
         if ($list->campaign_id != $campaign->id) {
-            dd($list, $campaign);
             abort(403, 'Unauthorized');
         }
 
@@ -647,11 +647,11 @@ class RecipientController extends Controller
                 $list->delete();
             } catch (\Exception $e) {
                 $errors = new MessageBag(["recipients" => "Unable to delete selected recipient list!"]);
-                return redirect()->back()->withErrors($errors)->withInput($request->all());
+                return response()->json(['errors' => $errors]);
             }
         }
 
-        return redirect()->back();
+        return response()->json(['message' => 'Resource deleted.']);
     }
 
     /**
@@ -659,28 +659,12 @@ class RecipientController extends Controller
      * @param Campaign $campaign
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createRecipientList(Request $request, Campaign $campaign)
+    public function createRecipientList(CreateRecipientListRequest $request, Campaign $campaign)
     {
         try {
-            /**
-             * Validation Time
-             */
-            $validator = Validator::make($request->all(), [
-                'uploaded_file_name' => 'required',
-                'uploaded_file_headers' => 'required',
-                'uploaded_file_fieldmap' => 'required|JSON',
-                'pm_list_name' => 'required',
-                'pm_list_type' => 'required|in:all_conquest,all_database,use_recipient_field',
-            ]);
-
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
             Log::debug('New List passed initial validation');
 
-            $fieldmap = (array) json_decode($request->input('uploaded_file_fieldmap'));
+            $fieldmap = $request->input('uploaded_file_fieldmap');
             $validator = Validator::make($fieldmap, [
                 'first_name' => 'required',
                 'last_name' => 'required',
@@ -694,9 +678,7 @@ class RecipientController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
+                return response()->json(['errors'=>$validator->errors()]);
             }
 
             // Validate for the conquest vs database setting
@@ -706,9 +688,7 @@ class RecipientController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return redirect()->back()
-                        ->withErrors($validator)
-                        ->withInput();
+                    return response()->json(['errors'=>$validator->errors()]);
                 }
             }
             Log::debug("New List passed list_type validation");
@@ -739,10 +719,10 @@ class RecipientController extends Controller
         } catch (\Exception $e) {
             $errors = new MessageBag(['file' => 'Unable to load file']);
             Log::error("Unable to load file for campaign {$campaign->id}. ". $e->getMessage());
-            return redirect()->back()->withErrors($errors)->withInput($request->all());
+            return response()->json(['errors' => $errors], 422);
         }
 
-        return redirect()->back();
+        return response()->json(['message' => 'Recipients Created.']);
     }
 
     /**
@@ -909,7 +889,7 @@ class RecipientController extends Controller
             'inDrops' => $inDrops,
             'dropped' => $dropped,
             'deletable' => $deletable,
-            'delete_url' => route("recipient-list.delete", [$campaign->id, $list->id]),
+            'delete_url' => route('campaigns.recipient-lists.delete', [$campaign->id, $list->id]),
         ];
     }
 }
