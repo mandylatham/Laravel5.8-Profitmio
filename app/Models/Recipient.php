@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Sofa\Eloquence\Eloquence;
 
 class Recipient extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Eloquence;
 
     protected $table = 'recipients';
 
@@ -65,6 +67,8 @@ class Recipient extends Model
         'vin',
     ];
 
+    protected $searchableColumns = ['first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip', 'year', 'make', 'model', 'vin'];
+
     public function list()
     {
         return $this->belongsTo(RecipientList::class, 'recipient_list_id');
@@ -93,6 +97,16 @@ class Recipient extends Model
     public function suppressions()
     {
         return $this->hasMany(SmsSuppression::class, 'phone', 'phone');
+    }
+
+    public function getDroppedTime()
+    {
+        $dropped = DeploymentRecipients::join('campaign_schedules', 'deployment_recipients.deployment_id', '=', 'campaign_schedules.id')
+            ->where('campaign_schedules.campaign_id', $this->campaign_id)
+            ->where('deployment_recipients.recipient_id', $this->id)
+            ->whereNotNull('deployment_recipients.sent_at')
+            ->first();
+        return $dropped ? $dropped->sent_at : null;
     }
 
     /**
@@ -130,6 +144,22 @@ class Recipient extends Model
     public function getEmailAttribute()
     {
         return strtolower($this->attributes['email']);
+    }
+
+    public static function searchByRequest(Request $request, RecipientList $recipientList)
+    {
+        $query = $recipientList->recipients();
+
+        if ($request->has('q')) {
+            $query->filterByQuery($request->get('q'));
+        }
+
+        return $query;
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        return $query->search($q);
     }
 
     public function scopeWithResponses($query, $campaignId)

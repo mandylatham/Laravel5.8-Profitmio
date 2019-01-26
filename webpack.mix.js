@@ -51,6 +51,8 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     // Recipients
     .js('resources/js/pages/campaigns/recipients/index.js', 'public/js/recipients-index.js')
     .sass('resources/sass/campaigns/recipients/index.scss', 'public/css/recipients-index.css')
+    .js('resources/js/pages/campaigns/recipients/detail.js', 'public/js/recipients-detail.js')
+    .sass('resources/sass/campaigns/recipients/detail.scss', 'public/css/recipients-detail.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');

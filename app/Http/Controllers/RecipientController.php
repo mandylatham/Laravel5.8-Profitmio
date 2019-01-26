@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\AddRecipientRequest;
 use App\Http\Requests\CreateRecipientListRequest;
+use App\Http\Resources\Recipient as RecipientResource;
 use App\Events\CampaignResponseUpdated;
 use App\Events\ServiceDeptLabelAdded;
 use App\Models\Recipient;
@@ -226,44 +227,20 @@ class RecipientController extends Controller
         return view('campaigns.recipient_lists.show', $viewData);
     }
 
-    public function showRecipientList(Request $request, Campaign $campaign, $id)
+    public function getRecipientsForUserDisplay(Request $request, Campaign $campaign, RecipientList $list)
     {
-        $list = RecipientList::whereId($id)->with(['campaign'])->firstOrFail();
-        if (! $request->has('q')) {
-            $recipients = Recipient::whereRecipientListId($list->id)->paginate();
-        } else {
-            $recipients = Recipient::whereRecipientListId($list->id)
-                ->where(function ($query) use ($request) {
-                    $q = $request->input('q');
-                    $query->where('first_name', 'like', '%' . $q . '%')
-                        ->orWhere('last_name', 'like', '%' . $q . '%')
-                        ->orWhere('email', 'like', '%' . $q . '%')
-                        ->orWhere('phone', 'like', '%' . $q . '%')
-                        ->orWhere('address1', 'like', '%' . $q . '%')
-                        ->orWhere('city', 'like', '%' . $q . '%')
-                        ->orWhere('state', 'like', '%' . $q . '%')
-                        ->orWhere('zip', 'like', '%' . $q . '%')
-                        ->orWhere('year', 'like', '%' . $q . '%')
-                        ->orWhere('make', 'like', '%' . $q . '%')
-                        ->orWhere('model', 'like', '%' . $q . '%')
-                        ->orWhere('vin', 'like', '%' . $q . '%');
-                })
-                ->paginate();
-        }
+        $items = Recipient::searchByRequest($request, $list)
+            ->orderBy('id', 'asc')
+            ->paginate(15);
 
-        $dropped = collect(DB::select("
-        select distinct recipient_id as `dropped`
-            from deployment_recipients as dt where dt.deployment_id in (
-              select id from campaign_schedules where campaign_id = {$campaign->id}
-            )
-            and dt.sent_at is not null
-        "))->pluck('dropped')->toArray();
+        return RecipientResource::collection($items);
+    }
 
-        return view('campaigns.recipient_lists.show')->with([
+    public function showRecipientList(Request $request, Campaign $campaign, RecipientList $list)
+    {
+        return view('campaigns.recipient_lists.detail')->with([
             'campaign' => $list->campaign,
             'list' => $list,
-            'recipients' => $recipients->appends($request->except('page')),
-            'dropped' => $dropped,
         ]);
     }
 
@@ -443,7 +420,7 @@ class RecipientController extends Controller
 
         if (count($dangers) > 0) {
             $errors = new MessageBag(['recipients' => 'Unable to process bulk deletion as some recipients have already been sent media and therefore cannot be deleted']);
-            return redirect()->back()->withErrors($errors);
+            return response()->json(['errors' => $errors], 422);
         }
 
          Recipient::where('campaign_id', $campaign->id)
@@ -451,7 +428,7 @@ class RecipientController extends Controller
             ->whereNotIn('id', $dropped)
             ->delete();
 
-        return redirect()->back();
+        return response()->json(['message' => 'Resources Deleted']);
     }
 
     /**
