@@ -17,7 +17,7 @@ window['app'] = new Vue({
     components: {
         SearchIcon,
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
     },
     computed: {
         pagination: function () {
@@ -53,7 +53,7 @@ window['app'] = new Vue({
         pusherAuthEndpoint: '',
     },
     methods: {
-        fetchRecipients: function () {
+        fetchRecipients() {
             this.loading = true;
             this.searchForm.get(window.getRecipientsUrl)
                 .then(response => {
@@ -71,10 +71,12 @@ window['app'] = new Vue({
                     this.$toastr.error('Unable to get recipient');
                 });
         },
-        showPanel: function (recipient, event) {
-            console.log(event.target);
-            console.log(event);
+        showPanel: function (recipient, key) {
+            // console.log(key);
+            // console.log(event.target);
+            // console.log(event);
             this.currentRecipientId = recipient.id;
+            this.recipientKey = key;
 
             // Close sidebar when opening panel on smaller screens
             let app = document.getElementById('app');
@@ -139,21 +141,16 @@ window['app'] = new Vue({
             let channel = pusher.subscribe(channelName);
             channel.unbind(eventName);
         },
-        updateRecipients: function () {
-            // TODO: check this out
-            const vm = this;
-            this.pusher('private-campaign.' + this.campaign.id, 'recipients.updated', function (data) {
-                console.log(data);
-
-                vm.recipients = data.recipients.data;
-                vm.searchForm.page = data.recipients.current_page;
-                vm.searchForm.per_page = data.recipients.per_page;
-                vm.total = data.recipients.total;
+        updateRecipients() {
+            this.pusher('private-campaign.' + this.campaign.id, 'recipients.updated', (data) => {
+                this.recipients = data.recipients.data;
+                this.searchForm.page = data.recipients.current_page;
+                this.searchForm.per_page = data.recipients.per_page;
+                this.total = data.recipients.total;
             });
         }
     },
-    mounted: function () {
-        const vm = this;
+    mounted() {
         this.campaign = window.campaign;
         this.currentUser = window.user;
         this.pusherKey = window.pusherKey;
@@ -164,11 +161,11 @@ window['app'] = new Vue({
         this.updateRecipients();
 
         // Events
-        window.Event.listen('filters.filter-changed', function (data) {
-            vm.searchForm.filter = data.filter;
-            vm.searchForm.label = data.label;
+        window.Event.listen('filters.filter-changed', (data) => {
+            this.searchForm.filter = data.filter;
+            this.searchForm.label = data.label;
 
-            vm.fetchRecipients();
+            this.fetchRecipients();
         });
     }
 });
@@ -208,9 +205,8 @@ window['sidebar'] = new Vue({
             });
         },
         updateCounters: function () {
-            const vm = this;
-            window['app'].pusher('private-campaign.' + this.campaign.id, 'counts.updated', function (data) {
-                vm.labelCounts = data.labelCounts
+            window['app'].pusher('private-campaign.' + this.campaign.id, 'counts.updated', (data) => {
+                this.labelCounts = data.labelCounts
             });
         },
     }

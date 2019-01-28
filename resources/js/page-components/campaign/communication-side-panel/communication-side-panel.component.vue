@@ -34,16 +34,8 @@
                     <div class="col-12">
 
                         <label for="labels" class="form-check-label">Add Label</label>
-                        <select name="label" class="form-control" id="labels" v-model="selectedLabel"
-                                @change="addLabel(recipientId)">
-                            <option value="interested">Interested</option>
-                            <option value="service">Service Dept</option>
-                            <option value="not_interested">Not Interested</option>
-                            <option value="wrong_number">Wrong Number</option>
-                            <option value="car_sold">Car Sold</option>
-                            <option value="heat">Heat Case</option>
-                        </select>
-
+                        <v-select :options="labelsDropdown" name="label" class="form-control filter--v-select"
+                                  id="labels" v-model="selectedLabel"></v-select>
                     </div>
 
                     <div class="col-12" v-if="this.labels">
@@ -282,7 +274,15 @@
                 textMessage: '',
                 emailMessage: '',
                 selectedLabel: '',
-                labels: []
+                labels: [],
+                labelsDropdown: [
+                    {value: 'interested', label: 'Interested'},
+                    {value: 'service', label: 'Service Dept'},
+                    {value: 'not_interested', label: 'Not Interested'},
+                    {value: 'wrong_number', label: 'Wrong Number'},
+                    {value: 'car_sold', label: 'Car Sold'},
+                    {value: 'heat', label: 'Heat Case'},
+                ]
             }
         },
         props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
@@ -290,7 +290,9 @@
             //
         },
         watch: {
-            //
+            selectedLabel: function (newVal) {
+                this.addLabel(newVal.value)
+            }
         },
         methods: {
             closePanel() {
@@ -313,24 +315,24 @@
                 this.labels = [];
             },
             getResponses: function (campaignId, recipientId) {
-                const vm = this;
-                vm.setLoading(true);
+                this.setLoading(true);
 
                 axios.get('/campaign/' + campaignId + '/response/' + recipientId)
-                    .then(function (response) {
-                        vm.recipient = response.data.recipient;
-                        vm.threads = response.data.threads;
-                        vm.appointments = response.data.appointments;
-                        vm.rest = response.data.rest;
-                        vm.notes = response.data.recipient.notes;
-                        vm.labels = response.data.recipient.labels_list;
+                    .then((response) => {
+                        this.recipient = response.data.recipient;
+                        this.threads = response.data.threads;
+                        this.appointments = response.data.appointments;
+                        this.rest = response.data.rest;
+                        this.notes = response.data.recipient.notes;
+                        this.labels = response.data.recipient.labels_list;
 
-                        vm.updateResponses(vm.recipient);
+                        this.updateResponses(this.recipient);
 
-                        vm.setLoading(false);
+                        this.setLoading(false);
                     })
-                    .catch(function (response) {
-                        vm.$toastr.error("Couldn't fetch responses.");
+                    .catch((response) => {
+                        this.setLoading(false);
+                        this.$toastr.error("Couldn't fetch responses.");
                     });
             },
             setLoading: function (bool) {
@@ -340,182 +342,164 @@
                 this.$set(window['app'], 'loading', bool);
             },
             addNotes: function (recipientId) {
-                const vm = this;
-
                 axios.post('/recipient/' + recipientId + '/update-notes',
                     {
-                        notes: vm.notes
+                        notes: this.notes
                     })
-                    .then(function (response) {
-                        vm.$toastr.success('Note added.');
+                    .then((response) => {
+                        this.$toastr.success('Note added.');
                     })
-                    .catch(function (response) {
+                    .catch((response) => {
                         // TODO: error
                         console.log(response);
                         // this.$toastr.error("MESSAGE");
                     });
             },
             appointmentCalledBackToggle: function (event, appointmentId) {
-                const vm = this;
                 axios.post('/appointment/' + appointmentId + '/update-called-status',
                     {
                         called_back: event.target.checked
                     })
-                    .then(function (response) {
-                        vm.$toastr.success('Called status updated.');
+                    .then((response) => {
+                        this.$toastr.success('Called status updated.');
                     })
-                    .catch(function (response) {
+                    .catch((response) => {
                         // TODO: error
                         console.log(response);
                     });
             },
             addAppointment: function (campaignId, recipientId) {
-                const vm = this;
-
                 axios.post('/campaign/' + campaignId + '/responses/' + recipientId + '/add-appointment',
                     {
-                        appointment_date: vm.appointmentSelectedDate,
-                        appointment_time: vm.appointmentSelectedTime
+                        appointment_date: this.appointmentSelectedDate,
+                        appointment_time: this.appointmentSelectedTime
                     })
-                    .then(function (response) {
-                        vm.$toastr.success('Appointment added.');
+                    .then((response) => {
+                        this.$toastr.success('Appointment added.');
                     })
-                    .catch(function (response) {
+                    .catch((response) => {
                         // TODO: error
                         console.log(response);
                     });
             },
             messageUpdateReadStatus: function (event, textId) {
-                const vm = this;
                 axios.post('/response/' + textId + '/update-read-status',
                     {
                         read: event.target.checked
                     })
-                    .then(function (response) {
-                        vm.$toastr.success('Read status updated.');
+                    .then((response) => {
+                        this.$toastr.success('Read status updated.');
                     })
-                    .catch(function (response) {
+                    .catch((response) => {
                         // TODO: error
                         console.log(response);
                     });
             },
             sendText: function (campaignId, recipientId) {
-                const vm = this;
-
                 axios.post('/campaign/' + campaignId + '/text-response/' + recipientId,
                     {
-                        message: vm.textMessage
+                        message: this.textMessage
                     })
-                    .then(function (response) {
-                        vm.$toastr.success('Text sent.');
+                    .then((response) => {
+                        this.$toastr.success('Text sent.');
                     })
-                    .catch(function (response) {
+                    .catch((response) => {
                         // TODO: error
                         console.log(response);
                     });
             },
             sendEmail: function (campaignId, recipientId) {
-                const vm = this;
-
                 axios.post('/campaign/' + campaignId + '/email-response/' + recipientId,
                     {
-                        message: vm.emailMessage
+                        message: this.emailMessage
                     })
-                    .then(function (response) {
-                        vm.$toastr.success('Email sent.');
+                    .then((response) => {
+                        this.$toastr.success('Email sent.');
                     })
-                    .catch(function (response) {
+                    .catch((response) => {
                         // TODO: error
                         console.log(response);
                     });
             },
-            addLabel: function (recipientId) {
-                const vm = this;
+            addLabel: function (label) {
+                let selectedLabel = this.selectedLabel.value;
+                if (label) {
+                    selectedLabel = label;
+                }
 
-                axios.post('/recipient/' + recipientId + '/add-label',
+                axios.post('/recipient/' + this.recipientId + '/add-label',
                     {
-                        label: vm.selectedLabel
+                        label: selectedLabel
                     })
-                    .then(function (response) {
-                        vm.$toastr.success('Label added.');
+                    .then((response) => {
+                        this.$toastr.success('Label added.');
                     })
-                    .catch(function (response) {
+                    .catch((response) => {
                         // TODO: error
                         console.log(response);
                     });
             },
             removeLabel: function (label) {
-                const vm = this;
-
-                let selectedLabel = vm.selectedLabel;
+                let selectedLabel = this.selectedLabel.value;
                 if (label) {
                     selectedLabel = label;
                 }
 
-                axios.post('/recipient/' + vm.recipientId + '/remove-label',
+                axios.post('/recipient/' + this.recipientId + '/remove-label',
                     {
                         label: selectedLabel
                     })
-                    .then(function (response) {
-                        vm.$toastr.success('Label removed.');
+                    .then((response) => {
+                        this.$toastr.success('Label removed.');
                     })
-                    .catch(function (response) {
+                    .catch((response) => {
                         // TODO: error
                         console.log(response);
                     });
             },
             updateResponses: function (recipient) {
-                const vm = this;
 
                 // TODO: check this out
                 if (recipient) {
 
-                    window['app'].pusher('private-campaign.' + vm.campaign.id, 'response.' + recipient.id + '.updated', function (data) {
-                        console.log('updateResponses:');
-                        console.log(data);
-                        // console.log(data.recipient.labels_list);
-                        // console.log(data.labels);
+                    window['app'].pusher('private-campaign.' + this.campaign.id, 'response.' + recipient.id + '.updated', (data) => {
 
                         if (data) {
-                            axios.get('/recipient/' + vm.recipientId + '/get-responses-by-recipient',
+                            this.setLoading(true);
+                            axios.get('/recipient/' + this.recipientId + '/get-responses-by-recipient',
                                 {
                                     params: {
                                         list: data
                                     }
                                 })
-                                .then(function (response) {
-                                    console.log(response.data);
-                                    // TODO: success message
-                                    // vm.$toastr.success('Label removed.');
+                                .then((response) => {
 
                                     if (response.data.appointments) {
-                                        vm.appointments = response.data.appointments;
+                                        this.appointments = response.data.appointments;
                                     }
                                     if (response.data.threads) {
-                                        vm.threads = response.data.threads;
+                                        this.threads = response.data.threads;
                                     }
                                     if (response.data.recipient) {
-                                        vm.recipient = response.data.recipient;
-                                    }
-                                    if (response.data.recipient.labels_list) {
-                                        // vm.labels = response.data.labels;
-                                        vm.labels = response.data.recipient.labels_list;
-                                    }
-                                    if (response.data.recipient.labels_list) {
-                                        // vm.labels = response.data.labels;
-                                        vm.labels = response.data.recipient.labels_list;
-                                    }
-                                    if (response.data.recipient.labels_list_text) {
-                                        this.$set(window['app'].recipients, 'recipients', bool);
+                                        this.recipient = response.data.recipient;
 
-                                        example1.items = example1.items.filter(function (item) {
-                                            return item.message.match(/Foo/)
-                                        });
+                                        // Update labels in main recipients list
+                                        this.$set(window['app'].recipients[this.recipientKey], 'labels_list_text',
+                                            response.data.recipient.labels_list_text);
                                     }
+                                    if (response.data.recipient.labels_list) {
+                                        this.labels = response.data.recipient.labels_list;
+                                    }
+                                    if (response.data.recipient.labels_list) {
+                                        this.labels = response.data.recipient.labels_list;
+                                    }
+
+                                    this.setLoading(false);
                                 })
-                                .catch(function (response) {
+                                .catch((response) => {
                                     // TODO: error
                                     console.log(response);
+                                    this.setLoading(false);
                                 });
                         }
                     });

@@ -132,13 +132,13 @@
         </div>
 
         <div id="recipients-list" v-if="recipients.length">
-            <div class="row no-gutters" v-for="(recipient, key) in recipients" @click="showPanel(recipient, $event)">
+            <div class="row no-gutters" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
                 <div class="col-4">
-                    <div class="name-wrapper" :class="{'half': recipient.labels_list_text.length}">
+                    <div class="name-wrapper" :class="{'half': recipient.labels_list_text}">
                         <span>@{{ recipient.name }}</span>
                     </div>
-                    <div class="label-wrapper" :class="{'half': recipient.labels_list_text.length}"
-                         v-if="recipient.labels_list_text.length">
+                    <div class="label-wrapper" :class="{'half': recipient.labels_list_text}"
+                         v-if="recipient.labels_list_text">
                         <span>Labels: @{{ recipient.labels_list_text }}</span>
                     </div>
                 </div>
