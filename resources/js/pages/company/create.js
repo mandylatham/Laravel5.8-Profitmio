@@ -41,6 +41,10 @@ window['app'] = new Vue({
         this.companyIndex = window.indexUrl;
     },
     methods: {
+        addImageFile() {
+            this.createForm.image = this.$refs.image.files[0];
+            console.log(this.$refs.image.files[0]);
+        },
         validateBasicTab() {
             let valid = true;
             ['name','type'].forEach(field => {
@@ -71,7 +75,7 @@ window['app'] = new Vue({
                 .then(response => {
                     this.isLoading = false;
                     this.$toastr.success("Company Added");
-                    window.location.replace(this.companyIndex);
+                    // window.location.replace(this.companyIndex);
                 })
                 .catch(error => {
                     this.createForm.errors = error.errors;

@@ -32,7 +32,7 @@
                     <tab-content title="Description" icon="fas fa-list-ul" :before-change="validateBasicTab">
                         <div class="form-group">
                             <label class="well well-sm">
-                                <input type="file" name="image">
+                                <input type="file" name="image" ref="image" @change="addImageFile()">
                             </label>
                         </div>
                         <div class="form-group">

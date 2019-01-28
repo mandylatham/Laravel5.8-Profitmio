@@ -19,12 +19,33 @@ export default class Form {
      * Fetch all form elements
      */
     data() {
-        let data = {};
+        if (this.hasFile()) {
+            console.log("form has a file");
+            // If files are present, return a FormData object
+            let formData = new FormData();
+            for (let property in this.originalData) {
+                formData.append(property, this[property]);
+            }
+            return formData;
+        }
 
+        console.log("form does not have a file");
+        // Default parameter handling
+        let data = {};
         for (let property in this.originalData) {
             data[property] = this[property];
         }
         return data;
+    }
+
+    hasFile() {
+        let hasFile = false;
+        for (let property in this.originalData) {
+            if (typeof this[property].name === 'string') {
+                hasFile = true;
+            }
+        }
+        return hasFile;
     }
 
     updateData(field) {
@@ -49,32 +70,33 @@ export default class Form {
 
     submit(method, url) {
         return new Promise((resolve, reject) =>  {
-            if (method === 'post') {
-                axios[method](url, this.data())
-                    .then(response => {
+            if (method === 'get' || method === 'delete') {
+                axios[method](url, { params: this.data() }) 
+                .then(response => {
                         this.onSuccess(response.data);
-
                         resolve(response.data);
-                    })
-                    .catch(error => {
-                        this.onFail(error.response.data);
-
-                        reject(error.response.data);
-                    });
-            } else {
-                axios[method](url, {
-                    params: this.data()
                 })
-                    .then(response => {
-                        this.onSuccess(response.data);
+                .catch(error => {
+                    this.onFail(error.response.data);
 
-                        resolve(response.data);
-                    })
-                    .catch(error => {
-                        this.onFail(error.response.data);
+                    reject(error.response.data);
+                });
+            } else {
+                axios[method](url, this.data(),{
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => {
+                    this.onSuccess(response.data);
 
-                        reject(error.response.data);
-                    });
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    this.onFail(error.response.data);
+
+                    reject(error.response.data);
+                });
             }
         });
     }

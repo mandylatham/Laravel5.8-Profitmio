@@ -73,6 +73,20 @@ return [
             'url' => env('AWS_URL'),
         ],
 
+        'company-images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/company'),
+            'url' => env('APP_URL').'/storage',
+            'visitbility' => 'public',
+        ],
+
+        'user-images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/user'),
+            'url' => env('APP_URL').'/storage',
+            'visitbility' => 'public',
+        ],
+
     ],
 
 ];

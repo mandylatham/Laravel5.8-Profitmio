@@ -159,24 +159,25 @@ class CompanyController extends Controller
      * @param StoreCompanyRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreCompanyRequest $request)
+    public function store(Request $request)
     {
+        dd($request->hasFile('image'));
         $company = new $this->company([
-            'name' => $request->input('name'),
-            'type' => $request->input('type'),
-            'phone' => $request->input('phone'),
-            'address' => $request->input('address'),
-            'address2' => $request->input('address2'),
-            'city' => $request->input('city'),
-            'state' => $request->input('state'),
-            'zip' => $request->input('zip'),
-            'country' => $request->input('country'),
-            'url' => $request->input('url'),
-            'facebook' => $request->input('facebook'),
-            'twitter' => $request->input('twitter'),
+            'name' => $json->input('name'),
+            'type' => $json->input('type'),
+            'phone' => $json->input('phone'),
+            'address' => $json->input('address'),
+            'address2' => $json->input('address2'),
+            'city' => $json->input('city'),
+            'state' => $json->input('state'),
+            'zip' => $json->input('zip'),
+            'country' => $json->input('country'),
+            'url' => $json->input('url'),
+            'facebook' => $json->input('facebook'),
+            'twitter' => $json->input('twitter'),
         ]);
-        if ($request->hasFile('image')) {
-            $company->image_url = $request->file('image')->store('company-image', 'public');
+        if ($json->has('image')) {
+            $company->image_url = $json->file('image')->store('company-image', 'public');
         }
         $company->save();
         return redirect()->route('company.campaign.index', ['company' => $company->id]);
@@ -189,8 +190,9 @@ class CompanyController extends Controller
      * @param StoreCompanyRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Company $company, StoreCompanyRequest $request)
+    public function update(Company $company, Request $request)
     {
+        dd($request->hasFile('image'));
         $company->update([
             'name' => $request->input('name'),
             'type' => $request->input('type'),
@@ -206,8 +208,8 @@ class CompanyController extends Controller
             'twitter' => $request->input('twitter'),
         ]);
         if ($request->hasFile('image')) {
-            $company->image_url = $request->file('image')->store('company-image', 's3');
-            $this->storage->disk('s3')->setVisibility($company->image_url, 'public');
+            $company->image_url = $request->file('image')->store('test.png', 'company-images');
+            // $this->storage->disk('s3')->setVisibility($company->image_url, 'public');
         }
         $company->save();
         return response()->redirectToRoute('company.campaign.index', ['company' => $company->id]);

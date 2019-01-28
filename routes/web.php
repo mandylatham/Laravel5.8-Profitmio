@@ -282,7 +282,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('for-user-display', 'CompanyController@getForUserDisplay')->name('company.for-user-display');
         Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
         Route::post('/upload-image', 'CompanyController@uploadImage')->middleware('can:edit,App\Models\Company')->name('company.upload-image');
-        Route::post('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');
+        Route::put('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');
         Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
         Route::get('/{company}/campaign', 'CompanyController@campaignIndex')->middleware('can:viewForPreferences,company')->name('company.campaign.index');
         Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:manage,company')->name('company.edit');
