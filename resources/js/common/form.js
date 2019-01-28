@@ -83,11 +83,7 @@ export default class Form {
                     reject(error.response.data);
                 });
             } else {
-                axios[method](url, this.data(),{
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    }
-                })
+                axios[method](url, this.data())
                 .then(response => {
                     this.onSuccess(response.data);
 
