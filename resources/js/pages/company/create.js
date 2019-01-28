@@ -75,7 +75,7 @@ window['app'] = new Vue({
                 .then(response => {
                     this.isLoading = false;
                     this.$toastr.success("Company Added");
-                    // window.location.replace(this.companyIndex);
+                    window.location.replace(this.companyIndex);
                 })
                 .catch(error => {
                     this.createForm.errors = error.errors;

@@ -20,7 +20,6 @@ export default class Form {
      */
     data() {
         if (this.hasFile()) {
-            console.log("form has a file");
             // If files are present, return a FormData object
             let formData = new FormData();
             for (let property in this.originalData) {
@@ -29,7 +28,6 @@ export default class Form {
             return formData;
         }
 
-        console.log("form does not have a file");
         // Default parameter handling
         let data = {};
         for (let property in this.originalData) {
@@ -41,7 +39,10 @@ export default class Form {
     hasFile() {
         let hasFile = false;
         for (let property in this.originalData) {
-            if (typeof this[property].name === 'string') {
+            if (typeof this[property] === 'object' && 
+                    this[property] != null &&
+                    this[property].name != undefined &&
+                    typeof this[property].name === 'string') {
                 hasFile = true;
             }
         }

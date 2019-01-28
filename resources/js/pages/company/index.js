@@ -80,6 +80,7 @@ window['app'] = new Vue({
                     this.isLoading = false;
                 })
                 .catch(error => {
+                    console.log(error);
                     this.$toastr.error("Unable to get companies");
                 });
         },
