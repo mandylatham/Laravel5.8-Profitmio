@@ -3,8 +3,8 @@ import './../../common';
 import Form from './../../common/form';
 import axios from 'axios';
 // Chart Library
-import VueChartkick from 'vue-chartkick'
-import Chart from 'chart.js'
+import VueChartkick from 'vue-chartkick';
+import Chart from 'chart.js';
 import {filter} from 'lodash';
 import './../../filters/user-role.filter';
 import {generateRoute} from './../../common/helpers';

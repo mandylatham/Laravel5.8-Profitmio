@@ -1,0 +1,159 @@
+@import './../common/index';
+@import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/input-group";
+@import './../components/date-pick';
+@import './../components/spinner-icon';
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+
+#company-details {
+  .company-image-container {
+    text-align: center;
+  }
+  .form-row {
+    margin-bottom: 4px;
+    p {
+        margin-bottom: 2px;
+    }
+  }
+  p.form-control {
+    background-color: transparent;
+    border: 0;
+    border-bottom: 1px solid #528;
+    height: auto;
+    padding-left: 0;
+    border-radius: 0;
+  }
+  .form-controls {
+      text-align: right;
+  }
+  .align-items-end {
+    text-align: right;
+  }
+  .align-items-center {
+    text-align: center;
+  }
+  .editable {
+    padding: 0 8px;
+    margin-top: 0;
+    min-height: 1.5rem;
+    h1 {
+      color: $brand-purple;
+      padding-left: 0;
+      input {
+        color: $brand-purple;
+        font-size: 2.25rem;
+        font-weight: bold;
+        height: 3.5rem;
+        padding: .5rem;
+      }
+    }
+  }
+  .form-label {
+    color: $brand-purple;
+    font-size: .6rem;
+    margin-bottom: -5px;
+  }
+  .variable-button {
+      margin: 2px;
+      padding: 1px 6px;
+  }
+  .template-field {
+      @include media-breakpoint-up(md) {
+          text-align: right
+      }
+  }
+  .template-name {
+      border-left: 3px solid $brand-purple;
+  }
+  .card-header {
+      background-color: $brand-purple;
+      padding: 2px 0px 2px 12px;
+      p {
+          margin-bottom: 0;
+      }
+  }
+}
+
+.sidebar-wrapper {
+    padding: 2rem;
+    position: relative;
+    .avatar {
+        margin-bottom: 1.5rem;
+        position: relative;
+        &--image {
+            height: 120px;
+            width: 120px;
+            border-radius: 50%;
+            background-color: #fff;
+            margin: 0 auto;
+            position: relative;
+        }
+        &--edit {
+            padding: 0;
+            height: 30px;
+            width: 30px;
+            background-color: #fff;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid $brand-purple;
+            top: 0;
+            right: 0;
+            color: $brand-black;
+            position: absolute;
+        }
+    }
+    .edit-user, .delete-user {
+        margin: 0;
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1em;
+        padding: 0;
+    }
+    .edit-user {
+        position: absolute;
+        left: 2rem;
+        top: 1rem;
+    }
+    .delete-user {
+        float: right;
+        margin-top: 3rem;
+    }
+    .panel-data {
+        background-color: transparent;
+        color: #fff;
+        border: none;
+        border-bottom: 1px solid #fff;
+        border-radius: 0;
+        padding: 0.4rem 1rem;
+        line-height: 1em;
+        height: auto;
+    }
+    .form-group {
+        margin-bottom: 0.8rem;
+        label {
+            color: $brand-white;
+            font-size: 0.85rem;
+        }
+    }
+    .loader-spinner {
+        .sk-circle {
+            margin: 0;
+            width: 15px;
+            height: 15px;
+            .sk-child:before {
+                background-color: #fff;
+            }
+        }
+    }
+    .vue-dropzone {
+        background-color: #fff;
+        border-radius: 4px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

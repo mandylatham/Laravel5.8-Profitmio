@@ -9,8 +9,6 @@
 @section('body-script')
     <script>
         window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
-        window.searchCompaniesFormUrl = "{{ route('company.for-user-display') }}";
-        window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
         window.campaignCompanySelected = @json($campaignCompanySelected);
         window.updateUserUrl = "{{ route('user.update', ['user' => ':userId']) }}";
         window.timezones = @json($timezones);

@@ -9,7 +9,7 @@
 @section('body-script')
     <script>
         window.searchFormUrl = "{{ route('company.for-user-display') }}";
-        window.companyEdit = "{{ route('company.edit', ['company' => ':companyId']) }}";
+        window.companyEdit = "{{ route('company.details', ['company' => ':companyId']) }}";
         window.companyDelete = "{{ route('company.delete', ['company' => ':companyId']) }}";
         window.q = @json($q);
     </script>

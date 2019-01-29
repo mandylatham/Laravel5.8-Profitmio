@@ -10,7 +10,6 @@
     <script>
         window.createUrl = "{{ route('company.store') }}";
         window.indexUrl = "{{ route('company.index') }}";
-        window.imageUploadUrl = "{{ route('company.upload-image') }}";
     </script>
     <script src="{{ asset('js/company-create.js') }}"></script>
 @endsection

@@ -147,9 +147,20 @@ class CompanyController extends Controller
      * @param  \App\Models\Company  $company
      * @return \Illuminate\Http\Response
      */
-    public function edit(Company $company)
+    public function details(Company $company)
     {
-        return view('company.edit', ['company' => $company]);
+        $loggedUser = auth()->user();
+        if ($loggedUser->isAdmin()) {
+            $hasCampaigns = $company->getCampaigns()->count() > 0;
+        } else {
+            $hasCampaigns = $company->getCampaigns()->where('company_id', get_active_company())->count() > 0;
+        }
+
+        return view('company.details', [
+            'users' => $company->users,
+            'hasCampaigns' => $hasCampaigns,
+            'company' => $company,
+        ]);
     }
 
 
@@ -179,7 +190,7 @@ class CompanyController extends Controller
             $company->image_url = $request->file('image')->store('company-image', 'public');
         }
         $company->save();
-        return redirect()->route('company.index');
+        return redirect()->route('company.details', ['company' => $company]);
     }
 
     /**
@@ -191,66 +202,15 @@ class CompanyController extends Controller
      */
     public function update(Company $company, Request $request)
     {
-        dd($request->hasFile('image'));
-        $company->update([
-            'name' => $request->input('name'),
-            'type' => $request->input('type'),
-            'phone' => $request->input('phone'),
-            'address' => $request->input('address'),
-            'address2' => $request->input('address2'),
-            'city' => $request->input('city'),
-            'state' => $request->input('state'),
-            'zip' => $request->input('zip'),
-            'country' => $request->input('country'),
-            'url' => $request->input('url'),
-            'facebook' => $request->input('facebook'),
-            'twitter' => $request->input('twitter'),
-        ]);
         if ($request->hasFile('image')) {
-            $company->image_url = $request->file('image')->store('test.png', 'company-images');
-            // $this->storage->disk('s3')->setVisibility($company->image_url, 'public');
+            $company->image_url = $request->file('image')->store('company-images');
+        } else {
+            $company->update($request->all());
         }
         $company->save();
-        return response()->redirectToRoute('company.campaign.index', ['company' => $company->id]);
-    }
-
-    public function uploadImage(FileReceiver $receiver)
-    {
-        // check if the upload is success, throw exception or return response you need
-        if ($receiver->isUploaded() === false) {
-            throw new UploadMissingFileException();
-        }
-        // receive the file
-        $save = $receiver->receive();
-
-        // check if the upload has finished (in chunk mode it will send smaller files)
-        if ($save->isFinished()) {
-        // save the file and return any response you need
-            return $this->saveFile($save->getFile());
-        }
-
-        // we are in chunk mode, lets send the current progress
-        /** @var AbstractHandler $handler */
-        $handler = $save->handler();
         return response()->json([
-            "done" => $handler->getPercentageDone()
+            'status' => 'ok'
         ]);
-    }
-
-    protected function saveFile(UploadedFile $file)
-    {
-        $fileName = $this->createFilename($file);
-        // Group files by mime type
-        $mime = str_replace('/', '-', $file->getMimeType());
-        // Group files by the date (week
-        $dateFolder = date("Y-m-W");
-        // Build the file path
-        // $filePath = "upload/{$mime}/{$dateFolder}/";
-        $filePath = "temporary_uploads/";
-        $finalPath = storage_path("app/".$filePath);
-
-        // move the file name
-        $file->move($finalPath, $fileName);
     }
 
     //region User Resource

@@ -39,7 +39,7 @@ export default class Form {
     hasFile() {
         let hasFile = false;
         for (let property in this.originalData) {
-            if (typeof this[property] === 'object' && 
+            if (typeof this[property] === 'object' &&
                     this[property] != null &&
                     this[property].name != undefined &&
                     typeof this[property].name === 'string') {
@@ -61,6 +61,14 @@ export default class Form {
         this.errors.clear();
     }
 
+    put(url) {
+        return this.submit('put', url);
+    }
+
+    patch(url) {
+        return this.submit('patch', url);
+    }
+
     post(url) {
         return this.submit('post', url);
     }
@@ -72,7 +80,7 @@ export default class Form {
     submit(method, url) {
         return new Promise((resolve, reject) =>  {
             if (method === 'get' || method === 'delete') {
-                axios[method](url, { params: this.data() }) 
+                axios[method](url, { params: this.data() })
                 .then(response => {
                         this.onSuccess(response.data);
                         resolve(response.data);
