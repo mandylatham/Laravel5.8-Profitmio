@@ -177,7 +177,7 @@
                                        placeholder="Type your message..." v-model="textMessage">
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-primary waves-effect send-sms"
-                                            @click="sendText(campaign.id, recipientId)">
+                                            @click="sendText">
                                         <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
@@ -236,7 +236,7 @@
                                        placeholder="Type your message..." v-model="emailMessage">
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-primary waves-effect send-email"
-                                            @click="sendEmail(campaign.id, recipientId)">
+                                            @click="sendEmail">
                                         <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
@@ -251,6 +251,7 @@
 
 <script>
     import axios from 'axios';
+    import {generateRoute} from './../../../common/helpers'
 
     export default {
         mounted() {
@@ -258,7 +259,8 @@
             this.getResponses(this.campaign.id, this.recipientId);
         },
         components: {
-            'date-pick': require('./../../../components/date-pick/date-pick')
+            'date-pick': require('./../../../components/date-pick/date-pick'),
+            generateRoute
         },
         data() {
             return {
@@ -295,8 +297,10 @@
             }
         },
         methods: {
+            generateRoute,
             closePanel() {
                 window['app'].pusherUnbindEvent('private-campaign.' + this.campaign.id, 'response.' + this.recipientId + '.updated');
+                this.resetVars();
                 this.$emit('closePanel', {});
             },
             resetVars() {
@@ -317,7 +321,7 @@
             getResponses: function (campaignId, recipientId) {
                 this.setLoading(true);
 
-                axios.get('/campaign/' + campaignId + '/response/' + recipientId)
+                axios.get(generateRoute(window.getResponsesUrl, {'recipientId': recipientId}))
                     .then((response) => {
                         this.recipient = response.data.recipient;
                         this.threads = response.data.threads;
@@ -342,7 +346,7 @@
                 this.$set(window['app'], 'loading', bool);
             },
             addNotes: function (recipientId) {
-                axios.post('/recipient/' + recipientId + '/update-notes',
+                axios.post(generateRoute(window.updateNotesUrl, {'recipientId': recipientId}),
                     {
                         notes: this.notes
                     })
@@ -350,13 +354,12 @@
                         this.$toastr.success('Note added.');
                     })
                     .catch((response) => {
-                        // TODO: error
                         console.log(response);
-                        // this.$toastr.error("MESSAGE");
+                        this.$toastr.error('Failed to add note.');
                     });
             },
             appointmentCalledBackToggle: function (event, appointmentId) {
-                axios.post('/appointment/' + appointmentId + '/update-called-status',
+                axios.post(generateRoute(window.appointmentUpdateCalledStatusUrl, {'appointmentId': appointmentId}),
                     {
                         called_back: event.target.checked
                     })
@@ -364,12 +367,12 @@
                         this.$toastr.success('Called status updated.');
                     })
                     .catch((response) => {
-                        // TODO: error
                         console.log(response);
+                        this.$toastr.error('Failed to update called status.');
                     });
             },
             addAppointment: function (campaignId, recipientId) {
-                axios.post('/campaign/' + campaignId + '/responses/' + recipientId + '/add-appointment',
+                axios.post(generateRoute(window.addAppointmentUrl, {'recipientId': recipientId}),
                     {
                         appointment_date: this.appointmentSelectedDate,
                         appointment_time: this.appointmentSelectedTime
@@ -378,12 +381,12 @@
                         this.$toastr.success('Appointment added.');
                     })
                     .catch((response) => {
-                        // TODO: error
                         console.log(response);
+                        this.$toastr.error('Failed to add an appointment.');
                     });
             },
             messageUpdateReadStatus: function (event, textId) {
-                axios.post('/response/' + textId + '/update-read-status',
+                axios.post(generateRoute(window.messageUpdateReadStatusUrl, {'responseId': textId}),
                     {
                         read: event.target.checked
                     })
@@ -391,12 +394,12 @@
                         this.$toastr.success('Read status updated.');
                     })
                     .catch((response) => {
-                        // TODO: error
                         console.log(response);
+                        this.$toastr.error('Failed to update message read status.');
                     });
             },
-            sendText: function (campaignId, recipientId) {
-                axios.post('/campaign/' + campaignId + '/text-response/' + recipientId,
+            sendText: function () {
+                axios.post(generateRoute(window.sendTextUrl, {'recipientId': this.recipientId}),
                     {
                         message: this.textMessage
                     })
@@ -404,12 +407,12 @@
                         this.$toastr.success('Text sent.');
                     })
                     .catch((response) => {
-                        // TODO: error
                         console.log(response);
+                        this.$toastr.error('Failed to send text.');
                     });
             },
-            sendEmail: function (campaignId, recipientId) {
-                axios.post('/campaign/' + campaignId + '/email-response/' + recipientId,
+            sendEmail: function () {
+                axios.post(generateRoute(window.sendEmailUrl, {'recipientId': this.recipientId}),
                     {
                         message: this.emailMessage
                     })
@@ -417,8 +420,8 @@
                         this.$toastr.success('Email sent.');
                     })
                     .catch((response) => {
-                        // TODO: error
                         console.log(response);
+                        this.$toastr.error('Failed to send email.');
                     });
             },
             addLabel: function (label) {
@@ -427,7 +430,7 @@
                     selectedLabel = label;
                 }
 
-                axios.post('/recipient/' + this.recipientId + '/add-label',
+                axios.post(generateRoute(window.addLabelUrl, {'recipientId': this.recipientId}),
                     {
                         label: selectedLabel
                     })
@@ -435,8 +438,8 @@
                         this.$toastr.success('Label added.');
                     })
                     .catch((response) => {
-                        // TODO: error
                         console.log(response);
+                        this.$toastr.error('Failed to add label.');
                     });
             },
             removeLabel: function (label) {
@@ -445,7 +448,7 @@
                     selectedLabel = label;
                 }
 
-                axios.post('/recipient/' + this.recipientId + '/remove-label',
+                axios.post(generateRoute(window.removeLabelUrl, {'recipientId': this.recipientId}),
                     {
                         label: selectedLabel
                     })
@@ -453,20 +456,20 @@
                         this.$toastr.success('Label removed.');
                     })
                     .catch((response) => {
-                        // TODO: error
                         console.log(response);
+                        this.$toastr.error('Failed to remove label.');
                     });
             },
             updateResponses: function (recipient) {
 
-                // TODO: check this out
                 if (recipient) {
 
                     window['app'].pusher('private-campaign.' + this.campaign.id, 'response.' + recipient.id + '.updated', (data) => {
 
                         if (data) {
                             this.setLoading(true);
-                            axios.get('/recipient/' + this.recipientId + '/get-responses-by-recipient',
+
+                            axios.get(generateRoute(window.recipientGetResponsesUrl, {'recipientId': this.recipientId}),
                                 {
                                     params: {
                                         list: data
@@ -497,8 +500,8 @@
                                     this.setLoading(false);
                                 })
                                 .catch((response) => {
-                                    // TODO: error
                                     console.log(response);
+                                    this.$toastr.error('Failed to update responses.');
                                     this.setLoading(false);
                                 });
                         }

@@ -177,7 +177,7 @@ class ResponseController extends Controller
      * @param Recipient $recipient
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getResponse(Campaign $campaign, Recipient $recipient)
+    public function getResponseThread(Campaign $campaign, Recipient $recipient)
     {
         /*
         $responses = \DB::table('responses')
@@ -196,7 +196,7 @@ class ResponseController extends Controller
      * @param Recipient $recipient
      * @return array
      */
-    public function getResponseJson(Campaign $campaign, Recipient $recipient)
+    public function getResponse(Campaign $campaign, Recipient $recipient)
     {
         $appointments = Appointment::where('recipient_id', $recipient->id)->get();
         $responses = Response::where('campaign_id', $campaign->id)

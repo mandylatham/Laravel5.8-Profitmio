@@ -42,39 +42,6 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 //    });
 //});
 
-// TODO: remove me after testing
-Route::get('/pusher-test', function () {
-
-    $labelCounts = App\Models\Recipient::withResponses(20)
-        ->selectRaw("sum(interested) as interested, sum(not_interested) as not_interested,
-                sum(appointment) as appointment, sum(service) as service, sum(wrong_number) as wrong_number,
-                sum(car_sold) as car_sold, sum(heat) as heat_case, sum(callback) as callback,
-                sum(case when (interested = 0 and not_interested = 0 and appointment = 0 and service = 0 and
-                wrong_number = 0 and car_sold = 0 and heat = 0) then 1 else 0 end) as not_labelled")
-        ->first();
-
-    $data = [
-        'labelCounts' => array_map('intval', $labelCounts->toArray()),
-    ];
-
-    // $data['message'] = 'hello world ' . time();
-
-    $pusher = new Pusher\Pusher(
-        env('PUSHER_APP_KEY'),
-        env('PUSHER_APP_SECRET'),
-        env('PUSHER_APP_ID'),
-        [
-            'cluster' => env('PUSHER_CLUSTER'),
-            'useTLS'  => true,
-        ]
-    );
-
-    $pusher->trigger("private-campaign.20", 'counts.updated', $data);
-    // $pusher->trigger("campaign.20", 'counts.updated', $data);
-
-    return ['success' => true];
-});
-
 Route::get('/layout', function () {
     return view('layouts.base');
 });
@@ -93,11 +60,6 @@ Route::get('/user-dashboard', function () {
 Route::get('/user-view', function () {
     return view('user.view');
 });
-Route::get('/new-response-console', function () {
-    return view('campaign.console');
-});
-
-// TODO: remove me when original route is done
 Route::get('/new-response-console', function () {
     return view('campaign.console');
 });
@@ -259,11 +221,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
         Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
         Route::any('/get-response-list', 'ResponseController@getResponseList');
-        // TODO: old route
-        // Route::get('/response/{recipient}', 'ResponseController@getResponse');
-        Route::get('/response/{recipient}', 'ResponseController@getResponseJson');
-        Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply');
-        Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console');
+        Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
+        Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
+        Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console')->name('campaign.recipient.email-response');
         Route::get('/response-console', 'ResponseConsoleController@show')->name('campaign.response-console.index');
         Route::get('/response-console/unread', 'ResponseConsoleController@showUnread')->name('campaign.response-console.index.unread');
         Route::get('/response-console/idle', 'ResponseConsoleController@showIdle')->name('campaign.response-console.index.idle');

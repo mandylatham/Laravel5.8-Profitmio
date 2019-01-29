@@ -12,12 +12,23 @@
         window.label = @json($label);
         window.counters = @json($counters);
         window.campaign = @json($campaign);
-        window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
         window.user = @json(auth()->user());
         window.pusherKey = "{{env('PUSHER_APP_KEY')}}";
         window.pusherCluster = "{{env('PUSHER_CLUSTER')}}";
         window.pusherAuthEndpoint = "{{ url('/broadcasting/auth') }}";
         window.csrfToken = "{{ csrf_token() }}";
+        // URLs
+        window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
+        window.getResponsesUrl = "{{ route('campaign.recipient.responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.updateNotesUrl = "{{ route('recipient.update-notes', ['recipient' => ':recipientId']) }}";
+        window.appointmentUpdateCalledStatusUrl = "{{ route('appointment.update-called-status', ['appointment' => ':appointmentId']) }}";
+        window.addAppointmentUrl = "{{ route('add-appointment', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.messageUpdateReadStatusUrl = "{{ route('response.update-read-status', ['response' => ':responseId']) }}";
+        window.sendTextUrl = "{{ route('campaign.recipient.text-response', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.sendEmailUrl = "{{ route('campaign.recipient.email-response', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.addLabelUrl = "{{ route('recipient.add-label', ['recipient' => ':recipientId']) }}";
+        window.removeLabelUrl = "{{ route('recipient.remove-label', ['recipient' => ':recipientId']) }}";
+        window.recipientGetResponsesUrl = "{{ route('recipient.get-responses', ['recipient' => ':recipientId']) }}";
     </script>
     <script src="//js.pusher.com/4.3/pusher.min.js"></script>
     <script src="{{ asset('js/console.js') }}"></script>

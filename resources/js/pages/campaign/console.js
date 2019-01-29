@@ -62,9 +62,6 @@ window['app'] = new Vue({
                     this.searchForm.per_page = response.recipients.per_page;
                     this.total = response.recipients.total;
 
-                    // TODO: check this out
-                    // this.updateRecipients();
-
                     this.loading = false;
                 })
                 .catch(error => {
@@ -112,8 +109,7 @@ window['app'] = new Vue({
             }
         },
         pusherInit: function () {
-            // TODO: remove me when done
-            // Enable pusher logging - don't include this in production
+            // TODO: Enable pusher logging - don't include this in production
             Pusher.logToConsole = true;
 
             return new Pusher(this.pusherKey, {
