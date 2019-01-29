@@ -7,6 +7,7 @@ use App\Models\Drop;
 use App\Http\Requests\DeploymentRequest;
 use App\Http\Requests\BulkDeploymentRequest;
 use App\Models\Recipient;
+use App\Models\RecipientList;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
@@ -157,14 +158,9 @@ class DeploymentController extends Controller
         $viewData['recipient_info'] = [];
         $viewData['campaign'] = $campaign;
         $viewData['templates'] = CampaignScheduleTemplate::all();
+        $viewData['recipientLists'] = RecipientList::where('campaign_id', $campaign->id)->get();
 
-        /*
-        if ($request->session()->has($campaign->id . '_recipient_info')) {
-            $viewData['recipient_info'] = $request->session()->get($campaign->id . '_recipient_info');
-        }
-        */
-
-        return view('campaigns.deployments.new', $viewData);
+        return view('campaigns.deployments.create', $viewData);
     }
 
     public function create(Campaign $campaign, BulkDeploymentRequest $request)
@@ -181,13 +177,15 @@ class DeploymentController extends Controller
 
         \DB::table('deployment_recipients')->insert($batches);
 
-        return redirect()->route('campaign.drop.index', ['campaign' => $campaign->id]);
+        return response()->json(['message' => 'Resource created.']);
+
+//        return redirect()->route('campaign.drop.index', ['campaign' => $campaign->id]);
     }
 
     public function forCampaign(Campaign $campaign)
     {
         return view('campaigns.deployments.index', [
-            'campaign' => $campaign
+            'campaign' => $campaign,
         ]);
     }
 
@@ -219,7 +217,7 @@ class DeploymentController extends Controller
 
         $request->session()->put($campaign->id . "_recipient_info", $info);
 
-        return json_encode(['code' => 200, 'message' => $info]);
+        return response()->json(['code' => 200, 'message' => $info]);
     }
 
     public function scopeFilterByQuery($query, $q)

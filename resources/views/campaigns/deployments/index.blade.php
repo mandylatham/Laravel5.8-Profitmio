@@ -9,6 +9,7 @@
         window.searchDropsUrl = "{{ route('campaigns.drops.for-user-display', ['campaign' => $campaign->id]) }}";
         window.deleteDropUrl = "{{ route('campaigns.drops.delete', ['campaign' => $campaign->id, 'drop' => ':dropId']) }}";
         window.dropIndexUrl = "{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}";
+        window.dropEditUrl = @json(route('campaigns.drops.edit', ['campaign' => $campaign->id, 'drop' => ':dropId']));
     </script>
     <script src="{{ asset('js/deployments-index.js') }}"></script>
 @endsection
@@ -17,7 +18,7 @@
     <div class="container" id="drops-index" v-cloak>
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-4">
-                <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.create') }}">
+                <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id]) }}">
                     <i class="fas fa-plus mr-2"></i> NEW
                 </a>
             </div>
@@ -47,20 +48,20 @@
                                 <span class="pm-font-date-icon mr-3"></span>@{{ (drop.status === 'Completed' ? drop.completed_at : drop.send_at) | amDateTimeFormat('MM/DD/YYYY | H:mm A') }}
                             </div>
                         </div>
-                        <div class="col-4 col-md-3 drop-status">
+                        <div class="col-4 col-md-3 drop-status text-center">
                             <drop-status :status="drop.status"></drop-status>
                         </div>
                         <div class="col-4 col-md-3 drop-recipient">
-                            <i class="pm-font-recipients-icon mr-3"></i> Recipients @{{ drop.recipients }}
+                            <i class="pm-font-recipients-icon mr-3"></i> @{{ drop.recipients }} Recipients
                         </div>
                         <div class="col-4 col-md-2 drop-options">
                             <p v-if="drop.status === 'Completed' || drop.status === 'Cancelled' || drop.status === 'Processing' || drop.status === 'Deleted'" class="drop-options--no-actions">No Actions Available</p>
-                            <div v-else class="justify-content-center align-items-xl-start">
+                            <div v-else class="">
                                 <a :href="generateRoute(dropEditUrl, {'dropId': drop.id})" class="btn btn-link pm-btn-link pm-btn-link-primary">
-                                    <i class="pm-font-edit-icon mr-3"></i> Edit
+                                    <i class="pm-font-edit-icon mr-3"></i>
                                 </a>
                                 <a href="javascript:;" @click.prevent="deleteDrop(drop)" class="btn btn-link pm-btn-link pm-btn-link-warning">
-                                    <i class="far fa-trash-alt mr-3"></i> Delete
+                                    <i class="far fa-trash-alt mr-3"></i>
                                 </a>
                             </div>
                         </div>

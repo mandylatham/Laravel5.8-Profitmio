@@ -18,9 +18,11 @@ window['app'] = new Vue({
     components: {
         'pm-pagination': require('./../../../components/pm-pagination/pm-pagination'),
         'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
+        'drop-status': require('./../../../components/drop-status/drop-status'),
     },
     data: {
         drops: [],
+        dropEditUrl: '',
         loading: false,
         searchDropForm: new Form({
             q: null,
@@ -81,5 +83,6 @@ window['app'] = new Vue({
     },
     mounted() {
         this.fetchData();
+        this.dropEditUrl = window.dropEditUrl;
     }
 });
