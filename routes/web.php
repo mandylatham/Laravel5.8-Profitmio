@@ -213,7 +213,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/drops/for-user-display', 'DeploymentController@getForUserDisplay')->name('campaigns.drops.for-user-display');
         Route::get('/drop/{drop}', 'DeploymentController@show');
         Route::delete('/drop/{drop}', 'DeploymentController@delete')->name('campaigns.drops.delete');
-        Route::post('/drop/{deployment}/update', 'DeploymentController@update');
+        Route::post('/drop/{drop}/update', 'DeploymentController@update')->name('campaigns.drops.update');
         Route::get('/drops/new', 'DeploymentController@createNew')->name('campaigns.drops.create');
         Route::post('/drops', 'DeploymentController@create')->name('campaigns.drops.store');
         Route::post('/drops/add-groups', 'DeploymentController@saveGroups')->name('campaigns.drops.add-groups');

@@ -280,7 +280,7 @@ class DeploymentController extends Controller
         return view('campaigns.deployments.details', $viewData);
     }
 
-    public function update(Campaign $campaign, CampaignSchedule $deployment, DeploymentRequest $request)
+    public function update(Campaign $campaign, CampaignSchedule $drop, DeploymentRequest $request)
     {
         $date = new Carbon($request->send_at_date);
         $time = new Carbon($request->send_at_time);
@@ -288,11 +288,13 @@ class DeploymentController extends Controller
 
         $request->request->set('send_at', $send_at);
 
-        $deployment->fill($request->all());
+        $drop->fill($request->all());
 
-        $deployment->save();
+        $drop->save();
 
-        return redirect()->route('campaign.drop.index', ['campaign' => $campaign->id]);
+        return response()->json(['message' => 'Resource Updated.']);
+
+//        return redirect()->route('campaigns.drop.index', ['campaign' => $campaign->id]);
     }
 
     public function updateForm(Campaign $campaign, CampaignSchedule $drop)
