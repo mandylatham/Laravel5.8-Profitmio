@@ -40,7 +40,7 @@
             <div class="no-items-row" v-if="recipientList.length === 0">
                 No Items
             </div>
-            <div class="recipient mb-4" v-for="row in recipientList">
+            <div class="recipient mb-4" v-for="(row, index) in recipientList">
                 <div class="row no-gutters">
                     <div class="col-12 col-sm-6 col-lg-4 recipient-name">
                         <div class="recipient-name--icon">
@@ -52,40 +52,6 @@
                             <div class="recipient-name--id">List File ID: @{{ row.id }}</div>
                         </div>
                     </div>
-                    {{--@if ($list->recipients_added)--}}
-                        {{--<div class="col-md-3 col-sm-4 list-details">--}}
-                            {{--<div class="text-primary">--}}
-                                {{--<div class="list-count"><i class="ml-2 mr-2 icon fa fa-users"></i> Total</div>--}}
-                                {{--<div class="list-count count">{{ $list->recipients->count() }}</div>--}}
-                            {{--</div>--}}
-                            {{--<div>--}}
-                                {{--<div class="list-count"><i class="ml-2 mr-2 icon fa fa-envelope"></i> Emails</div>--}}
-                                {{--<div class="list-count count">{{ $list->withEmails() }}</div>--}}
-                            {{--</div>--}}
-                            {{--<div>--}}
-                                {{--<div class="list-count"><i class="ml-2 mr-2 icon fa fa-phone"></i> Phones</div>--}}
-                                {{--<div class="list-count count">{{ $list->withPhones() }}</div>--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
-                        {{--<div class="col-md-3 col-sm-4 list-details">--}}
-                            {{--<div>--}}
-                                {{--<div class="list-count"><i class="ml-2 mr-2 icon fa fa-map"></i> Conquest</div>--}}
-                                {{--<div class="list-count count">{{ $list->fromConquest(false) }}</div>--}}
-                            {{--</div>--}}
-                            {{--<div>--}}
-                                {{--<div class="list-count"><i class="ml-2 mr-2 icon fa fa-database"></i> Dealer DB</div>--}}
-                                {{--<div class="list-count count">{{ $list->fromDealerDb(true) }}</div>--}}
-                            {{--</div>--}}
-                        {{--</div>--}}
-                    {{--@else--}}
-                        {{--<div class="col-md-6 col-sm-8">--}}
-                            {{--@if ($list->failed_at)--}}
-                                {{--<div><h4 class="text-danger">List failed to load: </h4><p class="text-danger">{{ $list->failed_reason }}</p></div>--}}
-                            {{--@else--}}
-                                {{--<div class="alert"><i class="icon fa-spinner fa-spin "></i> <strong>Loading Recipients...</strong> <i>(refresh to update)</i></div>--}}
-                            {{--@endif--}}
-                        {{--</div>--}}
-                    {{--@endif--}}
                     <div class="col-12 col-sm-6 col-lg-3 recipient-stats">
                         <div class="recipient-stats--stat">
                             <span class="pm-font-companies-icon"></span>
@@ -123,7 +89,7 @@
                             <a class="btn pm-btn btn-transparent" :href="generateRoute(downloadRecipientListUrl, {listId: row.id})" download>
                                 <download-icon></download-icon>
                             </a>
-                            <a class="btn pm-btn btn-transparent" href="javascript:;" @click.prevent="removeList(row)">
+                            <a class="btn pm-btn btn-transparent" href="javascript:;" @click.prevent="removeList(row, index)">
                                 <spinner-icon :size="'xs'" v-if="loadingStats"></spinner-icon>
                                 <trash-icon v-if="!loadingStats"></trash-icon>
                             </a>
