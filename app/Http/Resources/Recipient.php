@@ -18,6 +18,7 @@ class Recipient extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'email' => $this->email,
             'phone' => $this->phone,
             'address1' => $this->address1,
             'city' => $this->city,
