@@ -110,9 +110,6 @@
                                 <tr v-if="phoneNumbers.length === 0">
                                     <td colspan="3">
                                         <div class="text-center text-danger font-weight-bold mt-4 mb-2">No Phone Numbers</div>
-                                        <div class="text-center mb-4">
-                                            <button class="btn pm-btn pm-btn-md pm-btn-purple" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Add your first Phone Number</button>
-                                        </div>
                                     </td>
                                 </tr>
                                 </tbody>
