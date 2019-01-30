@@ -9,10 +9,6 @@
 #campaigns-edit {
     padding: 2rem 1rem;
 
-    .card-body {
-        padding: 0;
-    }
-
     .feature-input {
         padding: 1.25rem;
     }
@@ -37,10 +33,41 @@
         cursor: pointer;
     }
 
-    .wizard-container {
+    .card-header {
+        padding: 0;
+        background-color: transparent;
+        border-bottom: 1px solid $brand-purple;
+        .nav {
+            margin: 0;
+            background-color: transparent;
+            border: none;
+        }
+    }
+
+    .card {
+        background-color: transparent;
+        border: none;
+        .nav-tabs .nav-link {
+            background-color: $brand-purple;
+            color: #fff;
+            border: none;
+            height: 100%;
+            padding: 0.7rem 2rem;
+            border-radius: 0;
+        }
+        .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+            background-color: #fff;
+            color: $brand-purple;
+            border: none;
+            border-top: 1px solid $brand-purple;
+            height: 100%;
+            padding: 0.7rem 2rem;
+            border-radius: 0;
+        }
+    }
+
+    .tab-content {
         background-color: #fff;
-        border-radius: 5px;
-        border: 1px solid #fafafa;
     }
 
     .pm-btn-submit {

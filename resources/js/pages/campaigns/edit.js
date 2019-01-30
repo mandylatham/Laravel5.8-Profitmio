@@ -128,7 +128,7 @@ window['app'] = new Vue({
                         type: 'success',
                         allowOutsideClick: false
                     }).then(() => {
-                        window.location.replace(window.campaignStatsUrl);
+                        // window.location.replace(window.campaignStatsUrl);
                     });
                 })
                 .catch(e => {
