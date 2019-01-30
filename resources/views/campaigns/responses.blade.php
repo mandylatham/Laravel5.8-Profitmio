@@ -10,9 +10,14 @@
 
 @section('main-content')
     <div class="container" id="campaign-responses" v-cloak>
+        <a class="btn pm-btn pm-btn-blue mb-3" href="{{ route('campaigns.index') }}">
+            <i class="fas fa-chevron-circle-left mr-2"></i> Back
+        </a>
+        @if ($campaign->responses()->count() > 0)
         <div class="row">
             <div class="col-12 col-sm-10">
-                <a href="{{ url('/campaign/' . $campaign->id . '/responses/export-responders') }}" class="download-response mb-3">
+                <a href="{{ url('/campaign/' . $campaign->id . '/responses/export-responders') }}"
+                   class="download-response mb-3">
             <span class="icon">
                 <download-icon></download-icon>
             </span>
@@ -22,7 +27,8 @@
             </span>
                 </a>
 
-                <a href="{{ url('/campaign/' . $campaign->id . '/responses/export-nonresponders') }}" class="download-response mb-3">
+                <a href="{{ url('/campaign/' . $campaign->id . '/responses/export-nonresponders') }}"
+                   class="download-response mb-3">
             <span class="icon">
                 <download-icon></download-icon>
             </span>
@@ -33,5 +39,10 @@
                 </a>
             </div>
         </div>
+        @else
+        <div class="no-items-row">
+            No Responses
+        </div>
+        @endif
     </div>
 @endsection
