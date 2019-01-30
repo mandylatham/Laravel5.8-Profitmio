@@ -47,6 +47,9 @@
     .card {
         background-color: transparent;
         border: none;
+        &.card-feature {
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
         .nav-tabs .nav-link {
             background-color: $brand-purple;
             color: #fff;

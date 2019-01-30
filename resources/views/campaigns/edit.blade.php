@@ -117,7 +117,7 @@
                         </b-tab>
                         <b-tab title="CONTACT">
                             <h4 class="mb-3">Additional Features</h4>
-                            <div class="card mb-3">
+                            <div class="card mb-3 card-feature">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -161,7 +161,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3">
+                            <div class="card mb-3 card-feature">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -205,7 +205,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3">
+                            <div class="card mb-3 card-feature">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -249,7 +249,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3">
+                            <div class="card mb-3 card-feature">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -293,7 +293,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3">
+                            <div class="card mb-3 card-feature">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
