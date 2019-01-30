@@ -214,14 +214,14 @@ class CampaignController extends Controller
         }
 
         $campaign->fill([
-            'name' => $request->name,
+            'name' => $request->input('name'),
             'status' => $status,
-            'order_id' => $request->order,
+            'order_id' => $request->input('order'),
             'starts_at' => $starts_at,
             'ends_at' => $ends_at,
             'expires_at' => $expires_at,
-            'agency_id' => $request->agency,
-            'dealership_id' => $request->dealership,
+            'agency_id' => $request->input('agency'),
+            'dealership_id' => $request->input('dealership'),
             'adf_crm_export' => (bool) $request->input('adf_crm_export'),
             'adf_crm_export_email' => $request->input('adf_crm_export_email', []),
             'lead_alerts' => (bool) $request->input('lead_alerts'),
@@ -232,7 +232,7 @@ class CampaignController extends Controller
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'client_passthrough' => (bool) $request->input('client_passthrough'),
             'client_passthrough_email' => $request->input('client_passthrough_email', []),
-            'phone_number_id' => $request->phone_number_id,
+            'phone_number_id' => $request->input('phone_number_id'),
         ]);
 
         if ($request->has('forward')) {

@@ -96,7 +96,7 @@
                             </button>
                         </b-tab>
                         <b-tab title="PHONE NUMBERS">
-                            <h4 class="mt-4 mb-3"><button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Generate Phone Number</button>
+                            <h4 class="mt-4 mb-3"><button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Add Phone Number</button>
                             </h4>
                             <table class="table table-sm table-bordered">
                                 <thead>

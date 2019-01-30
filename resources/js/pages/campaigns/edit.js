@@ -37,7 +37,7 @@ window['app'] = new Vue({
             client_passthrough_email: window.campaign.client_passthrough_email,
             dealership: null,
             end: moment.utc(window.campaign.ends_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD'),
-            expires: moment.utc(window.campaign.expires_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD'),
+            expires: window.campaign.expires_at? moment.utc(window.campaign.expires_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD') : undefined,
             lead_alerts: window.campaign.lead_alerts,
             lead_alert_emails: window.campaign.lead_alert_email,
             name: window.campaign.name,
