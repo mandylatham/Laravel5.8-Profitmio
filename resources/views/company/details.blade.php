@@ -9,6 +9,7 @@
 @section('body-script')
     <script>
         window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
+        window.searchUserFormUrl = "{{ route('user.for-user-display') }}";
         window.company = @json($company);
         window.indexUrl = "{{ route('company.index') }}";
         window.updateUrl = "{{ route('company.update', ['company' => $company->id]) }}";
@@ -142,6 +143,67 @@
                                     @if($hasCampaigns)
                                     <pm-pagination :pagination="campaignsPagination" @page-changed="onCampaignPageChanged"></pm-pagination>
                                     @endif
+                                </div>
+                            </div>
+                        </b-tab>
+                        <b-tab title="USERS">
+                            <div class="row align-items-end no-gutters mb-md-4">
+                                <div class="col-12 col-sm-5 col-lg-4">
+                                </div>
+                                <div class="col-none col-sm-2 col-lg-4"></div>
+                                <div class="col-12 col-sm-5 col-lg-4">
+                                    <input type="text" v-model="searchUserForm.q" class="form-control filter--search-box" aria-describedby="search"
+                                           placeholder="Search" @keyup.enter="fetchUsers">
+                                </div>
+                            </div>
+                            <div class="row align-items-end no-gutters mt-3">
+                                <div class="col-12">
+                                    <div class="loader-spinner" v-if="loadingUsers">
+                                        <spinner-icon></spinner-icon>
+                                    </div>
+                                    <div class="no-items-row" v-if="users.length === 0">
+                                        No Items
+                                    </div>
+                                    <div class="user-row" v-for="user in users">
+                                        <div class="row no-gutters">
+                                            <div class="col-12 col-md-8 col-xl-3">
+                                                <div class="user-row--id justify-content-center justify-content-xl-start">
+                                                    <strong class="mr-2">ID: @{{ user.id }}</strong>
+                                                    <span class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
+                                                    <user-role class="ml-3" :role="'site_admin'" v-if="user.is_admin"></user-role>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-4 col-xl-2">
+                                                <div class="user-row--companies justify-content-center justify-content-xl-start">
+                                                    <div>Active Companies <span class="ml-2 counter">@{{ user.active_companies }}</span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-4 col-xl-3">
+                                                <div class="user-row--email justify-content-center justify-content-xl-start">
+                                                    <i class="fas fa-envelope mr-2"></i>@{{ user.email || '--' }}
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-md-6 col-lg-4 col-xl-2">
+                                                <div class="user-row--phone-number justify-content-center justify-content-xl-start">
+                                                    <span class="pm-font-phone-icon mr-2"></span>@{{ user.phone_number || '--' }}
+                                                </div>
+                                            </div>
+                                            <div class="col-12 col-lg-4 col-xl-2">
+                                                <div class="user-row--options justify-content-center align-items-xl-start">
+                                                    <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-warning" title="Edit">
+                                                        <i class="far fa-eye mr-3"></i> View
+                                                    </a>
+                                                    <a :href="generateRoute(userImpersonateUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-blue" title="Impersonate" v-if="user.has_active_companies">
+                                                        <i class="fas fa-lock-open mr-3"></i> Impersonate
+                                                    </a>
+                                                    <a :href="generateRoute(userEditUrl, {'userId': user.id})" class="btn btn-link pm-btn-link pm-btn-link-black" title="Has Pending Invitations" v-if="user.has_pending_invitations">
+                                                        <i class="fas fa-envelope mr-3"></i> Has Pending Invitations
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <pm-pagination :pagination="usersPagination" @page-changed="onUserPageChanged"></pm-pagination>
                                 </div>
                             </div>
                         </b-tab>

@@ -21,9 +21,17 @@ import { isNorthAmericanPhoneNumber, isCanadianPostalCode, isUnitedStatesPostalC
 window['app'] = new Vue({
     el: '#app',
     components: {
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination')
     },
     computed: {
+        usersPagination: function () {
+            return {
+                page: this.searchUserForm.page,
+                per_page: this.searchUserForm.per_page,
+                total: this.totalUsers
+            };
+        },
         campaignsPagination: function () {
             return {
                 page: this.searchCampaignForm.page,
@@ -46,9 +54,16 @@ window['app'] = new Vue({
         campaigns: [],
         company: {},
         companyIndex: '',
+        loadingUsers: false,
         modifiedCompany: {},
         searchCampaignForm: new Form({
-            q: localStorage.getItem('companyCampaignQ') || null,
+            q: localStorage.getItem('companyCampaignQ') || undefined,
+            page: 1,
+            per_page: 15,
+            company: window.company.id
+        }),
+        searchUserForm: new Form({
+            q: localStorage.getItem('companyUserQ') || undefined,
             page: 1,
             per_page: 15,
             company: window.company.id
@@ -62,10 +77,12 @@ window['app'] = new Vue({
             zip: '',
         }),
         updateUrl: '',
+        users: [],
         companyFormFields: ['name', 'address', 'address2', 'city', 'state', 'zip'],
         showCompanyFormControls: false,
         loadingCampaigns: false,
-        total: 0
+        total: 0,
+        totalUsers: 0
     },
     mounted() {
         this.companyIndex = window.indexUrl;
@@ -74,6 +91,7 @@ window['app'] = new Vue({
         this.modifiedCompany = JSON.parse(JSON.stringify(this.company));
         this.updateFields();
         this.fetchCampaigns();
+        this.fetchUsers();
     },
     methods: {
         fetchCampaigns() {
@@ -90,6 +108,22 @@ window['app'] = new Vue({
                 })
                 .catch(error => {
                     this.$toastr.error("Unable to get campaigns");
+                });
+        },
+        fetchUsers() {
+            localStorage.setItem('companyUserQ', this.searchUserForm.q);
+            this.loadingUsers = true;
+            this.searchUserForm
+                .get(window.searchUserFormUrl)
+                .then(response => {
+                    this.users = response.data;
+                    this.searchUserForm.page = response.current_page;
+                    this.searchUserForm.per_page = response.per_page;
+                    this.totalUsers = response.total;
+                    this.loadingUsers = false;
+                })
+                .catch(error => {
+                    this.$toastr.error("Unable to get users");
                 });
         },
         updateFields: function () {
@@ -111,6 +145,14 @@ window['app'] = new Vue({
                 royal += parts[key].charAt(0).toUpperCase() + parts[key].slice(1);
             }
             return royal;
+        },
+        onCampaignPageChanged(event) {
+            this.searchCampaignForm.page = event.page;
+            return this.fetchCampaigns();
+        },
+        onUserPageChanged(event) {
+            this.searchUserForm.page = event.page;
+            return this.fetchUsers();
         },
         saveCompanyForm: function () {
             this.updateFields();
