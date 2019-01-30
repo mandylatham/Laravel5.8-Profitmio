@@ -651,7 +651,7 @@ class RecipientController extends Controller
                 $list->delete();
             } catch (\Exception $e) {
                 $errors = new MessageBag(["recipients" => "Unable to delete selected recipient list!"]);
-                return response()->json(['errors' => $errors]);
+                return response()->json(['errors' => $errors], 422);
             }
         }
 
