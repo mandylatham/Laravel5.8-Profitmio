@@ -486,6 +486,32 @@ class RecipientController extends Controller
     /**
      * @param Campaign $campaign
      */
+    public function downloadRecipientList(Campaign $campaign, RecipientList $list)
+    {
+        $recipients = $list->recipients;
+        $columns = \DB::getSchemaBuilder()->getColumnListing('recipients');
+
+        $filename = 'List_' . $list->id . '_recipients.csv';
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Type: application/force-download');
+        header('Content-Disposition: attachment; filename='.$filename.'');
+
+        // create a file pointer connected to the output stream
+        $output = fopen('php://output', 'w');
+
+        fputcsv($output, $columns);
+        foreach ($recipients as $recipient) {
+            fputcsv($output, $recipient);
+        }
+        fclose($output);
+
+        return;
+    }
+
+    /**
+     * @param Campaign $campaign
+     */
     public function download(Campaign $campaign)
     {
         $recipients = Recipient::where('campaign_id', $campaign->id)->get()->toArray();

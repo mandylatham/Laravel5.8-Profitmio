@@ -32,6 +32,7 @@ window['app'] = new Vue({
         loading: false,
         loadingStats: false,
         total: 0,
+        downloadRecipientListUrl: '',
         uploadRecipientsUrl: ''
     },
     methods: {
@@ -128,6 +129,7 @@ window['app'] = new Vue({
     },
     mounted() {
         this.fetchData();
+        this.downloadRecipientListUrl = window.downloadRecipientListUrl;
         this.showRecipientListUrl = window.showRecipientListUrl;
         this.uploadRecipientsUrl = window.uploadRecipientsUrl;
     }

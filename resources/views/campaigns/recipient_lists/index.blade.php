@@ -8,6 +8,7 @@
     <script>
         window.searchRecipientsUrl = @json(route('campaigns.recipient-lists.for-user-display', ['campaign' => $campaign->id]));
         window.uploadRecipientsUrl = @json(route('campaigns.recipient-lists.upload', ['campaign' => $campaign->id]));
+        window.downloadRecipientListUrl = @json(route('campaigns.recipient-lists.download', ['campaign' => $campaign->id, 'list' => ':listId']));
         window.saveRecipientsUrl = @json(route('campaigns.recipient-lists.store', ['campaign' => $campaign->id]));
         window.recipientsIndexUrl = @json(route('campaigns.recipient-lists.index', ['campaign' => $campaign->id]));
         window.deleteRecipientUrl = @json(route('campaigns.recipient-lists.delete', ['campaign' => $campaign->id, 'list' => ':listId']));
@@ -119,7 +120,7 @@
                             MODIFY MEMBER
                         </a>
                         <div class="options-group">
-                            <a class="btn pm-btn btn-transparent" href="javascript:;">
+                            <a class="btn pm-btn btn-transparent" :href="generateRoute(downloadRecipientListUrl, {listId: row.id})" download>
                                 <download-icon></download-icon>
                             </a>
                             <a class="btn pm-btn btn-transparent" href="javascript:;" @click.prevent="removeList(row)">
