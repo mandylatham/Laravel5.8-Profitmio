@@ -46,8 +46,8 @@ window['app'] = new Vue({
                 value: 'all-sms',
                 label: 'All SMS-able'
             },
-            data_source_conquest: false,
-            data_source_database: false,
+            data_source_conquest: true,
+            data_source_database: true,
             recipients: ['all'],
             max: 1
         },
@@ -60,7 +60,6 @@ window['app'] = new Vue({
             email_text: null,
             email_html: null,
             text_message: null,
-            send_vehicle_image: false,
             text_message_image: null
         },
         templates: []
@@ -112,13 +111,11 @@ window['app'] = new Vue({
                         }
                         if (template.type === 'sms') {
                             this.templateData.text_message = template.text_message;
-                            this.templateData.send_vehicle_image = template.send_vehicle_image;
                             this.templateData.text_message_image = template.text_message_image;
                         }
                     });
             } else {
                 this.templateData.text_message = null;
-                this.templateData.send_vehicle_image = 0;
                 this.templateData.text_message_image = null;
                 this.templateData.email_text = null;
                 this.templateData.email_html = null;

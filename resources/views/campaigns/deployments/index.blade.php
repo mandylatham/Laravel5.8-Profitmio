@@ -41,7 +41,7 @@
                         <div class="col-12 col-md-4 drop-info">
                             <div class="drop-info--type">
                                 <span class="pm-font-mail-icon" v-if="drop.ype === 'email'"></span>
-                                <span class="pm-font-sms-icon" v-else-if="drop.ype === 'sms'"></span>
+                                <span class="far fa-comment" v-else-if="drop.ype === 'sms'"></span>
                                 <span class="pm-font-templates-icon" v-else></span>
                             </div>
                             <div class="drop-info--date">

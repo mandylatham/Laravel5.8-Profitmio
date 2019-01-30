@@ -125,9 +125,6 @@
                                     <textarea class="form-control" name="text_message" placeholder="Text Message"
                                               autocomplete="off" v-model="templateData.text_message"></textarea>
                                 </div>
-                                <div class="form-group">
-                                    <p-check color="primary" class="p-default d-block mb-3" name="send_vehicle_image" v-model="templateData.send_vehicle_image">Send Vehicle Image</p-check>
-                                </div>
                                 <div class="form-group" v-if="templateData.send_vehicle_image">
                                     <label for="text_message_image">Vehicle Image</label>
                                     <input type="text" name="text_message_image" class="form-control" placeholder="Vehicle Image Location" v-model="templateData.text_message_image">

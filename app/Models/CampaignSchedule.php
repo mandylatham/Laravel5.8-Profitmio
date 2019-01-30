@@ -12,7 +12,7 @@ class CampaignSchedule extends Model
 {
     use SoftDeletes, Eloquence;
 
-    protected $searchableColumns = ['send_at', 'type', 'started_at', 'recipient_group', 'status', 'text_message'];
+    protected $searchableColumns = ['send_at', 'started_at', 'status'];
 
     public $dates = [
         'send_at',
