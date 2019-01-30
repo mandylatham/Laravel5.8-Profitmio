@@ -20,9 +20,10 @@ window['app'] = new Vue({
         drop: {}
     },
     mounted() {
-        if (window.drop.sent_at) {
-            window.drop.sent_at_date = moment(window.drop.sent_at, 'YYYY-MM-DD HH:mm:ss').toDate();
-            window.drop.sent_at_time = moment(window.drop.sent_at, 'YYYY-MM-DD HH:mm:ss').toDate();
+        console.log('window.drop', window.drop);
+        if (window.drop.send_at) {
+            window.drop.send_at_date = moment(window.drop.send_at, 'YYYY-MM-DD HH:mm:ss').toDate();
+            window.drop.send_at_time = moment(window.drop.send_at, 'YYYY-MM-DD HH:mm:ss').toDate();
         }
         this.drop = window.drop;
     },
