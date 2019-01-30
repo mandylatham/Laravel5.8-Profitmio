@@ -68,6 +68,7 @@ window['app'] = new Vue({
             this.searchRecipientsForm
                 .get(window.searchRecipientsUrl)
                 .then(response => {
+                    console.log('response', response);
                     this.recipientList = response.data;
                     this.searchRecipientsForm.page = response.current_page;
                     this.searchRecipientsForm.per_page = response.per_page;

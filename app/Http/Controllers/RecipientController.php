@@ -23,14 +23,15 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
+use App\Http\Resources\RecipientList as RecipientListResource;
 
 class RecipientController extends Controller
 {
     public function forUserDisplay(Campaign $campaign)
     {
-        return RecipientList::whereCampaignId($campaign->id)
+        return RecipientListResource::collection(RecipientList::whereCampaignId($campaign->id)
             ->with('recipients')
-            ->paginate(15);
+            ->paginate(15));
     }
 
     public function searchForDeployment(Campaign $campaign, Request $request)
