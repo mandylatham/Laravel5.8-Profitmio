@@ -20,7 +20,7 @@
     <div class="container" id="company-index">
         <div class="row align-items-end no-gutters mb-md-3 mb-3">
             <div class="col-12 col-sm-5 col-lg-3">
-                <a href="{{ route('company.create') }}" class="btn pm-btn btn-success">
+                <a href="{{ route('company.create') }}" class="btn pm-btn pm-btn-blue">
                     <i class="fa fa-plus mr-2"></i>
                     Add Company
                 </a>
@@ -47,8 +47,12 @@
                 <span>@{{ company.created_at | amDateFormat('MM.DD.YY') }}</span>
             </div>
             <div class="col-4 col-md-3 company-links">
-                <a class="btn pm-btn pm-btn-purple" :href="generateRoute(companyEdit, {'companyId': company.id})"><span class="fa fa-edit"></span> Edit</a>
-                <a href="#" @click="deleteCompany(company.id, index)" class="btn btn-pm pm-btn-danger"><span class="fa fa-trash"></span> Delete</a>
+                <a class="btn pm-btn pm-btn-purple pm-btn-md justify-content-center" :href="generateRoute(companyEdit, {'companyId': company.id})">
+                    <span class="fa fa-edit"></span> Edit
+                </a>
+                <a href="#" @click="deleteCompany(company.id, index)" class="btn pm-btn pm-btn-danger pm-btn-md justify-content-center">
+                    <span class="fa fa-trash"></span> Delete
+                </a>
             </div>
         </div>
         <pm-pagination v-if="companies.length > 0" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>

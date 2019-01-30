@@ -8,6 +8,7 @@
 
 @section('body-script')
     <script>
+        window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
         window.company = @json($company);
         window.indexUrl = "{{ route('company.index') }}";
         window.updateUrl = "{{ route('company.update', ['company' => $company->id]) }}";
@@ -16,11 +17,10 @@
 @endsection
 
 @section('main-content')
-    <div class="container mt-3" id="company-details">
+    <div class="container mt-3" id="company-details" v-cloak>
         <div class="row mb-3">
             <div class="col-12">
-                <div class="card mb-5">
-                    <div class="card-header"></div>
+                <div class="card profile mb-5">
                     <div class="card-body pb-5">
                         <div class="row no-gutters">
                             <div class="col-md-4 col-lg-3 col-xl-2 company-image-container mt-5">
@@ -29,7 +29,7 @@
                             <div class="col-md pl-3">
                                 <div class="d-flex justify-content-end">
                                     <button class="btn pm-btn pm-btn-outline-purple mb-3" @click="showCompanyFormControls = true">
-                                        <i class="fa fa-pencil mr-2"></i>
+                                        <i class="fas fa-pencil-alt mr-2"></i>
                                         Edit
                                     </button>
                                 </div>

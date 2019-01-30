@@ -20,10 +20,39 @@ import { isNorthAmericanPhoneNumber, isCanadianPostalCode, isUnitedStatesPostalC
 
 window['app'] = new Vue({
     el: '#app',
+    components: {
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
+    },
+    computed: {
+        campaignsPagination: function () {
+            return {
+                page: this.searchCampaignForm.page,
+                per_page: this.searchCampaignForm.per_page,
+                total: this.total
+            };
+        },
+        countActiveCampaigns: function () {
+            return filter(this.campaigns, {
+                status: 'Active'
+            }).length;
+        },
+        countInactiveCampaigns: function () {
+            return filter(this.campaigns, item => {
+                return item.status !== 'Active';
+            }).length;
+        }
+    },
     data: {
+        campaigns: [],
         company: {},
         companyIndex: '',
         modifiedCompany: {},
+        searchCampaignForm: new Form({
+            q: localStorage.getItem('companyCampaignQ') || null,
+            page: 1,
+            per_page: 15,
+            company: window.company.id
+        }),
         updateForm: new Form({
             name: '',
             address: '',
@@ -35,7 +64,8 @@ window['app'] = new Vue({
         updateUrl: '',
         companyFormFields: ['name', 'address', 'address2', 'city', 'state', 'zip'],
         showCompanyFormControls: false,
-        loadingCampaigns: false
+        loadingCampaigns: false,
+        total: 0
     },
     mounted() {
         this.companyIndex = window.indexUrl;
@@ -43,8 +73,25 @@ window['app'] = new Vue({
         this.company = window.company;
         this.modifiedCompany = JSON.parse(JSON.stringify(this.company));
         this.updateFields();
+        this.fetchCampaigns();
     },
     methods: {
+        fetchCampaigns() {
+            localStorage.setItem('companyCampaignQ', this.searchCampaignForm.q);
+            this.loadingCampaigns = true;
+            this.searchCampaignForm
+                .get(window.searchCampaignFormUrl)
+                .then(response => {
+                    this.campaigns = response.data;
+                    this.searchCampaignForm.page = response.current_page;
+                    this.searchCampaignForm.per_page = response.per_page;
+                    this.total = response.total;
+                    this.loadingCampaigns = false;
+                })
+                .catch(error => {
+                    this.$toastr.error("Unable to get campaigns");
+                });
+        },
         updateFields: function () {
             // update the form
             this.companyFormFields.forEach((field) => {
