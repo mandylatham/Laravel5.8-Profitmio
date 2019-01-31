@@ -36,7 +36,7 @@ class RecipientBuilder
         if (! $media) {
             throw new \Exception("Campaign {$list->campaign_id}: Unable to locate the media object for list {$list->id}");
         }
-        if (! Storage::disk('local')->put($media->file_name, Storage::disk('media')->get($media->getPath()))) {
+        if (! $this->makeMediaCopy($media)) {
             throw new \Exception("Campaign {$list->campaign_id}: Unable to download the media object for list {$list->id}");
         }
         \Log::debug("RecipientBuilder: found uploaded file");
@@ -69,11 +69,13 @@ class RecipientBuilder
                     $staging['from_dealer_db'] = true;
                 }
             }
+            \log::debug("recipientbuilder: about to iterate fields");
             foreach ($this->listFields as $field) {
-                if (array_key_exists($field, $list->fieldmap)) {
+                if (array_key_exists($field, $list->fieldmap) && array_key_exists($field, $staging)) {
                     $staging[$field] = $this->sanitize($row[$list->fieldmap[$field]], true);
                 }
             }
+            \log::debug("recipientbuilder: iteration complete");
             $rows[] = $staging;
 
             if ($i % 100 == 0) {
@@ -97,6 +99,18 @@ class RecipientBuilder
         $list->update([
             'recipients_added' => true,
         ]);
+    }
+
+    /**
+     * Handle local files differently due to path issue
+     */
+    protected function makeMediaCopy($media)
+    {
+        if ($media->disk == 'local') {
+            return Storage::disk('local')->put($media->file_name, Storage::disk('local')->get($media->id . '/' . $media->file_name));
+        }
+
+        return Storage::disk('local')->put($media->file_name, Storage::disk($media->disk)->get($media->getPath()));
     }
 
     public function sanitize($value, $correctCase = false) {
