@@ -49,7 +49,7 @@ window['app'] = new Vue({
             data_source_conquest: true,
             data_source_database: true,
             recipients: ['all'],
-            max: 1
+            max: null
         },
         loading: false,
         showGlobalLoader: false,

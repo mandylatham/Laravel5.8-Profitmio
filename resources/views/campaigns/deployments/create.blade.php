@@ -63,7 +63,7 @@
                         </div>
                         <div class="col-12 col-lg-4">
                             <div class="form-group">
-                                <label for="max">Maximums</label>
+                                <label for="max">Max Per Group</label>
                                 <input type="number" min="0" class="form-control" name="max" required placeholder="Max per Groups" v-model="searchFilters.max" @input="fetchRecipientsGroup">
                             </div>
                         </div>
