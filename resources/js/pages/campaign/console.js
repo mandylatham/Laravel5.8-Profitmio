@@ -69,9 +69,6 @@ window['app'] = new Vue({
                 });
         },
         showPanel: function (recipient, key) {
-            // console.log(key);
-            // console.log(event.target);
-            // console.log(event);
             this.currentRecipientId = recipient.id;
             this.recipientKey = key;
 

@@ -259,8 +259,7 @@
             this.getResponses(this.campaign.id, this.recipientId);
         },
         components: {
-            'date-pick': require('./../../../components/date-pick/date-pick'),
-            generateRoute
+            'date-pick': require('./../../../components/date-pick/date-pick')
         },
         data() {
             return {
@@ -297,7 +296,6 @@
             }
         },
         methods: {
-            generateRoute,
             closePanel() {
                 window['app'].pusherUnbindEvent('private-campaign.' + this.campaign.id, 'response.' + this.recipientId + '.updated');
                 this.resetVars();

@@ -132,7 +132,7 @@ class MailgunService
     {
         // TODO: check if user is passed to method `getFromLine` properly; before it was `$campaign->client`
         $response = $this->mailgun->messages()->send('mg.automotive-alerts.com', [
-            'from'    => $this->getFromLine($campaign, $recipient, $campaign->users->first()),
+            'from'    => $this->getFromLine($campaign, $recipient, $campaign->users()->first()),
             'to'      => $recipient->email,
             'subject' => $subject,
             'html'    => $html,
