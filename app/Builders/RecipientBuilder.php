@@ -13,9 +13,9 @@ class RecipientBuilder
      * @var array
      */
     public $listFields = [
-        'address1', 'city', 'state', 'zip', 'year',
-        'phone', 'make', 'model', 'vin', 'is_database'
-    ];
+            'address1', 'city', 'state', 'zip', 'year',
+            'phone', 'make', 'model', 'vin',
+        ];
 
     /**
      * Create new recipients from an uploaded list
@@ -30,6 +30,10 @@ class RecipientBuilder
         // Add recipients to the list
         if ($list->recipients_added) {
             return;
+        }
+
+        if ($list->type == 'mixed') {
+            array_push($this->listFields, 'is_database');
         }
 
         $media = $list->getMedia('recipient-lists')->first();
@@ -71,7 +75,7 @@ class RecipientBuilder
             }
             \log::debug("recipientbuilder: about to iterate fields");
             foreach ($this->listFields as $field) {
-                if (array_key_exists($field, $list->fieldmap) && array_key_exists($field, $staging)) {
+                if (array_key_exists($field, $list->fieldmap)) {
                     $staging[$field] = $this->sanitize($row[$list->fieldmap[$field]], true);
                 }
             }
