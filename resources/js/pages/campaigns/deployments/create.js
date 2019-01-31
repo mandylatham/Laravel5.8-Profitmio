@@ -58,9 +58,10 @@ window['app'] = new Vue({
             template: null,
             email_subject: null,
             email_text: null,
-            email_html: null,
+            email_html: '',
             text_message: null,
-            text_message_image: null
+            text_message_image: null,
+            type: 'sms'
         },
         templates: []
     },
@@ -72,7 +73,6 @@ window['app'] = new Vue({
         fetchRecipientsGroup() {
             this.showGlobalLoader = true;
             const recipients = [...this.searchFilters.recipients];
-            recipients.splice(0, 1);
             const dataSources = [];
             if (this.searchFilters.data_source_conquest) {
                 dataSources.push('conquest');
@@ -115,11 +115,11 @@ window['app'] = new Vue({
                         }
                     });
             } else {
-                this.templateData.text_message = null;
-                this.templateData.text_message_image = null;
-                this.templateData.email_text = null;
-                this.templateData.email_html = null;
-                this.templateData.email_subject = null;
+                this.templateData.text_message = '';
+                this.templateData.text_message_image = '';
+                this.templateData.email_text = '';
+                this.templateData.email_html = '';
+                this.templateData.email_subject = '';
             }
         },
         initEditor: function (editor) {

@@ -102,7 +102,7 @@
                                     <option disabled><s>Voice</s></option>
                                 </select>
                             </div>
-                            <div class="email-fields" v-if="templateData.type === 'email'">
+                            <div class="email-fields" v-if="templateData.type == 'email'">
                                 <div class="form-group">
                                     <label for="email_subject">Email Subject</label>
                                     <input id="email_subject" type="text" class="form-control" name="email_subject"
@@ -119,7 +119,7 @@
                                     <editor v-model="templateData.email_html" lang="html" height="800" @init="initEditor"></editor>
                                 </div>
                             </div>
-                            <div id="sms-fields" v-if="templateData.type === 'sms'">
+                            <div id="sms-fields" v-if="templateData.type == 'sms'">
                                 <div class="form-group">
                                     <label for="text_message">Text Message</label>
                                     <textarea class="form-control" name="text_message" placeholder="Text Message"
