@@ -10,6 +10,12 @@
     <script>
         window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
         window.searchUserFormUrl = "{{ route('user.for-user-display') }}";
+        window.userEditUrl = "{{ route('user.view', ['user' => ':userId']) }}";
+        window.userImpersonateUrl = "{{ route('admin.impersonate', ['user' => ':userId']) }}";
+        @if (!auth()->user()->isAdmin())
+        window.userActivateUrl = "{{ route('user.activate', ['user' => ':userId', 'company' => get_active_company()]) }}";
+        window.userDeactivateUrl = "{{ route('user.deactivate', ['user' => ':userId', 'company' => get_active_company()]) }}";
+        @endif
         window.company = @json($company);
         window.indexUrl = "{{ route('company.index') }}";
         window.updateUrl = "{{ route('company.update', ['company' => $company->id]) }}";
