@@ -6,9 +6,11 @@ import {generateRoute} from './../../common/helpers'
 import VueFormWizard from 'vue-form-wizard';
 Vue.use(VueFormWizard);
 // Chart Library
-import VueChartkick from 'vue-chartkick';
-import Chart from 'chart.js';
+import VueChartkick from 'vue-chartkick'
+import Chart from 'chart.js'
+Vue.use(VueChartkick, {adapter: Chart})
 import {filter} from 'lodash';
+// filters
 import './../../filters/user-role.filter';
 import vue2Dropzone from 'vue2-dropzone';
 // Validation
