@@ -231,7 +231,7 @@
                     @endif
                     @can('list', \App\Models\Campaign::class)
                     <li class="site-menu-item">
-                        <a href="{{ route('campaign.index') }}" class=" waves-effect waves-classic">
+                        <a href="{{ route('campaigns.index') }}" class=" waves-effect waves-classic">
                             <i class="site-menu-icon icon oi-megaphone" aria-hidden="true"></i>
                             <span class="site-menu-title">Campaigns</span>
                         </a>

@@ -6,6 +6,7 @@
 
 @section('company_content')
     <div class="col-xs-12">
+        <div class="row"></div>
         <div class="row">
             <div class="col-md-6 offset-md-6">
                 <form action="{{ route('company.campaign.index', ['company' => $company->id]) }}" method="get">

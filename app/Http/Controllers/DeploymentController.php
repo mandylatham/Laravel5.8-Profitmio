@@ -7,6 +7,7 @@ use App\Models\Drop;
 use App\Http\Requests\DeploymentRequest;
 use App\Http\Requests\BulkDeploymentRequest;
 use App\Models\Recipient;
+use App\Models\RecipientList;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
@@ -157,14 +158,9 @@ class DeploymentController extends Controller
         $viewData['recipient_info'] = [];
         $viewData['campaign'] = $campaign;
         $viewData['templates'] = CampaignScheduleTemplate::all();
+        $viewData['recipientLists'] = RecipientList::where('campaign_id', $campaign->id)->get();
 
-        /*
-        if ($request->session()->has($campaign->id . '_recipient_info')) {
-            $viewData['recipient_info'] = $request->session()->get($campaign->id . '_recipient_info');
-        }
-        */
-
-        return view('campaigns.deployments.new', $viewData);
+        return view('campaigns.deployments.create', $viewData);
     }
 
     public function create(Campaign $campaign, BulkDeploymentRequest $request)
@@ -181,34 +177,29 @@ class DeploymentController extends Controller
 
         \DB::table('deployment_recipients')->insert($batches);
 
-        return redirect()->route('campaign.drop.index', ['campaign' => $campaign->id]);
+        return response()->json(['message' => 'Resource created.']);
+
+//        return redirect()->route('campaign.drop.index', ['campaign' => $campaign->id]);
     }
 
     public function forCampaign(Campaign $campaign)
     {
-        // $schedules = CampaignSchedule::where('campaign_id', $campaign->id)->get();
-        $drops = \DB::table('campaign_schedules')
-            ->select([
-                'send_at', 'type', 'started_at', 'recipient_group', 'status', 'text_message', 'percentage_complete', 'completed_at', 'campaign_schedules.id',
-                \DB::raw("case when type in ('email', 'sms') then
-                (select count(*) from deployment_recipients where deployment_id = campaign_schedules.id)
-                else
-                (select count(*) from recipients where campaign_id = " . $campaign->id . " and subgroup = recipient_group)
-                end as recipients")
-            ])
-            ->where('campaign_id', $campaign->id)
-            ->whereNull('deleted_at')
+        return view('campaigns.deployments.index', [
+            'campaign' => $campaign,
+        ]);
+    }
+
+    public function getForUserDisplay(Campaign $campaign, Request $request)
+    {
+        $drops = CampaignSchedule::searchByRequest($request, $campaign)
             ->orderBy('campaign_schedules.id', 'desc')
-            ->get();
+            ->paginate(15);
 
         $drops->each(function ($item) {
             return $item->text_message = str_replace('}}', '</span>', str_replace('{{', '<span class="badge badge-outline badge-primary">', $item->text_message));
         });
 
-        $viewData['drops'] = $drops;
-        $viewData['campaign'] = $campaign;
-
-        return view('campaigns.deployments.index', $viewData);
+        return $drops;
     }
 
     public function saveGroups(Campaign $campaign, Request $request)
@@ -226,7 +217,12 @@ class DeploymentController extends Controller
 
         $request->session()->put($campaign->id . "_recipient_info", $info);
 
-        return json_encode(['code' => 200, 'message' => $info]);
+        return response()->json(['code' => 200, 'message' => $info]);
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        return $query->search($q);
     }
 
     public function show(Campaign $campaign, Drop $drop)
@@ -284,7 +280,7 @@ class DeploymentController extends Controller
         return view('campaigns.deployments.details', $viewData);
     }
 
-    public function update(Campaign $campaign, CampaignSchedule $deployment, DeploymentRequest $request)
+    public function update(Campaign $campaign, CampaignSchedule $drop, DeploymentRequest $request)
     {
         $date = new Carbon($request->send_at_date);
         $time = new Carbon($request->send_at_time);
@@ -292,11 +288,13 @@ class DeploymentController extends Controller
 
         $request->request->set('send_at', $send_at);
 
-        $deployment->fill($request->all());
+        $drop->fill($request->all());
 
-        $deployment->save();
+        $drop->save();
 
-        return redirect()->route('campaign.drop.index', ['campaign' => $campaign->id]);
+        return response()->json(['message' => 'Resource Updated.']);
+
+//        return redirect()->route('campaigns.drop.index', ['campaign' => $campaign->id]);
     }
 
     public function updateForm(Campaign $campaign, CampaignSchedule $drop)
@@ -311,17 +309,17 @@ class DeploymentController extends Controller
     }
 
 
-    public function delete(CampaignSchedule $deployment)
+    public function delete(Campaign $campaign, Drop $drop)
     {
         try {
-            $deployment->status = "Deleted";
-            $deployment->save();
-            $deployment->delete();
+            $drop->status = "Deleted";
+            $drop->save();
+            $drop->delete();
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
-            ]);
+            ], 422);
         }
 
         return response()->json([
@@ -487,6 +485,8 @@ class DeploymentController extends Controller
         $i = 0;
         $batch = 0;
         $batches = [];
+        \Log::debug("assemble recipient batches (info): " . json_encode($info));
+        \Log::debug("assemble recipient batches (deployments): " . json_encode($deployments));
 
         try {
             if ($info['max']) {
@@ -494,7 +494,7 @@ class DeploymentController extends Controller
                     if ( ! isset($deployments[$batch])) {
                         Throw new \Exception("More recipients than batches");
                     }
-                    $batches[] = ['deployment_id' => $deployments[$batch]->campaign_schedule_id, 'recipient_id' => $recipient->id];
+                    $batches[] = ['deployment_id' => $deployments[$batch]->id, 'recipient_id' => $recipient->id];
 
                     if ($i != 0 && $i % $info['max'] == 0) {
                         $batch++;
