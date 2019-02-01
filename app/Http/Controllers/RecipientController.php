@@ -82,7 +82,9 @@ class RecipientController extends Controller
         }
 
         if (is_array($lists) && ! empty($lists) && $lists[0] != null) {
-            $recipients->whereIn('recipient_list_id', (array)$lists);
+            if (! in_array('all', $lists)) {
+                $recipients->whereIn('recipient_list_id', (array)$lists);
+            }
         }
 
         if (count($source) == 1) {

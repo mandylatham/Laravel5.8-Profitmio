@@ -73,13 +73,11 @@ class RecipientBuilder
                     $staging['from_dealer_db'] = true;
                 }
             }
-            \log::debug("recipientbuilder: about to iterate fields");
             foreach ($this->listFields as $field) {
                 if (array_key_exists($field, $list->fieldmap)) {
                     $staging[$field] = $this->sanitize($row[$list->fieldmap[$field]], true);
                 }
             }
-            \log::debug("recipientbuilder: iteration complete");
             $rows[] = $staging;
 
             if ($i % 100 == 0) {

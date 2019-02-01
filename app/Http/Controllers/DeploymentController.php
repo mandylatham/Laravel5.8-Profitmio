@@ -485,6 +485,8 @@ class DeploymentController extends Controller
         $i = 0;
         $batch = 0;
         $batches = [];
+        \Log::debug("assemble recipient batches (info): " . json_encode($info));
+        \Log::debug("assemble recipient batches (deployments): " . json_encode($deployments));
 
         try {
             if ($info['max']) {
@@ -492,7 +494,7 @@ class DeploymentController extends Controller
                     if ( ! isset($deployments[$batch])) {
                         Throw new \Exception("More recipients than batches");
                     }
-                    $batches[] = ['deployment_id' => $deployments[$batch]->campaign_schedule_id, 'recipient_id' => $recipient->id];
+                    $batches[] = ['deployment_id' => $deployments[$batch]->id, 'recipient_id' => $recipient->id];
 
                     if ($i != 0 && $i % $info['max'] == 0) {
                         $batch++;
