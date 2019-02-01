@@ -6,7 +6,7 @@ use App\Events\ServiceDeptLabelAdded;
 use App\Http\Requests\AddRecipientRequest;
 use App\Http\Requests\CreateRecipientListRequest;
 use App\Http\Resources\Recipient as RecipientResource;
-use App\Events\CampaignResponseUpdated;
+use App\Http\Resources\RecipientList as RecipientListResource;
 use App\Jobs\LoadListRecipients;
 use App\Jobs\ProcessList;
 use App\Models\Appointment;
@@ -26,10 +26,11 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
-use App\Http\Resources\RecipientList as RecipientListResource;
 
 class RecipientController extends Controller
 {
+    protected $pages = 15;
+
     public function forUserDisplay(Campaign $campaign)
     {
         return RecipientListResource::collection(RecipientList::whereCampaignId($campaign->id)
@@ -86,8 +87,8 @@ class RecipientController extends Controller
                 ->whereRaw("length(phone) > 9");
         }
 
-        if (is_array($lists) && ! empty($lists) && $lists[0] != null) {
-            if (! in_array('all', $lists)) {
+        if (is_array($lists) && !empty($lists) && $lists[0] != null) {
+            if (!in_array('all', $lists)) {
                 $recipients->whereIn('recipient_list_id', (array)$lists);
             }
         }
@@ -274,11 +275,159 @@ class RecipientController extends Controller
         return RecipientResource::collection($items);
     }
 
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @param string   $filter
+     * @param null     $label
+     * @return mixed
+     */
+    public function getRecipientData(Request $request, Campaign $campaign, $filter = 'all', $label = null)
+    {
+        if ($filter == 'all') {
+            $recipients = Recipient::withResponses($campaign->id);
+        }
+        if ($filter == 'unread') {
+            $recipients = Recipient::unread($campaign->id);
+        }
+        if ($filter == 'idle') {
+            $recipients = Recipient::idle($campaign->id);
+        }
+        if ($filter == 'archived') {
+            $recipients = Recipient::archived($campaign->id);
+        }
+        if ($filter == 'labelled') {
+            $recipients = Recipient::withResponses($campaign->id)
+                ->labelled($campaign->id, $label);
+        }
+        if ($filter == 'email') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+                )
+            );
+        }
+        if ($filter == 'text') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+                )
+            );
+        }
+        if ($filter == 'calls') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+                )
+            );
+        }
+
+        if (!isset($recipients)) {
+            abort(401);
+        }
+
+        if ($request->has('search')) {
+            $recipients->where(function ($query) use ($request) {
+                $keywords = explode(' ', $request->search);
+                foreach ($keywords as $keyword) {
+                    $query->orWhere('first_name', 'like', '%' . $keyword . '%')
+                        ->orWhere('last_name', 'like', '%' . $keyword . '%')
+                        ->orWhere('email', 'like', '%' . $keyword . '%')
+                        ->orWhere('phone', 'like', '%' . $keyword . '%')
+                        ->orWhere('make', 'like', '%' . $keyword . '%')
+                        ->orWhere('model', 'like', '%' . $keyword . '%')
+                        ->orWhere('year', 'like', '%' . $keyword . '%');
+                }
+            });
+        }
+
+        $recipients->join('responses as r1', function ($join) {
+            $join->on('recipients.id', '=', 'r1.id');
+        })
+            ->leftJoin('responses as r2', function ($join) {
+                $join->on('r1.id', '=', 'r2.id')
+                    ->on('r1.created_at', '<', 'r2.created_at');
+            })
+            ->whereNull('r2.created_at')
+            ->selectRaw('recipients.*, r1.created_at as last_seen')
+            ->orderBy('last_seen', 'desc');
+
+        $recipients = $recipients->paginate($this->pages);
+
+        $recipients->totalCount = Recipient::withResponses($campaign->id)->count();
+        $recipients->unread = Recipient::unread($campaign->id)->count();
+        $recipients->idle = Recipient::idle($campaign->id)->count();
+        $recipients->archived = Recipient::archived()->count();
+        $recipients->email = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+            )
+        )->count();
+        $recipients->calls = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+            )
+        )->count();
+        $recipients->sms = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+            )
+        )->count();
+
+        $recipients->labelCounts = Recipient::withResponses($campaign->id)
+            ->selectRaw("sum(interested) as interested, sum(not_interested) as not_interested,
+                sum(appointment) as appointment, sum(service) as service, sum(wrong_number) as wrong_number,
+                sum(car_sold) as car_sold, sum(heat) as heat_case, sum(callback) as callback,
+                sum(case when (interested = 0 and not_interested = 0 and appointment = 0 and service = 0 and
+                wrong_number = 0 and car_sold = 0 and heat = 0) then 1 else 0 end) as not_labelled")
+            ->first();
+
+        $viewData['campaign'] = $campaign;
+        $viewData['recipients'] = $recipients;
+        $viewData['filter'] = $filter;
+        $viewData['label'] = $label;
+        $viewData['counters'] = [
+            'totalCount'  => $recipients->totalCount,
+            'unread'      => $recipients->unread,
+            'idle'        => $recipients->idle,
+            'archived'    => $recipients->archived,
+            'email'       => $recipients->email,
+            'calls'       => $recipients->calls,
+            'sms'         => $recipients->sms,
+            'labelCounts' => array_map('intval', $recipients->labelCounts->toArray()),
+        ];
+
+        return $viewData;
+    }
+
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return mixed
+     */
+    public function getRecipients(Request $request, Campaign $campaign)
+    {
+        $filter = $request->get('filter') ?: 'all';
+        $label = $request->get('label') ?: null;
+
+        $viewData = $this->getRecipientData($request, $campaign, $filter, $label);
+
+        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+
+        return $viewData;
+    }
+
     public function showRecipientList(Request $request, Campaign $campaign, RecipientList $list)
     {
         return view('campaigns.recipient_lists.detail')->with([
             'campaign' => $list->campaign,
-            'list' => $list,
+            'list'     => $list,
         ]);
     }
 
@@ -455,7 +604,8 @@ class RecipientController extends Controller
             abort(422, "Invalid Parameters");
         }
 
-        if ( Recipient::whereIn('id', $request->input('recipient_ids'))->count() != count($request->input('recipient_ids'))) {
+        if (Recipient::whereIn('id',
+                $request->input('recipient_ids'))->count() != count($request->input('recipient_ids'))) {
             abort(422, "Not all recipients exist, please try again");
         }
 
@@ -546,7 +696,7 @@ class RecipientController extends Controller
 
         header('Content-Type: text/csv; charset=utf-8');
         header('Content-Type: application/force-download');
-        header('Content-Disposition: attachment; filename='.$filename.'');
+        header('Content-Disposition: attachment; filename=' . $filename . '');
 
         // create a file pointer connected to the output stream
         $output = fopen('php://output', 'w');
@@ -752,7 +902,7 @@ class RecipientController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['errors'=>$validator->errors()]);
+                return response()->json(['errors' => $validator->errors()]);
             }
 
             // Validate for the conquest vs database setting
@@ -762,7 +912,7 @@ class RecipientController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['errors'=>$validator->errors()]);
+                    return response()->json(['errors' => $validator->errors()]);
                 }
             }
             Log::debug("New List passed list_type validation");
@@ -792,7 +942,8 @@ class RecipientController extends Controller
             LoadListRecipients::dispatch($list)->onQueue('load-lists');
         } catch (\Exception $e) {
             $errors = new MessageBag(['file' => 'Unable to load file']);
-            Log::error("Unable to load file for campaign {$campaign->id}. ". $e->getMessage());
+            Log::error("Unable to load file for campaign {$campaign->id}. " . $e->getMessage());
+
             return response()->json(['errors' => $errors], 422);
         }
 
@@ -960,10 +1111,10 @@ class RecipientController extends Controller
         $deletable = $total - $dropped;
 
         return [
-            'total' => $total,
-            'inDrops' => $inDrops,
-            'dropped' => $dropped,
-            'deletable' => $deletable,
+            'total'      => $total,
+            'inDrops'    => $inDrops,
+            'dropped'    => $dropped,
+            'deletable'  => $deletable,
             'delete_url' => route('campaigns.recipient-lists.delete', [$campaign->id, $list->id]),
         ];
     }

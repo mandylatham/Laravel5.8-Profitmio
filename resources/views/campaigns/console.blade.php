@@ -125,7 +125,7 @@
                 <a href="javascript:;" class="btn pm-btn pm-btn-blue toggle-sidebar" @click="toggleSidebar"><i
                             class="fa fa-bars"></i></a>
 
-                <a href="{{ route('campaign.index') }}" class="btn pm-btn pm-btn-blue">
+                <a href="{{ route('campaigns.index') }}" class="btn pm-btn pm-btn-blue">
                     <i class="fas fa-chevron-left mr-2"></i>Home</a>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
