@@ -51,6 +51,7 @@ class TemplateController extends Controller
 
     public function update(CampaignScheduleTemplate $template, Request $request)
     {
+        dd($request->input('params'));
         $template->fill($request->input('params'));
 
         $template->save();

@@ -285,15 +285,17 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region COMPANIES
     Route::group(['prefix' => 'companies'], function () {
-        Route::get('', 'CompanyController@index')->middleware('can:create')->name('company.index');
+        Route::get('/', 'CompanyController@index')->middleware('can:create')->name('company.index');
+        Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
+
         Route::get('for-dropdown', 'CompanyController@getForDropdown')->name('company.for-dropdown');
         Route::get('for-user-display', 'CompanyController@getForUserDisplay')->name('company.for-user-display');
         Route::get('/create', 'CompanyController@create')->middleware('can:create,App\Models\Company')->name('company.create');
-        Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:edit,company')->name('company.edit');
-        Route::post('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');
-        Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
+
+        Route::get('/{company}', 'CompanyController@details')->middleware('can:manage,company')->name('company.details');
+        Route::put('/{company}', 'CompanyController@update')->middleware('can:edit,company')->name('company.update');
+
         Route::get('/{company}/campaign', 'CompanyController@campaignIndex')->middleware('can:viewForPreferences,company')->name('company.campaign.index');
-        Route::get('/{company}/edit', 'CompanyController@edit')->middleware('can:manage,company')->name('company.edit');
         Route::delete('/{company}', 'CompanyController@delete')->middleware('can:manage,company')->name('company.delete');
 
         Route::group(['prefix' => '/{company}/user'], function () {

@@ -26,6 +26,13 @@ class StoreCompanyRequest extends FormRequest
         return [
             'name' => 'required',
             'type' => 'required|in:support,agency,dealership',
+            'country' => 'required|in:us,ca',
+            'phone' => 'required',
+            'address' => 'required',
+            'address2' => 'nullable',
+            'city' => 'required',
+            'state' => 'required',
+            'zip' => 'required',
             'url' => 'nullable|url',
             'image_url' => 'nullable|url',
             'facebook' => 'nullable|url',
