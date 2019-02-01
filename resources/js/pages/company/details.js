@@ -86,12 +86,18 @@ window['app'] = new Vue({
         showCompanyFormControls: false,
         loadingCampaigns: false,
         total: 0,
-        totalUsers: 0
+        totalUsers: 0,
+
+        userEditUrl: '',
+        userImpersonateUrl: '',
     },
     mounted() {
         this.companyIndex = window.indexUrl;
         this.updateUrl = window.updateUrl;
         this.company = window.company;
+        this.userEditUrl = window.userEditUrl;
+        this.userImpersonateUrl = window.userImpersonateUrl;
+
         this.modifiedCompany = JSON.parse(JSON.stringify(this.company));
         this.updateFields();
         this.fetchCampaigns();
@@ -176,7 +182,8 @@ window['app'] = new Vue({
                 .catch(error => {
                     this.$toastr.error("Unable to update");
                 });
-        }
+        },
+        generateRoute
     },
     validations() {
         return {
