@@ -17,12 +17,14 @@ Vue.use(Vuelidate);
 // Custom Validation
 import { helpers, required, minLength, url } from 'vuelidate/lib/validators';
 import { isNorthAmericanPhoneNumber, isCanadianPostalCode, isUnitedStatesPostalCode, looseAddressMatch } from './../../common/validators';
+import './../../components/campaign/campaign';
 
 window['app'] = new Vue({
     el: '#app',
     components: {
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination')
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
+        'campaign': require('./../../components/campaign/campaign'),
     },
     computed: {
         usersPagination: function () {
