@@ -35,7 +35,7 @@
                             </div>
                             <div class="col-md pl-3">
                                 <div class="d-flex justify-content-end">
-                                    <button class="btn pm-btn pm-btn-outline-purple mb-3" @click="showCompanyFormControls = true">
+                                    <button class="btn pm-btn pm-btn-outline-purple mb-3" @click="showCompanyFormControls = true" v-if="!showCompanyFormControls">
                                         <i class="fas fa-pencil-alt mr-2"></i>
                                         Edit
                                     </button>
