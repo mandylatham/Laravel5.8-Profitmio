@@ -40,8 +40,8 @@
                     <div class="row no-gutters">
                         <div class="col-12 col-md-4 drop-info">
                             <div class="drop-info--type">
-                                <span class="pm-font-mail-icon" v-if="drop.ype === 'email'"></span>
-                                <span class="far fa-comment" v-else-if="drop.ype === 'sms'"></span>
+                                <span class="pm-font-mail-icon" v-if="drop.type === 'email'"></span>
+                                <span class="fa fa-comment" v-else-if="drop.type === 'sms'"></span>
                                 <span class="pm-font-templates-icon" v-else></span>
                             </div>
                             <div class="drop-info--date">
