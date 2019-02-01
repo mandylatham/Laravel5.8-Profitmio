@@ -220,80 +220,74 @@
     <div class="site-menubar">
         <div class="site-menubar-body">
             <div>
-                <div>
-                    <ul class="site-menu" data-plugin="menu">
-                        <li class="site-menu-category">General</li>
-                        @if (!auth()->user()->isAdmin())
-                            <li class="site-menu-item">
-                                <a href="{{ secure_url('/dashboard') }}" class=" waves-effect waves-classic">
-                                    <i class="site-menu-icon icon oi-dashboard" aria-hidden="true"></i>
-                                    <span class="site-menu-title">Dashboard</span>
-                                </a>
-                            </li>
-                        @endif
-                        @can('list', \App\Models\Campaign::class)
-                            <li class="site-menu-item">
-                                <a href="{{ route('campaign.index') }}" class=" waves-effect waves-classic">
-                                    <i class="site-menu-icon icon oi-megaphone" aria-hidden="true"></i>
-                                    <span class="site-menu-title">Campaigns</span>
-                                </a>
-                            </li>
-                        @endcan
-                        @can('list', \App\Models\CampaignScheduleTemplate::class)
-                            <li class="site-menu-item">
-                                <a href="{{ route('template.index') }}" class=" waves-effect waves-classic">
-                                    <i class="site-menu-icon icon fa-file-text-o" aria-hidden="true"></i>
-                                    <span class="site-menu-title">Templates</span>
-                                </a>
-                            </li>
-                        @endcan
-                        @can('list', \App\Models\User::class)
-                            <li class="site-menu-item">
-                                <a href="{{ route('user.index') }}" class=" waves-effect waves-classic">
-                                    <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
-                                    <span class="site-menu-title">Users</span>
-                                </a>
-                            </li>
-                        @endcan
-                        @if (auth()->user()->isAdmin())
-                            <li class="site-menu-item">
-                                <a href="{{ route('company.index') }}" class=" waves-effect waves-classic">
-                                    <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
-                                    <span class="site-menu-title">Companies</span>
-                                </a>
-                            </li>
-                        @endif
-                        @if (auth()->user()->isAdmin())
-                            <li class="site-menu-category">System</li>
-                            <li class="dropdown site-menu-item has-sub">
-                                <a data-toggle="dropdown" href="javascript:void(0)" data-dropdown-toggle="false" class="waves-effect waves-classic">
-                                    <i class="site-menu-icon icon fa-server" aria-hidden="true"></i>
-                                    <span class="site-menu-title">System</span>
-                                    <span class="site-menu-arrow"></span>
-                                </a>
-                                <div class="dropdown-menu">
-                                    <div class="site-menu-scroll-wrap is-list scrollable is_enabled scrollable-vertical" style="position: relative">
-                                        <div class="scrollable-container" style="max-height: 420px; width: 232px;">
-                                            <div class="scrollable-content" style="width: 217px;">
-                                                <ul class="site-menu-sub site-menu-normal-list">
-                                                    <li class="site-menu-item">
-                                                        <a href="{{ route('system.drop.index') }}" class=" waves-effect waves-classic">
-                                                            <i class="site-menu-icon icon fa-paper-plane" aria-hidden="true"></i>
-                                                            <span class="site-menu-title">Drop Management</span>
-                                                        </a>
-                                                    </li>
-                                                    <li class="site-menu-item">
-                                                        <a href="{{ route('system.report.index') }}" class=" waves-effect waves-classic">
-                                                            <i class="site-menu-icon icon fa-bar-chart" aria-hidden="true"></i>
-                                                            <span class="site-menu-title">Reports</span>
-                                                        </a>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide" draggable="false">
-                                            <div class="scrollable-bar-handle" style="height: 350.283px;"></div>
-                                        </div>
+                <ul class="site-menu" data-plugin="menu">
+                    <li class="site-menu-category">General</li>
+                    @if (!auth()->user()->isAdmin())
+                    <li class="site-menu-item">
+                        <a href="{{ secure_url('/dashboard') }}" class=" waves-effect waves-classic">
+                            <i class="site-menu-icon icon oi-dashboard" aria-hidden="true"></i>
+                            <span class="site-menu-title">Dashboard</span>
+                        </a>
+                    </li>
+                    @endif
+                    @can('list', \App\Models\Campaign::class)
+                    <li class="site-menu-item">
+                        <a href="{{ route('campaigns.index') }}" class=" waves-effect waves-classic">
+                            <i class="site-menu-icon icon oi-megaphone" aria-hidden="true"></i>
+                            <span class="site-menu-title">Campaigns</span>
+                        </a>
+                    </li>
+                    @endcan
+                    @can('list', \App\Models\CampaignScheduleTemplate::class)
+                    <li class="site-menu-item">
+                        <a href="{{ route('template.index') }}" class=" waves-effect waves-classic">
+                            <i class="site-menu-icon icon fa-file-text-o" aria-hidden="true"></i>
+                            <span class="site-menu-title">Templates</span>
+                        </a>
+                    </li>
+                    @endcan
+                    @can('list', \App\Models\User::class)
+                    <li class="site-menu-item">
+                        <a href="{{ route('user.index') }}" class=" waves-effect waves-classic">
+                            <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
+                            <span class="site-menu-title">Users</span>
+                        </a>
+                    </li>
+                    @endcan
+                    @if (auth()->user()->isAdmin())
+                    <li class="site-menu-item">
+                        <a href="{{ route('company.index') }}" class=" waves-effect waves-classic">
+                            <i class="site-menu-icon icon fa-users" aria-hidden="true"></i>
+                            <span class="site-menu-title">Companies</span>
+                        </a>
+                    </li>
+                    @endif
+                    @if (auth()->user()->isAdmin())
+                    <li class="site-menu-category">System</li>
+                    <li class="dropdown site-menu-item has-sub">
+                        <a data-toggle="dropdown" href="javascript:void(0)" data-dropdown-toggle="false" class="waves-effect waves-classic">
+                            <i class="site-menu-icon icon fa-server" aria-hidden="true"></i>
+                            <span class="site-menu-title">System</span>
+                            <span class="site-menu-arrow"></span>
+                        </a>
+                        <div class="dropdown-menu">
+                            <div class="site-menu-scroll-wrap is-list scrollable is_enabled scrollable-vertical" style="position: relative">
+                                <div class="scrollable-container" style="max-height: 420px; width: 232px;">
+                                    <div class="scrollable-content" style="width: 217px;">
+                                        <ul class="site-menu-sub site-menu-normal-list">
+                                            <li class="site-menu-item">
+                                                <a href="{{ route('system.drop.index') }}" class=" waves-effect waves-classic">
+                                                    <i class="site-menu-icon icon fa-paper-plane" aria-hidden="true"></i>
+                                                    <span class="site-menu-title">Drop Management</span>
+                                                </a>
+                                            </li>
+                                            <li class="site-menu-item">
+                                                <a href="{{ route('system.report.index') }}" class=" waves-effect waves-classic">
+                                                    <i class="site-menu-icon icon fa-bar-chart" aria-hidden="true"></i>
+                                                    <span class="site-menu-title">Reports</span>
+                                                </a>
+                                            </li>
+                                        </ul>
                                     </div>
                                 </div>
                             </li>

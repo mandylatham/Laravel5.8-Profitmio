@@ -1,0 +1,92 @@
+@import './../../common/index';
+@import './../base';
+@import "~bootstrap/scss/tables";
+@import './../../components/spinner-icon';
+@import './../../components/pm-pagination';
+
+#recipients-detail {
+    padding: 2rem 1rem;
+    .table-container {
+        padding: 1.5rem 1rem;
+        background-color: #fff;
+        border-radius: 5px;
+    }
+    .recipients-container {
+        position: relative;
+    }
+    .recipient-name {
+        display: flex;
+        background-color: $brand-purple;
+        padding: 1rem 1.25rem;
+        color: #fff;
+        &--icon {
+            padding: 0 20px 0 10px;
+            flex-grow: 1;
+            font-size: 2.5rem;
+        }
+        &--data {
+            flex-grow: 5;
+            small {
+                display: block;
+                font-weight: 300;
+            }
+        }
+        &--id {
+            margin-top: 12px;
+        }
+    }
+    .recipient-stats{
+        display: flex;
+        flex-flow: column;
+        text-align: left;
+        background: #fff;
+        justify-content: center;
+        padding: 1rem 1.25rem;
+        border-right: 2px solid $brand-white;
+        &--stat {
+            margin-bottom: 5px;
+            [class^="pm-font-"], [class*=" pm-font-"] {
+                width: 40px;
+                font-size: 1.2rem;
+                color: $brand-purple;
+            }
+            .pm-font-companies-icon {
+                font-size: 1.1rem;
+            }
+            span {
+                display: inline-block;
+                width: 80px;
+                margin-right: 10px;
+            }
+            strong {
+                color: $brand-black;
+            }
+            &.last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+    .recipient-options {
+        flex-flow: column;
+        text-align: center;
+        background: #fff;
+        padding: 1rem 1.25rem;
+        display: flex;
+        .btn-action {
+            color: $brand-blue;
+            border: 1px solid $brand-blue;
+            border-radius: 0;
+        }
+        .options-group {
+            margin-top: 10px;
+            .btn {
+                padding: 8px;
+                margin-right: 20px;
+                color: $brand-purple;
+                &:last-child {
+                    margin-right: 0;
+                }
+            }
+        }
+    }
+}

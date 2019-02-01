@@ -31,20 +31,10 @@ window['app'] = new Vue({
     },
     data: {
         template: {},
-        oldTemplate: '',
-        renderedTemplate: '',
         toggleInputs: false,
         toggleNameInput: false,
         updateUrl: '',
         deleteUrl: '',
-        updateForm: new Form({
-            name: null,
-            text_message: null,
-            email_subject: null,
-            email_text: null,
-            email_html: null
-        }),
-
         showNameControls: false,
         showTextMessageControls: false,
         showEmailSubjectControls: false,
@@ -95,7 +85,8 @@ window['app'] = new Vue({
             this.updateForm.email_subject = this.oldTemplate.email_subject;
             this.updateForm.email_text = this.oldTemplate.email_text;
             this.updateForm.email_html = this.oldTemplate.email_html;
-
+        },
+        htmlifyFields: function () {
             // style the previews
             this.renderedTemplate.text_message = this.htmlify(this.oldTemplate.text_message);
             this.renderedTemplate.email_subject = this.htmlify(this.oldTemplate.email_subject);
@@ -145,12 +136,14 @@ window['app'] = new Vue({
         },
         update: function (fieldName) {
             this.updateFields();
-            this.updateForm.post(updateUrl)
+            console.log(updateUrl);
+            this.updateForm.patch(updateUrl)
                 .then(response => {
                     this.oldTemplate = JSON.parse(JSON.stringify(this.template));
                     var controlName = 'show' + this.toRoyalCase(fieldName) + 'Controls';
                     this[controlName] = false;
                     this.$toastr.success("Update successful");
+                    this.htmlifyFields();
                 })
                 .catch(error => {
                     this.$toastr.error("Unable to update");

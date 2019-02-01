@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Sofa\Eloquence\Eloquence;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Company extends Model
 {
-    use LogsActivity, Eloquence;
+    use LogsActivity, Eloquence, SoftDeletes;
 
     const TYPE_SUPPORT = 'support';
     const TYPE_AGENCY = 'agency';
@@ -30,6 +31,7 @@ class Company extends Model
         'url',
         'facebook',
         'twitter',
+        'image_url',
     ];
 
     protected static $logAttributes = ['id', 'name', 'type'];
@@ -49,7 +51,7 @@ class Company extends Model
         return $this->hasMany(CampaignScheduleTemplate::class);
     }
 
-    public function campaigns()
+    public function scopeCampaigns()
     {
         return Campaign::where(function ($query) {
                 if ($this->isAgency()) {
@@ -103,7 +105,7 @@ class Company extends Model
             ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at')
-            ->whereIn('status', ['Active', 'Completed', 'Upcoming']);
+            ->whereIn('status', ['Active', 'Completed', 'Upcoming', 'Expired']);
 
         if ($q) {
             $likeQ = '%' . $q . '%';

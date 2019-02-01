@@ -28,6 +28,8 @@ class Campaign extends Model
         'lead_alert_email',
         'client_passthrough',
         'client_passthrough_email',
+        'service_dept',
+        'service_dept_email',
         'phone_number_id',
         'expires_at',
         'sms_on_callback',
@@ -46,6 +48,14 @@ class Campaign extends Model
     protected static $logAttributes = ['id', 'agency_id', 'dealership_id', 'name'];
 
     protected $appends = ['is_expired'];
+
+    protected $casts = [
+        'sms_on_callback_number' => 'json',
+        'service_dept_email' => 'json',
+        'adf_crm_export_email' => 'json',
+        'lead_alert_email' => 'json',
+        'client_passthrough_email' => 'json'
+    ];
 
     public function agency()
     {
@@ -163,7 +173,7 @@ class Campaign extends Model
                 ['campaign' => $this->id]) . '"><i class="fa fa-search"></i></a>';
         $template .= '<a class="btn btn-pure btn-primary btn-round campaign-drops" href="' . route('campaign.drop.index',
                 ['campaign' => $this->id]) . '"><i class="icon icon-lg wi-raindrops" style="font-size: 28px; margin: -5px"></i></a>';
-        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-recipients" href="' . route('campaign.recipient.index',
+        $template .= '<a class="btn btn-pure btn-primary btn-round campaign-recipients" href="' . route('campaigns.recipients.index',
                 ['campaign' => $this->id]) . '"><i class="fa fa-users"></i></a>';
         $template .= '<a class="btn btn-pure btn-primary btn-round campaign-console" href="' . route('campaign.response-console.index',
                 ['campaign' => $this->id]) . '"><i class="fa fa-terminal"></i></a>';

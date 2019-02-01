@@ -1,0 +1,57 @@
+@import './../../common/index';
+@import './../base';
+@import "~bootstrap/scss/tables";
+@import './../../components/date-pick';
+@import './../../components/spinner-icon';
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+
+#deployments-create {
+
+    .mx-calendar-icon {
+        height: auto;
+    }
+
+    .wizard-container {
+        position: relative;
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: 5px;
+        margin: 2rem 1rem;
+        border: 2px solid #ced4da;
+    }
+
+    .total{
+        &-value {
+            font-size: 4rem;
+            line-height: 1em;
+        }
+    }
+
+    .table-loader-spinner {
+
+    }
+
+    .vue-form-wizard {
+        .wizard-icon-circle, .stepTitle {
+            color: $brand-purple;
+        }
+
+        a.disabled {
+            .wizard-icon-circle {
+                border-color: rgba(0, 0, 0, .2);
+                color: rgba(0, 0, 0, .2);
+            }
+
+            .stepTitle {
+                color: rgba(0, 0, 0, .2);
+            }
+        }
+
+        .wizard-btn {
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background-color: $brand-purple;
+            color: #fff;
+        }
+    }
+}
