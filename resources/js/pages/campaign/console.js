@@ -82,6 +82,7 @@ window['app'] = new Vue({
                 component: 'communication-side-panel',
                 cssClass: 'communication-side-panel',
                 width: '50%',
+                disableBgClick: false,
                 props: {
                     campaign: this.campaign,
                     recipientId: this.currentRecipientId,

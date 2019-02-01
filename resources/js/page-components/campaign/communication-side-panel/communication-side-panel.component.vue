@@ -33,9 +33,11 @@
                 <div class="row align-items-end no-gutters mt-4 mb-3">
                     <div class="col-12">
 
-                        <label for="labels" class="form-check-label">Add Label</label>
-                        <v-select :options="labelsDropdown" name="label" class="form-control filter--v-select"
-                                  id="labels" v-model="selectedLabel"></v-select>
+                        <b-dropdown right text="Add Label" v-if="labelsDropdown">
+                            <b-dropdown-item v-for="item in labelsDropdown" :key="item.value" :value="item.value"
+                                             @click="selectLabel(item.value)">{{ item.label }}
+                            </b-dropdown-item>
+                        </b-dropdown>
                     </div>
 
                     <div class="col-12" v-if="this.labels">
@@ -89,15 +91,9 @@
                             <div class="form-group">
                                 <label for="appointment_date" class="form-check-label">Select Appointment Date</label>
 
-                                <date-pick id="appointment_date" class="event-calendar"
-                                           v-model="appointmentSelectedDate"
-                                           :has-input-element="false"></date-pick>
-                            </div>
-                            <div class="form-group">
-                                <label for="appointment_time" class="form-check-label">Select Appointment Time</label>
-                                <select name="appointment_time" class="form-control" id="appointment_time"
-                                        v-html="rest.appointmentTimes" v-model="appointmentSelectedTime">
-                                </select>
+                                <date-picker id="appointment_date" v-model="appointmentSelectedDateUnformatted"
+                                             type="datetime" format="YYYY-MM-DD HH:mm" :lang="timePickerLang"
+                                             :time-picker-options="timePickerOptions"></date-picker>
                             </div>
                             <button class="btn btn-primary" role="button"
                                     @click="addAppointment(campaign.id, recipientId)">Add
@@ -171,7 +167,7 @@
                             </div>
                         </div>
 
-                        <div id="sms-form" style="margin-top: 20px;" v-if="campaign.is_expired">
+                        <div id="sms-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
                             <div class="input-group">
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="textMessage">
@@ -230,7 +226,7 @@
                             </div>
                         </div>
 
-                        <div id="email-form" style="margin-top: 20px;" v-if="campaign.is_expired">
+                        <div id="email-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
                             <div class="input-group">
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="emailMessage">
@@ -252,6 +248,7 @@
 <script>
     import axios from 'axios';
     import {generateRoute} from './../../../common/helpers'
+    import DatePicker from 'vue2-datepicker'
 
     export default {
         mounted() {
@@ -259,10 +256,12 @@
             this.getResponses(this.campaign.id, this.recipientId);
         },
         components: {
-            'date-pick': require('./../../../components/date-pick/date-pick')
+            // 'date-pick': require('./../../../components/date-pick/date-pick'),
+            DatePicker
         },
         data() {
             return {
+                disableBgClick: false,
                 recipient: [],
                 threads: [],
                 appointments: [],
@@ -270,6 +269,7 @@
                 loading: false,
                 notes: '',
                 calledCheckbox: false,
+                appointmentSelectedDateUnformatted: '',
                 appointmentSelectedDate: '',
                 appointmentSelectedTime: '',
                 textMessage: '',
@@ -277,13 +277,27 @@
                 selectedLabel: '',
                 labels: [],
                 labelsDropdown: [
-                    {value: 'interested', label: 'Interested'},
-                    {value: 'service', label: 'Service Dept'},
-                    {value: 'not_interested', label: 'Not Interested'},
-                    {value: 'wrong_number', label: 'Wrong Number'},
-                    {value: 'car_sold', label: 'Car Sold'},
-                    {value: 'heat', label: 'Heat Case'},
-                ]
+                    {value: 'interested', label: 'Interested', class: 'green'},
+                    {value: 'service', label: 'Service Dept', class: 'green'},
+                    {value: 'not_interested', label: 'Not Interested', class: 'red'},
+                    {value: 'wrong_number', label: 'Wrong Number', class: 'red'},
+                    {value: 'car_sold', label: 'Car Sold', class: 'red'},
+                    {value: 'heat', label: 'Heat Case', class: 'red'},
+                ],
+                timePickerLang: {
+                    days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    pickers: ['next 7 days', 'next 30 days', 'previous 7 days', 'previous 30 days'],
+                    placeholder: {
+                        date: 'Select Date',
+                        dateRange: 'Select Date Range'
+                    }
+                },
+                timePickerOptions: {
+                    start: '00:00',
+                    step: '00:15',
+                    end: '23:45'
+                }
             }
         },
         props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
@@ -292,8 +306,17 @@
         },
         watch: {
             selectedLabel: function (newVal) {
-                this.addLabel(newVal.value)
-            }
+                this.addLabel(newVal.value);
+            },
+            appointmentSelectedDateUnformatted: function (newVal) {
+                let d = new Date(newVal);
+                // date format: YYYY-MM-DD
+                let formattedDate = d.getFullYear() + '-' + this.pad2(d.getMonth() + 1) + '-' + this.pad2(d.getDate());
+                // time format: HH:mm
+                let formattedTime = this.pad2(d.getHours()) + ':' + this.pad2(d.getMinutes());
+                this.appointmentSelectedDate = formattedDate;
+                this.appointmentSelectedTime = formattedTime;
+            },
         },
         methods: {
             closePanel() {
@@ -309,6 +332,7 @@
                 this.loading = false;
                 this.notes = '';
                 this.calledCheckbox = false;
+                this.appointmentSelectedDateUnformatted = '';
                 this.appointmentSelectedDate = '';
                 this.appointmentSelectedTime = '';
                 this.textMessage = '';
@@ -336,6 +360,9 @@
                         this.setLoading(false);
                         this.$toastr.error("Couldn't fetch responses.");
                     });
+            },
+            pad2: function (number) {
+                return (number < 10 ? '0' : '') + number;
             },
             setLoading: function (bool) {
                 // Local loading variable
@@ -422,8 +449,11 @@
                         this.$toastr.error('Failed to send email.');
                     });
             },
+            selectLabel: function (label) {
+                this.selectedLabel = label;
+            },
             addLabel: function (label) {
-                let selectedLabel = this.selectedLabel.value;
+                let selectedLabel = this.selectedLabel;
                 if (label) {
                     selectedLabel = label;
                 }
@@ -441,7 +471,7 @@
                     });
             },
             removeLabel: function (label) {
-                let selectedLabel = this.selectedLabel.value;
+                let selectedLabel = this.selectedLabel;
                 if (label) {
                     selectedLabel = label;
                 }
@@ -465,7 +495,8 @@
                     window['app'].pusher('private-campaign.' + this.campaign.id, 'response.' + recipient.id + '.updated', (data) => {
 
                         if (data) {
-                            this.setLoading(true);
+                            // TODO: check why is whole slidePanel flickering when loading is enabled
+                            // this.setLoading(true);
 
                             axios.get(generateRoute(window.recipientGetResponsesUrl, {'recipientId': this.recipientId}),
                                 {
@@ -478,9 +509,11 @@
                                     if (response.data.appointments) {
                                         this.appointments = response.data.appointments;
                                     }
+
                                     if (response.data.threads) {
                                         this.threads = response.data.threads;
                                     }
+
                                     if (response.data.recipient) {
                                         this.recipient = response.data.recipient;
 
@@ -488,19 +521,19 @@
                                         this.$set(window['app'].recipients[this.recipientKey], 'labels_list_text',
                                             response.data.recipient.labels_list_text);
                                     }
-                                    if (response.data.recipient.labels_list) {
-                                        this.labels = response.data.recipient.labels_list;
-                                    }
+
                                     if (response.data.recipient.labels_list) {
                                         this.labels = response.data.recipient.labels_list;
                                     }
 
-                                    this.setLoading(false);
+                                    // TODO: check why is whole slidePanel flickering when loading is enabled
+                                    // this.setLoading(false);
                                 })
                                 .catch((response) => {
                                     console.log(response);
                                     this.$toastr.error('Failed to update responses.');
-                                    this.setLoading(false);
+                                    // TODO: check why is whole slidePanel flickering when loading is enabled
+                                    // this.setLoading(false);
                                 });
                         }
                     });

@@ -81,7 +81,7 @@
         <ul class="labels">
             <li class="no-label">
                 <a :class="{'active': activeLabelSection === 'no-label'}" href="javascript:;"
-                   @click="changeFilter('labelled', 'no-label')">No Label
+                   @click="changeFilter('labelled', 'none')">No Label
                     <span class="counter">@{{ this.labelCounts.not_labelled }}</span></a>
             </li>
             <li class="interested">

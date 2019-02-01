@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\MailgunService;
 use App\Models\Appointment;
 use App\Models\Campaign;
-use App\Classes\MailgunService;
 use App\Models\Recipient;
 use App\Models\Response;
 use App\Models\ResponseThread;
 use App\Services\PusherBroadcastingService;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use League\Csv\Writer;
 
 
@@ -235,9 +235,6 @@ class ResponseController extends Controller
             'appointments' => $appointments,
             'responses'    => $responses,
             'threads'      => $threads,
-            'rest'         => [
-                'appointmentTimes' => get_times('', '+15 minutes', '<option selected="selected">Appt Time</option>'),
-            ],
         ];
     }
 

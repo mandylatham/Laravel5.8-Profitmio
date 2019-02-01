@@ -175,13 +175,12 @@
   }
 }
 
-@include media-breakpoint-up(sm) {
-  .main-content-container {
-    .main-content {
-      .sidebar-toggler {
-        visibility: hidden;
-        display: none;
-      }
+// Hide initial sidebar toggler
+.main-content-container {
+  .main-content {
+    .sidebar-toggler {
+      visibility: hidden;
+      display: none;
     }
   }
 }

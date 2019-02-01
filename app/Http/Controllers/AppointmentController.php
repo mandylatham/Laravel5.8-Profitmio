@@ -311,8 +311,14 @@ class AppointmentController extends Controller
      */
     public function addAppointmentFromConsole(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'),
-            Auth::user()->timezone);
+        if ($request->has('appointment_date_time')) {
+            $dateTime = explode(' ', $request->input('appointment_date_time'));
+
+            $appointment_at = new Carbon($dateTime[0] . ' ' . $dateTime[1], Auth::user()->timezone);
+        } else {
+            $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'),
+                Auth::user()->timezone);
+        }
 
         $appointment = Appointment::create([
             'recipient_id'   => $recipient->id,
