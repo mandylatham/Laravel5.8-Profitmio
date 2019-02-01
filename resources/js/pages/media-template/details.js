@@ -31,20 +31,10 @@ window['app'] = new Vue({
     },
     data: {
         template: {},
-        oldTemplate: '',
-        renderedTemplate: '',
         toggleInputs: false,
         toggleNameInput: false,
         updateUrl: '',
         deleteUrl: '',
-        updateForm: new Form({
-            name: null,
-            text_message: null,
-            email_subject: null,
-            email_text: null,
-            email_html: null
-        }),
-
         showNameControls: false,
         showTextMessageControls: false,
         showEmailSubjectControls: false,

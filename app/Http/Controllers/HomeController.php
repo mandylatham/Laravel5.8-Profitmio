@@ -38,7 +38,7 @@ class HomeController extends Controller
     {
         $user = auth()->user();
         if ($user->isAdmin()) {
-            return redirect()->route('campaign.index');
+            return redirect()->route('campaigns.index');
         }
 
         return view('dashboard.index', [

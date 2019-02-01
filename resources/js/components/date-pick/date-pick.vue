@@ -209,12 +209,10 @@
 
             eventsPerDay() {
                 const events = {};
-                console.log(' computing', this.events);
                 this.events.forEach(e => {
                     events[e.date] = events[e.date] || [];
                     events[e.date].push(e);
                 });
-                console.log(' computed events', events);
                 return events;
             },
 

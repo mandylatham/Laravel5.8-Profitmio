@@ -31,7 +31,7 @@ class CampaignController extends Controller
 
     public function index(Request $request)
     {
-        return view('campaign.index', [
+        return view('campaigns.index', [
             'companySelected' => $this->company->find(session('filters.campaign.index.company')),
             'q' => session('filters.campaign.index.q')
         ]);
@@ -92,6 +92,15 @@ class CampaignController extends Controller
         return view('campaigns.dashboard', $viewData);
     }
 
+
+    public function showStats(Campaign $campaign, Request $request)
+    {
+        return view('campaigns.stats', [
+            'campaign' => $campaign
+        ]);
+    }
+
+
     public function details(Campaign $campaign)
     {
         return view('campaigns.details', [
@@ -108,7 +117,7 @@ class CampaignController extends Controller
             'agencies' => $agencies,
         ];
 
-        return view('campaigns.new', $viewData);
+        return view('campaigns.create', $viewData);
     }
 
     public function create(NewCampaignRequest $request)
@@ -137,13 +146,17 @@ class CampaignController extends Controller
             'starts_at' => $starts_at,
             'ends_at' => $ends_at,
             'agency_id' => $request->input('agency'),
-            'dealership_id' => $request->input('client'),
+            'dealership_id' => $request->input('dealership'),
             'adf_crm_export' => (bool) $request->input('adf_crm_export'),
-            'adf_crm_export_email' => $request->input('adf_crm_export_email'),
-            'lead_alerts' => (bool) $request->input('lead_alerts'),
-            'lead_alert_email' => $request->input('lead_alert_email'),
+            'adf_crm_export_email' => $request->input('adf_crm_export_email', []),
             'client_passthrough' => (bool) $request->input('client_passthrough'),
-            'client_passthrough_email' => $request->input('client_passthrough_email'),
+            'client_passthrough_email' => $request->input('client_passthrough_email', []),
+            'lead_alerts' => (bool) $request->input('lead_alerts'),
+            'lead_alert_email' => $request->input('lead_alert_emails', []),
+            'service_dept' => (bool) $request->input('service_dept'),
+            'service_dept_email' => $request->input('service_dept_email', []),
+            'sms_on_callback' => (bool) $request->input('service_dept'),
+            'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'phone_number_id' => $request->input('phone_number_id'),
         ]);
 
@@ -159,7 +172,7 @@ class CampaignController extends Controller
             $phone->save();
         }
 
-        return redirect()->route('campaign.index');
+        return response()->json(['message' => 'Resource created']);
     }
 
 
@@ -201,25 +214,25 @@ class CampaignController extends Controller
         }
 
         $campaign->fill([
-            'name' => $request->name,
+            'name' => $request->input('name'),
             'status' => $status,
-            'order_id' => $request->order,
+            'order_id' => $request->input('order'),
             'starts_at' => $starts_at,
             'ends_at' => $ends_at,
             'expires_at' => $expires_at,
-            'agency_id' => $request->agency,
-            'dealership_id' => $request->client,
-            'adf_crm_export' => (bool) $request->adf_crm_export,
-            'adf_crm_export_email' => $request->adf_crm_export_email,
-            'lead_alerts' => (bool) $request->lead_alerts,
-            'lead_alert_email' => $request->lead_alert_email,
-            'client_passthrough' => (bool) $request->client_passthrough,
-            'client_passthrough_email' => $request->client_passthrough_email,
-            'service_dept' => (bool) $request->service_dept,
-            'service_dept_email' => $request->service_dept_email,
-            'sms_on_callback' => (bool) $request->sms_on_callback,
-            'sms_on_callback_number' => $request->sms_on_callback_number,
-            'phone_number_id' => $request->phone_number_id,
+            'agency_id' => $request->input('agency'),
+            'dealership_id' => $request->input('dealership'),
+            'adf_crm_export' => (bool) $request->input('adf_crm_export'),
+            'adf_crm_export_email' => $request->input('adf_crm_export_email', []),
+            'lead_alerts' => (bool) $request->input('lead_alerts'),
+            'lead_alert_email' => $request->input('lead_alert_email', []),
+            'service_dept' => (bool) $request->input('service_dept'),
+            'service_dept_email' => $request->input('service_dept_email', []),
+            'sms_on_callback' => (bool) $request->input('service_dept'),
+            'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
+            'client_passthrough' => (bool) $request->input('client_passthrough'),
+            'client_passthrough_email' => $request->input('client_passthrough_email', []),
+            'phone_number_id' => $request->input('phone_number_id'),
         ]);
 
         if ($request->has('forward')) {
@@ -228,13 +241,13 @@ class CampaignController extends Controller
 
         $campaign->save();
 
-        return redirect()->route('campaign.edit', ['campaign' => $campaign->id]);
+        return response()->json(['message' => 'Resource updated.']);
     }
 
     public function delete(Campaign $campaign)
     {
         $campaign->delete();
 
-        return redirect()->route('campaign.index');
+        return redirect()->route('campaigns.index');
     }
 }

@@ -47,7 +47,7 @@ class AdminController extends Controller
         }
         session()->forget('activeCompany');
         auth()->user()->leaveImpersonation();
-        return redirect()->route('campaign.index');
+        return redirect()->route('campaigns.index');
     }
 
     public function resendInvitation(ResendInvitationRequest $request)
