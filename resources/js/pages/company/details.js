@@ -22,9 +22,9 @@ import './../../components/campaign/campaign';
 window['app'] = new Vue({
     el: '#app',
     components: {
+        'campaign': require('./../../components/campaign/campaign'),
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'campaign': require('./../../components/campaign/campaign'),
     },
     computed: {
         usersPagination: function () {
@@ -59,13 +59,13 @@ window['app'] = new Vue({
         loadingUsers: false,
         modifiedCompany: {},
         searchCampaignForm: new Form({
-            q: localStorage.getItem('companyCampaignQ') || undefined,
+            q: localStorage.getItem('companyCampaignQ') || '',
             page: 1,
             per_page: 15,
             company: window.company.id
         }),
         searchUserForm: new Form({
-            q: localStorage.getItem('companyUserQ') || undefined,
+            q: localStorage.getItem('companyUserQ') || '',
             page: 1,
             per_page: 15,
             company: window.company.id
