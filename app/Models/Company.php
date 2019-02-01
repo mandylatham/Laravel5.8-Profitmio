@@ -51,7 +51,7 @@ class Company extends Model
         return $this->hasMany(CampaignScheduleTemplate::class);
     }
 
-    public function campaigns()
+    public function scopeCampaigns()
     {
         return Campaign::where(function ($query) {
                 if ($this->isAgency()) {
@@ -105,7 +105,7 @@ class Company extends Model
             ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at')
-            ->whereIn('status', ['Active', 'Completed', 'Upcoming']);
+            ->whereIn('status', ['Active', 'Completed', 'Upcoming', 'Expired']);
 
         if ($q) {
             $likeQ = '%' . $q . '%';
