@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\AddRecipientRequest;
+use App\Http\Requests\CreateRecipientListRequest;
+use App\Http\Resources\Recipient as RecipientResource;
 use App\Events\CampaignResponseUpdated;
 use App\Events\ServiceDeptLabelAdded;
 use App\Models\Recipient;
@@ -21,9 +23,17 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
+use App\Http\Resources\RecipientList as RecipientListResource;
 
 class RecipientController extends Controller
 {
+    public function forUserDisplay(Campaign $campaign)
+    {
+        return RecipientListResource::collection(RecipientList::whereCampaignId($campaign->id)
+            ->with('recipients')
+            ->paginate(15));
+    }
+
     public function searchForDeployment(Campaign $campaign, Request $request)
     {
         $contact = $request->has('contact') ? $request->contact : false;
@@ -72,7 +82,9 @@ class RecipientController extends Controller
         }
 
         if (is_array($lists) && ! empty($lists) && $lists[0] != null) {
-            $recipients->whereIn('recipient_list_id', (array)$lists);
+            if (! in_array('all', $lists)) {
+                $recipients->whereIn('recipient_list_id', (array)$lists);
+            }
         }
 
         if (count($source) == 1) {
@@ -199,9 +211,7 @@ class RecipientController extends Controller
      */
     public function show(Campaign $campaign)
     {
-        $lists = RecipientList::whereCampaignId($campaign->id)->with('recipients')->get();
         $viewData['campaign'] = $campaign;
-        $viewData['lists'] = $lists;
 
         return view('campaigns.recipient_lists.index', $viewData);
     }
@@ -220,44 +230,20 @@ class RecipientController extends Controller
         return view('campaigns.recipient_lists.show', $viewData);
     }
 
-    public function showRecipientList(Request $request, Campaign $campaign, $id)
+    public function getRecipientsForUserDisplay(Request $request, Campaign $campaign, RecipientList $list)
     {
-        $list = RecipientList::whereId($id)->with(['campaign'])->firstOrFail();
-        if (! $request->has('q')) {
-            $recipients = Recipient::whereRecipientListId($list->id)->paginate();
-        } else {
-            $recipients = Recipient::whereRecipientListId($list->id)
-                ->where(function ($query) use ($request) {
-                    $q = $request->input('q');
-                    $query->where('first_name', 'like', '%' . $q . '%')
-                        ->orWhere('last_name', 'like', '%' . $q . '%')
-                        ->orWhere('email', 'like', '%' . $q . '%')
-                        ->orWhere('phone', 'like', '%' . $q . '%')
-                        ->orWhere('address1', 'like', '%' . $q . '%')
-                        ->orWhere('city', 'like', '%' . $q . '%')
-                        ->orWhere('state', 'like', '%' . $q . '%')
-                        ->orWhere('zip', 'like', '%' . $q . '%')
-                        ->orWhere('year', 'like', '%' . $q . '%')
-                        ->orWhere('make', 'like', '%' . $q . '%')
-                        ->orWhere('model', 'like', '%' . $q . '%')
-                        ->orWhere('vin', 'like', '%' . $q . '%');
-                })
-                ->paginate();
-        }
+        $items = Recipient::searchByRequest($request, $list)
+            ->orderBy('id', 'asc')
+            ->paginate(15);
 
-        $dropped = collect(DB::select("
-        select distinct recipient_id as `dropped`
-            from deployment_recipients as dt where dt.deployment_id in (
-              select id from campaign_schedules where campaign_id = {$campaign->id}
-            )
-            and dt.sent_at is not null
-        "))->pluck('dropped')->toArray();
+        return RecipientResource::collection($items);
+    }
 
-        return view('campaigns.recipient_lists.show')->with([
+    public function showRecipientList(Request $request, Campaign $campaign, RecipientList $list)
+    {
+        return view('campaigns.recipient_lists.detail')->with([
             'campaign' => $list->campaign,
             'list' => $list,
-            'recipients' => $recipients->appends($request->except('page')),
-            'dropped' => $dropped,
         ]);
     }
 
@@ -437,7 +423,7 @@ class RecipientController extends Controller
 
         if (count($dangers) > 0) {
             $errors = new MessageBag(['recipients' => 'Unable to process bulk deletion as some recipients have already been sent media and therefore cannot be deleted']);
-            return redirect()->back()->withErrors($errors);
+            return response()->json(['errors' => $errors], 422);
         }
 
          Recipient::where('campaign_id', $campaign->id)
@@ -445,7 +431,7 @@ class RecipientController extends Controller
             ->whereNotIn('id', $dropped)
             ->delete();
 
-        return redirect()->back();
+        return response()->json(['message' => 'Resources Deleted']);
     }
 
     /**
@@ -497,6 +483,32 @@ class RecipientController extends Controller
         ]);
 
         $recipient->save();
+    }
+
+    /**
+     * @param Campaign $campaign
+     */
+    public function downloadRecipientList(Campaign $campaign, RecipientList $list)
+    {
+        $recipients = $list->recipients;
+        $columns = \DB::getSchemaBuilder()->getColumnListing('recipients');
+
+        $filename = 'List_' . $list->id . '_recipients.csv';
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Type: application/force-download');
+        header('Content-Disposition: attachment; filename='.$filename.'');
+
+        // create a file pointer connected to the output stream
+        $output = fopen('php://output', 'w');
+
+        fputcsv($output, $columns);
+        foreach ($recipients as $recipient) {
+            fputcsv($output, $recipient);
+        }
+        fclose($output);
+
+        return;
     }
 
     /**
@@ -621,7 +633,6 @@ class RecipientController extends Controller
     public function deleteRecipientList(Request $request, Campaign $campaign, RecipientList $list)
     {
         if ($list->campaign_id != $campaign->id) {
-            dd($list, $campaign);
             abort(403, 'Unauthorized');
         }
 
@@ -642,11 +653,11 @@ class RecipientController extends Controller
                 $list->delete();
             } catch (\Exception $e) {
                 $errors = new MessageBag(["recipients" => "Unable to delete selected recipient list!"]);
-                return redirect()->back()->withErrors($errors)->withInput($request->all());
+                return response()->json(['errors' => $errors], 422);
             }
         }
 
-        return redirect()->back();
+        return response()->json(['message' => 'Resource deleted.']);
     }
 
     /**
@@ -654,28 +665,12 @@ class RecipientController extends Controller
      * @param Campaign $campaign
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function createRecipientList(Request $request, Campaign $campaign)
+    public function createRecipientList(CreateRecipientListRequest $request, Campaign $campaign)
     {
         try {
-            /**
-             * Validation Time
-             */
-            $validator = Validator::make($request->all(), [
-                'uploaded_file_name' => 'required',
-                'uploaded_file_headers' => 'required',
-                'uploaded_file_fieldmap' => 'required|JSON',
-                'pm_list_name' => 'required',
-                'pm_list_type' => 'required|in:all_conquest,all_database,use_recipient_field',
-            ]);
-
-            if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
-            }
             Log::debug('New List passed initial validation');
 
-            $fieldmap = (array) json_decode($request->input('uploaded_file_fieldmap'));
+            $fieldmap = $request->input('uploaded_file_fieldmap');
             $validator = Validator::make($fieldmap, [
                 'first_name' => 'required',
                 'last_name' => 'required',
@@ -689,9 +684,7 @@ class RecipientController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
+                return response()->json(['errors'=>$validator->errors()]);
             }
 
             // Validate for the conquest vs database setting
@@ -701,9 +694,7 @@ class RecipientController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return redirect()->back()
-                        ->withErrors($validator)
-                        ->withInput();
+                    return response()->json(['errors'=>$validator->errors()]);
                 }
             }
             Log::debug("New List passed list_type validation");
@@ -734,10 +725,10 @@ class RecipientController extends Controller
         } catch (\Exception $e) {
             $errors = new MessageBag(['file' => 'Unable to load file']);
             Log::error("Unable to load file for campaign {$campaign->id}. ". $e->getMessage());
-            return redirect()->back()->withErrors($errors)->withInput($request->all());
+            return response()->json(['errors' => $errors], 422);
         }
 
-        return redirect()->back();
+        return response()->json(['message' => 'Recipients Created.']);
     }
 
     /**
@@ -814,7 +805,7 @@ class RecipientController extends Controller
     {
         Recipient::where('campaign_id', $campaign->id)->delete();
 
-        return redirect()->route('campaign.recipient.index', ['campaign' => $campaign->id]);
+        return redirect()->route('campaigns.recipients.index', ['campaign' => $campaign->id]);
     }
 
     private function abortBadFields()
@@ -904,7 +895,7 @@ class RecipientController extends Controller
             'inDrops' => $inDrops,
             'dropped' => $dropped,
             'deletable' => $deletable,
-            'delete_url' => route("recipient-list.delete", [$campaign->id, $list->id]),
+            'delete_url' => route('campaigns.recipient-lists.delete', [$campaign->id, $list->id]),
         ];
     }
 }
