@@ -1,0 +1,42 @@
+@import './../common/index';
+@import './base';
+
+#campaign-responses {
+    padding: 4rem 2rem;
+    .download-response {
+        display: flex;
+        flex-flow: row;
+        color: $brand-gray;
+        text-decoration: none;
+        flex-wrap : wrap;
+        .icon {
+            flex-basis: 0;
+            flex-grow: 2;
+            padding: 1rem 1.5rem;
+            background-color: $brand-purple;
+            color: #fff;
+            display: inline-flex;
+            align-items: center;
+            height: auto;
+            width: 50px;
+            justify-content: center
+        }
+        .description {
+            flex-basis: 0;
+            flex-grow: 11;
+            background-color: #fff;
+            display: inline-flex;
+            flex-flow: column;
+            padding: 1rem 2rem;
+            align-content: center;
+            strong {
+                margin-bottom: 0.3rem;
+            }
+            p {
+                margin: 0;
+                font-size: 0.95rem;
+                line-height: 1.4em;
+            }
+        }
+    }
+}

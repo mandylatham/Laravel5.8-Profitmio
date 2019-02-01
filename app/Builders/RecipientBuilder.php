@@ -13,9 +13,9 @@ class RecipientBuilder
      * @var array
      */
     public $listFields = [
-        'address1', 'city', 'state', 'zip', 'year',
-        'phone', 'make', 'model', 'vin', 'is_database'
-    ];
+            'address1', 'city', 'state', 'zip', 'year',
+            'phone', 'make', 'model', 'vin',
+        ];
 
     /**
      * Create new recipients from an uploaded list
@@ -32,11 +32,15 @@ class RecipientBuilder
             return;
         }
 
+        if ($list->type == 'mixed') {
+            array_push($this->listFields, 'is_database');
+        }
+
         $media = $list->getMedia('recipient-lists')->first();
         if (! $media) {
             throw new \Exception("Campaign {$list->campaign_id}: Unable to locate the media object for list {$list->id}");
         }
-        if (! Storage::disk('local')->put($media->file_name, Storage::disk('media')->get($media->getPath()))) {
+        if (! $this->makeMediaCopy($media)) {
             throw new \Exception("Campaign {$list->campaign_id}: Unable to download the media object for list {$list->id}");
         }
         \Log::debug("RecipientBuilder: found uploaded file");
@@ -97,6 +101,18 @@ class RecipientBuilder
         $list->update([
             'recipients_added' => true,
         ]);
+    }
+
+    /**
+     * Handle local files differently due to path issue
+     */
+    protected function makeMediaCopy($media)
+    {
+        if ($media->disk == 'local') {
+            return Storage::disk('local')->put($media->file_name, Storage::disk('local')->get($media->id . '/' . $media->file_name));
+        }
+
+        return Storage::disk('local')->put($media->file_name, Storage::disk($media->disk)->get($media->getPath()));
     }
 
     public function sanitize($value, $correctCase = false) {

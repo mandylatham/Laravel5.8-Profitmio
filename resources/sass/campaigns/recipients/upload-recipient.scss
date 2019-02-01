@@ -1,0 +1,34 @@
+@import './../../components/resumable';
+@import './../../components/spinner-icon';
+@import "~bootstrap/scss/tables";
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+
+.upload-recipient-component {
+    background-color: #fff;
+    padding: 0 1.5rem;
+    border-radius: 5px;
+    border: 1px solid #fafafa;
+    .vue-form-wizard {
+        .wizard-icon-circle, .stepTitle {
+            color: $brand-purple;
+        }
+
+        a.disabled {
+            .wizard-icon-circle {
+                border-color: rgba(0, 0, 0, .2);
+                color: rgba(0, 0, 0, .2);
+            }
+
+            .stepTitle {
+                color: rgba(0, 0, 0, .2);
+            }
+        }
+
+        .wizard-btn {
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background-color: $brand-purple;
+            color: #fff;
+        }
+    }
+}

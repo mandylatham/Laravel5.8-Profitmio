@@ -1,0 +1,12 @@
+.drop-status-component {
+    padding: 0.3rem 3rem;
+    border: 1px solid $brand-blue;
+    text-align: center;
+    color: $brand-blue;
+    display: inline-block;
+    text-transform: uppercase;
+    &.completed {
+        background-color: $brand-blue;
+        color: #fff;
+    }
+}
