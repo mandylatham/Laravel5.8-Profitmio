@@ -29,3 +29,10 @@ Vue.use(Navbar);
 import './pm-icons';
 // Filters
 import './../filters/global-filters';
+// Sweet Alert
+import VueSweetalert2 from 'vue-sweetalert2';
+Vue.use(VueSweetalert2);
+// Toastr Library
+import VueToastr2 from 'vue-toastr-2'
+window.toastr = require('toastr');
+Vue.use(VueToastr2);
