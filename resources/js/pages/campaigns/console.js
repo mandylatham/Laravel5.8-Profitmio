@@ -72,16 +72,12 @@ window['app'] = new Vue({
             this.currentRecipientId = recipient.id;
             this.recipientKey = key;
 
-            // Close sidebar when opening panel on smaller screens
-            let app = document.getElementById('app');
-            if (window.innerWidth <= 1200 && app.classList.contains('side-menu-open')) {
-                this.toggleSidebar();
-            }
+            console.log('window.innerWidth', window.innerWidth);
 
             const panel = this.$showPanel({
                 component: 'communication-side-panel',
                 cssClass: 'communication-side-panel',
-                width: '50%',
+                width: window.innerWidth >= 768 ? '50%' : '100%',
                 disableBgClick: false,
                 props: {
                     campaign: this.campaign,
@@ -95,17 +91,17 @@ window['app'] = new Vue({
             this.searchForm.search = '';
             this.fetchRecipients();
         },
-        toggleSidebar: function () {
-            let app = document.getElementById('app');
-
-            if (app.classList.contains('side-menu-open')) {
-                app.classList.add('navbar-side-menu-fix');
-                app.classList.remove('side-menu-open');
-                app.classList.remove('navbar-side-menu-fix');
-            } else {
-                app.classList.add('side-menu-open');
-            }
-        },
+        // toggleSidebar: function () {
+        //     let app = document.getElementById('app');
+        //
+        //     if (app.classList.contains('side-menu-open')) {
+        //         app.classList.add('navbar-side-menu-fix');
+        //         app.classList.remove('side-menu-open');
+        //         app.classList.remove('navbar-side-menu-fix');
+        //     } else {
+        //         app.classList.add('side-menu-open');
+        //     }
+        // },
         pusherInit: function () {
             // TODO: Enable pusher logging - don't include this in production
             Pusher.logToConsole = true;
@@ -174,10 +170,11 @@ window['sidebar'] = new Vue({
         filter: '',
         label: '',
         counters: [],
-        labelCounts: [],
+        labelCounts: {},
         campaign: {},
     },
     mounted: function () {
+        console.log('window.counters', window.counters);
         this.filter = window.filter;
         this.label = window.label;
         this.counters = window.counters;

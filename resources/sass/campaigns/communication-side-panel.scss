@@ -7,7 +7,20 @@
 
 .slideout {
   &.communication-side-panel {
-    width: 50%;
+    width: 100%;
+      @include media-breakpoint-up(sm) {
+          width: 80%;
+      }
+      @include media-breakpoint-up(md) {
+          width: 65%;
+      }
+      @include media-breakpoint-up(lg) {
+          width: 50%;
+      }
+      @include media-breakpoint-up(xl) {
+          width: 40%;
+      }
+
   }
 
   .content {

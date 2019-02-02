@@ -18,6 +18,10 @@
         window.user = @json($user);
         window.deleteUserUrl = "{{ route('user.delete', ['user' => $user->id]) }}";
         window.updateUserPhotoUrl = "{{ route('user.update-avatar', ['user' => $user->id]) }}";
+        window.campaignStatsUrl = "{{ route('campaigns.stats', ['campaign' => ':campaignId']) }}";
+        window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
+        window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
+        window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.campaignQ = @json($campaignQ);
         @if (auth()->user()->isAdmin())
             window.userRole = 'site_admin';

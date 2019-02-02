@@ -35,7 +35,7 @@
 @endsection
 
 @section('sidebar-content')
-    <nav id="sidebar-nav-content" class="wrapper-aside--navigation">
+    <nav id="sidebar-nav-content" class="wrapper-aside--navigation" v-cloak>
         <ul class="filter">
             <li class="all">
                 <a :class="{'active': activeFilterSection === 'all'}" href="javascript:;"
@@ -118,18 +118,19 @@
     </nav>
 @endsection
 
-@section('main-content')
-    <div id="console" class="container-fluid list-campaign-container">
-        <div class="row align-items-end no-gutters mb-4 ">
-            <div class="col-12 col-sm-5 col-lg-3">
-                <a href="javascript:;" class="btn pm-btn pm-btn-blue toggle-sidebar" @click="toggleSidebar"><i
-                            class="fa fa-bars"></i></a>
+@section('sidebar-toggle-content')
+    <i class="fas fa-bars"></i>
+@endsection
 
-                <a href="{{ route('campaigns.index') }}" class="btn pm-btn pm-btn-blue">
+@section('main-content')
+    <div id="console" class="container-fluid list-campaign-container" v-cloak>
+        <div class="row align-items-end no-gutters">
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
+                <a href="{{ route('campaigns.stats', ['campaign' => $campaign->id])  }}" class="btn pm-btn pm-btn-blue">
                     <i class="fas fa-chevron-left mr-2"></i>Home</a>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
-            <div class="col-12 col-sm-5 col-lg-3 search-wrapper">
+            <div class="col-12 col-sm-5 col-lg-3 search-wrapper mb-3">
                 <div class="clearable">
                     <input type="text" v-model="searchForm.search" class="form-control filter--search-box"
                            aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
@@ -144,7 +145,7 @@
 
         <div id="recipients-list" v-if="recipients.length">
             <div class="row no-gutters" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
-                <div class="col-4">
+                <div class="col-12 col-md-4">
                     <div class="name-wrapper" :class="{'half': recipient.labels_list_text}">
                         <span>@{{ recipient.name }}</span>
                     </div>
@@ -153,10 +154,10 @@
                         <span>Labels: @{{ recipient.labels_list_text }}</span>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-12 col-md-4">
                     <span>@{{ recipient.email }}</span>
                 </div>
-                <div class="col-4">
+                <div class="col-12 col-md-4">
                     <span>@{{ recipient.last_seen_ago }}</span>
                 </div>
             </div>

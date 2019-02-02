@@ -20,7 +20,7 @@
 
 @section('main-content')
     <div class="container" id="campaigns-edit" v-cloak>
-        <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ route('campaigns.stats', ['campaign' => $campaign->id]) }}">
+        <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">
             <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
         </a>
         <div class="row">
