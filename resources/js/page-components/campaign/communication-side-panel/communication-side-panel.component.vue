@@ -275,7 +275,7 @@
                 textMessage: '',
                 emailMessage: '',
                 selectedLabel: '',
-                labels: [],
+                labels: {},
                 labelsDropdown: [
                     {value: 'interested', label: 'Interested', class: 'green'},
                     {value: 'service', label: 'Service Dept', class: 'green'},
@@ -338,19 +338,20 @@
                 this.textMessage = '';
                 this.emailMessage = '';
                 this.selectedLabel = '';
-                this.labels = [];
+                this.labels = {};
             },
             getResponses: function (campaignId, recipientId) {
                 this.setLoading(true);
 
                 axios.get(generateRoute(window.getResponsesUrl, {'recipientId': recipientId}))
                     .then((response) => {
-                        this.recipient = response.data.recipient;
-                        this.threads = response.data.threads;
-                        this.appointments = response.data.appointments;
-                        this.rest = response.data.rest;
-                        this.notes = response.data.recipient.notes;
-                        this.labels = response.data.recipient.labels_list;
+                        let r = response.data;
+                        this.recipient = r.recipient;
+                        this.threads = r.threads;
+                        this.appointments = r.appointments;
+                        this.rest = r.rest;
+                        this.notes = r.recipient.notes;
+                        this.labels = r.recipient.labels_list.length === 0 ? {} : r.recipient.labels_list;
 
                         this.updateResponses(this.recipient);
 
@@ -379,7 +380,6 @@
                         this.$toastr.success('Note added.');
                     })
                     .catch((response) => {
-                        console.log(response);
                         this.$toastr.error('Failed to add note.');
                     });
             },
@@ -392,7 +392,6 @@
                         this.$toastr.success('Called status updated.');
                     })
                     .catch((response) => {
-                        console.log(response);
                         this.$toastr.error('Failed to update called status.');
                     });
             },
@@ -406,7 +405,6 @@
                         this.$toastr.success('Appointment added.');
                     })
                     .catch((response) => {
-                        console.log(response);
                         this.$toastr.error('Failed to add an appointment.');
                     });
             },
@@ -419,7 +417,6 @@
                         this.$toastr.success('Read status updated.');
                     })
                     .catch((response) => {
-                        console.log(response);
                         this.$toastr.error('Failed to update message read status.');
                     });
             },
@@ -432,7 +429,6 @@
                         this.$toastr.success('Text sent.');
                     })
                     .catch((response) => {
-                        console.log(response);
                         this.$toastr.error('Failed to send text.');
                     });
             },
@@ -445,7 +441,6 @@
                         this.$toastr.success('Email sent.');
                     })
                     .catch((response) => {
-                        console.log(response);
                         this.$toastr.error('Failed to send email.');
                     });
             },
@@ -463,28 +458,23 @@
                         label: selectedLabel
                     })
                     .then((response) => {
+                        this.$set(this.labels, response.data.label, response.data.labelText);
                         this.$toastr.success('Label added.');
                     })
                     .catch((response) => {
-                        console.log(response);
                         this.$toastr.error('Failed to add label.');
                     });
             },
             removeLabel: function (label) {
-                let selectedLabel = this.selectedLabel;
-                if (label) {
-                    selectedLabel = label;
-                }
-
                 axios.post(generateRoute(window.removeLabelUrl, {'recipientId': this.recipientId}),
                     {
-                        label: selectedLabel
+                        label: label
                     })
                     .then((response) => {
+                        this.$delete(this.labels, label);
                         this.$toastr.success('Label removed.');
                     })
                     .catch((response) => {
-                        console.log(response);
                         this.$toastr.error('Failed to remove label.');
                     });
             },
@@ -530,7 +520,6 @@
                                     // this.setLoading(false);
                                 })
                                 .catch((response) => {
-                                    console.log(response);
                                     this.$toastr.error('Failed to update responses.');
                                     // TODO: check why is whole slidePanel flickering when loading is enabled
                                     // this.setLoading(false);

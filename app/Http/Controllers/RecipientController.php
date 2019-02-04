@@ -230,6 +230,11 @@ class RecipientController extends Controller
                 event(new ServiceDeptLabelAdded($recipient));
             }
 
+            return response()->json([
+                "label" => $request->label,
+                "labelText" => $this->getLabelText($request->label),
+            ]);
+
             return '
                     <span class="badge ' . $class . '">
                         ' . $this->getLabelText($request->label) . '
