@@ -120,7 +120,7 @@ class Recipient extends Model
      */
     public function getVehicleAttribute()
     {
-        return $this->year . ' ' . $this->make . ' ' . $this->model;
+        return trim(implode(' ', [$this->year, $this->make, $this->model]));
     }
 
     public function getNameAttribute()
