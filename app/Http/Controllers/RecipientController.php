@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ServiceDeptLabelAdded;
+use App\Events\CampaignResponseUpdated;
 use App\Http\Requests\AddRecipientRequest;
 use App\Http\Requests\CreateRecipientListRequest;
 use App\Http\Resources\Recipient as RecipientResource;
@@ -180,7 +181,8 @@ class RecipientController extends Controller
             $recipient->save();
             // TODO: fix me
             // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-            PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
+            //PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient, ['labels']);
+            event(new CampaignResponseUpdated($recipient, ['labels']));
 
             $class = 'badge-danger';
             if (in_array($request->label, ['interested', 'appointment', 'service', 'callback'])) {
@@ -219,7 +221,10 @@ class RecipientController extends Controller
             $recipient->save();
             // TODO: TEST LATER WITH EVENT
             // event(new CampaignResponseUpdated($recipient->campaign, $recipient));
-            PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
+            if ($sendNotifications) {
+                // PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient, ['labels']);
+                event(new CampaignResponseUpdated($recipient, ['labels']));
+            }
 
             $class = 'badge-danger';
             if (in_array($request->label, ['interested', 'appointment', 'service'])) {
