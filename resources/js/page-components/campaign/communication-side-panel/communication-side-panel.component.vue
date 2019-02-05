@@ -4,43 +4,43 @@
             <div class="row align-items-end no-gutters mt-4 mb-3">
                 <div class="col-12">
 
-                    <button class="btn btn-primary float-right" v-on:click.prevent="closePanel">Close Panel</button>
+                    <button class="btn btn-primary close-comms-panel" v-on:click.prevent="closePanel">Close</button>
                 </div>
             </div>
 
             <div class="content" :class="{'show': !loading}">
                 <div class="row align-items-end no-gutters mt-4 mb-3">
                     <div class="col-12">
-
-                        <div class="name text-primary"><strong>{{ this.recipient.name }}</strong>
-                            <small><em>{{ this.recipient.location }}</em></small>
-                        </div>
-                        <div class="vehicle" v-if="this.recipient.vehicle">
-                            <i class="fas fa-car"></i>
-                            {{ this.recipient.vehicle }}
-                        </div>
-                        <div class="email" v-if="this.recipient.email">
-                            <i class="fas fa-envelope"></i>
-                            {{ this.recipient.email }}
-                        </div>
-                        <div class="phone" v-if="this.recipient.phone">
-                            <i class="fas fa-phone"></i>
-                            {{ this.recipient.phone }}
+                        <div class="name text-purple"><h1>{{ recipient.name }}</h1>
+                            <small v-if="recipient.location"><em>{{ recipient.location }}</em></small>
                         </div>
                     </div>
-                </div>
-
-                <div class="row align-items-end no-gutters mt-4 mb-3">
-                    <div class="col-12">
-
-                        <b-dropdown right text="Add Label">
+                    <div class="col-8">
+                        <div class="vehicle" v-if="recipient.vehicle && recipient.vehicle.length > 0">
+                            <i class="fas fa-car mr-2"></i>
+                            {{ recipient.vehicle }}
+                        </div>
+                        <div class="email" v-if="recipient.email && recipient.email.length > 0">
+                            <i class="fas fa-envelope mr-2"></i>
+                            {{ recipient.email }}
+                        </div>
+                        <div class="phone" v-if="recipient.phone && recipient.phone.length > 0">
+                            <i class="fas fa-phone mr-2"></i>
+                            {{ recipient.phone }}
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <b-dropdown right text="Add Label" :disabled="Object.keys(labelsDropdown).length === 0" class="float-right">
                             <b-dropdown-item v-for="(label, index) in labelsDropdown" :key="index" :value="index"
                                              @click="addLabel(index)">{{ label }}
                             </b-dropdown-item>
                         </b-dropdown>
                     </div>
+                </div>
 
-                    <div class="col-12" v-if="this.labels">
+                <div class="row align-items-end no-gutters mt-4 mb-3">
+                    <div class="col-12 labels-wrapper" v-if="this.labels">
+                        <h5>Labels</h5>
                         <ul class="labels">
                             <li :class="index" v-for="(label, index) in this.labels">{{ label }}<i
                                     class="fas fa-times" @click="removeLabel(index)"></i></li>

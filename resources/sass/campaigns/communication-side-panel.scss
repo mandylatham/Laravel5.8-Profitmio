@@ -23,6 +23,13 @@
     max-width: 600px;
   }
 
+  .close-comms-panel {
+    position: fixed;
+    right: 15px;
+    z-index: 5000;
+    border: 1px #fff solid;
+  }
+
   .content {
     display: none;
 
@@ -43,35 +50,42 @@
       margin: 8px;
     }
 
-    ul.labels {
-      list-style: none;
-      padding: 0;
+    div.labels-wrapper {
+      background-color: #e0e0e0;
+      padding: 12px;
 
-      > li {
-        display: inline-block;
-        margin: 10px 10px 10px 0;
-        padding: 2px 8px;
-        border-radius: 4px;
+      ul.labels {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 0;
 
-        &.not_interested,
-        &.heat,
-        &.car_sold,
-        &.wrong_number {
-          color: #fff;
-          background-color: #f44336;
-        }
+        > li {
+          display: inline-block;
+          margin: 2px 4px;
+          padding: 2px 8px;
+          border-radius: 4px;
+          font-size: 1rem;
 
-        &.interested,
-        &.service {
-          color: #fff;
-          background-color: #4caf50;
-        }
+          &.not_interested,
+          &.heat,
+          &.car_sold,
+          &.wrong_number {
+            color: #fff;
+            background-color: #f44336;
+          }
 
-        > i {
-          float: right;
-          margin-left: 8px;
-          line-height: 22px;
-          cursor: pointer;
+          &.interested,
+          &.service {
+            color: #fff;
+            background-color: #4caf50;
+          }
+
+          > i {
+            float: right;
+            margin-left: 8px;
+            line-height: 22px;
+            cursor: pointer;
+          }
         }
       }
     }

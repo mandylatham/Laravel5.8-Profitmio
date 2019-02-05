@@ -110,7 +110,7 @@ window['app'] = new Vue({
         // },
         pusherInit: function () {
             // TODO: Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true;
+            Pusher.logToConsole = false;
 
             return new Pusher(this.pusherKey, {
                 cluster: this.pusherCluster,
