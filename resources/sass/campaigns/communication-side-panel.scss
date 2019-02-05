@@ -90,11 +90,22 @@
       }
     }
 
-    .mail-attachments {
+    .notes-wrapper {
+      .form-group:first-of-type {
+        margin-bottom: 2px;
+      }
+    }
 
+    .mail-attachments {
       .list-group {
         list-style: none;
         padding: 0;
+      }
+    }
+
+    .call-in-wrapper {
+      > ul {
+        list-style: none;
       }
     }
 

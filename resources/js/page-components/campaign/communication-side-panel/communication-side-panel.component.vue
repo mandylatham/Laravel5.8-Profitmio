@@ -40,7 +40,6 @@
 
                 <div class="row align-items-end no-gutters mt-4 mb-3">
                     <div class="col-12 labels-wrapper" v-if="this.labels">
-                        <h5>Labels</h5>
                         <ul class="labels">
                             <li :class="index" v-for="(label, index) in this.labels">{{ label }}<i
                                     class="fas fa-times" @click="removeLabel(index)"></i></li>
@@ -48,26 +47,21 @@
                     </div>
                 </div>
 
-                <div class="mail-content">
+                <div class="notes-wrapper">
                     <div class="form-group">
-                        <textarea class="form-control" placeholder="Notes..." name="notes"
+                        <textarea class="form-control" placeholder="Notes..." name="notes" rows="4"
                                   v-model="notes">{{ this.recipient.notes }}</textarea>
                     </div>
-
                     <div class="form-group">
                         <button type="button" class="btn btn-primary" @click="addNotes(recipientId)">Save note</button>
                     </div>
                 </div>
-
-                <div class="mail-attachments" v-if="appointments.length">
+                <div class="call-in-wrapper" v-if="appointments.length">
                     <h4>Appointments</h4>
-
-
                     <ul class="list-group">
                         <li class="list-group-item" v-for="appointment in appointments">
-
                             <div v-if="appointment.type === 'callback'">
-                                <i class="fas fa-phone"></i>
+                                <i class="fas fa-phone mr-2"></i>
                                 {{ appointment.name }} @ {{ appointment.phone_number }}
                                 <div class="checkbox" style="padding-top: 6px; margin-left: 8px;">
                                     <label>
@@ -77,8 +71,13 @@
                                     </label>
                                 </div>
                             </div>
-                            <div v-else>
-                                <i class="fas fa-calendar"></i>
+                            <div v-else-if="appointment.type === 'discussion'">
+                                <i class="fas fa-question-circle mr-2"></i>
+                                <span class="mr-2">Just Curious</span>
+                                <span>{{ recipient.name }} called, but did not elect to reserve a callback or an appointment</span>
+                            </div>
+                            <div v-else-if="appointment.type === 'appointment'">
+                                <i class="fas fa-calendar mr-2"></i>
                                 {{ appointment.appointment_at_formatted }}
                             </div>
                         </li>
@@ -92,8 +91,8 @@
                                 <label for="appointment_date" class="form-check-label">Select Appointment Date</label>
 
                                 <date-picker id="appointment_date" v-model="appointmentSelectedDateUnformatted"
-                                             type="datetime" format="YYYY-MM-DD HH:mm" :lang="timePickerLang"
-                                             :time-picker-options="timePickerOptions"></date-picker>
+                                             type="datetime" format="YYYY-MM-DD hh:mm" :lang="timePickerLang"
+                                             :minute-step="5" confirm></date-picker>
                             </div>
                             <button class="btn btn-primary" role="button"
                                     @click="addAppointment(campaign.id, recipientId)">Add
@@ -293,11 +292,6 @@
                         date: 'Select Date',
                         dateRange: 'Select Date Range'
                     }
-                },
-                timePickerOptions: {
-                    start: '00:00',
-                    step: '00:15',
-                    end: '23:45'
                 }
             }
         },
