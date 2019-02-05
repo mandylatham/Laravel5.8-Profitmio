@@ -33,9 +33,9 @@
                 <div class="row align-items-end no-gutters mt-4 mb-3">
                     <div class="col-12">
 
-                        <b-dropdown right text="Add Label" v-if="labelsDropdown">
-                            <b-dropdown-item v-for="item in labelsDropdown" :key="item.value" :value="item.value"
-                                             @click="selectLabel(item.value)">{{ item.label }}
+                        <b-dropdown right text="Add Label">
+                            <b-dropdown-item v-for="(label, index) in labelsDropdown" :key="index" :value="index"
+                                             @click="addLabel(index)">{{ label }}
                             </b-dropdown-item>
                         </b-dropdown>
                     </div>
@@ -276,14 +276,15 @@
                 emailMessage: '',
                 selectedLabel: '',
                 labels: {},
-                labelsDropdown: [
-                    {value: 'interested', label: 'Interested', class: 'green'},
-                    {value: 'service', label: 'Service Dept', class: 'green'},
-                    {value: 'not_interested', label: 'Not Interested', class: 'red'},
-                    {value: 'wrong_number', label: 'Wrong Number', class: 'red'},
-                    {value: 'car_sold', label: 'Car Sold', class: 'red'},
-                    {value: 'heat', label: 'Heat Case', class: 'red'},
-                ],
+                labelsDropdown: {},
+                labelDropdownItems: {
+                    interested: "Interested",
+                    service: "Service Dept",
+                    not_interested: "Not Interested",
+                    wrong_number: "Wrong Number",
+                    car_sold: "Car Sold",
+                    heat: "Heat Case",
+                },
                 timePickerLang: {
                     days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
                     months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -302,7 +303,13 @@
         },
         props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
         computed: {
-            //
+            labelDropdownOptions: function () {
+                let options = this.labelDropdownItems;
+                this.labels.forEach((label,text) => {
+                    options.delete(label);
+                });
+                return options
+            }
         },
         watch: {
             selectedLabel: function (newVal) {
@@ -319,6 +326,15 @@
             },
         },
         methods: {
+            updateLabelDropdown() {
+                for (label in this.labelDropdownItems) {
+                    if (this.labels[label] === undefined) {
+                        this.$set(this.labelsDropdown, label, this.labelDropdownItems[label]);
+                    } else {
+                        this.$delete(this.labelsDropdown, label);
+                    }
+                }
+            },
             closePanel() {
                 window['app'].pusherUnbindEvent('private-campaign.' + this.campaign.id, 'response.' + this.recipientId + '.updated');
                 this.resetVars();
@@ -354,7 +370,7 @@
                         this.labels = r.recipient.labels_list.length === 0 ? {} : r.recipient.labels_list;
 
                         this.updateResponses(this.recipient);
-
+                        this.updateLabelDropdown();
                         this.setLoading(false);
                     })
                     .catch((response) => {
@@ -448,18 +464,11 @@
                 this.selectedLabel = label;
             },
             addLabel: function (label) {
-                let selectedLabel = this.selectedLabel;
-                if (label) {
-                    selectedLabel = label;
-                }
-
-                axios.post(generateRoute(window.addLabelUrl, {'recipientId': this.recipientId}),
-                    {
-                        label: selectedLabel
-                    })
+                axios.post(generateRoute(window.addLabelUrl, {'recipientId': this.recipientId}),{ label: label })
                     .then((response) => {
                         this.$set(this.labels, response.data.label, response.data.labelText);
                         this.$toastr.success('Label added.');
+                        this.updateLabelDropdown();
                     })
                     .catch((response) => {
                         this.$toastr.error('Failed to add label.');
@@ -473,6 +482,7 @@
                     .then((response) => {
                         this.$delete(this.labels, label);
                         this.$toastr.success('Label removed.');
+                        this.updateLabelDropdown();
                     })
                     .catch((response) => {
                         this.$toastr.error('Failed to remove label.');
