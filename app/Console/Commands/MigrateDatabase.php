@@ -39,7 +39,7 @@ class MigrateDatabase extends Command
     {
         $this->call('migrate:campaign-schedule', []);
         $this->call('migrate:appointment', []);
-//        $this->call('migrate:campaign', []);
+        $this->call('migrate:campaign', []);
 //        $this->call('migrate:phone-number', []);
 //        $this->call('migrate:recipient', []);
 //        $this->call('migrate:recipient-list', []);
