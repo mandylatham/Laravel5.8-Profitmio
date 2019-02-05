@@ -611,7 +611,7 @@ class ResponseConsoleController extends Controller
 
             $response->recipient_id = $recipient->id;
             $response->save();
-            broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
+            broadcast(new CampaignResponseUpdated($recipient));
 
             if ($this->isUnsubscribeMessage($message)) {
                 Log::debug('unsubscribing recipient #' . $recipient->id);

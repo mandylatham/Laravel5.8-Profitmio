@@ -15,8 +15,6 @@ class CampaignResponseUpdated implements ShouldBroadcast
 {
     use SerializesModels;
 
-    /** @var  Campaign */
-    private $campaign;
     /** @var  Recipient */
     private $recipient;
 
@@ -26,10 +24,9 @@ class CampaignResponseUpdated implements ShouldBroadcast
      * @param Campaign  $campaign  Campaign
      * @param Recipient $recipient Recipient
      */
-    public function __construct(Campaign $campaign, Recipient $recipient)
+    public function __construct(Recipient $recipient)
     {
         $this->recipient = $recipient;
-        $this->campaign = $campaign;
     }
 
     /**
@@ -70,7 +67,7 @@ class CampaignResponseUpdated implements ShouldBroadcast
 
     private function getEmailThreads()
     {
-        return Response::where('campaign_id', $this->campaign->id)
+        return Response::where('campaign_id', $this->recipient->campaign_id)
             ->where('id', $this->recipient->id)
             ->where('type', 'email')
             ->get()
@@ -79,7 +76,7 @@ class CampaignResponseUpdated implements ShouldBroadcast
 
     private function getTextThreads()
     {
-        return Response::where('campaign_id', $this->campaign->id)
+        return Response::where('campaign_id', $this->recipient->campaign_id)
             ->where('id', $this->recipient->id)
             ->where('type', 'text')
             ->get()
@@ -88,7 +85,7 @@ class CampaignResponseUpdated implements ShouldBroadcast
 
     private function getPhoneThreads()
     {
-        return Response::where('campaign_id', $this->campaign->id)
+        return Response::where('campaign_id', $this->recipient->campaign_id)
             ->where('id', $this->recipient->id)
             ->where('type', 'phone')
             ->get()
