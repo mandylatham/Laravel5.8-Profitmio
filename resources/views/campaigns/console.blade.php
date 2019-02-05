@@ -149,9 +149,8 @@
                     <div class="name-wrapper" :class="{'half': recipient.labels_list_text}">
                         <span>@{{ recipient.name }}</span>
                     </div>
-                    <div class="label-wrapper" :class="{'half': recipient.labels_list_text}"
-                         v-if="recipient.labels_list_text">
-                        <span>Labels: @{{ recipient.labels_list_text }}</span>
+                    <div class="label-wrapper" v-if="recipient.labels">
+                        <span v-for="(label, index) in recipient.labels" :class="index">@{{ label }}</span>
                     </div>
                 </div>
                 <div class="col-12 col-md-4">

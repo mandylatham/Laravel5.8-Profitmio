@@ -56,8 +56,7 @@ class Recipient extends Model
         'name',
         'vehicle',
         'location',
-        'labels_list',
-        'labels_list_text'
+        'labels',
     ];
 
     public static $mappable = [
@@ -150,7 +149,7 @@ class Recipient extends Model
         return implode(', ', $location);
     }
 
-    public function getLabelsListAttribute()
+    public function getLabelsAttribute()
     {
         $labels = [];
 
@@ -179,36 +178,6 @@ class Recipient extends Model
         }
 
         return $labels;
-    }
-
-    public function getLabelsListTextAttribute()
-    {
-        $string = '';
-
-        $labelsArray = $this->getLabelsListAttribute();
-
-        if ($labelsArray) {
-            $string = implode(', ', $labelsArray);
-        }
-
-        return $string;
-    }
-
-    public function getLabelsListHtmlAttribute()
-    {
-        $html = '';
-
-        $labelsArray = $this->getLabelsListAttribute();
-
-        if ($labelsArray) {
-            $html .= '<ul class="labels">';
-            foreach ($labelsArray as $item) {
-                $html .= "<li>{$item}</li>";
-            }
-            $html .= '</ul>';
-        }
-
-        return $html;
     }
 
     public function getEmailAttribute()

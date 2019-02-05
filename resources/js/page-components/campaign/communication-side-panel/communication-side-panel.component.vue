@@ -367,7 +367,7 @@
                         this.appointments = r.appointments;
                         this.rest = r.rest;
                         this.notes = r.recipient.notes;
-                        this.labels = r.recipient.labels_list.length === 0 ? {} : r.recipient.labels_list;
+                        this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
 
                         this.updateResponses(this.recipient);
                         this.updateLabelDropdown();
@@ -516,14 +516,10 @@
 
                                     if (response.data.recipient) {
                                         this.recipient = response.data.recipient;
-
-                                        // Update labels in main recipients list
-                                        this.$set(window['app'].recipients[this.recipientKey], 'labels_list_text',
-                                            response.data.recipient.labels_list_text);
                                     }
 
-                                    if (response.data.recipient.labels_list) {
-                                        this.labels = response.data.recipient.labels_list;
+                                    if (response.data.recipient.labels) {
+                                        this.labels = response.data.recipient.labels;
                                     }
 
                                     // TODO: check why is whole slidePanel flickering when loading is enabled
