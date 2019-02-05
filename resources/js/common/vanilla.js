@@ -16,12 +16,20 @@ document.addEventListener('DOMContentLoaded', function () {
     if (toggleSideMenu) {
         toggleSideMenu.addEventListener('click', function () {
             const app = document.getElementById('app');
-            // Move navbar-menu
-            if (app.classList.contains('side-menu-open')) {
-                collapseSideMenu();
-            } else {
-                app.classList.add('side-menu-open');
+            let timeout = 0;
+            if (app.classList.contains('navbar-menu-open')) {
+                collapseNavbarMenu();
+                timeout = 300;
             }
+            setTimeout(() => {
+                if (app.classList.contains('side-menu-open')) {
+                    app.classList.add('navbar-side-menu-fix');
+                    setTimeout(() => {
+                        app.classList.remove('navbar-side-menu-fix');
+                    }, 300);
+                }
+                document.getElementById('app').classList.toggle('side-menu-open');
+            }, timeout);
         });
     }
 
@@ -30,6 +38,15 @@ document.addEventListener('DOMContentLoaded', function () {
         closeSideMenuButton.addEventListener('click', function () {
             collapseSideMenu();
         });
+    }
+
+    function collapseNavbarMenu() {
+        const app = document.getElementById('app');
+        // app.classList.add('navbar-side-menu-fix');
+        app.classList.remove('navbar-menu-open');
+        // setTimeout(() => {
+        //     app.classList.remove('navbar-side-menu-fix');
+        // }, 300);
     }
 
     function collapseSideMenu() {

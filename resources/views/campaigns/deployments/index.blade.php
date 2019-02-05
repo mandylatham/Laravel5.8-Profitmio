@@ -16,14 +16,14 @@
 
 @section('main-content')
     <div class="container" id="drops-index" v-cloak>
-        <div class="row align-items-end no-gutters mb-md-3">
-            <div class="col-12 col-sm-5 col-lg-4">
+        <div class="row align-items-end no-gutters">
+            <div class="col-12 col-sm-5 col-lg-4 mb-3">
                 <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id]) }}">
                     <i class="fas fa-plus mr-2"></i> NEW
                 </a>
             </div>
             <div class="col-none col-sm-2 col-lg-4"></div>
-            <div class="col-12 col-sm-5 col-lg-4">
+            <div class="col-12 col-sm-5 col-lg-4 mb-3">
                 <input type="text" v-model="searchDropForm.q" class="form-control filter--search-box" aria-describedby="search"
                        placeholder="Search" @keyup.enter="fetchData">
             </div>
