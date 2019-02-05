@@ -3,10 +3,10 @@
 @import './../components/spinner-icon';
 
 .sidebar-toggler {
-    border-radius: 5px;
-    background-color: #67a7cc;
-    border-color: #67a7cc;
-    color: #fff !important;
+  border-radius: 5px;
+  background-color: #67a7cc;
+  border-color: #67a7cc;
+  color: #fff !important;
 }
 
 #sidebar-nav-content {
@@ -93,9 +93,9 @@
           border: 1px solid #333;
           color: #808080;
           display: inline-block;
-          font-size: 12px;
-          padding: 3px 6px;
-          border-radius: 6px;
+          font-size: 10px;
+          padding: 1px 6px;
+          border-radius: 3px;
           margin: 2px;
 
           &.not_interested,

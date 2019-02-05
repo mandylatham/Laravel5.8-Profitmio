@@ -119,18 +119,13 @@
 @endsection
 
 @section('sidebar-toggle-content')
-    <i class="fas fa-bars"></i>
+    <i class="fas fa-bars mr-2"></i> Filters
 @endsection
 
 @section('main-content')
     <div id="console" class="container-fluid list-campaign-container" v-cloak>
         <div class="row align-items-end no-gutters">
-            <div class="col-12 col-sm-5 col-lg-3 mb-3">
-                <a href="{{ route('campaigns.stats', ['campaign' => $campaign->id])  }}" class="btn pm-btn pm-btn-blue">
-                    <i class="fas fa-chevron-left mr-2"></i>Home</a>
-            </div>
-            <div class="col-none col-sm-2 col-lg-6"></div>
-            <div class="col-12 col-sm-5 col-lg-3 search-wrapper mb-3">
+            <div class="col-12 offset-sm-7 col-sm-5 offset-lg-9 col-lg-3 search-wrapper mb-3">
                 <div class="clearable">
                     <input type="text" v-model="searchForm.search" class="form-control filter--search-box"
                            aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
@@ -145,13 +140,12 @@
 
         <div id="recipients-list" class="container-fluid" v-if="recipients.length">
             <div class="row" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
-                <div class="col-12 col-md-2">
-                    <div>@{{ recipient.last_seen_ago }}</div>
-                    <div>@{{ recipient.last_responded_at | shortDate }}</div>
+                <div class="col-12 col-md-1 align-items-center">
+                    @{{ recipient.last_seen_ago }}
                 </div>
-                <div class="col-12 col-md-4">
+                <div class="col-12 col-md-5">
                     <div class="name-wrapper">
-                        <span>@{{ recipient.name }}</span>
+                        <strong>@{{ recipient.name }}</strong>
                     </div>
                     <div class="label-wrapper" v-if="recipient.labels">
                         <span v-for="(label, index) in recipient.labels" :class="index">@{{ label }}</span>
