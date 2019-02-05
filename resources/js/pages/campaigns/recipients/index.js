@@ -71,9 +71,9 @@ window['app'] = new Vue({
                 .then(response => {
                     console.log('response', response);
                     this.recipientList = response.data;
-                    this.searchRecipientsForm.page = response.current_page;
-                    this.searchRecipientsForm.per_page = response.per_page;
-                    this.total = response.total;
+                    this.searchRecipientsForm.page = response.meta.current_page;
+                    this.searchRecipientsForm.per_page = response.meta.per_page;
+                    this.total = response.meta.total;
                     this.loading = false;
                 })
                 .catch(error => {
