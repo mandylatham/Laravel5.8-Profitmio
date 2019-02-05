@@ -201,6 +201,7 @@ class RecipientController extends Controller
     public function addLabel(Recipient $recipient, Request $request)
     {
         $sendNotifications = false;
+
         if ($request->label && in_array($request->label, [
                 'interested',
                 'not_interested',
@@ -239,12 +240,6 @@ class RecipientController extends Controller
                 "label" => $request->label,
                 "labelText" => $this->getLabelText($request->label),
             ]);
-
-            return '
-                    <span class="badge ' . $class . '">
-                        ' . $this->getLabelText($request->label) . '
-                        <button class="btn btn-pure btn-xs waves-effect icon fa-close remove-label" data-label="' . $request->label . '"></button>
-                    </span>';
         }
 
         return '';
