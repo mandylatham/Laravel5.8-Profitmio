@@ -107,7 +107,7 @@ class Appointment extends Model
 
     public function getAppointmentAtFormattedAttribute()
     {
-        return isset($this->appointment_at) ? $this->appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y @ g:i A T") : '';
+        return isset($this->appointment_at) ? $this->appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y @ g:i A") : '';
     }
 
     /**
