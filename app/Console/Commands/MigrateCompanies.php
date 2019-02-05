@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\Campaign;
 use App\Models\Company;
+use App\Models\CompanyUser;
 use App\Models\User;
 use DB;
 use Carbon\Carbon;
@@ -45,6 +46,7 @@ class MigrateCompanies extends Command
         $this->info('====== Migrating companies ==============');
         Company::truncate();
         User::truncate();
+        CompanyUser::truncate();
         $size = 250;
         $users = DB::connection('mysql_legacy')
             ->table('users')
