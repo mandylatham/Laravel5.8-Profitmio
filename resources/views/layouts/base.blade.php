@@ -25,7 +25,7 @@
             @endcomponent
             <div class="main-content">
                 @if (isset($hasSidebar) && $hasSidebar)
-                <div class="container">
+                <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
                             <div class="sidebar-toggler js-toggle-side-menu d-xl-none">
