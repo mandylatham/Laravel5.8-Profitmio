@@ -44,6 +44,6 @@ class MigrateDatabase extends Command
         $this->call('migrate:recipient', []);
         $this->call('migrate:recipient-list', []);
         $this->call('migrate:response', []);
-//        $this->call('migrate:sms-suppression', []);
+        $this->call('migrate:sms-suppression', []);
     }
 }
