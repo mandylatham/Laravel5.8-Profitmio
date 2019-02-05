@@ -1,3 +1,25 @@
+window.breakpoints = {
+    isXs() {
+        return document.documentElement.clientWidth < 576;
+    },
+    isSm() {
+        const w = document.documentElement.clientWidth;
+        return w >= 576 && w < 768;
+    },
+    isMd() {
+        const w = document.documentElement.clientWidth;
+        return w >= 768 && w < 992;
+    },
+    isLg() {
+        const w = document.documentElement.clientWidth;
+        return w >= 992 && w < 1200;
+    },
+    isXlg() {
+        const w = document.documentElement.clientWidth;
+        return w >= 1200;
+    }
+};
+
 document.addEventListener('DOMContentLoaded', function () {
 
     document.querySelector('.js-toggle-navbar-menu').addEventListener('click', function () {
@@ -22,7 +44,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 timeout = 300;
             }
             setTimeout(() => {
-                if (app.classList.contains('side-menu-open')) {
+                if (app.classList.contains('side-menu-open') && document.documentElement.clientWidth < 768) {
                     app.classList.add('navbar-side-menu-fix');
                     setTimeout(() => {
                         app.classList.remove('navbar-side-menu-fix');
@@ -58,24 +80,3 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 300);
     }
 });
-window.breakpoints = {
-    isXs() {
-        return document.documentElement.clientWidth < 576;
-    },
-    isSm() {
-        const w = document.documentElement.clientWidth;
-        return w >= 576 && w < 768;
-    },
-    isMd() {
-        const w = document.documentElement.clientWidth;
-        return w >= 768 && w < 992;
-    },
-    isLg() {
-        const w = document.documentElement.clientWidth;
-        return w >= 992 && w < 1200;
-    },
-    isXlg() {
-        const w = document.documentElement.clientWidth;
-        return w >= 1200;
-    }
-};
