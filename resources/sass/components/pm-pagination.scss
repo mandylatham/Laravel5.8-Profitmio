@@ -32,6 +32,9 @@
         padding: 10px;
         background-color: #fff;
         border: 1px solid #ddd;
+        box-shadow: none;
+        outline: none;
+        cursor: pointer;
         &:disabled {
             cursor: not-allowed;
             background-color: #ddd;
