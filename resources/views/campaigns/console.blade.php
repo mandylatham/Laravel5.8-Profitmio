@@ -143,10 +143,14 @@
             <spinner-icon></spinner-icon>
         </div>
 
-        <div id="recipients-list" v-if="recipients.length">
-            <div class="row no-gutters" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
+        <div id="recipients-list" class="container-fluid" v-if="recipients.length">
+            <div class="row" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
+                <div class="col-12 col-md-2">
+                    <div>@{{ recipient.last_seen_ago }}</div>
+                    <div>@{{ recipient.last_responded_at | shortDate }}</div>
+                </div>
                 <div class="col-12 col-md-4">
-                    <div class="name-wrapper" :class="{'half': recipient.labels_list_text}">
+                    <div class="name-wrapper">
                         <span>@{{ recipient.name }}</span>
                     </div>
                     <div class="label-wrapper" v-if="recipient.labels">
@@ -154,10 +158,8 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-4">
-                    <span>@{{ recipient.email }}</span>
-                </div>
-                <div class="col-12 col-md-4">
-                    <span>@{{ recipient.last_seen_ago }}</span>
+                    <div v-if="recipient.email"><i class="fa fa-envelope mr-2"></i> @{{ recipient.email }}</div>
+                    <div v-if="recipient.phone"><i class="fa fa-phone mr-2"></i> @{{ recipient.phone }}</div>
                 </div>
             </div>
         </div>

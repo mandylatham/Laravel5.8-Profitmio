@@ -69,39 +69,50 @@
   padding: 1rem;
 
   #recipients-list {
+    max-width: 1024px;
 
     .row {
       cursor: pointer;
       background-color: #ffffff !important;
-      line-height: 40px;
-      text-align: center;
+      text-align: left;
       border: none;
       margin-bottom: 4px;
+      padding-top: 8px;
+      padding-bottom: 8px;
 
       @include media-breakpoint-up(lg) {
-        height: 56px;
-        line-height: 56px;
+        min-height: 56px;
       }
 
       .name-wrapper {
-        &.half {
-          height: 50%;
-          line-height: 28px;
-        }
+        margin-bottom: .4rem;
       }
 
       .label-wrapper {
-        &.half {
-          height: 50%;
-          line-height: 28px;
-        }
-
         > span {
-          font-size: 12px;
+          border: 1px solid #333;
           color: #808080;
-          white-space: nowrap;
-          overflow: hidden;
-          text-overflow: ellipsis;
+          display: inline-block;
+          font-size: 12px;
+          padding: 3px 6px;
+          border-radius: 6px;
+          margin: 2px;
+
+          &.not_interested,
+          &.heat,
+          &.car_sold,
+          &.wrong_number {
+            border: 1px solid rgb(172, 29, 19);
+            color: rgb(172, 29, 19);
+            // background-color: #f44336;
+          }
+
+          &.interested,
+          &.service {
+            border: 1px solid #5b6;
+            color: #5b6;
+            // background-color: #4caf50;
+          }
         }
       }
     }

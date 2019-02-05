@@ -20,7 +20,7 @@
       @include media-breakpoint-up(xl) {
           width: 40%;
       }
-
+    max-width: 600px;
   }
 
   .content {
@@ -57,11 +57,13 @@
         &.heat,
         &.car_sold,
         &.wrong_number {
+          color: #fff;
           background-color: #f44336;
         }
 
         &.interested,
         &.service {
+          color: #fff;
           background-color: #4caf50;
         }
 

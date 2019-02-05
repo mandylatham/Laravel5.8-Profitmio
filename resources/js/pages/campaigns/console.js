@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
+import moment from 'moment';
 import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
 import 'vue-toastr-2/dist/vue-toastr-2.min.css'
@@ -51,6 +52,11 @@ window['app'] = new Vue({
         pusherKey: '',
         pusherCluster: '',
         pusherAuthEndpoint: '',
+    },
+    filters: {
+        shortDate: function(value) {
+            return moment(String(value)).format('MM/DD/YYYY hh:mm A')
+        }
     },
     methods: {
         fetchRecipients() {
