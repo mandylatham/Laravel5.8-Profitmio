@@ -59,9 +59,9 @@ window['app'] = new Vue({
         serviceDeptEmail: '',
         searchPhoneNumberForm: new Form({
             country: 'US',
-            postal_code: '',
+            inPostalCode: '',
             contains: '',
-            area_code: '',
+            areaCode: '',
         }),
         showAvailablePhoneNumbers: false,
         smsOnCallbackNumber: '',
@@ -79,6 +79,7 @@ window['app'] = new Vue({
             if (!this[field]) return;
             list.push(this[field]);
             this[field] = null;
+
         },
         clearError: function (form, field) {
             form.errors.clear(field);
@@ -137,12 +138,12 @@ window['app'] = new Vue({
         searchPhones() {
             let invalid = false;
             this.searchPhoneNumberForm.errors.clear();
-            ['area_code', 'postal_code', 'contains'].forEach(field => {
-                if (!this.searchPhoneNumberForm[field]) {
-                    this.searchPhoneNumberForm.errors.add(field, 'This field is required.');
-                    invalid = true;
-                }
-            });
+            if (!this.searchPhoneNumberForm.areaCode && !this.searchPhoneNumberForm.inPostalCode && !this.searchPhoneNumberForm.contains) {
+                this.searchPhoneNumberForm.errors.add('area_code', 'This field is required.');
+                this.searchPhoneNumberForm.errors.add('postal_code', 'This field is required.');
+                this.searchPhoneNumberForm.errors.add('contains', 'This field is required.');
+                invalid = true;
+            }
             if (invalid) return;
             this.loadingPhoneModal = true;
             this.showAvailablePhoneNumbers = false;

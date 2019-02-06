@@ -21,7 +21,8 @@ class PhoneController extends Controller
      */
     public function searchAvailable(PhoneSearchRequest $request)
     {
-        $data = $request->only(['area_code', 'postal_code', 'contains', 'country']);
+        $data = $request->only(['areaCode', 'inPostalCode', 'contains', 'country']);
+//        $data = $request->only(['area_code', 'postal_code', 'contains', 'country']);
 
         $data['country'] = array_key_exists('country', $data) ? $data['country'] : 'US';
 
