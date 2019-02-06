@@ -95,3 +95,6 @@ a.go-back {
     float: right;
     margin-top: 0.5rem;
 }
+
+[v-cloak] { display: none; }
+[v-cloak]::before { content: "loading..."; }

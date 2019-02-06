@@ -67,26 +67,26 @@
                     <i class="fas fa-sign-out-alt"></i>
                 </b-nav-item>
                 @endImpersonating
-                <b-nav-item-dropdown right variant="link" size="lg" no-caret>
-                    <template slot="button-content">
-                        <span>
-                            <i class="pm-font-notification-icon"></i>
-                        </span>
-                        <span class="d-sm-none">Notifications</span>
-                    </template>
-                    <b-dropdown-item href="#">Notification 1</b-dropdown-item>
-                    <b-dropdown-item href="#">Notification 2</b-dropdown-item>
-                </b-nav-item-dropdown>
-                <b-nav-item-dropdown right variant="link" size="lg" no-caret>
-                    <template slot="button-content">
-                        <span>
-                            <i class="pm-font-help-icon"></i>
-                        </span>
-                        <span class="d-sm-none">Help</span>
-                    </template>
-                    <b-dropdown-item href="#">Help 1</b-dropdown-item>
-                    <b-dropdown-item href="#">Help 2</b-dropdown-item>
-                </b-nav-item-dropdown>
+                {{--<b-nav-item-dropdown right variant="link" size="lg" no-caret>--}}
+                    {{--<template slot="button-content">--}}
+                        {{--<span>--}}
+                            {{--<i class="pm-font-notification-icon"></i>--}}
+                        {{--</span>--}}
+                        {{--<span class="d-sm-none">Notifications</span>--}}
+                    {{--</template>--}}
+                    {{--<b-dropdown-item href="#">Notification 1</b-dropdown-item>--}}
+                    {{--<b-dropdown-item href="#">Notification 2</b-dropdown-item>--}}
+                {{--</b-nav-item-dropdown>--}}
+                {{--<b-nav-item-dropdown right variant="link" size="lg" no-caret>--}}
+                    {{--<template slot="button-content">--}}
+                        {{--<span>--}}
+                            {{--<i class="pm-font-help-icon"></i>--}}
+                        {{--</span>--}}
+                        {{--<span class="d-sm-none">Help</span>--}}
+                    {{--</template>--}}
+                    {{--<b-dropdown-item href="#">Help 1</b-dropdown-item>--}}
+                    {{--<b-dropdown-item href="#">Help 2</b-dropdown-item>--}}
+                {{--</b-nav-item-dropdown>--}}
                 <b-nav-item-dropdown class="profile" right variant="link" size="lg" no-caret>
                     <template slot="button-content">
                         <img :src="loggedUser.image_url" alt="Avatar" v-if="loggedUser.image_url">
