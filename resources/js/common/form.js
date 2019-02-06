@@ -19,12 +19,34 @@ export default class Form {
      * Fetch all form elements
      */
     data() {
-        let data = {};
+        if (this.hasFile()) {
+            // If files are present, return a FormData object
+            let formData = new FormData();
+            for (let property in this.originalData) {
+                formData.append(property, this[property]);
+            }
+            return formData;
+        }
 
+        // Default parameter handling
+        let data = {};
         for (let property in this.originalData) {
             data[property] = this[property];
         }
         return data;
+    }
+
+    hasFile() {
+        let hasFile = false;
+        for (let property in this.originalData) {
+            if (typeof this[property] === 'object' &&
+                    this[property] != null &&
+                    this[property].name != undefined &&
+                    typeof this[property].name === 'string') {
+                hasFile = true;
+            }
+        }
+        return hasFile;
     }
 
     updateData(field) {
@@ -39,6 +61,14 @@ export default class Form {
         this.errors.clear();
     }
 
+    put(url) {
+        return this.submit('put', url);
+    }
+
+    patch(url) {
+        return this.submit('patch', url);
+    }
+
     post(url) {
         return this.submit('post', url);
     }
@@ -48,25 +78,26 @@ export default class Form {
     }
 
     submit(method, url) {
+        if (!url) {
+            return Promise.reject('No url passed.');
+        }
         return new Promise((resolve, reject) =>  {
-            if (method === 'post') {
-                axios[method](url, this.data())
-                    .then(response => {
+            if (method === 'get' || method === 'delete') {
+                axios[method](url, { params: this.data() })
+                .then(response => {
                         resolve(response.data);
-                    })
-                    .catch(error => {
-                        reject(error.response);
-                    });
-            } else {
-                axios[method](url, {
-                    params: this.data()
                 })
-                    .then(response => {
-                        resolve(response.data);
-                    })
-                    .catch(error => {
-                        reject(error.response);
-                    });
+                .catch(error => {
+                    reject(error.response.data);
+                });
+            } else {
+                axios[method](url, this.data())
+                .then(response => {
+                    resolve(response.data);
+                })
+                .catch(error => {
+                    reject(error);
+                });
             }
         });
     }
