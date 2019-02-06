@@ -62,7 +62,7 @@ class RecipientObserver
      */
     public function updated(Recipient $recipient)
     {
-        $labelCounts = $recipient::with('responses')
+        $labelCounts = $recipient::withReponses($recipient->campaign->id)
             ->selectRaw("sum(interested) as interested, sum(not_interested) as not_interested,
                 sum(appointment) as appointment, sum(service) as service, sum(wrong_number) as wrong_number,
                 sum(car_sold) as car_sold, sum(heat) as heat_case, sum(callback) as callback,
