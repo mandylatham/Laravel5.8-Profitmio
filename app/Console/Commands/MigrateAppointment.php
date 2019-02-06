@@ -39,11 +39,11 @@ class MigrateAppointment extends Command
      */
     public function handle()
     {
-        $this->info('====== Migrating appointments table ==============');
+        $this->info('Migrate appointments');
         Appointment::truncate();
         DB::insert('insert into profitminer.appointments
 (id, campaign_id, recipient_id, appointment_at, first_name, last_name, phone_number, alt_phone_number, email, address, city, state, zip, auto_year, auto_make, auto_model, auto_trim, auto_mileage, type, called_back, created_at, updated_at, deleted_at)
 select appointment_id, campaign_id, target_id, appointment_at, first_name, last_name, phone_number, alt_phone_number, email, address, city, state, zip, auto_year, auto_make, auto_model, auto_trim, auto_mileage, type, called_back, created_at, updated_at, deleted_at from profitminer_original_schema.appointments;');
-        $this->info("\n====== Migration finished ==============");
+        $this->info("\nMigration finished");
     }
 }

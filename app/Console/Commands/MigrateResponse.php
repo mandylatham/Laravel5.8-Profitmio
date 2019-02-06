@@ -39,11 +39,11 @@ class MigrateResponse extends Command
      */
     public function handle()
     {
-        $this->info('====== Migrating responses table ==============');
+        $this->info('Migrate responses ');
         Response::truncate();
         DB::insert('insert into profitminer.responses
 (id, campaign_id, recipient_id, type, message, call_sid, recording_sid, call_phone_number_id, response_source, response_destination, recording_url, duration, message_id, in_reply_to, subject, incoming, created_at, updated_at, deleted_at)
 select response_id, campaign_id, target_id, type, message, call_sid, recording_sid, call_phone_number_id, response_source, response_destination, recording_uri, duration, message_id, in_reply_to, subject, incoming, created_at, updated_at, deleted_at from profitminer_original_schema.responses;');
-        $this->info("\n====== Migration finished ==============");
+        $this->info("\nMigration finished");
     }
 }

@@ -43,7 +43,7 @@ class MigrateCompanies extends Command
      */
     public function handle()
     {
-        $this->info('====== Migrating companies ==============');
+        $this->info('Migrate companies ==============');
         Company::truncate();
         User::truncate();
         CompanyUser::truncate();
@@ -100,6 +100,6 @@ class MigrateCompanies extends Command
 
         $bar->finish();
 
-        $this->info("\n====== Migration finished ==============");
+        $this->info("\nMigration finished");
     }
 }

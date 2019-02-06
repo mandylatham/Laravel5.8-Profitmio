@@ -39,11 +39,11 @@ class MigrateRecipient extends Command
      */
     public function handle()
     {
-        $this->info('====== Migrating recipients table ==============');
+        $this->info('Migrate recipients ');
         Recipient::truncate();
         DB::insert('insert into profitminer.recipients
 (id, campaign_id, recipient_list_id, unique_recipient_id, first_name, last_name, email, phone, address1, address2, city, state, zip, year, make, model, vin, carrier, carrier_type, subgroup, service, appointment, heat, interested, not_interested, wrong_number, car_sold, callback, email_valid, phone_valid, from_dealer_db, notes, archived_at, last_responded_at, created_at, updated_at, deleted_at)
 select target_id, campaign_id, recipient_list_id, unique_recipient_id, first_name, last_name, email, phone, address1, address2, city, state, zip, year, make, model, vin, carrier, carrier_type, subgroup, service, appointment, heat, interested, not_interested, wrong_number, car_sold, callback, email_valid, phone_valid, from_dealer_db, notes, archived_at, last_responded_at, created_at, updated_at, deleted_at from profitminer_original_schema.targets;');
-        $this->info("\n====== Migration finished ==============");
+        $this->info("\nMigration finished");
     }
 }
