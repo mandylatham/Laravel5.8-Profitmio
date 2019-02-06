@@ -192,19 +192,22 @@ class AppointmentController extends Controller
         $recipient->save();
 
         event(new CampaignCountsUpdated($campaign));
-        if ($campaign->adf_crm_export) {
-            $alert_emails = explode(',', $campaign->lead_alert_email);
-            foreach ($alert_emails as $email) {
-                $email = trim($email);
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $this->log->error("AppointmentController@insert (line 82): Skipping crm notification to invalid email, $email");
-                    continue;
-                }
-                try {
-                    $this->mail->to($email)->send(new CrmNotification($campaign, $appointment));
-                    $this->log->debug("AppointmentController@insert: Sent crm alerts for appointment #{$appointment->id}");
-                } catch (\Exception $e) {
-                    $this->log->error("Unable to send crm notification: " . $e->getMessage());
+
+        if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT])) {
+            if ($campaign->adf_crm_export) {
+                $alert_emails = explode(',', $campaign->adf_crm_export_email);
+                foreach ($alert_emails as $email) {
+                    $email = trim($email);
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $this->log->error("AppointmentController@insert (line 82): Skipping crm notification to invalid email, $email");
+                        continue;
+                    }
+                    try {
+                        $this->mail->to($email)->send(new CrmNotification($campaign, $appointment));
+                        $this->log->debug("AppointmentController@insert: Sent crm alerts for appointment #{$appointment->id}");
+                    } catch (\Exception $e) {
+                        $this->log->error("Unable to send crm notification: " . $e->getMessage());
+                    }
                 }
             }
 
@@ -327,12 +330,32 @@ class AppointmentController extends Controller
             'email'          => $recipient->email,
         ]);
 
-        $recipient->update(['appointment' => true]);
+        $recipient->update(['appointment' => true, 'last_responded_at' => \Carbon\Carbon::now('UTC')]);
+
+        if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT])) {
+            if ($campaign->adf_crm_export) {
+                $alert_emails = explode(',', $campaign->adf_crm_export_email);
+                foreach ($alert_emails as $email) {
+                    $email = trim($email);
+                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $this->log->error("AppointmentController@insert (line 82): Skipping crm notification to invalid email, $email");
+                        continue;
+                    }
+                    try {
+                        $this->mail->to($email)->send(new CrmNotification($campaign, $appointment));
+                        $this->log->debug("AppointmentController@insert: Sent crm alerts for appointment #{$appointment->id}");
+                    } catch (\Exception $e) {
+                        $this->log->error("Unable to send crm notification: " . $e->getMessage());
+                    }
+                }
+
+            }
+        }
 
         event(new CampaignCountsUpdated($campaign));
 
         return response()->json([
-            'appointment_at' => $appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y h:i A T"),
+            'appointment_at' => $appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y h:i A"),
         ]);
     }
 
