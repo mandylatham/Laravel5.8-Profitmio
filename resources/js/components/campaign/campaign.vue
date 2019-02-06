@@ -10,14 +10,21 @@
                     <p>{{ campaign.name }}</p>
                 </div>
             </div>
-            <div class="campaign-postcard">
+            <div class="campaign-postcard" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">
                 <div class="campaign-postcard--image">
-                    <img src="" alt="">
+                    <pie-chart height="70px" :colors="['#572E8D', '#e7f386', '#67A7CC']" :legend="false" :data="pieChartDataSet"></pie-chart>
                 </div>
-                <div class="campaign-postcard--value">
-                    <strong>9x12 PostCard</strong>
-                    <p>Car & Buyer BB</p>
-                    <p>Mailer - TXT for Value</p>
+                <div class="campaign-postcard--value campaign-chart--labels">
+                    <span class="sms">sms</span>
+                    <span class="call">call</span>
+                    <span class="email">email</span>
+                </div>
+            </div>
+            <div class="campaign-postcard" v-if="campaign.text_responses_count === 0 && campaign.phone_responses_count === 0 && campaign.email_responses_count === 0">
+                <div class="campaign-chart--labels">
+                    <span class="sms"> 0 sms</span>
+                    <span class="call">0 call</span>
+                    <span class="email">0 email</span>
                 </div>
             </div>
         </div>
