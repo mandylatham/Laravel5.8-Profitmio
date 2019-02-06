@@ -39,11 +39,11 @@ class MigrateSmsSuppression extends Command
      */
     public function handle()
     {
-        $this->info('Migrate sms suppression ');
+        $this->info('Sms Suppressions migration started.');
         SmsSuppression::truncate();
         DB::insert('insert into profitminer.sms_suppressions
 (phone, suppressed_at)
 select phone, suppressed_at from profitminer_original_schema.sms_suppressions;');
-        $this->info("\nMigration finished");
+        $this->info('Sms Suppresions migration completed.');
     }
 }

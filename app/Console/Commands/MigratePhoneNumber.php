@@ -39,11 +39,11 @@ class MigratePhoneNumber extends Command
      */
     public function handle()
     {
-        $this->info('Migrate phone numbers ');
+        $this->info('Phone number migration started.');
         PhoneNumber::truncate();
         DB::insert('insert into profitminer.phone_numbers
 (id, dealership_id, phone_number, campaign_id, call_source_name, forward, sid, created_at, updated_at, deleted_at)
 select phone_number_id, client_id, phone_number, campaign_id, call_source_name, forward, sid, created_at, updated_at, deleted_at from profitminer_original_schema.phone_numbers;');
-        $this->info("\nMigration finished");
+        $this->info('Phone number migration completed.');
     }
 }
