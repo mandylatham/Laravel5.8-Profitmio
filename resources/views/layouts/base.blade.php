@@ -29,7 +29,11 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="sidebar-toggler js-toggle-side-menu d-xl-none">
-                                @yield('sidebar-toggle-content')
+                                @hasSection('sidebar-toggle-content')
+                                    @yield('sidebar-toggle-content')
+                                @else
+                                    <i class="fas fa-bars"></i>
+                                @endif
                             </div>
                         </div>
                     </div>
