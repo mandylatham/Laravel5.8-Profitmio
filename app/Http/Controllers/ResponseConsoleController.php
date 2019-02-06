@@ -653,23 +653,22 @@ class ResponseConsoleController extends Controller
      */
     protected function getRequestObjects(Request $request)
     {
-        $number = $request->get('To') ?: $request->get('Called');
+        if ((!$request->has('To') && !$request->has('Called')) || !$request->has('From')) {
+            throw new \Exception("A critical phone component is missing from the request: " . json_encode($request->all()));
+        }
 
-        $phoneNumber = PhoneNumber::where('phone_number', 'like', '%' . $number)
+        $number = str_replace('+1', '', trim($request->input('To') ?: $request->input('Called')));
+        $fromNumber = str_replace('+1', '', trim($request->input('From')));
+
+        $phoneNumber = PhoneNumber::with('campaign')
+            ->whereRaw("replace(phone_number, '+1', '') like '%{$number}'")
             ->firstOrFail();
 
-        $campaign = Campaign::where('phone_number_id', $phoneNumber->id)
-            ->orderBy('campaign_id', 'desc')
-            ->firstOrFail();
-
-        $recipient = Recipient::where('campaign_id', $campaign->id)
-            ->where(function ($query) use ($request) {
-                $query->where('phone', $request->get('From'))
-                    ->orWhere('phone', str_replace('+1', '', $request->get('From')));
-            })
+        $recipient = $phoneNumber->campaign->recipients()
+            ->whereRaw("replace(phone, '+1', '') = ?", [$fromNumber])
             ->first();
 
-        return [$phoneNumber, $campaign, $recipient];
+        return [$phoneNumber, $phoneNumber->campaign, $recipient];
     }
 
     /**

@@ -198,7 +198,7 @@ class Campaign extends Model
 
     public function phones()
     {
-        return $this->hasMany(PhoneNumber::class, 'campaign_id', 'campaign_id');
+        return $this->hasMany(PhoneNumber::class);
     }
 
     public function responses()
