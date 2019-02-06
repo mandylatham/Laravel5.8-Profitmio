@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CampaignCountsUpdated;
 use App\Classes\MailgunService;
 use App\Mail\CrmNotification;
 use App\Mail\LeadNotification;
@@ -193,7 +194,7 @@ class AppointmentController extends Controller
         }
         $recipient->save();
 
-        if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT, Appointment::TYPE_CALLBACK])) {
+        event(new CampaignCountsUpdated($campaign));
             if ($campaign->adf_crm_export) {
                 $alert_emails = explode(',', $campaign->lead_alert_email);
                 foreach ($alert_emails as $email) {
@@ -277,7 +278,7 @@ class AppointmentController extends Controller
 
         $appt->save();
 
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($appt->recipient);
+        event(new CampaignCountsUpdated($campaign));
 
         return response()->json($appt->toJson());
     }
@@ -295,7 +296,7 @@ class AppointmentController extends Controller
 
         $appointment->save();
 
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($appointment->recipient);
+        event(new CampaignCountsUpdated($appointment->campaign));
 
         return response()->json([
             'called_back' => $appointment->called_back,
@@ -333,7 +334,7 @@ class AppointmentController extends Controller
 
         $recipient->update(['appointment' => true]);
 
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
+        event(new CampaignCountsUpdated($campaign));
 
         return response()->json([
             'appointment_at' => $appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y h:i A T"),
