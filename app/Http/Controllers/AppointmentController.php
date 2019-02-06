@@ -181,9 +181,6 @@ class AppointmentController extends Controller
                     JSON_UNESCAPED_SLASHES));
 
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
-
-            // TODO: Unreachable statement
-            // abort(406);
         }
 
         if ($appointment->type == 'appointment') {
