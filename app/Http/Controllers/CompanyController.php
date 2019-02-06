@@ -107,7 +107,7 @@ class CompanyController extends Controller
     public function index(Request $request)
     {
         return view('company.index', [
-            'q' => ''
+            'q' => session('filters.company.index.q')
         ]);
     }
 

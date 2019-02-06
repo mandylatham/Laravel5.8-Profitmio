@@ -1,10 +1,3 @@
-@extends('layouts.base', [
-    'hasSidebar' => false
-])
-
-@section('head-styles')
-    <link href="{{ asset('css/company-index.css') }}" rel="stylesheet">
-@endsection
 
 @section('body-script')
     <script>
@@ -17,7 +10,7 @@
 @endsection
 
 @section('main-content')
-    <div class="container" id="company-index" v-cloak>
+    <div class="container" id="company-index">
         <div class="row align-items-end no-gutters mb-md-3 mb-3">
             <div class="col-12 col-sm-5 col-lg-3">
                 <a href="{{ route('company.create') }}" class="btn pm-btn pm-btn-blue">

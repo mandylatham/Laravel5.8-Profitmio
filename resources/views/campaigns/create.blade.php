@@ -343,7 +343,7 @@
                 </span>
             </template>
             <div class="card">
-                <div class="card-body card-phone-modal">
+                <div class="card-body">
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
