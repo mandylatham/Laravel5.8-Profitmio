@@ -6856,6 +6856,8 @@ vm-browserify@0.0.4:
   dependencies:
     indexof "0.0.1"
 
+<<<<<<< HEAD
+=======
 vue-chartkick@^0.5.0:
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/vue-chartkick/-/vue-chartkick-0.5.0.tgz#3ede6a3042e5436f82228b89886f867a0d1dbc14"
@@ -6865,6 +6867,7 @@ vue-chartkick@^0.5.0:
     deep-equal "^1.0.1"
     deepmerge "^2.1.1"
 
+>>>>>>> feature/new-ui-design
 vue-feather-icons@^4.7.1:
   version "4.7.1"
   resolved "https://registry.yarnpkg.com/vue-feather-icons/-/vue-feather-icons-4.7.1.tgz#d8c55fbee7c9ad59689ebbaf07ad1e2f1e5c37da"

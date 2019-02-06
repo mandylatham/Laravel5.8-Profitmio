@@ -266,6 +266,11 @@ class Campaign extends Model
         return $this->hasMany(Drop::class, 'campaign_id', 'id');
     }
 
+    public function mailers()
+    {
+        return $this->hasMany(Mailer::class, 'campaign_id', 'id');
+    }
+
     public function isExpired()
     {
         return $this->expires_at && $this->expires_at <= Carbon::now('UTC');

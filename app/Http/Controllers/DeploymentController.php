@@ -163,6 +163,45 @@ class DeploymentController extends Controller
         return view('campaigns.deployments.create', $viewData);
     }
 
+    public function createNewEmailDrop(Campaign $campaign, Request $request)
+    {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
+        $viewData['recipient_info'] = [];
+        $viewData['campaign'] = $campaign;
+        $viewData['templates'] = CampaignScheduleTemplate::all();
+
+        return view('campaigns.deployments.new-email-drop', $viewData);
+    }
+
+    public function createNewSmsDrop(Campaign $campaign, Request $request)
+    {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
+        $viewData['recipient_info'] = [];
+        $viewData['campaign'] = $campaign;
+        $viewData['templates'] = CampaignScheduleTemplate::all();
+
+        return view('campaigns.deployments.new-sms-drop', $viewData);
+    }
+
+    public function createNewMailerDrop(Campaign $campaign, Request $request)
+    {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
+        $viewData['recipient_info'] = [];
+        $viewData['campaign'] = $campaign;
+        $viewData['templates'] = CampaignScheduleTemplate::all();
+
+        return view('campaigns.deployments.new-mailer-drop', $viewData);
+    }
+
     public function create(Campaign $campaign, BulkDeploymentRequest $request)
     {
         if ($campaign->isExpired) {

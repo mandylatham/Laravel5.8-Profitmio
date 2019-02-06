@@ -1,0 +1,39 @@
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+
+img.company-logo {
+  margin: 4px;
+  margin-right: 10px;
+}
+
+.wrapper--user-index {
+  padding: 20px;
+  background-color: #fff;
+  @include media-breakpoint-up(lg) {
+    .pmt {
+      &-col {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+        &.options-col {
+          width: 90px;
+        }
+        &.companies-col {
+          width: 30%;
+        }
+        &.phone-number-col, &.email-col {
+          width: 15%;
+          padding-right: 2px;
+          padding-left: 2px;
+        }
+        &.status-col {
+          width: 85px;
+        }
+        &.name-col {
+          width: 40%;
+        }
+      }
+    }
+  }
+}

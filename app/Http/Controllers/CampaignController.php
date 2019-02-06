@@ -55,7 +55,7 @@ class CampaignController extends Controller
 
     public function getList(Request $request)
     {
-        $campaigns = $this->campaign->with('client')
+        $campaigns = $this->campaign->with(['client', 'mailers'])
             ->selectRaw("
                 (select count(distinct(recipient_id)) from recipients where campaign_id = campaigns.id) as recipientCount),
                 (select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='phone' and recording_sid is not null) as phoneCount,
@@ -66,6 +66,16 @@ class CampaignController extends Controller
             ->get();
 
         return $campaigns->toJson();
+    }
+
+    public function addMailer(Request $request)
+    {
+        $mailer = $this->campaign->mailers()->create([
+            'name' => $request->mailer_name,
+            'in_home_ap' => $request->in_home_date,
+        ]);
+
+        $mailer->addMedia($request->file('mailer_image'));
     }
 
     /**

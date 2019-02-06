@@ -1,0 +1,177 @@
+@import "../../../../sass/variables";
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+$aside-width: 400px;
+
+#app {
+  display: flex;
+  flex-flow: column;
+  height: 100%;
+}
+.wrapper--user-view {
+  flex-grow: 1;
+  .wrapper-aside {
+    background: $gray;
+    padding: 20px;
+    color: #fff;
+    transform: translate(-100%);
+    min-height: calc(100vh - 100px);
+    position: absolute;
+    top: 0; left: 0;
+    z-index: 100;
+    width: 100%;
+    transition: transform .3s ease-in-out,width .3s ease-in-out;
+    .btn-remove {
+      border-radius: 0;
+      background-color: lighten($gray, 10%);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1em;
+      font-weight: 300;
+      padding: 5px;
+      float: right;
+      margin-right: 39px;
+      margin-top: 20px;
+      svg {
+        height: 17px;
+        width: 17px;
+      }
+    }
+    &-control {
+      position: absolute;
+      background-color: $gray;
+      color: $gray-light;
+      top: 0;
+      right: 0;
+      transform: translateX(100%);
+      padding: 5px;
+      cursor: pointer;
+    }
+    &-close-control {
+      float: right;
+      margin-bottom: 10px;
+      color: #fff;
+      text-decoration: none;
+    }
+    .user-avatar {
+      background-color: #ddd;
+      clear: both;
+      height: 180px;
+      padding: 20px;
+      margin-bottom: 30px;
+      .btn {
+        background-color: $gray;
+        color: $gray-light;
+        padding: 0.5rem;
+        float: right;
+        line-height: 1em;
+        svg {
+          height: 20px;
+        }
+      }
+    }
+    @include media-breakpoint-up(sm) {
+      width: $aside-width;
+    }
+    @include media-breakpoint-up(lg) {
+      min-height: calc(100vh - 60px);
+    }
+    @include media-breakpoint-up(xl) {
+      transform: none;
+      &-control, &-close-control {
+        display: none;
+      }
+    }
+  }
+  .wrapper-content {
+    padding: 40px 0 0 0;
+    transform: translate(0, 0);
+    transition: transform .3s ease-in-out,margin .3s ease-in-out;
+    .pmt {
+      margin-top: 30px;
+    }
+    .card-header {
+      padding: 5px;
+      margin-bottom: 40px;
+      ul {
+        list-style: none;
+        display: flex;
+        flex-flow: row;
+        margin: 0;
+        padding: 0;
+        align-items: center;
+        justify-content: space-evenly;
+        a {
+          line-height: 1em;
+          padding: 15px 35px;
+          text-decoration: none;
+          background-color: lighten($gray, 15%);
+          color: $gray-light;
+          font-weight: 300;
+          &.active {
+            background-color: $gray;
+          }
+          @include media-breakpoint-up(xl) {
+            font-size: 1.1em;
+          }
+        }
+      }
+      @include media-breakpoint-up(xl) {
+        margin: 5px 15px 40px 15px;
+        padding: 0;
+        ul {
+          justify-content: flex-start;
+          li {
+            margin-right: 20px;
+          }
+        }
+      }
+    }
+    @include media-breakpoint-up(xl) {
+      transform: none !important;
+      margin-left: $aside-width;
+    }
+  }
+  &.open {
+    .wrapper-aside {
+      transform: translate(0, 0);
+    }
+    .wrapper-content {
+      transform: translate(100%, 0);
+      @include media-breakpoint-up(sm) {
+        transform: translate(450px, 0);
+      }
+    }
+  }
+}
+
+.pmt-label {
+  font-size: 0.8rem;
+  font-weight: 300;
+}
+.pmt-input-group-prepend {
+  display: flex;
+  flex-flow: row;
+  .form-control {
+    border-radius: 0;
+    background-color: lighten($gray, 20%);
+    border: lighten($gray, 20%);
+    color: #fff;
+    height: 32px;
+    font-weight: 300;
+  }
+  .input-group-prepend {
+    height: 32px;
+    padding: 0 5px 0 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    svg {
+      height: 18px;
+    }
+  }
+}

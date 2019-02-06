@@ -84,20 +84,21 @@ export default class Form {
         return new Promise((resolve, reject) =>  {
             if (method === 'get' || method === 'delete') {
                 axios[method](url, { params: this.data() })
-                .then(response => {
-                        resolve(response.data);
-                })
-                .catch(error => {
-                    reject(error.response.data);
-                });
+                  .then(response => {
+                      resolve(response.data);
+                  })
+                  .catch(error => {
+                      reject(error.response.data);
+                  });
+
             } else {
                 axios[method](url, this.data())
-                .then(response => {
-                    resolve(response.data);
-                })
-                .catch(error => {
-                    reject(error);
-                });
+                  .then(response => {
+                      resolve(response.data);
+                  })
+                  .catch(error => {
+                      resolve(response.data);
+                  });
             }
         });
     }

@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="{{ secure_url('/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ secure_url('/css/bootstrap-extend.min.css') }}">
     <link rel="stylesheet" href="{{ secure_asset('css/site.css') }}">
+    <link rel="stylesheet" href="{{ secure_asset('css/app.css') }}">
     <!-- Plugins -->
     <link rel="stylesheet" href="{{ secure_url('/vendor/animsition/animsition.css') }}">
     <link rel="stylesheet" href="{{ secure_url('/vendor/asscrollable/asScrollable.css') }}">
@@ -56,168 +57,168 @@
     </style>
 </head>
 <body class="animsition site-navbar-small site-menubar-hide" style="animation-duration: 800ms; opacity: 1;">
-<nav class="site-navbar navbar navbar-default navbar-fixed-top navbar-mega" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggler collapsed" data-target="#site-navbar-collapse"
-                data-toggle="collapse">
-            <i class="icon md-more" aria-hidden="true"></i>
-        </button>
-        <a class="navbar-brand navbar-brand-center" href="{{ secure_url('/dashboard') }}">
-            <img class="navbar-brand-logo navbar-brand-logo-normal" src="{{ secure_asset('images/favicon.png') }}"
-                 title="Profit Miner">
-            <img class="navbar-brand-logo navbar-brand-logo-special" src="{{ secure_asset('images/favicon.png') }}"
-                 title="Profit Miner">
-            <span class="navbar-brand-text hidden-xs-down"> Profit Miner</span>
-        </a>
-    </div>
-    <div class="navbar-container container-fluid d-flex align-items-center justify-content-end">
-        @impersonating
-        <a class="btn-round btn btn-primary d-none d-md-inline btn-sm" href="{{ route('admin.impersonate-leave') }}">Leave impersonation</a>
-        @endImpersonating
-        <!-- Navbar Collapse -->
-        <div class="collapse navbar-collapse navbar-collapse-toolbar" id="site-navbar-collapse">
-            <!-- Navbar Toolbar -->
-            <ul class="nav navbar-toolbar">
-                <li class="nav-item hidden-float" id="toggleMenubar">
-                    <a class="nav-link" data-toggle="menubar" href="#" role="button">
-                        <i class="icon hamburger hamburger-arrow-left">
-                            <span class="sr-only">Toggle menubar</span>
-                            <span class="hamburger-bar"></span>
-                        </i>
-                    </a>
-                </li>
-            </ul>
-            <!-- End Navbar Toolbar -->
-            <!-- Navbar Toolbar Right -->
-            <ul class="nav navbar-toolbar navbar-right navbar-toolbar-right">
-                @if (session('pendingNotificationCount'))
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0)" title="Notifications"
-                       aria-expanded="false" data-animation="scale-up" role="button">
-                        <i class="icon md-notifications" aria-hidden="true"></i>
-                        <span class="badge badge-pill badge-danger up">{{ session('pendingNotificationCount') }}</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-media" role="menu">
-                        <div class="dropdown-menu-header">
-                            <h5>NOTIFICATIONS</h5>
-                            <span class="badge badge-round badge-danger">New 5</span>
-                        </div>
-                        <div class="list-group">
-                            <div data-role="container">
-                                <div data-role="content">
-                                    @foreach(session('pendingNotifications') as $notification)
-                                    <a class="list-group-item dropdown-item" href="{{ secure_url('notifications/' . $notificaiton->id) }}" role="menuitem">
-                                        <div class="media">
-                                            <div class="pr-10">
-                                                <i class="icon md-receipt bg-red-600 white icon-circle" aria-hidden="true"></i>
-                                            </div>
-                                            <div class="media-body">
-                                                <h6 class="media-heading">{{ $notification->message }}</h6>
-                                                <time class="media-meta" datetime="{{ $notification->created_at->toDateTimeString() }}">{{ $notification->created_at }}</time>
-                                            </div>
+<div id="app">
+    <nav class="site-navbar navbar navbar-default navbar-fixed-top navbar-mega" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggler collapsed" data-target="#site-navbar-collapse"
+                    data-toggle="collapse">
+                <i class="icon md-more" aria-hidden="true"></i>
+            </button>
+            <a class="navbar-brand navbar-brand-center" href="{{ secure_url('/dashboard') }}">
+                <img class="navbar-brand-logo navbar-brand-logo-normal" src="{{ secure_asset('images/favicon.png') }}"
+                     title="Profit Miner">
+                <img class="navbar-brand-logo navbar-brand-logo-special" src="{{ secure_asset('images/favicon.png') }}"
+                     title="Profit Miner">
+                <span class="navbar-brand-text hidden-xs-down"> Profit Miner</span>
+            </a>
+        </div>
+        <div class="navbar-container container-fluid d-flex align-items-center justify-content-end">
+            @impersonating
+            <a class="btn-round btn btn-primary d-none d-md-inline btn-sm" href="{{ route('admin.impersonate-leave') }}">Leave impersonation</a>
+            @endImpersonating
+            <!-- Navbar Collapse -->
+            <div class="collapse navbar-collapse navbar-collapse-toolbar" id="site-navbar-collapse">
+                <!-- Navbar Toolbar -->
+                <ul class="nav navbar-toolbar">
+                    <li class="nav-item hidden-float" id="toggleMenubar">
+                        <a class="nav-link" data-toggle="menubar" href="#" role="button">
+                            <i class="icon hamburger hamburger-arrow-left">
+                                <span class="sr-only">Toggle menubar</span>
+                                <span class="hamburger-bar"></span>
+                            </i>
+                        </a>
+                    </li>
+                </ul>
+                <!-- End Navbar Toolbar -->
+                <!-- Navbar Toolbar Right -->
+                <ul class="nav navbar-toolbar navbar-right navbar-toolbar-right">
+                    @if (session('pendingNotificationCount'))
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" data-toggle="dropdown" href="javascript:void(0)" title="Notifications"
+                               aria-expanded="false" data-animation="scale-up" role="button">
+                                <i class="icon md-notifications" aria-hidden="true"></i>
+                                <span class="badge badge-pill badge-danger up">{{ session('pendingNotificationCount') }}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-media" role="menu">
+                                <div class="dropdown-menu-header">
+                                    <h5>NOTIFICATIONS</h5>
+                                    <span class="badge badge-round badge-danger">New 5</span>
+                                </div>
+                                <div class="list-group">
+                                    <div data-role="container">
+                                        <div data-role="content">
+                                            @foreach(session('pendingNotifications') as $notification)
+                                                <a class="list-group-item dropdown-item" href="{{ secure_url('notifications/' . $notificaiton->id) }}" role="menuitem">
+                                                    <div class="media">
+                                                        <div class="pr-10">
+                                                            <i class="icon md-receipt bg-red-600 white icon-circle" aria-hidden="true"></i>
+                                                        </div>
+                                                        <div class="media-body">
+                                                            <h6 class="media-heading">{{ $notification->message }}</h6>
+                                                            <time class="media-meta" datetime="{{ $notification->created_at->toDateTimeString() }}">{{ $notification->created_at }}</time>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            @endforeach
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-menu-footer">
+                                    <a class="dropdown-menu-footer-btn" href="javascript:void(0)" role="button">
+                                        <i class="icon md-settings" aria-hidden="true"></i>
                                     </a>
-									@endforeach
+                                    <a class="dropdown-item" href="javascript:void(0)" role="menuitem">
+                                        All notifications
+                                    </a>
                                 </div>
                             </div>
-                        </div>
-                        <div class="dropdown-menu-footer">
-                            <a class="dropdown-menu-footer-btn" href="javascript:void(0)" role="button">
-                                <i class="icon md-settings" aria-hidden="true"></i>
+                        </li>
+                    @endif
+                    @if (session('unreadMessagesCount'))
+                        <li class="nav-item dropdown">
+                            <a class="nav-link" data-toggle="dropdown" href="javascript:void(0)" title="Messages"
+                               aria-expanded="false" data-animation="scale-up" role="button">
+                                <i class="icon md-email" aria-hidden="true"></i>
+                                <span class="badge badge-pill badge-info up">3</span>
                             </a>
-                            <a class="dropdown-item" href="javascript:void(0)" role="menuitem">
-                                All notifications
-                            </a>
-                        </div>
-                    </div>
-                </li>
-                @endif
-                @if (session('unreadMessagesCount'))
-                <li class="nav-item dropdown">
-                    <a class="nav-link" data-toggle="dropdown" href="javascript:void(0)" title="Messages"
-                       aria-expanded="false" data-animation="scale-up" role="button">
-                        <i class="icon md-email" aria-hidden="true"></i>
-                        <span class="badge badge-pill badge-info up">3</span>
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-media" role="menu">
-                        <div class="dropdown-menu-header" role="presentation">
-                            <h5>MESSAGES</h5>
-                            <span class="badge badge-round badge-info">New 3</span>
-                        </div>
-                        <div class="list-group" role="presentation">
-                            <div data-role="container">
-                                <div data-role="content">
-                                    @foreach (session('unreadMessages') as $response)
-                                    <a class="list-group-item dropdown-item" href="javascript:void(0)" role="menuitem">
-                                        <div class="media">
-                                            <div class="pr-10">
+                            <div class="dropdown-menu dropdown-menu-right dropdown-menu-media" role="menu">
+                                <div class="dropdown-menu-header" role="presentation">
+                                    <h5>MESSAGES</h5>
+                                    <span class="badge badge-round badge-info">New 3</span>
+                                </div>
+                                <div class="list-group" role="presentation">
+                                    <div data-role="container">
+                                        <div data-role="content">
+                                            @foreach (session('unreadMessages') as $response)
+                                                <a class="list-group-item dropdown-item" href="javascript:void(0)" role="menuitem">
+                                                    <div class="media">
+                                                        <div class="pr-10">
                                                 <span class="avatar avatar-sm avatar-online">
                                                     <img src="https://placehold.it/35x35" alt="..." />
                                                     <i></i>
                                                 </span>
-                                            </div>
-                                            <div class="media-body">
-                                                <h6 class="media-heading">{{ $response->target->name }}</h6>
-                                                <div class="media-meta">
-                                                    <time datetime="{{ $response->created_at->toDateTimeString() }}">{{ $response->created_at }}</time>
-                                                </div>
-                                                <div class="media-detail">{{ $response->text }}</div>
-                                            </div>
+                                                        </div>
+                                                        <div class="media-body">
+                                                            <h6 class="media-heading">{{ $response->target->name }}</h6>
+                                                            <div class="media-meta">
+                                                                <time datetime="{{ $response->created_at->toDateTimeString() }}">{{ $response->created_at }}</time>
+                                                            </div>
+                                                            <div class="media-detail">{{ $response->text }}</div>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            @endforeach
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="dropdown-menu-footer" role="presentation">
+                                    <a class="dropdown-menu-footer-btn" href="javascript:void(0)" role="button">
+                                        <i class="icon md-settings" aria-hidden="true"></i>
                                     </a>
-                                    @endforeach
+                                    <a class="dropdown-item" href="javascript:void(0)" role="menuitem">
+                                        See all messages
+                                    </a>
                                 </div>
                             </div>
-                        </div>
-                        <div class="dropdown-menu-footer" role="presentation">
-                            <a class="dropdown-menu-footer-btn" href="javascript:void(0)" role="button">
-                                <i class="icon md-settings" aria-hidden="true"></i>
-                            </a>
-                            <a class="dropdown-item" href="javascript:void(0)" role="menuitem">
-                                See all messages
-                            </a>
-                        </div>
-                    </div>
-                </li>
-                @endif
-                <li class="nav-item dropdown">
-                    <a class="nav-link navbar-avatar" data-toggle="dropdown" href="#" aria-expanded="false"
-                       data-animation="scale-up" role="button">
+                        </li>
+                    @endif
+                    <li class="nav-item dropdown">
+                        <a class="nav-link navbar-avatar" data-toggle="dropdown" href="#" aria-expanded="false"
+                           data-animation="scale-up" role="button">
                         <span class="avatar avatar-online">
                             <img src="{{ secure_url('/images/default-user.png') }}">
                             <i></i>
                         </span>
-                        <span style="margin-left: 8px;">{{ auth()->user()->name }}</span>
-                    </a>
-                    <div class="dropdown-menu" role="menu">
-                        <a class="dropdown-item" href="{{ route('profile.index') }}" role="menuitem"><i class="icon md-account" aria-hidden="true"></i> Setting</a>
-                        <a class="dropdown-item" href="{{ route('logout') }}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
+                            <span style="margin-left: 8px;">{{ auth()->user()->name }}</span>
+                        </a>
+                        <div class="dropdown-menu" role="menu">
+                            <a class="dropdown-item" href="{{ route('profile.index') }}" role="menuitem"><i class="icon md-account" aria-hidden="true"></i> Setting</a>
+                            <a class="dropdown-item" href="{{ route('logout') }}" role="menuitem"><i class="icon md-power" aria-hidden="true"></i> Logout</a>
+                        </div>
+                    </li>
+                </ul>
+                <!-- End Navbar Toolbar Right -->
+            </div>
+            <!-- End Navbar Collapse -->
+            <!-- Site Navbar Seach -->
+            <div class="collapse navbar-search-overlap" id="site-navbar-search">
+                <form role="search">
+                    <div class="form-group">
+                        <div class="input-search">
+                            <i class="input-search-icon md-search" aria-hidden="true"></i>
+                            <input type="text" class="form-control" name="site-search" placeholder="Search...">
+                            <button type="button" class="input-search-close icon md-close" data-target="#site-navbar-search"
+                                    data-toggle="collapse" aria-label="Close"></button>
+                        </div>
                     </div>
-                </li>
-            </ul>
-            <!-- End Navbar Toolbar Right -->
+                </form>
+            </div>
+            <!-- End Site Navbar Seach -->
         </div>
-        <!-- End Navbar Collapse -->
-        <!-- Site Navbar Seach -->
-        <div class="collapse navbar-search-overlap" id="site-navbar-search">
-            <form role="search">
-                <div class="form-group">
-                    <div class="input-search">
-                        <i class="input-search-icon md-search" aria-hidden="true"></i>
-                        <input type="text" class="form-control" name="site-search" placeholder="Search...">
-                        <button type="button" class="input-search-close icon md-close" data-target="#site-navbar-search"
-                                data-toggle="collapse" aria-label="Close"></button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        <!-- End Site Navbar Seach -->
-    </div>
-</nav>
+    </nav>
 
-<div class="site-menubar">
-    <div class="site-menubar-body">
-        <div>
+    <div class="site-menubar">
+        <div class="site-menubar-body">
             <div>
                 <ul class="site-menu" data-plugin="menu">
                     <li class="site-menu-category">General</li>
@@ -289,92 +290,89 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <div class="scrollable-bar scrollable-bar-vertical scrollable-bar-hide" draggable="false">
-                                    <div class="scrollable-bar-handle" style="height: 350.283px;"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </li>
-                    @endif
-                    @if (!auth()->user()->isAdmin())
-                        <li class="site-menu-item float-right change-company-selector">
-                            <form method="post" action="{{ route('selector.update-active-company') }}">
-                                <select class="form-control" name="company" required onchange="this.form.submit()">
-                                    <option disabled>Change Company</option>
-                                    @foreach (auth()->user()->getActiveCompanies() as $company)
-                                        <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled selected' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
-                                    @endforeach
-                                </select>
-                                {{ csrf_field() }}
-                            </form>
-                        </li>
-                    @endif
-                </ul>
+                            </li>
+                        @endif
+                        @if (!auth()->user()->isAdmin())
+                            <li class="site-menu-item float-right change-company-selector">
+                                <form method="post" action="{{ route('selector.update-active-company') }}">
+                                    <select class="form-control" name="company" required onchange="this.form.submit()">
+                                        <option disabled>Change Company</option>
+                                        @foreach (auth()->user()->getActiveCompanies() as $company)
+                                            <option value="{{ $company->id }}" {{ $company->id == get_active_company() ? 'disabled selected' : '' }}>{{ $company->name }} {{ get_active_company() == $company->id ? '(ACTIVE)' : '' }}</option>
+                                        @endforeach
+                                    </select>
+                                    {{ csrf_field() }}
+                                </form>
+                            </li>
+                        @endif
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
-@yield('content')
+    @yield('content')
 
 
-<footer class="site-footer">
-    <div class="site-footer-legal">© 2017 Profit Miner</div>
-    <div class="site-footer-right">
-        <a href="{{ secure_url('/terms') }}" class="">Terms of Service</a>
-    </div>
-</footer>
+    <footer class="site-footer">
+        <div class="site-footer-legal">© 2017 Profit Miner</div>
+        <div class="site-footer-right">
+            <a href="{{ secure_url('/terms') }}" class="">Terms of Service</a>
+        </div>
+    </footer>
 
-<!-- Core  -->
-<script src="{{ secure_url('/vendor/babel-external-helpers/babel-external-helpers.js') }}"></script>
-<script src="{{ secure_url('/vendor/jquery/jquery.min.js') }}"></script>
-<script src="{{ secure_url('/vendor/tether/tether.min.js') }}"></script>
-<script src="{{ secure_url('/vendor/bootstrap/bootstrap.js') }}"></script>
-<script src="{{ secure_url('/vendor/animsition/animsition.js') }}"></script>
-<script src="{{ secure_url('/vendor/mousewheel/jquery.mousewheel.js') }}"></script>
-<script src="{{ secure_url('/vendor/asscrollbar/jquery-asScrollbar.js') }}"></script>
-<script src="{{ secure_url('/vendor/asscrollable/jquery-asScrollable.js') }}"></script>
-<script src="{{ secure_url('/vendor/waves/waves.js') }}"></script>
-<!-- Plugins -->
-{{--<script src="{{ secure_url('/vendor/switchery/switchery.min.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/vendor/intro-js/intro.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/vendor/screenfull/screenfull.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/vendor/slidepanel/jquery-slidePanel.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/vendor/chartist/chartist.min.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.min.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/vendor/jvectormap/jquery-jvectormap.min.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/vendor/jvectormap/maps/jquery-jvectormap-world-mill-en.js') }}"></script>--}}
-<script src="{{ secure_url('/vendor/matchheight/jquery.matchHeight-min.js') }}"></script>
-{{--<script src="{{ secure_url('/vendor/peity/jquery.peity.min.js') }}"></script>--}}
+    <!-- Core  -->
+    <script src="{{ secure_url('/vendor/babel-external-helpers/babel-external-helpers.js') }}"></script>
+    <script src="{{ secure_url('/vendor/jquery/jquery.min.js') }}"></script>
+    <script src="{{ secure_url('/vendor/tether/tether.min.js') }}"></script>
+    <script src="{{ secure_url('/vendor/bootstrap/bootstrap.js') }}"></script>
+    <script src="{{ secure_url('/vendor/animsition/animsition.js') }}"></script>
+    <script src="{{ secure_url('/vendor/mousewheel/jquery.mousewheel.js') }}"></script>
+    <script src="{{ secure_url('/vendor/asscrollbar/jquery-asScrollbar.js') }}"></script>
+    <script src="{{ secure_url('/vendor/asscrollable/jquery-asScrollable.js') }}"></script>
+    <script src="{{ secure_url('/vendor/waves/waves.js') }}"></script>
+    <!-- Plugins -->
+    {{--<script src="{{ secure_url('/vendor/switchery/switchery.min.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/vendor/intro-js/intro.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/vendor/screenfull/screenfull.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/vendor/slidepanel/jquery-slidePanel.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/vendor/chartist/chartist.min.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.min.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/vendor/jvectormap/jquery-jvectormap.min.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/vendor/jvectormap/maps/jquery-jvectormap-world-mill-en.js') }}"></script>--}}
+    <script src="{{ secure_url('/vendor/matchheight/jquery.matchHeight-min.js') }}"></script>
+    {{--<script src="{{ secure_url('/vendor/peity/jquery.peity.min.js') }}"></script>--}}
 <!-- Scripts -->
-<script src="{{ secure_url('/js/State.js') }}"></script>
-<script src="{{ secure_url('/js/Component.js') }}"></script>
-<script src="{{ secure_url('/js/Plugin.js') }}"></script>
-<script src="{{ secure_url('/js/Base.js') }}"></script>
-<script src="{{ secure_url('/js/Config.js') }}"></script>
-<script src="{{ secure_asset('js/Section/Menubar.js') }}"></script>
-<script src="{{ secure_asset('js/Section/Sidebar.js') }}"></script>
-<script src="{{ secure_asset('js/Section/PageAside.js') }}"></script>
-<script src="{{ secure_asset('js/Plugin/menu.js') }}"></script>
-<!-- Config -->
-<script src="{{ secure_url('/js/config/colors.js') }}"></script>
-<script src="{{ secure_asset('js/config/tour.js') }}"></script>
-<script>
-    Config.set('assets', '/');
-</script>
-<!-- Page -->
-<script src="{{ secure_asset('js/Site.js') }}"></script>
-<script src="{{ secure_url('/js/Plugin/asscrollable.js') }}"></script>
-{{--<script src="{{ secure_url('/js/Plugin/slidepanel.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/js/Plugin/switchery.js') }}"></script>--}}
-<script src="{{ secure_url('/js/Plugin/matchheight.js') }}"></script>
-{{--<script src="{{ secure_url('/js/Plugin/jvectormap.js') }}"></script>--}}
-{{--<script src="{{ secure_url('/js/Plugin/peity.js') }}"></script>--}}
-<script src="{{ secure_url('/js/v1.js') }}"></script>
-@yield('scriptTags')
+    <script src="{{ secure_url('/js/State.js') }}"></script>
+    <script src="{{ secure_url('/js/Component.js') }}"></script>
+    <script src="{{ secure_url('/js/Plugin.js') }}"></script>
+    <script src="{{ secure_url('/js/Base.js') }}"></script>
+    <script src="{{ secure_url('/js/Config.js') }}"></script>
+    <script src="{{ secure_asset('js/Section/Menubar.js') }}"></script>
+    <script src="{{ secure_asset('js/Section/Sidebar.js') }}"></script>
+    <script src="{{ secure_asset('js/Section/PageAside.js') }}"></script>
+    <script src="{{ secure_asset('js/Plugin/menu.js') }}"></script>
+    <!-- Config -->
+    <script src="{{ secure_url('/js/config/colors.js') }}"></script>
+    <script src="{{ secure_asset('js/config/tour.js') }}"></script>
+    <script>
+        Config.set('assets', '/');
+    </script>
+    <!-- Page -->
+    <script src="{{ secure_asset('js/Site.js') }}"></script>
+    <script src="{{ secure_asset('js/app.js') }}"></script>
+    <script src="{{ secure_url('/js/Plugin/asscrollable.js') }}"></script>
+    {{--<script src="{{ secure_url('/js/Plugin/slidepanel.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/js/Plugin/switchery.js') }}"></script>--}}
+    <script src="{{ secure_url('/js/Plugin/matchheight.js') }}"></script>
+    {{--<script src="{{ secure_url('/js/Plugin/jvectormap.js') }}"></script>--}}
+    {{--<script src="{{ secure_url('/js/Plugin/peity.js') }}"></script>--}}
+    <script src="{{ secure_url('/js/v1.js') }}"></script>
+    @yield('scriptTags')
 
-<script type="text/javascript">
-@yield('scripts')
-</script>
+    <script type="text/javascript">
+        @yield('scripts')
+    </script>
+</div>
 </body>
 </html>
