@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\MailgunService;
 use App\Models\Appointment;
 use App\Models\Campaign;
-use App\Classes\MailgunService;
 use App\Models\Recipient;
 use App\Models\Response;
 use App\Models\ResponseThread;
-use Illuminate\Support\Facades\DB;
+use App\Services\PusherBroadcastingService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use League\Csv\Writer;
 
 
@@ -33,12 +34,15 @@ class ResponseController extends Controller
      * @param Response $response
      * @param Request  $request
      * @return string
+     * @throws \Pusher\PusherException
      */
     public function updateReadStatus(Response $response, Request $request)
     {
         $response->fill(['read' => (int)$request->read]);
 
         $response->save();
+
+        PusherBroadcastingService::broadcastRecipientResponseUpdated($response->recipient);
 
         return $response->toJson();
     }
@@ -173,7 +177,7 @@ class ResponseController extends Controller
      * @param Recipient $recipient
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getResponse(Campaign $campaign, Recipient $recipient)
+    public function getResponseThread(Campaign $campaign, Recipient $recipient)
     {
         /*
         $responses = \DB::table('responses')
@@ -192,7 +196,7 @@ class ResponseController extends Controller
      * @param Recipient $recipient
      * @return array
      */
-    public function getResponseJson(Campaign $campaign, Recipient $recipient)
+    public function getResponse(Campaign $campaign, Recipient $recipient)
     {
         $appointments = Appointment::where('recipient_id', $recipient->id)->get();
         $responses = Response::where('campaign_id', $campaign->id)
@@ -231,9 +235,6 @@ class ResponseController extends Controller
             'appointments' => $appointments,
             'responses'    => $responses,
             'threads'      => $threads,
-            'rest'         => [
-                'appointmentTimes' => get_times('', '+15 minutes', '<option selected="selected">Appt Time</option>'),
-            ],
         ];
     }
 

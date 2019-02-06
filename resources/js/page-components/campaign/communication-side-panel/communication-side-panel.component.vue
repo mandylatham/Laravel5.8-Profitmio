@@ -4,69 +4,64 @@
             <div class="row align-items-end no-gutters mt-4 mb-3">
                 <div class="col-12">
 
-                    <button class="btn btn-primary float-right" v-on:click.prevent="closePanel">Close Panel</button>
+                    <button class="btn btn-primary close-comms-panel" v-on:click.prevent="closePanel">Close</button>
                 </div>
             </div>
 
             <div class="content" :class="{'show': !loading}">
                 <div class="row align-items-end no-gutters mt-4 mb-3">
                     <div class="col-12">
-
-                        <div class="name text-primary"><strong>{{ this.recipient.name }}</strong>
-                            <small><em>{{ this.recipient.location }}</em></small>
+                        <div class="name text-purple"><h1>{{ recipient.name }}</h1>
+                            <small v-if="recipient.location"><em>{{ recipient.location }}</em></small>
                         </div>
-                        <div class="vehicle" v-if="this.recipient.vehicle">
-                            <i class="icon fa-car"></i>
-                            {{ this.recipient.vehicle }}
+                    </div>
+                    <div class="col-8">
+                        <div class="vehicle" v-if="recipient.vehicle && recipient.vehicle.length > 0">
+                            <i class="fas fa-car mr-2"></i>
+                            {{ recipient.vehicle }}
                         </div>
-                        <div class="email" v-if="this.recipient.email">
-                            <i class="icon fa-envelope"></i>
-                            {{ this.recipient.email }}
+                        <div class="email" v-if="recipient.email && recipient.email.length > 0">
+                            <i class="fas fa-envelope mr-2"></i>
+                            {{ recipient.email }}
                         </div>
-                        <div class="phone" v-if="this.recipient.phone">
-                            <i class="icon fa-phone"></i>
-                            {{ this.recipient.phone }}
+                        <div class="phone" v-if="recipient.phone && recipient.phone.length > 0">
+                            <i class="fas fa-phone mr-2"></i>
+                            {{ recipient.phone }}
                         </div>
+                    </div>
+                    <div class="col-4">
+                        <b-dropdown right text="Add Label" :disabled="Object.keys(labelsDropdown).length === 0" class="float-right">
+                            <b-dropdown-item v-for="(label, index) in labelsDropdown" :key="index" :value="index"
+                                             @click="addLabel(index)">{{ label }}
+                            </b-dropdown-item>
+                        </b-dropdown>
                     </div>
                 </div>
 
                 <div class="row align-items-end no-gutters mt-4 mb-3">
-                    <div class="col-12">
-
-                        <label for="labels" class="form-check-label">Add Label</label>
-                        <select name="label" class="form-control" id="labels" v-model="selectedLabel"
-                                @change="addLabel(recipientId)">
-                            <option value="interested">Interested</option>
-                            <option value="service">Service Dept</option>
-                            <option value="not_interested">Not Interested</option>
-                            <option value="wrong_number">Wrong Number</option>
-                            <option value="car_sold">Car Sold</option>
-                            <option value="heat">Heat Case</option>
-                        </select>
-
+                    <div class="col-12 labels-wrapper" v-if="this.labels">
+                        <ul class="labels">
+                            <li :class="index" v-for="(label, index) in this.labels">{{ label }}<i
+                                    class="fas fa-times" @click="removeLabel(index)"></i></li>
+                        </ul>
                     </div>
                 </div>
 
-                <div class="mail-content">
+                <div class="notes-wrapper">
                     <div class="form-group">
-                        <textarea class="form-control" placeholder="Notes..." name="notes"
+                        <textarea class="form-control" placeholder="Notes..." name="notes" rows="4"
                                   v-model="notes">{{ this.recipient.notes }}</textarea>
                     </div>
-
                     <div class="form-group">
                         <button type="button" class="btn btn-primary" @click="addNotes(recipientId)">Save note</button>
                     </div>
                 </div>
-
-                <div class="mail-attachments" v-if="appointments.length">
-                    <h4>Appointments</h4>
-
-
+                <div class="call-in-wrapper" v-if="appointments.length">
+                    <h4>Call Ins</h4>
                     <ul class="list-group">
                         <li class="list-group-item" v-for="appointment in appointments">
-
                             <div v-if="appointment.type === 'callback'">
-                                <i class="icon fa-phone"></i>
+                                <i class="fas fa-phone mr-2"></i>
                                 {{ appointment.name }} @ {{ appointment.phone_number }}
                                 <div class="checkbox" style="padding-top: 6px; margin-left: 8px;">
                                     <label>
@@ -76,8 +71,13 @@
                                     </label>
                                 </div>
                             </div>
-                            <div v-else>
-                                <i class="icon fa-calendar"></i>
+                            <div v-else-if="appointment.type === 'discussion'">
+                                <i class="fas fa-question-circle mr-2"></i>
+                                <span class="mr-2">Just Curious</span>
+                                <span>{{ recipient.name }} called, but did not elect to reserve a callback or an appointment</span>
+                            </div>
+                            <div v-else-if="appointment.type === 'appointment'">
+                                <i class="fas fa-calendar mr-2"></i>
                                 {{ appointment.appointment_at_formatted }}
                             </div>
                         </li>
@@ -90,15 +90,9 @@
                             <div class="form-group">
                                 <label for="appointment_date" class="form-check-label">Select Appointment Date</label>
 
-                                <date-pick id="appointment_date" class="event-calendar"
-                                           v-model="appointmentSelectedDate"
-                                           :has-input-element="false"></date-pick>
-                            </div>
-                            <div class="form-group">
-                                <label for="appointment_time" class="form-check-label">Select Appointment Time</label>
-                                <select name="appointment_time" class="form-control" id="appointment_time"
-                                        v-html="rest.appointmentTimes" v-model="appointmentSelectedTime">
-                                </select>
+                                <date-picker id="appointment_date" v-model="appointmentSelectedDateUnformatted"
+                                             type="datetime" format="YYYY-MM-DD hh:mm" :lang="timePickerLang"
+                                             :minute-step="5" confirm></date-picker>
                             </div>
                             <button class="btn btn-primary" role="button"
                                     @click="addAppointment(campaign.id, recipientId)">Add
@@ -113,7 +107,7 @@
                     <ul class="list-group">
 
                         <li class="list-group-item" v-for="call in threads.phone">
-                            <i class="icon fa-phone"></i>
+                            <i class="fas fa-phone"></i>
                             Called at {{ call.created_at }}
 
                             <div v-if="currentUser.is_admin === 1">
@@ -172,14 +166,14 @@
                             </div>
                         </div>
 
-                        <div id="sms-form" style="margin-top: 20px;" v-if="campaign.is_expired">
+                        <div id="sms-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
                             <div class="input-group">
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="textMessage">
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-primary waves-effect send-sms"
-                                            @click="sendText(campaign.id, recipientId)">
-                                        <i class="icon md-mail-send" aria-hidden="true"></i> Send
+                                            @click="sendText">
+                                        <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
                             </div>
@@ -201,9 +195,7 @@
                             </div>
                             <strong class="vertical-text">Original Message</strong>
 
-                            <div class="message original-message">
-                                Original Message
-                                <iframe class="email-original" :src="threads.emailDrop.email_html"></iframe>
+                            <div class="message original-message email-original" v-html="threads.emailDrop.email_html">
                             </div>
                         </div>
 
@@ -233,14 +225,14 @@
                             </div>
                         </div>
 
-                        <div id="email-form" style="margin-top: 20px;" v-if="campaign.is_expired">
+                        <div id="email-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
                             <div class="input-group">
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="emailMessage">
                                 <div class="input-group-btn">
                                     <button type="button" class="btn btn-primary waves-effect send-email"
-                                            @click="sendEmail(campaign.id, recipientId)">
-                                        <i class="icon md-mail-send" aria-hidden="true"></i> Send
+                                            @click="sendEmail">
+                                        <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
                             </div>
@@ -253,14 +245,22 @@
 </template>
 
 <script>
+    import axios from 'axios';
+    import {generateRoute} from './../../../common/helpers'
+    import DatePicker from 'vue2-datepicker'
+
     export default {
         mounted() {
             this.resetVars();
             this.getResponses(this.campaign.id, this.recipientId);
-            console.log(this.recipientId);
+        },
+        components: {
+            // 'date-pick': require('./../../../components/date-pick/date-pick'),
+            DatePicker
         },
         data() {
             return {
+                disableBgClick: false,
                 recipient: [],
                 threads: [],
                 appointments: [],
@@ -268,22 +268,70 @@
                 loading: false,
                 notes: '',
                 calledCheckbox: false,
+                appointmentSelectedDateUnformatted: '',
                 appointmentSelectedDate: '',
                 appointmentSelectedTime: '',
                 textMessage: '',
                 emailMessage: '',
-                selectedLabel: ''
+                selectedLabel: '',
+                labels: {},
+                labelsDropdown: {},
+                labelDropdownItems: {
+                    interested: "Interested",
+                    service: "Service Dept",
+                    not_interested: "Not Interested",
+                    wrong_number: "Wrong Number",
+                    car_sold: "Car Sold",
+                    heat: "Heat Case",
+                },
+                timePickerLang: {
+                    days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+                    months: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    pickers: ['next 7 days', 'next 30 days', 'previous 7 days', 'previous 30 days'],
+                    placeholder: {
+                        date: 'Select Date',
+                        dateRange: 'Select Date Range'
+                    }
+                }
             }
         },
-        props: ['campaign', 'recipientId', 'currentUser'],
+        props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
         computed: {
-            //
+            labelDropdownOptions: function () {
+                let options = this.labelDropdownItems;
+                this.labels.forEach((label,text) => {
+                    options.delete(label);
+                });
+                return options
+            }
         },
         watch: {
-            //
+            selectedLabel: function (newVal) {
+                this.addLabel(newVal.value);
+            },
+            appointmentSelectedDateUnformatted: function (newVal) {
+                let d = new Date(newVal);
+                // date format: YYYY-MM-DD
+                let formattedDate = d.getFullYear() + '-' + this.pad2(d.getMonth() + 1) + '-' + this.pad2(d.getDate());
+                // time format: HH:mm
+                let formattedTime = this.pad2(d.getHours()) + ':' + this.pad2(d.getMinutes());
+                this.appointmentSelectedDate = formattedDate;
+                this.appointmentSelectedTime = formattedTime;
+            },
         },
         methods: {
+            updateLabelDropdown() {
+                for (label in this.labelDropdownItems) {
+                    if (this.labels[label] === undefined) {
+                        this.$set(this.labelsDropdown, label, this.labelDropdownItems[label]);
+                    } else {
+                        this.$delete(this.labelsDropdown, label);
+                    }
+                }
+            },
             closePanel() {
+                window['app'].pusherUnbindEvent('private-campaign.' + this.campaign.id, 'response.' + this.recipientId + '.updated');
+                this.resetVars();
                 this.$emit('closePanel', {});
             },
             resetVars() {
@@ -294,163 +342,191 @@
                 this.loading = false;
                 this.notes = '';
                 this.calledCheckbox = false;
+                this.appointmentSelectedDateUnformatted = '';
                 this.appointmentSelectedDate = '';
                 this.appointmentSelectedTime = '';
                 this.textMessage = '';
                 this.emailMessage = '';
                 this.selectedLabel = '';
+                this.labels = {};
             },
             getResponses: function (campaignId, recipientId) {
-                const vm = this;
-                vm.setLoading(true);
+                this.setLoading(true);
 
-                axios.get('/campaign/' + campaignId + '/response/' + recipientId)
-                    .then(function (response) {
-                        vm.recipient = response.data.recipient;
-                        vm.threads = response.data.threads;
-                        vm.appointments = response.data.appointments;
-                        vm.rest = response.data.rest;
-                        vm.notes = response.data.recipient.notes;
+                axios.get(generateRoute(window.getResponsesUrl, {'recipientId': recipientId}))
+                    .then((response) => {
+                        let r = response.data;
+                        this.recipient = r.recipient;
+                        this.threads = r.threads;
+                        this.appointments = r.appointments;
+                        this.rest = r.rest;
+                        this.notes = r.recipient.notes;
+                        this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
 
-                        // TODO: remove me
-                        console.log(vm.recipient);
-                        console.log(vm.threads);
-
-                        vm.setLoading(false);
+                        this.updateResponses(this.recipient);
+                        this.updateLabelDropdown();
+                        this.setLoading(false);
                     })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.setLoading(false);
+                        this.$toastr.error("Couldn't fetch responses.");
                     });
             },
+            pad2: function (number) {
+                return (number < 10 ? '0' : '') + number;
+            },
             setLoading: function (bool) {
+                // Local loading variable
                 this.loading = bool;
+                // Main vue instance loading variable
+                this.$set(window['app'], 'loading', bool);
             },
             addNotes: function (recipientId) {
-                const vm = this;
-
-                axios.post('/recipient/' + recipientId + '/update-notes',
+                axios.post(generateRoute(window.updateNotesUrl, {'recipientId': recipientId}),
                     {
-                        notes: vm.notes
+                        notes: this.notes
                     })
-                    .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                    .then((response) => {
+                        this.$toastr.success('Note added.');
                     })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.$toastr.error('Failed to add note.');
                     });
             },
             appointmentCalledBackToggle: function (event, appointmentId) {
-                axios.post('/appointment/' + appointmentId + '/update-called-status',
+                axios.post(generateRoute(window.appointmentUpdateCalledStatusUrl, {'appointmentId': appointmentId}),
                     {
                         called_back: event.target.checked
                     })
-                    .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                    .then((response) => {
+                        this.$toastr.success('Called status updated.');
                     })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.$toastr.error('Failed to update called status.');
                     });
             },
             addAppointment: function (campaignId, recipientId) {
-                const vm = this;
-
-                axios.post('/campaign/' + campaignId + '/responses/' + recipientId + '/add-appointment',
+                axios.post(generateRoute(window.addAppointmentUrl, {'recipientId': recipientId}),
                     {
-                        appointment_date: vm.appointmentSelectedDate,
-                        appointment_time: vm.appointmentSelectedTime
+                        appointment_date: this.appointmentSelectedDate,
+                        appointment_time: this.appointmentSelectedTime
                     })
-                    .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                    .then((response) => {
+                        this.$toastr.success('Appointment added.');
                     })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.$toastr.error('Failed to add an appointment.');
                     });
             },
             messageUpdateReadStatus: function (event, textId) {
-                axios.post('/response/' + textId + '/update-read-status',
+                axios.post(generateRoute(window.messageUpdateReadStatusUrl, {'responseId': textId}),
                     {
                         read: event.target.checked
                     })
-                    .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                    .then((response) => {
+                        this.$toastr.success('Read status updated.');
                     })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.$toastr.error('Failed to update message read status.');
                     });
             },
-            sendText: function (campaignId, recipientId) {
-                const vm = this;
-
-                axios.post('/campaign/' + campaignId + '/text-response/' + recipientId,
+            sendText: function () {
+                axios.post(generateRoute(window.sendTextUrl, {'recipientId': this.recipientId}),
                     {
-                        message: vm.textMessage
+                        message: this.textMessage
                     })
-                    .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                    .then((response) => {
+                        this.$toastr.success('Text sent.');
                     })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.$toastr.error('Failed to send text.');
                     });
             },
-            sendEmail: function (campaignId, recipientId) {
-                const vm = this;
-
-                axios.post('/campaign/' + campaignId + '/email-response/' + recipientId,
+            sendEmail: function () {
+                axios.post(generateRoute(window.sendEmailUrl, {'recipientId': this.recipientId}),
                     {
-                        message: vm.emailMessage
+                        message: this.emailMessage
                     })
-                    .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                    .then((response) => {
+                        this.$toastr.success('Email sent.');
                     })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.$toastr.error('Failed to send email.');
                     });
             },
-            addLabel: function (recipientId) {
-                const vm = this;
-
-                axios.post('/recipient/' + recipientId + '/add-label',
-                    {
-                        label: vm.selectedLabel
+            selectLabel: function (label) {
+                this.selectedLabel = label;
+            },
+            addLabel: function (label) {
+                axios.post(generateRoute(window.addLabelUrl, {'recipientId': this.recipientId}),{ label: label })
+                    .then((response) => {
+                        this.$set(this.labels, response.data.label, response.data.labelText);
+                        this.$toastr.success('Label added.');
+                        this.updateLabelDropdown();
                     })
-                    .then(function (response) {
-                        // TODO: success
-                        console.log(response);
-                    })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.$toastr.error('Failed to add label.');
                     });
             },
-            removeLabel: function (recipientId) {
-                // TODO: click on displayed label should remove it
-                const vm = this;
-
-                axios.post('/recipient/' + recipientId + '/remove-label',
+            removeLabel: function (label) {
+                axios.post(generateRoute(window.removeLabelUrl, {'recipientId': this.recipientId}),
                     {
-                        label: vm.selectedLabel
+                        label: label
                     })
-                    .then(function (response) {
-                        // TODO: success
-                        console.log(response);
+                    .then((response) => {
+                        this.$delete(this.labels, label);
+                        this.$toastr.success('Label removed.');
+                        this.updateLabelDropdown();
                     })
-                    .catch(function (response) {
-                        // TODO: error
-                        console.log(response);
+                    .catch((response) => {
+                        this.$toastr.error('Failed to remove label.');
                     });
+            },
+            updateResponses: function (recipient) {
+
+                if (recipient) {
+
+                    window['app'].pusher('private-campaign.' + this.campaign.id, 'response.' + recipient.id + '.updated', (data) => {
+
+                        if (data) {
+                            // TODO: check why is whole slidePanel flickering when loading is enabled
+                            // this.setLoading(true);
+
+                            axios.get(generateRoute(window.recipientGetResponsesUrl, {'recipientId': this.recipientId}),
+                                {
+                                    params: {
+                                        list: data
+                                    }
+                                })
+                                .then((response) => {
+
+                                    if (response.data.appointments) {
+                                        this.appointments = response.data.appointments;
+                                    }
+
+                                    if (response.data.threads) {
+                                        this.threads = response.data.threads;
+                                    }
+
+                                    if (response.data.recipient) {
+                                        this.recipient = response.data.recipient;
+                                    }
+
+                                    if (response.data.recipient.labels) {
+                                        this.labels = response.data.recipient.labels;
+                                    }
+
+                                    // TODO: check why is whole slidePanel flickering when loading is enabled
+                                    // this.setLoading(false);
+                                })
+                                .catch((response) => {
+                                    this.$toastr.error('Failed to update responses.');
+                                    // TODO: check why is whole slidePanel flickering when loading is enabled
+                                    // this.setLoading(false);
+                                });
+                        }
+                    });
+                }
             },
         }
     }

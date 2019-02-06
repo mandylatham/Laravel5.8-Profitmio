@@ -1,7 +1,10 @@
 <?php
 
 Route::impersonate();
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Broadcast;
+use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 //region OUTSIDE API CALLS
@@ -26,45 +29,6 @@ Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail'
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('password.restore');
 //endregion
-//
-//Route::group(['prefix' => 'new'], function () {
-//    Route::get('campaign', function () {
-//        return view('campaign.index', [
-//            'companies' => [(object) [
-//                'label' => 'asdfsaf',
-//                'value' => 1
-//                ]
-//            ]
-//        ]);
-//    });
-//});
-
-Route::get('/layout', function () {
-    return view('layouts.base');
-});
-Route::get('/new-dashboard', function () {
-    return view('dashboard.index');
-});
-Route::get('/campaign-dashboard', function () {
-    return view('campaign.index');
-});
-Route::get('/campaign-view', function () {
-    return view('campaign.view');
-});
-Route::get('/user-dashboard', function () {
-    return view('user.index');
-});
-Route::get('/user-view', function () {
-    return view('user.view');
-});
-Route::get('/new-response-console', function () {
-    return view('campaign.console');
-});
-
-// TODO: remove me when original route is done
-Route::get('/new-response-console', function () {
-    return view('campaign.console');
-});
 
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
@@ -185,6 +149,7 @@ Route::group(['middleware' => 'auth'], function () {
         // Recipient list
         Route::get('/recipient-lists', 'RecipientController@show')->name('campaigns.recipient-lists.index');
         Route::get('/recipient-list/for-user-display', 'RecipientController@forUserDisplay')->name('campaigns.recipient-lists.for-user-display');
+        Route::get('/recipients/for-user-display', 'RecipientController@getRecipients')->name('campaign.recipient.for-user-display');
         Route::post('/recipient-list/upload', 'RecipientController@uploadFile')->name('campaigns.recipient-lists.upload');
         Route::get('/recipient-list/{list}', 'RecipientController@showRecipientList')->name('campaigns.recipient-lists.show');
         Route::get('/recipient-list/{list}/download', 'RecipientController@downloadRecipientList')->name('campaigns.recipient-lists.download');
@@ -230,11 +195,9 @@ Route::group(['middleware' => 'auth'], function () {
         Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
         Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
         Route::any('/get-response-list', 'ResponseController@getResponseList');
-        // TODO: old route
-        // Route::get('/response/{recipient}', 'ResponseController@getResponse');
-        Route::get('/response/{recipient}', 'ResponseController@getResponseJson');
-        Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply');
-        Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console');
+        Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
+        Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
+        Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console')->name('campaign.recipient.email-response');
         Route::get('/response-console', 'ResponseConsoleController@show')->name('campaign.response-console.index');
         Route::get('/response-console/unread', 'ResponseConsoleController@showUnread')->name('campaign.response-console.index.unread');
         Route::get('/response-console/idle', 'ResponseConsoleController@showIdle')->name('campaign.response-console.index.idle');
@@ -251,6 +214,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/add-label', 'RecipientController@addLabel')->name('recipient.add-label');
         Route::post('/remove-label', 'RecipientController@removeLabel')->name('recipient.remove-label');
         Route::post('/update-notes', 'RecipientController@updateNotes')->name('recipient.update-notes');
+        Route::get('/get-responses-by-recipient', 'RecipientController@fetchResponsesByRecipient')->name('recipient.get-responses');
     });
     //endregion
 

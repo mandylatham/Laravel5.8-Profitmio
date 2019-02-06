@@ -10,7 +10,7 @@
 
 @section('main-content')
     <div class="container" id="campaign-responses" v-cloak>
-        <a class="btn pm-btn pm-btn-blue mb-3" href="{{ route('campaigns.index') }}">
+        <a class="btn pm-btn pm-btn-blue mb-3" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">
             <i class="fas fa-chevron-circle-left mr-2"></i> Back
         </a>
         @if ($campaign->responses()->count() > 0)

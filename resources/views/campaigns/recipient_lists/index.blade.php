@@ -22,15 +22,17 @@
     <div class="container" id="recipients-index" v-cloak>
         <div class="row align-items-end no-gutters mb-3">
             <div class="col-12 col-sm-5 col-lg-4">
-                <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.index') }}">
+                <a class="btn pm-btn pm-btn-blue" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">
                     <i class="fas fa-chevron-circle-left mr-2"></i> Back
                 </a>
             </div>
             <div class="col-none col-sm-2 col-lg-4"></div>
             <div class="col-12 col-sm-5 col-lg-4">
+                @if (auth()->user()->isAdmin())
                 <a class="btn pm-btn pm-btn-blue float-right" v-b-modal.upload-recipient-modal href="javascript:;">
                     <i class="fas fa-plus mr-2"></i> UPLOAD NEW LIST
                 </a>
+                @endif
             </div>
         </div>
         <div class="recipients-container">

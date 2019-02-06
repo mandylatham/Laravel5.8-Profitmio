@@ -2,18 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Campaign;
+use App\Classes\MailgunService;
 use App\Events\CampaignCountsUpdated;
 use App\Events\CampaignResponseUpdated;
-use App\Classes\MailgunService;
+use App\Models\Campaign;
 use App\Models\EmailLog;
 use App\Models\PhoneNumber;
 use App\Models\Recipient;
 use App\Models\Response;
+use App\Services\PusherBroadcastingService;
 use App\Services\TwilioClient;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ResponseConsoleController extends Controller
@@ -40,7 +41,7 @@ class ResponseConsoleController extends Controller
      * @param null     $label
      * @return mixed
      */
-    protected function getRecipientData(Request $request, Campaign $campaign, $filter = 'all', $label = null)
+    public function getRecipientData(Request $request, Campaign $campaign, $filter = 'all', $label = null)
     {
         if ($filter == 'all') {
             $recipients = Recipient::withResponses($campaign->id);
@@ -141,7 +142,7 @@ class ResponseConsoleController extends Controller
         $recipients->labelCounts = Recipient::withResponses($campaign->id)
             ->selectRaw("sum(interested) as interested, sum(not_interested) as not_interested,
                 sum(appointment) as appointment, sum(service) as service, sum(wrong_number) as wrong_number,
-                sum(car_sold) as car_sold, sum(heat) as heat_case,
+                sum(car_sold) as car_sold, sum(heat) as heat_case, sum(callback) as callback,
                 sum(case when (interested = 0 and not_interested = 0 and appointment = 0 and service = 0 and
                 wrong_number = 0 and car_sold = 0 and heat = 0) then 1 else 0 end) as not_labelled")
             ->first();
@@ -158,7 +159,7 @@ class ResponseConsoleController extends Controller
             'email'       => $recipients->email,
             'calls'       => $recipients->calls,
             'sms'         => $recipients->sms,
-            'labelCounts' => $recipients->labelCounts->toArray(),
+            'labelCounts' => array_map('intval', $recipients->labelCounts->toArray()),
         ];
 
         return $viewData;
@@ -176,6 +177,23 @@ class ResponseConsoleController extends Controller
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
 
         return view('campaigns.console', $viewData);
+    }
+
+    /**
+     * @param Request  $request
+     * @param Campaign $campaign
+     * @return mixed
+     */
+    public function getRecipientsForUserDisplay(Request $request, Campaign $campaign)
+    {
+        $filter = $request->get('filter') ?: 'all';
+        $label = $request->get('label') ?: null;
+
+        $viewData = $this->getRecipientData($request, $campaign, $filter, $label);
+
+        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+
+        return $viewData;
     }
 
     /**
@@ -372,6 +390,7 @@ class ResponseConsoleController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return string
+     * @throws \Pusher\PusherException
      */
     public function emailReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
@@ -385,7 +404,7 @@ class ResponseConsoleController extends Controller
             ->where('campaign_id', $campaign->id)
             ->where('incoming', 1)
             ->where('recipient_id', $recipient->id)
-            ->orderBy('response_id', 'desc')
+            ->orderBy('id', 'desc')
             ->first();
 
         $subject = 'Re: ' . $lastMessage->subject;
@@ -411,8 +430,11 @@ class ResponseConsoleController extends Controller
             'incoming'      => 0,
             'type'          => 'email',
             'recording_sid' => 0,
+            'duration'      => 0,
         ]);
         $response->save();
+
+        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
 
         # Log the transaction
         $log = new EmailLog([
@@ -436,6 +458,7 @@ class ResponseConsoleController extends Controller
      * @param \Illuminate\Http\Request $request
      *
      * @return mixed
+     * @throws \Pusher\PusherException
      * @throws \Twilio\Exceptions\ConfigurationException
      */
     public function smsReply(Campaign $campaign, Recipient $recipient, Request $request)
@@ -444,7 +467,8 @@ class ResponseConsoleController extends Controller
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
-        $reply = (new TwilioClient)->sendSms($campaign->phone->phone_number, $recipient->phone, $request->get('message'));
+        $reply = (new TwilioClient)->sendSms($campaign->phone->phone_number, $recipient->phone,
+            $request->get('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'text')
@@ -462,6 +486,8 @@ class ResponseConsoleController extends Controller
             'recording_sid' => 0,
         ]);
         $response->save();
+
+        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
 
         return response(json_encode(['error' => 0, 'message' => 'Your text message has been sent.']), 200)
             ->header('Content-Type', 'text/json');
@@ -585,7 +611,7 @@ class ResponseConsoleController extends Controller
 
             $response->recipient_id = $recipient->id;
             $response->save();
-            broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
+            broadcast(new CampaignResponseUpdated($recipient));
 
             if ($this->isUnsubscribeMessage($message)) {
                 Log::debug('unsubscribing recipient #' . $recipient->id);

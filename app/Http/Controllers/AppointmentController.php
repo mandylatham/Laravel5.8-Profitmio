@@ -2,20 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CampaignCountsUpdated;
+use App\Classes\MailgunService;
+use App\Mail\CrmNotification;
+use App\Mail\LeadNotification;
 use App\Models\Appointment;
 use App\Models\Campaign;
 use App\Models\Company;
-use App\Classes\MailgunService;
-use App\Events\CampaignResponseUpdated;
-use App\Mail\CrmNotification;
-use App\Mail\LeadNotification;
 use App\Models\Recipient;
+use App\Services\PusherBroadcastingService;
 use App\Services\TwilioClient;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Log\Logger;
 use Illuminate\Mail\Mailer;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 /**
@@ -48,8 +49,15 @@ class AppointmentController extends Controller
      * @param Logger      $log
      * @param Mailer      $mail
      */
-    public function __construct(Appointment $appointment, Carbon $carbon, Campaign $campaign, Company $company, Recipient $recipient, Logger $log, Mailer $mail)
-    {
+    public function __construct(
+        Appointment $appointment,
+        Carbon $carbon,
+        Campaign $campaign,
+        Company $company,
+        Recipient $recipient,
+        Logger $log,
+        Mailer $mail
+    ) {
         $this->appointment = $appointment;
         $this->carbon = $carbon;
         $this->campaign = $campaign;
@@ -66,8 +74,10 @@ class AppointmentController extends Controller
 
         if ($company->isDealership()) {
             $ids->where('dealership_id', $company->id);
-        } else if ($company->isAgency()) {
-            $ids->where('agency_id', $company->id);
+        } else {
+            if ($company->isAgency()) {
+                $ids->where('agency_id', $company->id);
+            }
         }
 
         return $ids->get()->toArray();
@@ -92,20 +102,23 @@ class AppointmentController extends Controller
      * Unauthenticated API call to insert Appointments
      *
      * @param MailgunService $mailgun
-     * @param Request $request
+     * @param Request        $request
      * @return \Illuminate\Http\JsonResponse
      */
     public function insert(MailgunService $mailgun, Request $request)
     {
         if (!$request->json()->get('campaign_id')) {
-            $this->log->error("appointment failed to save, no campaign_id present: " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+            $this->log->error("appointment failed to save, no campaign_id present: " . json_encode($request->all(),
+                    JSON_UNESCAPED_SLASHES));
+
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
         }
 
         $campaign = $this->campaign->find($request->json()->get('campaign_id'));
 
         if (!$campaign) {
-            $this->log->error("appointment failed to save, no campaign_id present: " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+            $this->log->error("appointment failed to save, no campaign_id present: " . json_encode($request->all(),
+                    JSON_UNESCAPED_SLASHES));
 
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
         }
@@ -125,10 +138,10 @@ class AppointmentController extends Controller
 
         if (!$recipient) {
             $recipient = new $this->recipient([
-                'first_name' => $request->json()->get('first_name'),
-                'last_name' => $request->json()->get('last_name'),
-                'phone' => $phone_number ?: $request->json()->get('phone_number'),
-                'email' => $request->json()->get('email'),
+                'first_name'  => $request->json()->get('first_name'),
+                'last_name'   => $request->json()->get('last_name'),
+                'phone'       => $phone_number ?: $request->json()->get('phone_number'),
+                'email'       => $request->json()->get('email'),
                 'campaign_id' => $campaign->id,
             ]);
 
@@ -142,19 +155,20 @@ class AppointmentController extends Controller
 
         $appointment_at = null;
         if (strlen($request->json()->get('appointment_at'))) {
-            $appointment_at = $this->carbon->createFromFormat('Y-m-d G:i:s', $request->json()->get('appointment_at'), $campaign->client->timezone);
+            $appointment_at = $this->carbon->createFromFormat('Y-m-d G:i:s', $request->json()->get('appointment_at'),
+                $campaign->client->timezone);
         }
 
         $appointment = new $this->appointment([
-            'recipient_id' => $recipient->id,
-            'campaign_id' => $campaign->id,
-            'appointment_at' => $appointment_at,
-            'auto_year' => intval($recipient->year),
-            'auto_make' => $recipient->make,
-            'auto_model' => $recipient->model,
-            'phone_number' => $phone_number ?: $request->json()->get('phone_number'),
+            'recipient_id'     => $recipient->id,
+            'campaign_id'      => $campaign->id,
+            'appointment_at'   => $appointment_at,
+            'auto_year'        => intval($recipient->year),
+            'auto_make'        => $recipient->make,
+            'auto_model'       => $recipient->model,
+            'phone_number'     => $phone_number ?: $request->json()->get('phone_number'),
             'alt_phone_number' => $alt_phone_number ?: $request->json()->get('alt_phone_number'),
-            'email' => $request->json()->get('email'),
+            'email'            => $request->json()->get('email'),
         ]);
 
         $allowed = ['first_name', 'last_name', 'address', 'city', 'state', 'zip', 'auto_trim', 'auto_mileage', 'type'];
@@ -163,7 +177,8 @@ class AppointmentController extends Controller
         }
 
         if (!$appointment->save()) {
-            $this->log->error("AppointmentController@insert: unable to save appointment for new request, " . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+            $this->log->error("AppointmentController@insert: unable to save appointment for new request, " . json_encode($request->all(),
+                    JSON_UNESCAPED_SLASHES));
 
             return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
 
@@ -179,7 +194,7 @@ class AppointmentController extends Controller
         }
         $recipient->save();
 
-        if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT, Appointment::TYPE_CALLBACK])) {
+        event(new CampaignCountsUpdated($campaign));
             if ($campaign->adf_crm_export) {
                 $alert_emails = explode(',', $campaign->lead_alert_email);
                 foreach ($alert_emails as $email) {
@@ -225,7 +240,7 @@ class AppointmentController extends Controller
                 try {
                     $message = $this->getCallbackMessage($appointment);
                     TwilioClient::sendSms($from, $to, $message);
-                } catch (\Exception $exception){
+                } catch (\Exception $exception) {
                     Log::error("Unable to send callback SMS: " . $e->getMessage());
                 }
             }
@@ -238,6 +253,7 @@ class AppointmentController extends Controller
     /**
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Pusher\PusherException
      */
     public function save(Request $request)
     {
@@ -262,6 +278,8 @@ class AppointmentController extends Controller
 
         $appt->save();
 
+        event(new CampaignCountsUpdated($campaign));
+
         return response()->json($appt->toJson());
     }
 
@@ -270,6 +288,7 @@ class AppointmentController extends Controller
      * @param Appointment $appointment
      * @param Request     $request
      * @return int|mixed [type]
+     * @throws \Pusher\PusherException
      */
     public function updateCalledStatus(Appointment $appointment, Request $request)
     {
@@ -277,7 +296,11 @@ class AppointmentController extends Controller
 
         $appointment->save();
 
-        return $appointment->called_back;
+        event(new CampaignCountsUpdated($appointment->campaign));
+
+        return response()->json([
+            'called_back' => $appointment->called_back,
+        ]);
     }
 
     /**
@@ -285,23 +308,33 @@ class AppointmentController extends Controller
      * @param Recipient $recipient
      * @param Request   $request
      * @return \Illuminate\Http\JsonResponse
+     * @throws \Pusher\PusherException
      */
     public function addAppointmentFromConsole(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'), Auth::user()->timezone);
+        if ($request->has('appointment_date_time')) {
+            $dateTime = explode(' ', $request->input('appointment_date_time'));
+
+            $appointment_at = new Carbon($dateTime[0] . ' ' . $dateTime[1], Auth::user()->timezone);
+        } else {
+            $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'),
+                Auth::user()->timezone);
+        }
 
         $appointment = Appointment::create([
-            'recipient_id' => $recipient->id,
-            'campaign_id' => $campaign->id,
+            'recipient_id'   => $recipient->id,
+            'campaign_id'    => $campaign->id,
             'appointment_at' => $appointment_at->timezone('UTC'),
-            'auto_year' => intval($recipient->year),
-            'auto_make' => $recipient->make,
-            'auto_model' => $recipient->model,
-            'phone_number' => $recipient->phone,
-            'email' => $recipient->email,
+            'auto_year'      => intval($recipient->year),
+            'auto_make'      => $recipient->make,
+            'auto_model'     => $recipient->model,
+            'phone_number'   => $recipient->phone,
+            'email'          => $recipient->email,
         ]);
 
         $recipient->update(['appointment' => true]);
+
+        event(new CampaignCountsUpdated($campaign));
 
         return response()->json([
             'appointment_at' => $appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y h:i A T"),
@@ -314,7 +347,8 @@ class AppointmentController extends Controller
      */
     private function getCallbackMessage(Appointment $appointment): string
     {
-        $name = $appointment->first_name.' '.$appointment->last_name;
+        $name = $appointment->first_name . ' ' . $appointment->last_name;
+
         return sprintf(self::CALLBACK_MESSAGE, $name, $appointment->phone_number);
     }
 }

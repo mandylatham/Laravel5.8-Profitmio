@@ -78,39 +78,27 @@ export default class Form {
     }
 
     submit(method, url) {
-        return new Promise((resolve, reject) => {
-            if (method === 'get') {
-                axios[method](url, {
-                    params: this.data()
-                })
-                    .then(response => {
-                        this.onSuccess(response.data);
-                        resolve(response.data);
-                    })
-                    .catch(error => {
-                        this.onFail(error.response.data);
+        if (!url) {
+            return Promise.reject('No url passed.');
+        }
+        return new Promise((resolve, reject) =>  {
+            if (method === 'get' || method === 'delete') {
+                axios[method](url, { params: this.data() })
+                  .then(response => {
+                      resolve(response.data);
+                  })
+                  .catch(error => {
+                      reject(error.response.data);
+                  });
 
-                        reject(error.response.data);
-                    });
             } else {
-
                 axios[method](url, this.data())
-                    .then(response => {
-                        this.onSuccess(response.data);
-                        resolve(response.data);
-                    })
-                    .catch(error => {
-                        this.onFail(error.response.data);
-
-                    resolve(response.data);
-                })
-                // .catch(error => {
-                //     if (error.response) {
-                //         this.onFail(error.response.data);
-                //     }
-                //
-                //     // reject(error);
-                // });
+                  .then(response => {
+                      resolve(response.data);
+                  })
+                  .catch(error => {
+                      resolve(response.data);
+                  });
             }
         });
     }

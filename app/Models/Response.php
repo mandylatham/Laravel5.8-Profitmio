@@ -10,8 +10,6 @@ class Response extends Model
 {
     use SoftDeletes;
 
-    protected $primaryKey = 'response_id';
-
     protected $fillable = [
         'read',
         'campaign_id',
@@ -30,14 +28,14 @@ class Response extends Model
 
     protected $appends = ['created_at_formatted', 'message_formatted'];
 
-    public function getIdAttribute()
-    {
-        return $this->response_id;
-    }
-
     public function campaign()
     {
-        return $this->belongsTo(Campaign::class, 'campaign_id', 'campaign_id');
+        return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
+    }
+
+    public function recipient()
+    {
+        return $this->belongsTo(Recipient::class, 'recipient_id', 'id');
     }
 
     public function scopeInboundEmail($query)
