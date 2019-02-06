@@ -17,7 +17,7 @@ class MigrateCompanies extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:companies';
+    protected $signature = 'pm-import:companies';
 
     /**
      * The console command description.

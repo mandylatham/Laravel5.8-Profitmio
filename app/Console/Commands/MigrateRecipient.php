@@ -13,7 +13,7 @@ class MigrateRecipient extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:recipient';
+    protected $signature = 'pm-import:recipient';
 
     /**
      * The console command description.

@@ -13,7 +13,7 @@ class MigrateCampaignSchedule extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:campaign-schedule';
+    protected $signature = 'pm-import:campaign-schedule';
 
     /**
      * The console command description.

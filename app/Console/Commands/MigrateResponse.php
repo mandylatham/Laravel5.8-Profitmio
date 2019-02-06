@@ -13,7 +13,7 @@ class MigrateResponse extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:response';
+    protected $signature = 'pm-import:response';
 
     /**
      * The console command description.

@@ -13,7 +13,7 @@ class MigrateCampaign extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:campaign';
+    protected $signature = 'pm-import:campaign';
 
     /**
      * The console command description.

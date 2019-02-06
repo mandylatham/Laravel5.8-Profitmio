@@ -11,7 +11,7 @@ class MigrateDatabase extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:database';
+    protected $signature = 'pm-import:database';
 
     /**
      * The console command description.
@@ -37,13 +37,13 @@ class MigrateDatabase extends Command
      */
     public function handle()
     {
-        $this->call('migrate:campaign-schedule', []);
-        $this->call('migrate:appointment', []);
-        $this->call('migrate:campaign', []);
-        $this->call('migrate:phone-number', []);
-        $this->call('migrate:recipient', []);
-        $this->call('migrate:recipient-list', []);
-        $this->call('migrate:response', []);
-        $this->call('migrate:sms-suppression', []);
+        $this->call('pm-import:campaign-schedule', []);
+        $this->call('pm-import:appointment', []);
+        $this->call('pm-import:campaign', []);
+        $this->call('pm-import:phone-number', []);
+        $this->call('pm-import:recipient', []);
+        $this->call('pm-import:recipient-list', []);
+        $this->call('pm-import:response', []);
+        $this->call('pm-import:sms-suppression', []);
     }
 }

@@ -13,7 +13,7 @@ class MigrateSmsSuppression extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:sms-suppression';
+    protected $signature = 'pm-import:sms-suppression';
 
     /**
      * The console command description.

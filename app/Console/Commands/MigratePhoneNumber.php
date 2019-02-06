@@ -13,7 +13,7 @@ class MigratePhoneNumber extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:phone-number';
+    protected $signature = 'pm-import:phone-number';
 
     /**
      * The console command description.

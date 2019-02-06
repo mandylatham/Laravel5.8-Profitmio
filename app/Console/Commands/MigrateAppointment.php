@@ -13,7 +13,7 @@ class MigrateAppointment extends Command
      *
      * @var string
      */
-    protected $signature = 'migrate:appointment';
+    protected $signature = 'pm-import:appointment';
 
     /**
      * The console command description.
