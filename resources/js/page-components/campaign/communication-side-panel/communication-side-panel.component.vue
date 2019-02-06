@@ -57,7 +57,7 @@
                     </div>
                 </div>
                 <div class="call-in-wrapper" v-if="appointments.length">
-                    <h4>Appointments</h4>
+                    <h4>Call Ins</h4>
                     <ul class="list-group">
                         <li class="list-group-item" v-for="appointment in appointments">
                             <div v-if="appointment.type === 'callback'">
