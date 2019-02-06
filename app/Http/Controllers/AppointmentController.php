@@ -322,6 +322,8 @@ class AppointmentController extends Controller
         $appointment = Appointment::create([
             'recipient_id'   => $recipient->id,
             'campaign_id'    => $campaign->id,
+            'first_name'     => $recipient->first_name,
+            'last_name'      => $recipient->last_name,
             'appointment_at' => $appointment_at->timezone('UTC'),
             'auto_year'      => intval($recipient->year),
             'auto_make'      => $recipient->make,
