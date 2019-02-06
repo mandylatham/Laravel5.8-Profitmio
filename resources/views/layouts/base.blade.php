@@ -11,6 +11,7 @@
     @yield('head-styles')
     <script>
         window.loggedUser = @json($loggedUser);
+        window.isAdmin = @json(auth()->user()->isAdmin());
     </script>
     @yield('head-script')
 </head>

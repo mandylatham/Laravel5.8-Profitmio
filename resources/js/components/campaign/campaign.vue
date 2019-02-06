@@ -52,8 +52,12 @@
                 <p>{{ campaign.name }}</p>
             </div>
         </div>
-        <div class="col-4 col-md-2 campaign-postcard--image">
+        <div class="col-4 col-md-2 campaign-postcard--image" v-if="!isAdmin">
             <img src="" alt="">
+        </div>
+        <div class="col-4 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
+            <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
         </div>
         <div class="col-4 col-md-2 campaign-date">
             <span class="label">End Date:</span>
@@ -105,6 +109,7 @@
         },
         data() {
             return {
+                isAdmin: false,
                 campaignClosed: true,
                 campaignStatsUrl: '',
                 campaignDropIndex: '',
@@ -130,6 +135,7 @@
             generateRoute
         },
         mounted: function () {
+            this.isAdmin = window.isAdmin;
             this.campaignStatsUrl = window.campaignStatsUrl;
             this.campaignDropIndex = window.campaignDropIndex;
             this.campaignRecipientIndex = window.campaignRecipientIndex;
