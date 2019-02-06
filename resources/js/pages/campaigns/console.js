@@ -4,11 +4,10 @@ import Form from './../../common/form';
 import moment from 'moment';
 import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
-import 'vue-toastr-2/dist/vue-toastr-2.min.css'
-import VueToastr2 from 'vue-toastr-2';
 
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
+toastr.options.positionClass = "toast-bottom-left"; 
+toastr.options.newestOnTop = true;
+toastr.options.progressBar = true;
 
 Vue.use(VueSlideoutPanel);
 
@@ -110,7 +109,7 @@ window['app'] = new Vue({
         // },
         pusherInit: function () {
             // TODO: Enable pusher logging - don't include this in production
-            Pusher.logToConsole = false;
+            Pusher.logToConsole = true;
 
             return new Pusher(this.pusherKey, {
                 cluster: this.pusherCluster,
