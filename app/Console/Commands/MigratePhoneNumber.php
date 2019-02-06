@@ -39,26 +39,11 @@ class MigratePhoneNumber extends Command
      */
     public function handle()
     {
-        $this->info('====== Migrating phone_number table ==============');
+        $this->info('====== Migrating phone numbers table ==============');
         PhoneNumber::truncate();
-        $size = 250;
-        $bar = $this->output->createProgressBar(DB::connection('mysql_legacy')->table('phone_numbers')->select('*')->count());
-        $bar->start();
-
-        DB::connection('mysql_legacy')->table('phone_numbers')->orderBy('phone_number_id')->chunk($size, function($phones) use ($bar) {
-            $insert = [];
-            foreach ($phones as $phone) {
-                $trans = (array) $phone;
-                $trans['id'] = $trans['phone_number_id'];
-                unset($trans['phone_number_id']);
-                $trans['dealership_id'] = $trans['client_id'];
-                unset($trans['client_id']);
-                $bar->advance();
-                $insert[] = $trans;
-            }
-            PhoneNumber::insert($insert);
-        });
-        $bar->finish();
+        DB::insert('insert into profitminer.phone_numbers
+(id, dealership_id, phone_number, campaign_id, call_source_name, forward, sid, created_at, updated_at, deleted_at)
+select phone_number_id, client_id, phone_number, campaign_id, call_source_name, forward, sid, created_at, updated_at, deleted_at from profitminer_original_schema.phone_numbers;');
         $this->info("\n====== Migration finished ==============");
     }
 }

@@ -39,28 +39,11 @@ class MigrateAppointment extends Command
      */
     public function handle()
     {
-        $this->info('====== Migrating appointment table ==============');
+        $this->info('====== Migrating appointments table ==============');
         Appointment::truncate();
-        $size = 250;
-        $bar = $this->output->createProgressBar(DB::connection('mysql_legacy')->table('appointments')->select('*')->count());
-        $bar->start();
-
-        DB::connection('mysql_legacy')->table('appointments')->orderBy('appointment_id')->chunk($size, function($appointments) use ($bar) {
-            $insert = [];
-            foreach ($appointments as $appointment) {
-                $trans = (array) $appointment;
-                // Remove appointment_id
-                $trans['id'] = $trans['appointment_id'];
-                unset($trans['appointment_id']);
-                // Remove target_id
-                $trans['recipient_id'] = $trans['target_id'];
-                unset($trans['target_id']);
-                $bar->advance();
-                $insert[] = $trans;
-            }
-            Appointment::insert($insert);
-        });
-        $bar->finish();
+        DB::insert('insert into profitminer.appointments
+(id, campaign_id, recipient_id, appointment_at, first_name, last_name, phone_number, alt_phone_number, email, address, city, state, zip, auto_year, auto_make, auto_model, auto_trim, auto_mileage, type, called_back, created_at, updated_at, deleted_at)
+select appointment_id, campaign_id, target_id, appointment_at, first_name, last_name, phone_number, alt_phone_number, email, address, city, state, zip, auto_year, auto_make, auto_model, auto_trim, auto_mileage, type, called_back, created_at, updated_at, deleted_at from profitminer_original_schema.appointments;');
         $this->info("\n====== Migration finished ==============");
     }
 }

@@ -39,26 +39,11 @@ class MigrateCampaign extends Command
      */
     public function handle()
     {
-        $this->info('====== Migrating campaign table ==============');
+        $this->info('====== Migrating campaigns table ==============');
         Campaign::truncate();
-        $size = 250;
-        $bar = $this->output->createProgressBar(DB::connection('mysql_legacy')->table('campaigns')->select('*')->count());
-        $bar->start();
-
-        DB::connection('mysql_legacy')->table('campaigns')->orderBy('campaign_id')->chunk($size, function($campaigns) use ($bar) {
-            $insert = [];
-            foreach ($campaigns as $campaign) {
-                $trans = (array) $campaign;
-                $trans['id'] = $trans['campaign_id'];
-                unset($trans['campaign_id']);
-                $trans['dealership_id'] = $trans['client_id'];
-                unset($trans['client_id']);
-                $bar->advance();
-                $insert[] = $trans;
-            }
-            Campaign::insert($insert);
-        });
-        $bar->finish();
+        DB::insert('insert into profitminer.campaigns
+(id, agency_id, dealership_id, phone_number_id, name, expires_at, order_id, sms_on_callback, sms_on_callback_number, service_dept, service_dept_email, adf_crm_export, adf_crm_export_email, lead_alerts, lead_alert_email, client_passthrough, client_passthrough_email, starts_at, ends_at, status, created_at, updated_at, deleted_at)
+select campaign_id, agency_id, client_id, phone_number_id, name, expires_at, order_id, sms_on_callback, sms_on_callback_number, service_dept, service_dept_email, adf_crm_export, adf_crm_export_email, lead_alerts, lead_alert_email, client_passthrough, client_passthrough_email, starts_at, ends_at, status, created_at, updated_at, deleted_at from profitminer_original_schema.campaigns;');
         $this->info("\n====== Migration finished ==============");
     }
 }

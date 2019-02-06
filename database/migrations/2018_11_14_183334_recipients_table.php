@@ -16,7 +16,7 @@ class RecipientsTable extends Migration
         Schema::create('recipients', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('campaign_id');
-            $table->unsignedInteger('recipient_list_id')->nullable()->index();
+            $table->unsignedInteger('recipient_list_id')->nullable();
             $table->unsignedInteger('unique_recipient_id')->nullable();
             $table->string('first_name');
             $table->string('last_name');

@@ -41,20 +41,9 @@ class MigrateRecipientList extends Command
     {
         $this->info('====== Migrating recipient list table ==============');
         RecipientList::truncate();
-        $size = 250;
-        $bar = $this->output->createProgressBar(DB::connection('mysql_legacy')->table('recipient_lists')->select('*')->count());
-        $bar->start();
-
-        DB::connection('mysql_legacy')->table('recipient_lists')->orderBy('id')->chunk($size, function($recipientLists) use ($bar) {
-            $insert = [];
-            foreach ($recipientLists as $recipientList) {
-                $trans = (array) $recipientList;
-                $bar->advance();
-                $insert[] = $trans;
-            }
-            RecipientList::insert($insert);
-        });
-        $bar->finish();
+        DB::insert('insert into profitminer.recipient_lists
+(id, campaign_id, uploaded_by, name, fieldmap, email_validated, recipients_added, phones_validated, total_recipients, total_dealer_db, total_conquest, total_valid_phones, total_valid_emails, upload_identifier, type, failed_reason, failed_at, created_at, updated_at, deleted_at)
+select id, campaign_id, uploaded_by, name, fieldmap, email_validated, recipients_added, phones_validated, total_recipients, total_dealer_db, total_conquest, total_valid_phones, total_valid_emails, upload_identifier, type, failed_reason, failed_at, created_at, updated_at, deleted_at from profitminer_original_schema.recipient_lists;');
         $this->info("\n====== Migration finished ==============");
     }
 }

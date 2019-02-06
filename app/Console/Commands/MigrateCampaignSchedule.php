@@ -41,26 +41,9 @@ class MigrateCampaignSchedule extends Command
     {
         $this->info('====== Migrating campaign_schedules table ==============');
         Drop::truncate();
-        $size = 250;
-        $bar = $this->output->createProgressBar(DB::connection('mysql_legacy')->table('campaign_schedules')->select('*')->count());
-        $bar->start();
-
-        DB::connection('mysql_legacy')->table('campaign_schedules')->orderBy('campaign_schedule_id')->chunk($size, function($campaignSchedules) use ($bar) {
-            $insert = [];
-            foreach ($campaignSchedules as $campaignSchedule) {
-                $trans = (array) $campaignSchedule;
-                // Remove campaign_schedule_Id
-                $trans['id'] = $trans['campaign_schedule_id'];
-                unset($trans['campaign_schedule_id']);
-                // Remove target_group
-                $trans['recipient_group'] = $trans['target_group'];
-                unset($trans['target_group']);
-                $bar->advance();
-                $insert[] = $trans;
-            }
-            Drop::insert($insert);
-        });
-        $bar->finish();
+        DB::insert('insert into profitminer.campaign_schedules
+(id, campaign_id, recipient_group, type, email_subject, email_html, email_text, text_message, text_message_image, send_vehicle_image, status, percentage_complete, system_id, send_at, started_at, completed_at, notified_at, created_at, updated_at, deleted_at)
+select campaign_schedule_id, campaign_id, target_group, type, email_subject, email_html, email_text, text_message, text_message_image, send_vehicle_image, status, percentage_complete, system_id, send_at, started_at, completed_at, notified_at, created_at, updated_at, deleted_at from profitminer_original_schema.campaign_schedules;');
         $this->info("\n====== Migration finished ==============");
     }
 }

@@ -39,28 +39,11 @@ class MigrateResponse extends Command
      */
     public function handle()
     {
-        $this->info('====== Migrating response table ==============');
+        $this->info('====== Migrating responses table ==============');
         Response::truncate();
-        $size = 250;
-        $bar = $this->output->createProgressBar(DB::connection('mysql_legacy')->table('responses')->select('*')->count());
-        $bar->start();
-
-        DB::connection('mysql_legacy')->table('responses')->orderBy('response_id')->chunk($size, function($responses) use ($bar) {
-            $insert = [];
-            foreach ($responses as $response) {
-                $trans = (array) $response;
-                $trans['id'] = $trans['response_id'];
-                unset($trans['response_id']);
-                $trans['recipient_id'] = $trans['target_id'];
-                unset($trans['target_id']);
-                $trans['recording_url'] = $trans['recording_uri'];
-                unset($trans['recording_uri']);
-                $bar->advance();
-                $insert[] = $trans;
-            }
-            Response::insert($insert);
-        });
-        $bar->finish();
+        DB::insert('insert into profitminer.responses
+(id, campaign_id, recipient_id, type, message, call_sid, recording_sid, call_phone_number_id, response_source, response_destination, recording_url, duration, message_id, in_reply_to, subject, incoming, created_at, updated_at, deleted_at)
+select response_id, campaign_id, target_id, type, message, call_sid, recording_sid, call_phone_number_id, response_source, response_destination, recording_uri, duration, message_id, in_reply_to, subject, incoming, created_at, updated_at, deleted_at from profitminer_original_schema.responses;');
         $this->info("\n====== Migration finished ==============");
     }
 }
