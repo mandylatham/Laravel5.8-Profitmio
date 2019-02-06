@@ -109,6 +109,27 @@
       }
     }
 
+    #add-appointment-form {
+      margin-top: 5px;
+      padding:8px;
+      border:1px solid #e0e0e0;
+
+      div {
+        div {
+          label {
+            display: block;
+          }
+        }
+      }
+      div {
+        div {
+          #appointment_date.mx-datepicker.form-control {
+            border: 0;
+            padding: 0;
+          }
+        }
+      }
+    }
     .panel {
       position: relative;
       margin-bottom: 1.875rem;

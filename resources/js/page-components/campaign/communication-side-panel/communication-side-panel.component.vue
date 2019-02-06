@@ -39,7 +39,7 @@
                 </div>
 
                 <div class="row align-items-end no-gutters mt-4 mb-3">
-                    <div class="col-12 labels-wrapper" v-if="this.labels">
+                    <div class="col-12 labels-wrapper" v-if="Object.keys(this.labels).length > 0">
                         <ul class="labels">
                             <li :class="index" v-for="(label, index) in this.labels">{{ label }}<i
                                     class="fas fa-times" @click="removeLabel(index)"></i></li>
@@ -83,19 +83,21 @@
                         </li>
                     </ul>
                 </div>
-                <div id="new-appointment" class="mail-attachments col-md-10" v-else>
-                    <div id="add-appointment-form" style="padding:25px; border:1px solid #e0e0e0;">
-                        <h4>Add Appointment</h4>
-                        <div>
+                <div id="new-appointment" class="mail-attachments mb-3" v-else>
+                    <div class="alert alert-info" role="alert">
+                        {{ recipient.name }} does not have any appointments yet.
+                        <button class="btn pm-btn btn-primary" @click="showNewApptForm = !showNewApptForm">Add new appointment</button>
+                    </div>
+                    <div id="add-appointment-form" class="card" v-if="showNewApptForm">
+                        <div class="card-body">
                             <div class="form-group">
                                 <label for="appointment_date" class="form-check-label">Select Appointment Date</label>
-
-                                <date-picker id="appointment_date" v-model="appointmentSelectedDateUnformatted"
+                                <date-picker id="appointment_date" class="form-control" v-model="appointmentSelectedDateUnformatted"
                                              type="datetime" format="YYYY-MM-DD hh:mm" :lang="timePickerLang"
                                              :minute-step="5" confirm></date-picker>
                             </div>
                             <button class="btn btn-primary" role="button"
-                                    @click="addAppointment(campaign.id, recipientId)">Add
+                                    @click="addAppointment(campaign.id, recipientId)">Save
                                 Appointment
                             </button>
                         </div>
@@ -260,6 +262,7 @@
         },
         data() {
             return {
+                showNewApptForm: false,
                 disableBgClick: false,
                 recipient: [],
                 threads: [],
