@@ -89,7 +89,10 @@
                 </b-nav-item-dropdown>
                 <b-nav-item-dropdown class="profile" right variant="link" size="lg" no-caret>
                     <template slot="button-content">
-                        <img :src="loggedUser.image_url" alt="Avatar">
+                        <img :src="loggedUser.image_url" alt="Avatar" v-if="loggedUser.image_url">
+                        <div class="avatar-placeholder" v-if="!loggedUser.image_Url">
+                            <i class="fas fa-user"></i>
+                        </div>
                         <span>@{{ loggedUser.first_name }}</span>
                     </template>
                     <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>
