@@ -13,6 +13,8 @@
     </div>
 </template>
 <script>
+    const VueScrollTo = require('vue-scrollto');
+
     export default {
         props: {
             pagination: {
@@ -25,6 +27,10 @@
                         total: 15
                     };
                 }
+            },
+            scrollElement: {
+                type: String,
+                required: false
             }
         },
         data() {
@@ -40,19 +46,33 @@
                 if (this.pagination.page < 1 || this.pagination.page > this.totalPages) {
                     return;
                 }
+                this.scrollUp();
                 this.$emit('page-changed', {page: this.pagination.page})
             },
             goBack: function () {
                 if (this.pagination.page <= 1) {
                     return;
                 }
+                this.scrollUp();
                 this.$emit('page-changed', {page: this.pagination.page - 1});
             },
             goUp: function () {
                 if (this.pagination.page >= this.totalPages) {
                     return;
                 }
+                this.scrollUp();
                 this.$emit('page-changed', {page: this.pagination.page + 1});
+            },
+            scrollUp: function () {
+                let el = this.$el.parentNode;
+                if (this.scrollElement) {
+                    el = this.scrollElement;
+                }
+                if (el) {
+                    VueScrollTo.scrollTo(el, 500, {
+                        container: '.main-content'
+                    });
+                }
             }
         }
     }
