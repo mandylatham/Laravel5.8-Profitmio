@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\ServiceDeptLabelAdded;
-use App\Events\CampaignResponseUpdated;
+use App\Events\CampaignCountsUpdated;
 use App\Http\Requests\AddRecipientRequest;
 use App\Http\Requests\CreateRecipientListRequest;
 use App\Http\Resources\Recipient as RecipientResource;
@@ -179,10 +179,8 @@ class RecipientController extends Controller
                 $request->label => 0,
             ]);
             $recipient->save();
-            // TODO: fix me
-            // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-            //PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient, ['labels']);
-            event(new CampaignResponseUpdated($recipient, ['labels']));
+
+            event(new CampaignCountsUpdated($recipient->campaign));
 
             $class = 'badge-danger';
             if (in_array($request->label, ['interested', 'appointment', 'service', 'callback'])) {
@@ -212,20 +210,11 @@ class RecipientController extends Controller
                 'heat',
                 'callback',
             ])) {
-            if (($request->label == 'service') && ($recipient->service != 1)) {
-                $sendNotifications = true;
-            }
             $recipient->fill([
                 $request->label => 1,
             ]);
 
             $recipient->save();
-            // TODO: TEST LATER WITH EVENT
-            // event(new CampaignResponseUpdated($recipient->campaign, $recipient));
-            if ($sendNotifications) {
-                // PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient, ['labels']);
-                event(new CampaignResponseUpdated($recipient, ['labels']));
-            }
 
             $class = 'badge-danger';
             if (in_array($request->label, ['interested', 'appointment', 'service'])) {
@@ -235,6 +224,8 @@ class RecipientController extends Controller
             if ($sendNotifications) {
                 event(new ServiceDeptLabelAdded($recipient));
             }
+
+            event(new CampaignCountsUpdated($recipient->campaign));
 
             return response()->json([
                 "label" => $request->label,

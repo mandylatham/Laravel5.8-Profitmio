@@ -14,7 +14,7 @@
         window.campaign = @json($campaign);
         window.user = @json(auth()->user());
         window.pusherKey = "{{env('PUSHER_APP_KEY')}}";
-        window.pusherCluster = "{{env('PUSHER_CLUSTER')}}";
+        window.pusherCluster = "{{env('PUSHER_APP_CLUSTER')}}";
         window.pusherAuthEndpoint = "{{ url('/broadcasting/auth') }}";
         window.csrfToken = "{{ csrf_token() }}";
         // URLs
