@@ -20,7 +20,7 @@
     }
     .drop-info {
         display: flex;
-        border-right: 3px solid $brand-white;
+        border-bottom: 3px solid $brand-white;
         &--type{
             display: inline-flex;
             padding: 0.5rem 1rem;
@@ -40,7 +40,7 @@
         }
     }
     .drop-status {
-        border-right: 3px solid $brand-white;
+        border-bottom: 3px solid $brand-white;
     }
     .drop-recipient {
         display: flex;
@@ -54,5 +54,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
+        & > div {
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+    }
+    @include media-breakpoint-up(md) {
+        .drop-info, .drop-status {
+            border-bottom: none;
+            border-right: 3px solid $brand-white;
+        }
     }
 }
