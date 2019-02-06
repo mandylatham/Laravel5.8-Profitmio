@@ -18,7 +18,7 @@ class CreateCompanyUserTable extends Migration
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('company_id');
             $table->enum('role', ['admin', 'user'])->default('user')->nullable();
-            $table->json('config')->nullable(true);
+            $table->text('config')->nullable(true);
             $table->boolean('is_active')->default(true);
             $table->timestamp('completed_at')->nullable(true);
 

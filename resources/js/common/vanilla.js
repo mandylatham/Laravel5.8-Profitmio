@@ -41,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 300);
     }
 });
+
 window.breakpoints = {
     isXs() {
         return document.documentElement.clientWidth < 576;

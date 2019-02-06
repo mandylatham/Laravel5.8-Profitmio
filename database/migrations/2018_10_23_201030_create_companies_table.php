@@ -15,7 +15,7 @@ class CreateCompaniesTable extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name', 255)->unique();
+            $table->string('name', 255);
             $table->enum('type', ['support', 'agency', 'dealership'])->default('support')->nullable(false);
             $table->string('phone', 50)->nullable();
             $table->string('address', 150)->nullable();
