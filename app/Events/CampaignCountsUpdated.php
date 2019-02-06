@@ -16,6 +16,8 @@ class CampaignCountsUpdated implements ShouldBroadcast
 {
     use SerializesModels;
 
+    public $broadcastQueue = 'pusher-queue';
+
     /** @var  Campaign */
     private $campaign;
 
@@ -45,21 +47,21 @@ class CampaignCountsUpdated implements ShouldBroadcast
         $this->idle = Recipient::idle($campaign->id)->count();
         $this->archived = Recipient::archived()->count();
         $this->emails = Recipient::withResponses($campaign->id)->whereIn(
-            'targets.target_id',
+            'recipients.id',
             result_array_values(
-                \DB::select("select target_id from responses where campaign_id = {$campaign->id} and type='email'")
+                \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
             )
         )->count();
         $this->calls = Recipient::withResponses($campaign->id)->whereIn(
-            'targets.target_id',
+            'recipients.id',
             result_array_values(
-                \DB::select("select target_id from responses where campaign_id = {$campaign->id} and type='phone'")
+                \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
             )
         )->count();
         $this->sms = Recipient::withResponses($campaign->id)->whereIn(
-            'targets.target_id',
+            'recipients.id',
             result_array_values(
-                \DB::select("select target_id from responses where campaign_id = {$campaign->id} and type='text'")
+                \DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
             )
         )->count();
         $labelCounts = Recipient::withResponses($campaign->id)
