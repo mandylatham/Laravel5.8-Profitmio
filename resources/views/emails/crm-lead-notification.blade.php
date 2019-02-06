@@ -12,21 +12,22 @@
             <contact>
                 <name part="first">{{ $appointment->first_name }}</name>
                 <name part="last">{{ $appointment->last_name }}</name>
-                <name part="full">{{ $appointment->first_name }} {{ $appointment->last_name }}</name>
                 <email>{{ $appointment->email }}</email>
                 <phone type="voice">{{ $appointment->phone_number }}</phone>
                 <phone type="voice">{{ $appointment->alt_phone_number }}</phone>
                 <address type="home">
-                    <street linke="1">{{ $appointment->address }}</street>
-                    <street linke="2" />
+                    <street line="1">{{ $appointment->address }}</street>
+                    <apartment/>
                     <city>{{ $appointment->city }}</city>
-                    <regioncode />
+                    <regioncode>{{ $appointment->state }}</regioncode>
                     <postalcode>{{ $appointment->zip }}</postalcode>
                 </address>
             </contact>
+            <comments>The contact, {{ $appointment->first_name }} {{ $apointment->last_name }} has called to request an appointment at {{ $appointment->appointment_at }}</comments>
         </customer>
         <vendor>
-            <contact>
+            <vendorname>{{ $campaign->agency->organization }}</vendorname>
+            <contact primarycontact="1">
                 <name part="full">{{ $campaign->agency->organization }}</name>
             </contact>
         </vendor>

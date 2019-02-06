@@ -354,6 +354,27 @@ class AppointmentController extends Controller
             }
         }
 
+        if ($campaign->lead_alerts) {
+            $alert_emails = explode(',', $campaign->lead_alert_email);
+
+            foreach ($alert_emails as $email) {
+                $email = trim($email);
+
+                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    $this->log->error("AppointmentController@insert (line 82): Skipping lead notification to invalid email, $email");
+
+                    continue;
+                }
+
+                try {
+                    $this->mail->to($email)->send(new LeadNotification($campaign, $appointment));
+                    $this->log->debug("AppointmentController@insert: Sent lead alerts for appointment #{$appointment->id}");
+                } catch (\Exception $e) {
+                    $this->log->error("Unable to send lead notification: " . $e->getMessage());
+                }
+            }
+        }
+
         event(new CampaignCountsUpdated($campaign));
 
         return response()->json([
