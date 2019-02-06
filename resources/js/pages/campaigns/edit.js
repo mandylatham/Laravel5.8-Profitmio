@@ -30,20 +30,20 @@ window['app'] = new Vue({
         campaignForm: new Form({
             agency: null,
             adf_crm_export: window.campaign.adf_crm_export,
-            adf_crm_export_email: window.campaign.adf_crm_export_email,
+            adf_crm_export_email: window.campaign.adf_crm_export_email || [],
             client_passthrough: window.campaign.client_passthrough,
-            client_passthrough_email: window.campaign.client_passthrough_email,
+            client_passthrough_email: window.campaign.client_passthrough_email || [],
             dealership: null,
             end: moment.utc(window.campaign.ends_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD'),
             expires: window.campaign.expires_at? moment.utc(window.campaign.expires_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD') : undefined,
             lead_alerts: window.campaign.lead_alerts,
-            lead_alert_emails: window.campaign.lead_alert_email,
+            lead_alert_emails: window.campaign.lead_alert_email || [],
             name: window.campaign.name,
             order: window.campaign.order_id,
             service_dept: window.campaign.service_dept,
-            service_dept_email: window.campaign.service_dept_email,
+            service_dept_email: window.campaign.service_dept_email || [],
             sms_on_callback: window.campaign.sms_on_callback,
-            sms_on_callback_number: window.campaign.sms_on_callback_number,
+            sms_on_callback_number: window.campaign.sms_on_callback_number || [],
             start: moment.utc(window.campaign.starts_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD'),
             status: window.campaign.status
         }),
@@ -59,9 +59,9 @@ window['app'] = new Vue({
         serviceDeptEmail: '',
         searchPhoneNumberForm: new Form({
             country: 'US',
-            postal_code: '',
+            inPostalCode: '',
             contains: '',
-            area_code: '',
+            areaCode: '',
         }),
         showAvailablePhoneNumbers: false,
         smsOnCallbackNumber: '',
@@ -79,6 +79,7 @@ window['app'] = new Vue({
             if (!this[field]) return;
             list.push(this[field]);
             this[field] = null;
+
         },
         clearError: function (form, field) {
             form.errors.clear(field);
@@ -137,12 +138,12 @@ window['app'] = new Vue({
         searchPhones() {
             let invalid = false;
             this.searchPhoneNumberForm.errors.clear();
-            ['area_code', 'postal_code', 'contains'].forEach(field => {
-                if (!this.searchPhoneNumberForm[field]) {
-                    this.searchPhoneNumberForm.errors.add(field, 'This field is required.');
-                    invalid = true;
-                }
-            });
+            if (!this.searchPhoneNumberForm.areaCode && !this.searchPhoneNumberForm.inPostalCode && !this.searchPhoneNumberForm.contains) {
+                this.searchPhoneNumberForm.errors.add('area_code', 'This field is required.');
+                this.searchPhoneNumberForm.errors.add('postal_code', 'This field is required.');
+                this.searchPhoneNumberForm.errors.add('contains', 'This field is required.');
+                invalid = true;
+            }
             if (invalid) return;
             this.loadingPhoneModal = true;
             this.showAvailablePhoneNumbers = false;

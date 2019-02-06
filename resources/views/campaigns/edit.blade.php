@@ -13,7 +13,7 @@
         window.dealershipSelected = @json($campaign->dealership);
         window.saveCampaignUrl = @json(route('campaigns.update', ['campaign' => $campaign->id]));
         window.campaignStatsUrl = @json(route('campaigns.stats', ['campaign' => $campaign->id]));
-        console.log(window.campaign);
+        window.searchPhoneUrl = @json(route('phone.search'));
     </script>
     <script src="{{ asset('js/campaigns-edit.js') }}"></script>
 @endsection
@@ -364,19 +364,19 @@
                         </div>
                         <div class="col-3">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="area_code" placeholder="Area Code" v-model="searchPhoneNumberForm.area_code" @change="clearError(searchPhoneNumberForm, 'area_code')" :class="{'is-invalid': searchPhoneNumberForm.errors.has('area_code')}">
+                                <input type="text" class="form-control" name="area_code" placeholder="Area Code" v-model="searchPhoneNumberForm.areaCode" @change="clearError(searchPhoneNumberForm)" :class="{'is-invalid': searchPhoneNumberForm.errors.has('area_code')}">
                                 <input-errors :error-bag="searchPhoneNumberForm.errors" :field="'area_code'"></input-errors>
                             </div>
                         </div>
                         <div class="col-5">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="postal_code" placeholder="Zip" v-model="searchPhoneNumberForm.postal_code" @change="clearError(searchPhoneNumberForm, 'postal_code')" :class="{'is-invalid': searchPhoneNumberForm.errors.has('postal_code')}">
+                                <input type="text" class="form-control" name="postal_code" placeholder="Zip" v-model="searchPhoneNumberForm.inPostalCode" @change="clearError(searchPhoneNumberForm)" :class="{'is-invalid': searchPhoneNumberForm.errors.has('postal_code')}">
                                 <input-errors :error-bag="searchPhoneNumberForm.errors" :field="'postal_code'"></input-errors>
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="contains" placeholder="Contains ex. Cars..." v-model="searchPhoneNumberForm.contains" @change="clearError(searchPhoneNumberForm, 'contains')" :class="{'is-invalid': searchPhoneNumberForm.errors.has('contains')}">
+                                <input type="text" class="form-control" name="contains" placeholder="Contains ex. Cars..." v-model="searchPhoneNumberForm.contains" @change="clearError(searchPhoneNumberForm)" :class="{'is-invalid': searchPhoneNumberForm.errors.has('contains')}">
                                 <input-errors :error-bag="searchPhoneNumberForm.errors" :field="'contains'"></input-errors>
                             </div>
                         </div>
