@@ -52,28 +52,20 @@ export default class Form {
             if (method === 'post') {
                 axios[method](url, this.data())
                     .then(response => {
-                        this.onSuccess(response.data);
-
                         resolve(response.data);
                     })
                     .catch(error => {
-                        this.onFail(error.response.data);
-
-                        reject(error.response.data);
+                        reject(error.response);
                     });
             } else {
                 axios[method](url, {
                     params: this.data()
                 })
                     .then(response => {
-                        this.onSuccess(response.data);
-
                         resolve(response.data);
                     })
                     .catch(error => {
-                        this.onFail(error.response.data);
-
-                        reject(error.response.data);
+                        reject(error.response);
                     });
             }
         });
