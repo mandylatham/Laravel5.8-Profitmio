@@ -270,7 +270,13 @@ class UserController extends Controller
         if ($loggedUser->isAdmin()) {
             $hasCampaigns = $user->getCampaigns()->count() > 0;
         } else {
-            $hasCampaigns = $user->getCampaigns()->where('company_id', get_active_company())->count() > 0;
+            $company = Company::findOrFail(get_active_company());
+            if ($company->isDealership()) {
+                $field = 'dealership_id';
+            } else {
+                $field = 'agency_id';
+            }
+            $hasCampaigns = $user->getCampaigns()->where($field, get_active_company())->count() > 0;
         }
         return view('user.detail', [
             'user' => $user,

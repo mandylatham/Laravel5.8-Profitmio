@@ -85,31 +85,19 @@ export default class Form {
             if (method === 'get' || method === 'delete') {
                 axios[method](url, { params: this.data() })
                 .then(response => {
-                        this.onSuccess(response.data);
                         resolve(response.data);
                 })
-                // .catch(error => {
-                //     if (error.response) {
-                //         this.onFail(error.response.data);
-                //     }
-                //
-                //     reject(error);
-                //     // reject(error.response.data);
-                // });
+                .catch(error => {
+                    reject(error.response.data);
+                });
             } else {
                 axios[method](url, this.data())
                 .then(response => {
-                    this.onSuccess(response.data);
-
                     resolve(response.data);
                 })
-                // .catch(error => {
-                //     if (error.response) {
-                //         this.onFail(error.response.data);
-                //     }
-                //
-                //     // reject(error);
-                // });
+                .catch(error => {
+                    reject(error);
+                });
             }
         });
     }

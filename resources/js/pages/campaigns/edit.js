@@ -5,7 +5,6 @@ import VueFormWizard from 'vue-form-wizard';
 import moment from 'moment';
 import Modal from 'bootstrap-vue';
 Vue.use(Modal);
-import InputTag from 'vue-input-tag'
 Vue.use(VueFormWizard);
 
 window['app'] = new Vue({
@@ -13,8 +12,7 @@ window['app'] = new Vue({
     components: {
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
         'input-errors': require('./../../components/input-errors/input-errors'),
-        'date-pick': require('./../../components/date-pick/date-pick'),
-        InputTag
+        'date-pick': require('./../../components/date-pick/date-pick')
     },
     data: {
         addCrmExportEmail: '',

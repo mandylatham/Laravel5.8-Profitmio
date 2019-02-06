@@ -18,9 +18,11 @@
     <div class="container" id="drops-index" v-cloak>
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-5 col-lg-4">
+                @if (auth()->user()->isAdmin())
                 <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id]) }}">
                     <i class="fas fa-plus mr-2"></i> NEW
                 </a>
+                @endif
             </div>
             <div class="col-none col-sm-2 col-lg-4"></div>
             <div class="col-12 col-sm-5 col-lg-4">

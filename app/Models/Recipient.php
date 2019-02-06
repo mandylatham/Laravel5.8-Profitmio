@@ -51,7 +51,13 @@ class Recipient extends Model
         'callback',
     ];
 
-    protected $appends = ['last_seen_ago', 'name', 'vehicle', 'location'];
+    protected $appends = [
+        'last_seen_ago',
+        'name',
+        'vehicle',
+        'location',
+        'labels',
+    ];
 
     public static $mappable = [
         'first_name',
@@ -114,7 +120,7 @@ class Recipient extends Model
      */
     public function getVehicleAttribute()
     {
-        return $this->year . ' ' . $this->make . ' ' . $this->model;
+        return trim(implode(' ', [$this->year, $this->make, $this->model]));
     }
 
     public function getNameAttribute()
@@ -124,7 +130,9 @@ class Recipient extends Model
 
     public function getLastSeenAgoAttribute()
     {
-        return $this->last_seen ? (new Carbon($this->last_seen))->timezone(Auth::user()->timezone)->diffForHumans(Carbon::now(),
+        $tz = isset(Auth::user()->timezone) ?: 'America/New_York';
+
+        return $this->last_seen ? (new Carbon($this->last_seen))->timezone($tz)->diffForHumans(Carbon::now(),
                 true) . ' ago' : '';
     }
 
@@ -139,6 +147,37 @@ class Recipient extends Model
         }
 
         return implode(', ', $location);
+    }
+
+    public function getLabelsAttribute()
+    {
+        $labels = [];
+
+        if ((bool)$this->interested) {
+            $labels['interested'] = 'Interested';
+        }
+
+        if ((bool)$this->not_interested) {
+            $labels['not_interested'] = 'Not Interested';
+        }
+
+        if ((bool)$this->service) {
+            $labels['service'] = 'Service Dept';
+        }
+
+        if ((bool)$this->heat) {
+            $labels['heat'] = 'Heat Case';
+        }
+
+        if ((bool)$this->car_sold) {
+            $labels['car_sold'] = 'Car Sold';
+        }
+
+        if ((bool)$this->wrong_number) {
+            $labels['wrong_number'] = 'Wrong Number';
+        }
+
+        return $labels;
     }
 
     public function getEmailAttribute()
@@ -215,7 +254,7 @@ class Recipient extends Model
                 'appointment'    => 0,
                 'car_sold'       => 0,
                 'wrong_number'   => 0,
-                'callback'       => 0.,
+                'callback'       => 0,
             ]);
         }
 

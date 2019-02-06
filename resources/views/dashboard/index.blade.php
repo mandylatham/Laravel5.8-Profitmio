@@ -8,10 +8,11 @@
 
 @section('body-script')
     <script>
+        window.campaignStatsUrl = "{{ route('campaigns.stats', ['campaign' => ':campaignId']) }}";
         window.appointmentsUrl = "{{ route('appointment.for-calendar-display') }}";
-        window.campaignViewUrl = "{{ route('campaign.view', ['campaign' => ':campaignId']) }}";
-        window.campaignDropIndex = "{{ route('campaign.drop.index', ['campaign' => ':campaignId']) }}";
-        window.campaignRecipientIndex = "{{ route('campaigns.recipients.index', ['campaign' => ':campaignId']) }}";
+        window.campaignViewUrl = "{{ route('campaigns.view', ['campaign' => ':campaignId']) }}";
+        window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
+        window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.dropsUrl = "{{ route('drop.for-calendar-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";

@@ -5,8 +5,8 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Sofa\Eloquence\Eloquence;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Campaign extends Model
 {
@@ -113,7 +113,7 @@ class Campaign extends Model
 
     public function users()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsToMany(User::class)->using(CampaignUser::class);
     }
 
     public function scopeFilterByCompany($query, Company $company)

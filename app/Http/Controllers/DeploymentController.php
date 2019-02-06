@@ -309,17 +309,17 @@ class DeploymentController extends Controller
     }
 
 
-    public function delete(CampaignSchedule $deployment)
+    public function delete(Campaign $campaign, Drop $drop)
     {
         try {
-            $deployment->status = "Deleted";
-            $deployment->save();
-            $deployment->delete();
+            $drop->status = "Deleted";
+            $drop->save();
+            $drop->delete();
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()
-            ]);
+            ], 422);
         }
 
         return response()->json([

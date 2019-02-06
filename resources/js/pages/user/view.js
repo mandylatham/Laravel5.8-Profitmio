@@ -16,7 +16,7 @@ Vue.use(VueToastr2);
 Vue.use(VueChartkick, {adapter: Chart});
 
 window['app'] = new Vue({
-    el: '#campaign-index',
+    el: '#user-view',
     components: {
         'campaign': require('./../../components/campaign/campaign'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
@@ -33,37 +33,37 @@ window['app'] = new Vue({
                 return item.status !== 'Active';
             }).length;
         },
-        pagination: function () {
+        campaignsPagination: function () {
             return {
-                page: this.searchForm.page,
-                per_page: this.searchForm.per_page,
+                page: this.searchCampaignForm.page,
+                per_page: this.searchCampaignForm.per_page,
                 total: this.total
             };
         }
     },
     data: {
-        searchFormUrl: null,
-        searchForm: new Form({
+        searchCampaignFormUrl: null,
+        searchCampaignForm: new Form({
             company: null,
             q: null,
             page: 1,
             per_page: 15,
+            user: null
         }),
-        isLoading: true,
+        loadingCampaigns: true,
         total: null,
         campaigns: [],
         companies: [],
         searchTerm: '',
-        companySelected: null,
+        campaignCompanySelected: null,
         tableOptions: {
             mobile: 'lg'
         },
         formUrl: ''
     },
     mounted() {
-        this.searchFormUrl = window.searchFormUrl;
-        this.companySelected = window.companySelected;
-        this.searchForm.q = window.q;
+        this.campaignCompanySelected = window.campaignCompanySelected;
+        this.searchCampaignForm.q = window.q;
 
         axios
             .get(window.getCompanyUrl, {
@@ -71,7 +71,8 @@ window['app'] = new Vue({
                     'Content-Type': 'application/json'
                 },
                 params: {
-                    per_page: 100
+                    per_page: 100,
+                    user: window.user.id
                 },
                 data: null
             })
@@ -79,35 +80,44 @@ window['app'] = new Vue({
                 this.companies = response.data.data;
             });
 
-        this.fetchData();
+        this.fetchCampaigns();
     },
     methods: {
-        onCompanySelected() {
-            this.searchForm.page = 1;
-            return this.fetchData();
+        onCampaignCompanySelected() {
+            this.searchCampaignForm.page = 1;
+            return this.fetchCampaigns();
         },
-        fetchData() {
-            if (this.companySelected) {
-                this.searchForm.company = this.companySelected.id;
+        fetchCampaigns() {
+            if (this.campaignCompanySelected) {
+                this.searchCampaignForm.company = this.campaignCompanySelected.id;
             } else {
-                this.searchForm.company = null;
+                this.searchCampaignForm.company = null;
             }
-            this.isLoading = true;
-            this.searchForm.get(this.searchFormUrl)
+            this.searchCampaignForm.user = window.user.id;
+            this.loadingCampaigns = true;
+            this.searchCampaignForm
+                .get(window.searchCampaignFormUrl)
                 .then(response => {
                     this.campaigns = response.data;
-                    this.searchForm.page = response.current_page;
-                    this.searchForm.per_page = response.per_page;
+                    this.searchCampaignForm.page = response.current_page;
+                    this.searchCampaignForm.per_page = response.per_page;
                     this.total = response.total;
-                    this.isLoading = false;
+                    this.loadingCampaigns = false;
                 })
                 .catch(error => {
                     this.$toastr.error("Unable to get campaigns");
                 });
         },
-        onPageChanged(event) {
-            this.searchForm.page = event.page;
-            return this.fetchData();
+        onCampaignPageChanged(event) {
+            this.searchCampaignForm.page = event.page;
+            return this.fetchCampaigns();
         }
+    }
+});
+
+window['sidebar'] = new Vue({
+    el: '#sidebar',
+    data: {
+        enableInputs: false
     }
 });

@@ -35,7 +35,7 @@ class CampaignPolicy
         if ($activeCompany->isAgency()) {
             return $campaign->agency_id == $activeCompany->id;
         } else if ($activeCompany->isDealership()) {
-            return $campaign->agency_id == $activeCompany->id;
+            return $campaign->dealership_id == $activeCompany->id;
         }
         return false;
     }
