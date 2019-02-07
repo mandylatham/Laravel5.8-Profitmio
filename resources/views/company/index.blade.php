@@ -17,16 +17,16 @@
 @endsection
 
 @section('main-content')
-    <div class="container" id="company-index">
-        <div class="row align-items-end no-gutters mb-md-3 mb-3">
-            <div class="col-12 col-sm-5 col-lg-3">
+    <div class="container" id="company-index" v-cloak>
+        <div class="row align-items-end no-gutters">
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
                 <a href="{{ route('company.create') }}" class="btn pm-btn pm-btn-blue">
                     <i class="fa fa-plus mr-2"></i>
                     Add Company
                 </a>
             </div>
             <div class="col-none col-sm-2 col-lg-6"></div>
-            <div class="col-12 col-sm-5 col-lg-3">
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
                 <input type="text" v-model="searchForm.q" class="form-control filter--search-box" aria-describedby="search"
                        placeholder="Search" @keyup.enter="fetchData()">
             </div>
