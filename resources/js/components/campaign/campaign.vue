@@ -15,9 +15,9 @@
                     <pie-chart height="70px" :colors="['#572E8D', '#e7f386', '#67A7CC']" :legend="false" :data="pieChartDataSet"></pie-chart>
                 </div>
                 <div class="campaign-postcard--value campaign-chart--labels">
-                    <span class="sms">sms</span>
-                    <span class="call">call</span>
-                    <span class="email">email</span>
+                    <span class="sms">{{ campaign.text_responses_count }} sms</span>
+                    <span class="call">{{ campaign.phone_responses_count }} call</span>
+                    <span class="email">{{ campaign.email_responses_count }} email</span>
                 </div>
             </div>
             <div class="campaign-postcard" v-if="campaign.text_responses_count === 0 && campaign.phone_responses_count === 0 && campaign.email_responses_count === 0">
@@ -76,9 +76,10 @@
                     <pie-chart height="70px" :colors="['#572E8D', '#e7f386', '#67A7CC']" :legend="false" :data="pieChartDataSet"></pie-chart>
                 </div>
                 <div class="col-6 campaign-chart--labels">
-                    <span class="sms">sms</span>
-                    <span class="call">call</span>
-                    <span class="email">email</span>
+
+                    <span class="sms">{{ campaign.text_responses_count }} sms</span>
+                    <span class="call">{{ campaign.phone_responses_count }} call</span>
+                    <span class="email">{{ campaign.email_responses_count }} email</span>
                 </div>
             </div>
             <div class="row no-gutters pl-3" v-if="campaign.text_responses_count === 0 && campaign.phone_responses_count === 0 && campaign.email_responses_count === 0">
