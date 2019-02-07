@@ -61,7 +61,7 @@
     @if ($drop->type == 'sms')
         <div class="row">
             <div class="col-md-4">
-                @if (! $campaign->phone instanceof App\PhoneNumber)
+                @if (! $campaign->phones()->whereCallSoureName('sms')->count() == 0)
                 <div class="panel panel-warning">
                     <div class="panel-heading">
                         <h3 class="panel-title">

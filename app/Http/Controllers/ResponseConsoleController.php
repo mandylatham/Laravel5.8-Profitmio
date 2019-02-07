@@ -456,8 +456,8 @@ class ResponseConsoleController extends Controller
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
-        $reply = (new TwilioClient)->sendSms($campaign->phone->phone_number, $recipient->phone,
-            $request->get('message'));
+        $sms_phone_number = $campaign->phones()->whereCallSourceName('sms')->firstOrFail();
+        $reply = \Twilio::sendSms($sms_phone_number, $recipient->phone, $request->input('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'text')
@@ -495,7 +495,7 @@ class ResponseConsoleController extends Controller
 
             $response = Response::where('call_sid', $request->get('CallSid'))->first();
 
-            $calling_to = PHoneNumber::wherePhoneNumber($request->get('To'))->first();
+            $calling_to = PhoneNumber::wherePhoneNumber($request->get('To'))->first();
             $phone_number_id = null;
             if ($calling_to) {
                 $phone_number_id = $calling_to->phone_number_id;

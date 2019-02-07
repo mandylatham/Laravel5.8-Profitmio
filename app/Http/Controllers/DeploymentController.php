@@ -63,7 +63,11 @@ class DeploymentController extends Controller
             throw new \Exception("Unable to parse message template");
         }
 
-        $from = $campaign->phone->phone_number;
+        if ($campaign->phones()->whereCallSourceName('sms')->count() == 0) {
+            throw new \Exception('No SMS phone number available for campaign ' . $campaign->id);
+        }
+
+        $from = $campaign->phone()->whereCallSourceName('sms')->first()->phone_number;
         $to = $recipient->phone;
         $message = $text;
         $mediaUrl = null;
