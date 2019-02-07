@@ -9,6 +9,72 @@
 
 #company-details {
 
+    .campaign-component.active {
+        .campaign-postcard {
+            background-color: $brand-white;
+            border-top-color: #fff;
+            border-bottom-color: #fff;
+        }
+        .campaign-date {
+            background-color: $brand-white;
+            border-right-color: #fff;
+        }
+        .campaign-links {
+            background-color: $brand-white;
+        }
+
+        @include media-breakpoint-up(md) {
+            .campaign-date {
+                border-left-color: #fff;
+            }
+        }
+    }
+
+    .campaign-component.inactive{
+        .campaign-header {
+            background-color: $brand-white;
+            border-bottom: 3px solid #fff;
+        }
+        .campaign-date {
+            background-color: $brand-white;
+            border: none;
+        }
+        .campaign-postcard--image {
+            background-color: $brand-white;
+            border-right: 3px solid #fff;
+        }
+        .campaign-chart {
+            border-top: 3px solid #fff;
+            background-color: $brand-white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @include media-breakpoint-up(md) {
+            .campaign-header {
+                border: none;
+            }
+            .campaign-postcard--image {
+                border-left: 3px solid #fff;
+            }
+            .campaign-date {
+                border-right: 3px solid #fff;
+            }
+            .campaign-chart {
+                border-top: none;
+            }
+        }
+    }
+
+    .campaign-group-label {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-top: 2rem;
+        text-align: left;
+        margin-bottom: 1rem;
+    }
+
     .company-image-container {
         text-align: center;
     }
@@ -28,14 +94,14 @@
         &--id, &--companies, &--phone-number, &--email, &--options {
             padding: 0.7rem 1rem;
             color: $brand-black;
-            background-color: #fff;
+            background-color: $brand-white;
             align-items: center;
             min-height: 52px;
             display: flex;
             height: 100%;
         }
         &--id, &--companies, &--phone-number, &--email {
-            border-bottom: 3px solid $brand-white;
+            border-bottom: 3px solid #fff;
         }
         &--id {
             background-color: $brand-purple !important;
@@ -52,45 +118,6 @@
             }
         }
 
-    }
-    @include media-breakpoint-up(sm) {
-        padding: 2rem 0;
-    }
-    @include media-breakpoint-up(md) {
-        .user-row {
-            &--id {
-                border-right: 3px solid $brand-white;
-            }
-            &--email {
-                border-bottom: 3px solid $brand-white;
-                border-right: 3px solid $brand-white;
-            }
-            &--phone-number {
-                border-bottom: 3px solid $brand-white;
-            }
-        }
-    }
-    @include media-breakpoint-up(lg) {
-        .user-row {
-            &--email {
-                border-bottom: none;
-            }
-            &--phone-number {
-                border-bottom: none;
-                border-right: 3px solid $brand-white;
-            }
-        }
-    }
-    @include media-breakpoint-up(xl) {
-        .user-row {
-            &--id {
-                border-bottom: none;
-            }
-            &--companies {
-                border-bottom: none;
-                border-right: 3px solid $brand-white;
-            }
-        }
     }
 
     p.form-control {
@@ -196,6 +223,49 @@
             height: 100%;
             padding: 0.7rem 2rem;
             border-radius: 0;
+        }
+    }
+
+    @include media-breakpoint-up(sm) {
+        padding: 2rem 0;
+    }
+
+    @include media-breakpoint-up(md) {
+        .user-row {
+            &--id {
+                border-right: 3px solid #fff;
+            }
+            &--email {
+                border-bottom: 3px solid #fff;
+                border-right: 3px solid #fff;
+            }
+            &--phone-number {
+                border-bottom: 3px solid #fff;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        .user-row {
+            &--email {
+                border-bottom: none;
+            }
+            &--phone-number {
+                border-bottom: none;
+                border-right: 3px solid #fff;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+        .user-row {
+            &--id {
+                border-bottom: none;
+            }
+            &--companies {
+                border-bottom: none;
+                border-right: 3px solid #fff;
+            }
         }
     }
 }
