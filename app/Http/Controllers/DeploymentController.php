@@ -31,7 +31,7 @@ class DeploymentController extends Controller
     public function deploySms(Campaign $campaign, Drop $drop, Recipient $recipient)
     {
         if ($campaign->isExpired) {
-            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+            return response()->json(['error' => ['error' => 'Illegal Request. This abuse of the system has been logged.']], 403);
         }
         if ($drop->system_id == 2) {
             $unsent = \DB::table('deployment_recipients')
@@ -266,57 +266,14 @@ class DeploymentController extends Controller
 
     public function show(Campaign $campaign, Drop $drop)
     {
-        $viewData['campaign'] = $campaign;
-        if ($drop->system_id == 2) {
-            $viewData['recipients'] = Recipient::whereIn('recipient_id',
-                result_array_values(\DB::table('deployment_recipients')
-                    ->where('deployment_id', $drop->id)
-                    ->whereNull('sent_at')
-                    ->whereNull('failed_at')
-                    ->select('recipient_id')
-                    ->get()))
-                ->get();
-
-            $viewData['sentRecipients'] = Recipient::whereIn('recipient_id',
-                result_array_values(\DB::table('deployment_recipients')
-                    ->where('deployment_id', $drop->id)
-                    ->where(function ($query) {
-                        $query->whereNotNull('sent_at')
-                            ->orWhereNotNull('failed_at');
-                    })
-                    ->select('recipient_id')
-                    ->get()))
-                ->count();
-            $viewData['recipientCount'] = \DB::table('deployment_recipients')->where('deployment_id', $drop->id)->count();
-        } else {
-            $viewData['recipients'] = Recipient::whereIn('recipient_id',
-                result_array_values(\DB::table('campaign_schedule_lists')
-                    ->where('campaign_schedule_id', $drop->id)
-                    ->whereNull('sent_at')
-                    ->whereNull('failed_at')
-                    ->select('recipient_id')
-                    ->get()))
-                ->get();
-
-            $viewData['sentRecipients'] = Recipient::whereIn('recipient_id',
-                result_array_values(\DB::table('campaign_schedule_lists')
-                    ->where('campaign_schedule_id', $drop->id)
-                    ->where(function ($query) {
-                        $query->whereNotNull('sent_at')
-                            ->orWhereNotNull('failed_at');
-                    })
-                    ->select('recipient_id')
-                    ->get()))
-                ->count();
-            $viewData['recipientCount'] = \DB::table('campaign_schedule_lists')->where('campaign_schedule_id', $drop->id)->count();
-        }
-
         $drop->text_message = str_replace('{{', '<span class="badge badge-outline badge-primary">',
             str_replace('}}', '</span>', $drop->text_message));
 
-        $viewData['drop'] = $drop;
-
-        return view('campaigns.deployments.details', $viewData);
+        return view('campaigns.deployments.details', [
+            'campaign' => $campaign,
+            'recipients' => $drop->recipients()->withPivot('sent_at', 'failed_at')->get(),
+            'drop' => $drop,
+        ]);
     }
 
     public function update(Campaign $campaign, CampaignSchedule $drop, DeploymentRequest $request)

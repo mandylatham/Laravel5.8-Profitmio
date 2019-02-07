@@ -10,6 +10,7 @@
         window.deleteDropUrl = "{{ route('campaigns.drops.delete', ['campaign' => $campaign->id, 'drop' => ':dropId']) }}";
         window.dropIndexUrl = "{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}";
         window.dropEditUrl = @json(route('campaigns.drops.edit', ['campaign' => $campaign->id, 'drop' => ':dropId']));
+        window.dropRunSmsUrl = @json(route('campaigns.drops.details', ['campaign' => $campaign->id, 'drop' => ':dropId']));
     </script>
     <script src="{{ asset('js/deployments-index.js') }}"></script>
 @endsection
@@ -58,12 +59,15 @@
                         </div>
                         <div class="col-6 col-md-2 drop-options">
                             <p v-if="drop.status === 'Completed' || drop.status === 'Cancelled' || drop.status === 'Processing' || drop.status === 'Deleted'" class="drop-options--no-actions">No Actions Available</p>
-                            <div v-else class="">
+                            <div v-else>
+                                <a v-if="drop.type === 'sms'" :href="generateRoute(dropRunSmsUrl, {'dropId': drop.id})" class="btn pm-btn pm-btn-green mr-2">
+                                    RUN
+                                </a>
                                 <a :href="generateRoute(dropEditUrl, {'dropId': drop.id})" class="btn btn-link pm-btn-link pm-btn-link-primary">
-                                    <i class="pm-font-edit-icon mr-3"></i>
+                                    <i class="pm-font-edit-icon"></i>
                                 </a>
                                 <a href="javascript:;" @click.prevent="deleteDrop(drop)" class="btn btn-link pm-btn-link pm-btn-link-warning">
-                                    <i class="far fa-trash-alt mr-3"></i>
+                                    <i class="far fa-trash-alt"></i>
                                 </a>
                             </div>
                         </div>

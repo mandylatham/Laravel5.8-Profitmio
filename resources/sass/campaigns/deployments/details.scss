@@ -1,0 +1,42 @@
+@import './../../common/index';
+@import './../base';
+@import "~bootstrap/scss/tables";
+@import './../../components/date-pick';
+@import './../../components/spinner-icon';
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+
+#deployments-details {
+
+    .details-container {
+        position: relative;
+        background-color: #fff;
+        padding: 1rem;
+        border-radius: 5px;
+        border: 2px solid #ced4da;
+    }
+
+    .counter {
+        font-size: 3rem;
+        text-align: center;
+        color: $brand-purple;
+    }
+
+    .counter-label {
+        text-align: center;
+        font-size: 1.1rem;
+        color: $brand-purple;
+    }
+
+    .card-message-container {
+        .card-header {
+            border-radius: 5px 5px 0 0;
+        }
+    }
+
+    .pm-btn-send {
+        margin-top: 1rem;
+        justify-content: center;
+        font-size: 0.9rem;
+        padding: 0.7rem;
+    }
+}

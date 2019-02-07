@@ -1,3 +1,10 @@
+@extends('layouts.base', [
+    'hasSidebar' => false
+])
+
+@section('head-styles')
+    <link href="{{ asset('css/company-index.css') }}" rel="stylesheet">
+@endsection
 
 @section('body-script')
     <script>
