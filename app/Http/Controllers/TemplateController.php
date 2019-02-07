@@ -18,21 +18,16 @@ class TemplateController extends Controller
 
     public function create(Request $request)
     {
-        if (! $request->has('params')) {
-            abort(422, 'Invalid Parameters');
-        }
-
-        $params = collect($request->input('params'));
-        $data = $params->only(['name', 'type', 'email_subject', 'email_text',
+        $data = $request->only(['name', 'type', 'email_subject', 'email_text',
             'email_html', 'text_message', 'text_message_image', 'send_vehicle_image']);
 
         $template = new CampaignScheduleTemplate([
-            'name' => $params->get('name'),
-            'type' => $params->get('type'),
-            'email_subject' => $params->get('email_subject'),
-            'email_text' => $params->get('email_text'),
-            'email_html' => $params->get('email_html'),
-            'text_message' => $params->get('text_message'),
+            'name' => $request->input('name'),
+            'type' => $request->input('type'),
+            'email_subject' => $request->input('email_subject'),
+            'email_text' => $request->input('email_text'),
+            'email_html' => $request->input('email_html'),
+            'text_message' => $request->input('text_message'),
         ]);
 
         // dd($template);

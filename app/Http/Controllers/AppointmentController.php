@@ -235,9 +235,10 @@ class AppointmentController extends Controller
         }
 
         if (($appointment->type == Appointment::TYPE_CALLBACK) && ($campaign->sms_on_callback == 1)) {
-            $from = $campaign->phone->phone_number;
-            $to = $campaign->sms_on_callback_number;
             try {
+                $phone = $campaign->phones()->whereCallSourceName('sms')->orderBy('id', 'desc')->firstOrFail();
+                $from = $phone->phone_number;
+                $to = $campaign->sms_on_callback_number;
                 $message = $this->getCallbackMessage($appointment);
                 TwilioClient::sendSms($from, $to, $message);
             } catch (\Exception $exception) {
