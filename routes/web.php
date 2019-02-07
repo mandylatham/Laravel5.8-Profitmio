@@ -111,7 +111,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/', 'TemplateController@show')->name('template.show');
             Route::get('/json', 'TemplateController@showJson')->name('templates.show-json');
             Route::get('/edit', 'TemplateController@editForm')->name('template.edit')->middleware('can:change-templates');
-            Route::post('/update', 'TemplateController@update')->name('template.update')->middleware('can:change-templates');
+            Route::patch('/update', 'TemplateController@update')->name('template.update')->middleware('can:change-templates');
             Route::delete('/delete', 'TemplateController@delete')->name('template.delete')->middleware('can:change-templates');
         });
     });
