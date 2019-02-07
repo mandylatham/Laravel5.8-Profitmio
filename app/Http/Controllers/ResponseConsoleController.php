@@ -498,7 +498,7 @@ class ResponseConsoleController extends Controller
             $calling_to = PhoneNumber::wherePhoneNumber($request->get('To'))->first();
             $phone_number_id = null;
             if ($calling_to) {
-                $phone_number_id = $calling_to->phone_number_id;
+                $phone_number_id = $calling_to->id;
             }
 
             if (!$response) {

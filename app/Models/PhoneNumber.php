@@ -17,7 +17,7 @@ class PhoneNumber extends Model
 
     public function getIdAttribute()
     {
-        return $this->phone_number_id;
+        return $this->id;
     }
 
     public function campaign()
