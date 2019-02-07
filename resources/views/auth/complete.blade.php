@@ -15,8 +15,7 @@
     </script>
 </head>
 <body style="background-image: url('/images/background-{{ rand(1,6)  }}.jpg')">
-{{--<div class="page">--}}
-<div class="card" id="registration">
+<div class="card" id="registration" v-cloak>
     <div class="card-body">
         <div class="logo">
             <img class="brand-img" src="/img/logo-large.png" alt="...">
@@ -97,7 +96,6 @@
         </form-wizard>
     </div>
 </div>
-{{--</div>--}}
 <script src="{{ asset('js/registration.js') }}"></script>
 </body>
 </html>

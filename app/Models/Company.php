@@ -102,7 +102,7 @@ class Company extends Model
                     $query->where('dealership_id', $this->id);
                 }
             })
-            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
+            ->withCount(['recipients', 'emailResponses', 'phoneResponses', 'textResponses'])
             ->with(['dealership', 'agency'])
             ->whereNull('deleted_at')
             ->whereIn('status', ['Active', 'Completed', 'Upcoming', 'Expired']);

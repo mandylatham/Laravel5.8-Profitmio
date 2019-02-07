@@ -88,7 +88,7 @@ export default class Form {
                       resolve(response.data);
                   })
                   .catch(error => {
-                      reject(error.response.data);
+                      reject(error);
                   });
 
             } else {
@@ -97,7 +97,7 @@ export default class Form {
                       resolve(response.data);
                   })
                   .catch(error => {
-                      resolve(response.data);
+                      reject(error);
                   });
             }
         });

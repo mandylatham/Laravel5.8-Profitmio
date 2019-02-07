@@ -20,8 +20,8 @@
 
 @section('main-content')
     <div class="container" id="template-index" v-cloak>
-        <div class="row mt-md-3">
-            <div class="col-12">
+        <div class="row align-items-end no-gutters mb-md-3">
+            <div class="col-12 col-sm-7 col-lg-9">
                 <button v-b-modal.add-template-modal class="pm-btn-purple mr-3">
                     <i class="fa fa-plus mr-2"></i>
                     Add new template
@@ -38,9 +38,7 @@
                     </div>
                 </b-modal>
             </div>
-        </div>
-        <div class="row align-items-end no-gutters mb-md-3">
-            <div class="col-12 offset-sm-7 col-sm-5 offset-lg-9 col-lg-3 mt-3">
+            <div class="col-12 col-sm-5 col-lg-3 mt-3">
                 <input type="text" v-model="searchForm.q" class="form-control filter--search-box" aria-describedby="search"
                        placeholder="Search" @keyup.enter="fetchData">
             </div>
@@ -56,8 +54,8 @@
                 <div class="row no-gutters media-template-component inactive" v-for="(template, index) in templates" :key="template.id">
                     <div class="col-12 col-md-5 media-template-header">
                         <div class="media-template-header--title">
-                            <p>Template @{{ template.id }}</p>
                             <strong>@{{ template.name }}</strong>
+                            <span class="ml-2">(id: @{{ template.id }})</span>
                         </div>
                     </div>
                     <div class="col-4 col-md-2 media-template-postcard">
@@ -69,7 +67,7 @@
                     </div>
                     <div class="col-4 col-md-3 media-template-links">
                         <a class="btn pm-btn pm-btn-purple" :href="generateRoute(templateEdit, {'templateId': template.id})"><span class="fa fa-edit"></span> Edit</a>
-                        <button @click="deleteTemplate(template.id, index)" class="btn pm-btn-danger" :data-url="generateRoute(templateDelete, {'templateId': template.id})"><span class="fa fa-trash"></span> Delete</button>
+                        <button @click="deleteTemplate(template.id, index)" class="btn pm-btn pm-btn-default" :data-url="generateRoute(templateDelete, {'templateId': template.id})"><span class="fa fa-trash mr-3"></span> Delete</button>
                     </div>
                 </div>
                 <pm-pagination v-if="templates.length > 0" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>

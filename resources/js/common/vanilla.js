@@ -16,12 +16,20 @@ document.addEventListener('DOMContentLoaded', function () {
     if (toggleSideMenu) {
         toggleSideMenu.addEventListener('click', function () {
             const app = document.getElementById('app');
-            // Move navbar-menu
-            if (app.classList.contains('side-menu-open')) {
-                collapseSideMenu();
-            } else {
-                app.classList.add('side-menu-open');
+            let timeout = 0;
+            if (app.classList.contains('navbar-menu-open')) {
+                collapseNavbarMenu();
+                timeout = 300;
             }
+            setTimeout(() => {
+                if (app.classList.contains('side-menu-open') && document.documentElement.clientWidth < 768) {
+                    app.classList.add('navbar-side-menu-fix');
+                    setTimeout(() => {
+                        app.classList.remove('navbar-side-menu-fix');
+                    }, 300);
+                }
+                document.getElementById('app').classList.toggle('side-menu-open');
+            }, timeout);
         });
     }
 
@@ -30,6 +38,15 @@ document.addEventListener('DOMContentLoaded', function () {
         closeSideMenuButton.addEventListener('click', function () {
             collapseSideMenu();
         });
+    }
+
+    function collapseNavbarMenu() {
+        const app = document.getElementById('app');
+        // app.classList.add('navbar-side-menu-fix');
+        app.classList.remove('navbar-menu-open');
+        // setTimeout(() => {
+        //     app.classList.remove('navbar-side-menu-fix');
+        // }, 300);
     }
 
     function collapseSideMenu() {
@@ -41,25 +58,3 @@ document.addEventListener('DOMContentLoaded', function () {
         }, 300);
     }
 });
-
-window.breakpoints = {
-    isXs() {
-        return document.documentElement.clientWidth < 576;
-    },
-    isSm() {
-        const w = document.documentElement.clientWidth;
-        return w >= 576 && w < 768;
-    },
-    isMd() {
-        const w = document.documentElement.clientWidth;
-        return w >= 768 && w < 992;
-    },
-    isLg() {
-        const w = document.documentElement.clientWidth;
-        return w >= 992 && w < 1200;
-    },
-    isXlg() {
-        const w = document.documentElement.clientWidth;
-        return w >= 1200;
-    }
-};

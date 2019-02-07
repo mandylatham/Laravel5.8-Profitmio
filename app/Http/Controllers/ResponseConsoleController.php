@@ -89,18 +89,7 @@ class ResponseConsoleController extends Controller
         }
 
         if ($request->has('search')) {
-            $recipients->where(function ($query) use ($request) {
-                $keywords = explode(' ', $request->search);
-                foreach ($keywords as $keyword) {
-                    $query->orWhere('first_name', 'like', '%' . $keyword . '%')
-                        ->orWhere('last_name', 'like', '%' . $keyword . '%')
-                        ->orWhere('email', 'like', '%' . $keyword . '%')
-                        ->orWhere('phone', 'like', '%' . $keyword . '%')
-                        ->orWhere('make', 'like', '%' . $keyword . '%')
-                        ->orWhere('model', 'like', '%' . $keyword . '%')
-                        ->orWhere('year', 'like', '%' . $keyword . '%');
-                }
-            });
+            $recipients->searchByQuery($request->input('search'));
         }
 
         $recipients->join('responses as r1', function ($join) {
@@ -467,8 +456,8 @@ class ResponseConsoleController extends Controller
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
-        $reply = (new TwilioClient)->sendSms($campaign->phone->phone_number, $recipient->phone,
-            $request->get('message'));
+        $sms_phone_number = $campaign->phones()->whereCallSourceName('sms')->firstOrFail();
+        $reply = \Twilio::sendSms($sms_phone_number, $recipient->phone, $request->input('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'text')
@@ -506,10 +495,10 @@ class ResponseConsoleController extends Controller
 
             $response = Response::where('call_sid', $request->get('CallSid'))->first();
 
-            $calling_to = PHoneNumber::wherePhoneNumber($request->get('To'))->first();
+            $calling_to = PhoneNumber::wherePhoneNumber($request->get('To'))->first();
             $phone_number_id = null;
             if ($calling_to) {
-                $phone_number_id = $calling_to->phone_number_id;
+                $phone_number_id = $calling_to->id;
             }
 
             if (!$response) {
@@ -664,23 +653,22 @@ class ResponseConsoleController extends Controller
      */
     protected function getRequestObjects(Request $request)
     {
-        $number = $request->get('To') ?: $request->get('Called');
+        if ((!$request->has('To') && !$request->has('Called')) || !$request->has('From')) {
+            throw new \Exception("A critical phone component is missing from the request: " . json_encode($request->all()));
+        }
 
-        $phoneNumber = PhoneNumber::where('phone_number', 'like', '%' . $number)
+        $number = str_replace('+1', '', trim($request->input('To') ?: $request->input('Called')));
+        $fromNumber = str_replace('+1', '', trim($request->input('From')));
+
+        $phoneNumber = PhoneNumber::with('campaign')
+            ->whereRaw("replace(phone_number, '+1', '') like '%{$number}'")
             ->firstOrFail();
 
-        $campaign = Campaign::where('phone_number_id', $phoneNumber->id)
-            ->orderBy('campaign_id', 'desc')
-            ->firstOrFail();
-
-        $recipient = Recipient::where('campaign_id', $campaign->id)
-            ->where(function ($query) use ($request) {
-                $query->where('phone', $request->get('From'))
-                    ->orWhere('phone', str_replace('+1', '', $request->get('From')));
-            })
+        $recipient = $phoneNumber->campaign->recipients()
+            ->whereRaw("replace(phone, '+1', '') = ?", [$fromNumber])
             ->first();
 
-        return [$phoneNumber, $campaign, $recipient];
+        return [$phoneNumber, $phoneNumber->campaign, $recipient];
     }
 
     /**

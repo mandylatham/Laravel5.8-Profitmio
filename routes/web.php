@@ -111,7 +111,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/', 'TemplateController@show')->name('template.show');
             Route::get('/json', 'TemplateController@showJson')->name('templates.show-json');
             Route::get('/edit', 'TemplateController@editForm')->name('template.edit')->middleware('can:change-templates');
-            Route::post('/update', 'TemplateController@update')->name('template.update')->middleware('can:change-templates');
+            Route::patch('/update', 'TemplateController@update')->name('template.update')->middleware('can:change-templates');
             Route::delete('/delete', 'TemplateController@delete')->name('template.delete')->middleware('can:change-templates');
         });
     });
@@ -177,13 +177,13 @@ Route::group(['middleware' => 'auth'], function () {
         // Drops
         Route::get('/drops', 'DeploymentController@forCampaign')->name('campaigns.drops.index');
         Route::get('/drops/for-user-display', 'DeploymentController@getForUserDisplay')->name('campaigns.drops.for-user-display');
-        Route::get('/drop/{drop}', 'DeploymentController@show');
+        Route::get('/drop/{drop}', 'DeploymentController@show')->name('campaigns.drops.details');
         Route::delete('/drop/{drop}', 'DeploymentController@delete')->name('campaigns.drops.delete');
         Route::post('/drop/{drop}/update', 'DeploymentController@update')->name('campaigns.drops.update');
         Route::get('/drops/new', 'DeploymentController@createNew')->name('campaigns.drops.create');
         Route::post('/drops', 'DeploymentController@create')->name('campaigns.drops.store');
         Route::post('/drops/add-groups', 'DeploymentController@saveGroups')->name('campaigns.drops.add-groups');
-        Route::post('/drop/{drop}/send-sms/{recipient}', 'DeploymentController@deploySms');
+        Route::post('/drop/{drop}/send-sms/{recipient}', 'DeploymentController@deploySms')->name('campaigns.drops.send-sms');
         Route::get('/drop/{drop}/edit', 'DeploymentController@updateForm')->name('campaigns.drops.edit');
         Route::get('/responses', 'ResponseController@getCampaignResponses')->name('campaigns.responses.index');
         Route::get('/responses/export-responders', 'ResponseController@getAllResponders');

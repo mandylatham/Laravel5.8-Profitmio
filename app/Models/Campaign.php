@@ -47,7 +47,12 @@ class Campaign extends Model
 
     protected static $logAttributes = ['id', 'agency_id', 'dealership_id', 'name'];
 
-    protected $appends = ['is_expired'];
+    protected $appends = [
+        'is_expired',
+        'text_responses_count',
+        'phone_responses_count',
+        'email_responses_count'
+    ];
 
     protected $casts = [
         'sms_on_callback_number' => 'json',
@@ -193,7 +198,7 @@ class Campaign extends Model
 
     public function phones()
     {
-        return $this->hasMany(PhoneNumber::class, 'campaign_id', 'campaign_id');
+        return $this->hasMany(PhoneNumber::class);
     }
 
     public function responses()
@@ -246,17 +251,17 @@ class Campaign extends Model
         return $query;
     }
 
-    public function email_responses()
+    public function emailResponses()
     {
         return $this->hasMany(Response::class, 'campaign_id', 'id')->where('responses.type', 'email');
     }
 
-    public function phone_responses()
+    public function phoneResponses()
     {
         return $this->hasMany(Response::class, 'campaign_id', 'id')->where('responses.type', 'phone');
     }
 
-    public function text_responses()
+    public function textResponses()
     {
         return $this->hasMany(Response::class, 'campaign_id', 'id')->where('responses.type', 'text');
     }
@@ -284,6 +289,21 @@ class Campaign extends Model
     public function getIsExpiredAttribute()
     {
         return $this->expires_at && $this->expires_at <= Carbon::now('UTC');
+    }
+
+    public function getTextResponsesCountAttribute()
+    {
+        return $this->textResponses()->count();
+    }
+
+    public function getEmailResponsesCountAttribute()
+    {
+        return $this->emailResponses()->count();
+    }
+
+    public function getPhoneResponsesCountAttribute()
+    {
+        return $this->phoneResponses()->count() ;
     }
 
     public function getIsNotExpiredAttribute()

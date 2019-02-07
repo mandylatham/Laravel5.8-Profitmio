@@ -226,7 +226,7 @@
                     this.fileForm.errors.add('pm_list_name', 'This field is required.');
                 }
                 return valid;
-            },
+            }
         }
     };
 </script>

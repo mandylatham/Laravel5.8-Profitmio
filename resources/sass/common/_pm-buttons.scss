@@ -64,6 +64,11 @@
         @include button-variant($brand-black, $brand-black);
         color: #fff !important;
     }
+
+    &-green {
+        @include button-variant($green, $green);
+        color: #fff !important;
+    }
 }
 
 .pm-btn-link {

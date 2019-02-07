@@ -111,3 +111,7 @@ label {
     font-size: 0.7rem;
     text-align: center;
 }
+
+
+[v-cloak] { display: none; }
+[v-cloak]::before { content: "loading..."; }

@@ -872,15 +872,15 @@ class RecipientController extends Controller
             $validator = Validator::make($request->all(), [
                 'uploaded_file_name'     => 'required',
                 'uploaded_file_headers'  => 'required',
-                'uploaded_file_fieldmap' => 'required|JSON',
+                'uploaded_file_fieldmap' => 'required',
                 'pm_list_name'           => 'required',
                 'pm_list_type'           => 'required|in:all_conquest,all_database,use_recipient_field',
             ]);
 
             if ($validator->fails()) {
-                return redirect()->back()
-                    ->withErrors($validator)
-                    ->withInput();
+                return response()->json([
+                    'errors' => $validator->errors()
+                ], 422);
             }
             Log::debug('New List passed initial validation');
 
@@ -898,7 +898,7 @@ class RecipientController extends Controller
             ]);
 
             if ($validator->fails()) {
-                return response()->json(['errors' => $validator->errors()]);
+                return response()->json(['errors' => $validator->errors()], 422);
             }
 
             // Validate for the conquest vs database setting
@@ -908,7 +908,7 @@ class RecipientController extends Controller
                 ]);
 
                 if ($validator->fails()) {
-                    return response()->json(['errors' => $validator->errors()]);
+                    return response()->json(['errors' => $validator->errors()], 422);
                 }
             }
             Log::debug("New List passed list_type validation");

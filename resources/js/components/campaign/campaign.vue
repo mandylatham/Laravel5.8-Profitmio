@@ -10,14 +10,21 @@
                     <p>{{ campaign.name }}</p>
                 </div>
             </div>
-            <div class="campaign-postcard">
+            <div class="campaign-postcard" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">
                 <div class="campaign-postcard--image">
-                    <img src="" alt="">
+                    <pie-chart height="70px" :colors="['#572E8D', '#e7f386', '#67A7CC']" :legend="false" :data="pieChartDataSet"></pie-chart>
                 </div>
-                <div class="campaign-postcard--value">
-                    <strong>9x12 PostCard</strong>
-                    <p>Car & Buyer BB</p>
-                    <p>Mailer - TXT for Value</p>
+                <div class="campaign-postcard--value campaign-chart--labels">
+                    <span class="sms">{{ campaign.text_responses_count }} sms</span>
+                    <span class="call">{{ campaign.phone_responses_count }} call</span>
+                    <span class="email">{{ campaign.email_responses_count }} email</span>
+                </div>
+            </div>
+            <div class="campaign-postcard" v-if="campaign.text_responses_count === 0 && campaign.phone_responses_count === 0 && campaign.email_responses_count === 0">
+                <div class="campaign-chart--labels">
+                    <span class="sms"> 0 sms</span>
+                    <span class="call">0 call</span>
+                    <span class="email">0 email</span>
                 </div>
             </div>
         </div>
@@ -52,30 +59,48 @@
                 <p>{{ campaign.name }}</p>
             </div>
         </div>
-        <div class="col-4 col-md-2 campaign-postcard--image">
+        <div class="col-4 col-md-2 campaign-postcard--image" v-if="!isAdmin">
             <img src="" alt="">
+        </div>
+        <div class="col-4 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
+            <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
         </div>
         <div class="col-4 col-md-2 campaign-date">
             <span class="label">End Date:</span>
             <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>
     </div>
         <div class="col-4 col-md-3 campaign-chart">
-            <div class="row no-gutters">
+            <div class="row no-gutters" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">
                 <div class="col-6 campaign-chart--charts">
                     <pie-chart height="70px" :colors="['#572E8D', '#e7f386', '#67A7CC']" :legend="false" :data="pieChartDataSet"></pie-chart>
                 </div>
                 <div class="col-6 campaign-chart--labels">
-                    <span class="sms">sms</span>
-                    <span class="call">call</span>
-                    <span class="email">email</span>
+
+                    <span class="sms">{{ campaign.text_responses_count }} sms</span>
+                    <span class="call">{{ campaign.phone_responses_count }} call</span>
+                    <span class="email">{{ campaign.email_responses_count }} email</span>
+                </div>
+            </div>
+            <div class="row no-gutters pl-3" v-if="campaign.text_responses_count === 0 && campaign.phone_responses_count === 0 && campaign.email_responses_count === 0">
+                <div class="col-12 campaign-chart--labels">
+                    <span class="sms">0 sms</span>
+                    <span class="call">0 call</span>
+                    <span class="email">0 email</span>
                 </div>
             </div>
         </div>
     </div>
 </template>
 <script>
+    import Vue from 'vue';
     import moment from 'moment';
     import {generateRoute} from './../../common/helpers'
+
+    // Chart Library
+    import VueChartkick from 'vue-chartkick'
+    import Chart from 'chart.js'
+    Vue.use(VueChartkick, {adapter: Chart});
 
     export default {
         components: {
@@ -92,6 +117,7 @@
         },
         data() {
             return {
+                isAdmin: false,
                 campaignClosed: true,
                 campaignStatsUrl: '',
                 campaignDropIndex: '',
@@ -117,6 +143,7 @@
             generateRoute
         },
         mounted: function () {
+            this.isAdmin = window.isAdmin;
             this.campaignStatsUrl = window.campaignStatsUrl;
             this.campaignDropIndex = window.campaignDropIndex;
             this.campaignRecipientIndex = window.campaignRecipientIndex;

@@ -23,6 +23,7 @@ window['app'] = new Vue({
     data: {
         drops: [],
         dropEditUrl: '',
+        dropRunSmsUrl: '',
         loading: false,
         searchDropForm: new Form({
             q: null,
@@ -83,6 +84,7 @@ window['app'] = new Vue({
     },
     mounted() {
         this.fetchData();
+        this.dropRunSmsUrl = window.dropRunSmsUrl;
         this.dropEditUrl = window.dropEditUrl;
     }
 });
