@@ -33,61 +33,6 @@
     <script src="{{ asset('js/user-detail.js') }}"></script>
 @endsection
 
-{{--@section('sidebar-toggle-content')--}}
-    {{--<i class="fas fa-chevron-circle-left mr-2"></i>User Details--}}
-{{--@endsection--}}
-
-@section('sidebar-content')
-    <div id="sidebar-content" v-cloak>
-        <div class="avatar">
-            <div class="avatar--image" :style="{backgroundImage: 'url(\'' + user.image_url + '\')'}" v-if="showAvatarImage">
-                <button class="avatar--edit" v-if="enableInputs" @click="showAvatarImage = false">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-            </div>
-            <vue-dropzone id="profile-image" :options="dropzoneOptions" :useCustomSlot="true" @vdropzone-success="profileImageUploaded" @vdropzone-error="profileImageError" v-if="!showAvatarImage">
-                <div class="dropzone-upload-profile-image">
-                    <h3 class="dropzone-title">Drag and drop to upload content!</h3>
-                    <div class="dropzone-subtitle">...or click to select a file from your computer</div>
-                </div>
-            </vue-dropzone>
-        </div>
-        <button class="btn pm-btn pm-btn-blue edit-user" v-if="!enableInputs && (loggedUserRole === 'site_admin' || (loggedUserRole === 'admin' && user.role !== 'site_admin'))" @click="enableInputs = !enableInputs">
-            <i class="fas fa-pencil-alt"></i>
-        </button>
-        <form class="clearfix form" method="post" action="{{ route('user.update', ['user' => $user->id]) }}" @submit.prevent="saveUser">
-            <div class="form-group">
-                <label for="first_name">First Name</label>
-                <input type="text" class="form-control empty" name="first_name" placeholder="First Name" v-model="editUserForm.first_name" required v-if="enableInputs">
-                <p class="form-control panel-data" v-if="!enableInputs">@{{ user.first_name }}</p>
-            </div>
-            <div class="form-group">
-                <label for="last_name">Last Name</label>
-                <input type="text" class="form-control" name="last_name" placeholder="Last Name" v-model="editUserForm.last_name" required v-if="enableInputs">
-                <p class="form-control panel-data" v-if="!enableInputs">@{{ user.last_name }}</p>
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" name="email" placeholder="Email" v-model="editUserForm.email" required v-if="enableInputs">
-                <p class="form-control panel-data" v-if="!enableInputs">@{{ user.email }}</p>
-            </div>
-            <div class="form-group">
-                <label for="phone_number">Phone Number</label>
-                <input type="text" class="form-control" name="phone_number" placeholder="Phone Number" v-model="editUserForm.phone_number" v-if="enableInputs">
-                <p class="form-control panel-data" v-if="!enableInputs">@{{ user.phone_number }}</p>
-            </div>
-            <button class="btn pm-btn pm-btn-purple float-left mt-4" type="submit" :disabled="loading" v-if="enableInputs">
-                <span v-if="!loading"><i class="fas fa-save mr-2"></i>Save</span>
-                <div class="loader-spinner" v-if="loading">
-                    <spinner-icon></spinner-icon>
-                </div>
-            </button>
-            {{--<button class="btn pm-btn pm-btn-blue float-right mt-4" type="button">Change Password</button>--}}
-        </form>
-        <button v-if="loggedUserRole === 'site_admin'" class="btn pm-btn pm-btn-danger delete-user" type="button" @click="deleteUser"><i class="fas fa-trash-alt"></i></button>
-    </div>
-@endsection
-
 @section('main-content')
     <div class="container" id="user-view" v-cloak>
         <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ route('user.index') }}">
