@@ -1,5 +1,5 @@
 @extends('layouts.base', [
-    'hasSidebar' => true
+    'hasSidebar' => false
 ])
 
 @section('head-styles')
@@ -33,9 +33,9 @@
     <script src="{{ asset('js/user-detail.js') }}"></script>
 @endsection
 
-@section('sidebar-toggle-content')
-    <i class="fas fa-chevron-circle-left mr-2"></i>User Details
-@endsection
+{{--@section('sidebar-toggle-content')--}}
+    {{--<i class="fas fa-chevron-circle-left mr-2"></i>User Details--}}
+{{--@endsection--}}
 
 @section('sidebar-content')
     <div id="sidebar-content" v-cloak>
@@ -68,7 +68,7 @@
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="text" class="form-control" name="email" placeholder="Email" v-model="editUserForm.email" required v-if="enableInputs">
+                <input type="email" class="form-control" name="email" placeholder="Email" v-model="editUserForm.email" required v-if="enableInputs">
                 <p class="form-control panel-data" v-if="!enableInputs">@{{ user.email }}</p>
             </div>
             <div class="form-group">
@@ -93,6 +93,63 @@
         <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ route('user.index') }}">
             <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
         </a>
+        <div class="card profile mb-5">
+            <div class="card-body pb-5">
+                <div class="row no-gutters">
+                    <div class="col-12 col-md-4 col-lg-3 col-xl-2 company-image-container">
+                        <img class="rounded rounded-circle img-thumbnail" src="{{ $user->image_url }}" width="150px" height="150px">
+                    </div>
+                    <div class="col-12 col-md-8 col-lg-9 col-xl-10">
+                        <div class="d-flex justify-content-end">
+                            <button class="btn pm-btn pm-btn-outline-purple mb-3" @click="showUserFormControls = true" v-if="!showUserFormControls">
+                                <i class="fas fa-pencil-alt mr-2"></i>
+                                Edit
+                            </button>
+                        </div>
+                        <form @submit.prevent="saveUser">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="first_name" class="form-label">First Name</label>
+                                        <p v-if="!showUserFormControls" class="editable form-control">@{{ originalUser.first_name }}</p>
+                                        <input name="first_name" tabindex="1" class="form-control" v-model="user.first_name" aria-label="First name" v-if="showUserFormControls">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">Email</label>
+                                        <p v-if="!showUserFormControls" class="editable form-control">@{{ originalUser.email }}</p>
+                                        <input name="email" tabindex="3" class="form-control" v-model="user.email" aria-label="Email" v-if="showUserFormControls">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="last_name" class="form-label">Last Name</label>
+                                        <p v-if="!showUserFormControls" class="editable form-control">@{{ originalUser.last_name }}</p>
+                                        <input name="last_name" tabindex="2" class="form-control" v-model="user.last_name" aria-label="Last name" v-if="showUserFormControls">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Phone</label>
+                                        <p v-if="!showUserFormControls" class="editable company-address form-control">@{{ originalUser.phone_number }}</p>
+                                        <input name="phone" tabindex="4" class="form-control" v-model="user.phone_number" aria-label="Company Phone" v-if="showUserFormControls">
+                                    </div>
+                                </div>
+                                <div class="col-12 form-controls">
+                                    <div class="form-group" v-if="showUserFormControls">
+                                        <button class="btn btn-sm btn-outline-primary mr-1" type="submit">
+                                            Save
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" @click="cancelUser">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                </div>
+            </div>
+        </div>
         <b-card no-body>
             <b-tabs card>
                 <b-tab title="CAMPAIGN" active>
