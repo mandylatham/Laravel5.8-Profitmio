@@ -1,5 +1,5 @@
 @extends('layouts.base', [
-    'hasSidebar' => true
+    'hasSidebar' => false
 ])
 
 @section('head-styles')
@@ -33,66 +33,68 @@
     <script src="{{ asset('js/user-detail.js') }}"></script>
 @endsection
 
-@section('sidebar-toggle-content')
-    <i class="fas fa-chevron-circle-left mr-2"></i>User Details
-@endsection
-
-@section('sidebar-content')
-    <div id="sidebar-content" v-cloak>
-        <div class="avatar">
-            <div class="avatar--image" :style="{backgroundImage: 'url(\'' + user.image_url + '\')'}" v-if="showAvatarImage">
-                <button class="avatar--edit" v-if="enableInputs" @click="showAvatarImage = false">
-                    <i class="fas fa-pencil-alt"></i>
-                </button>
-            </div>
-            <vue-dropzone id="profile-image" :options="dropzoneOptions" :useCustomSlot="true" @vdropzone-success="profileImageUploaded" @vdropzone-error="profileImageError" v-if="!showAvatarImage">
-                <div class="dropzone-upload-profile-image">
-                    <h3 class="dropzone-title">Drag and drop to upload content!</h3>
-                    <div class="dropzone-subtitle">...or click to select a file from your computer</div>
-                </div>
-            </vue-dropzone>
-        </div>
-        <button class="btn pm-btn pm-btn-blue edit-user" v-if="!enableInputs && (loggedUserRole === 'site_admin' || (loggedUserRole === 'admin' && user.role !== 'site_admin'))" @click="enableInputs = !enableInputs">
-            <i class="fas fa-pencil-alt"></i>
-        </button>
-        <form class="clearfix form" method="post" action="{{ route('user.update', ['user' => $user->id]) }}" @submit.prevent="saveUser">
-            <div class="form-group">
-                <label for="first_name">First Name</label>
-                <input type="text" class="form-control empty" name="first_name" placeholder="First Name" v-model="editUserForm.first_name" required v-if="enableInputs">
-                <p class="form-control panel-data" v-if="!enableInputs">@{{ user.first_name }}</p>
-            </div>
-            <div class="form-group">
-                <label for="last_name">Last Name</label>
-                <input type="text" class="form-control" name="last_name" placeholder="Last Name" v-model="editUserForm.last_name" required v-if="enableInputs">
-                <p class="form-control panel-data" v-if="!enableInputs">@{{ user.last_name }}</p>
-            </div>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="text" class="form-control" name="email" placeholder="Email" v-model="editUserForm.email" required v-if="enableInputs">
-                <p class="form-control panel-data" v-if="!enableInputs">@{{ user.email }}</p>
-            </div>
-            <div class="form-group">
-                <label for="phone_number">Phone Number</label>
-                <input type="text" class="form-control" name="phone_number" placeholder="Phone Number" v-model="editUserForm.phone_number" v-if="enableInputs">
-                <p class="form-control panel-data" v-if="!enableInputs">@{{ user.phone_number }}</p>
-            </div>
-            <button class="btn pm-btn pm-btn-purple float-left mt-4" type="submit" :disabled="loading" v-if="enableInputs">
-                <span v-if="!loading"><i class="fas fa-save mr-2"></i>Save</span>
-                <div class="loader-spinner" v-if="loading">
-                    <spinner-icon></spinner-icon>
-                </div>
-            </button>
-            {{--<button class="btn pm-btn pm-btn-blue float-right mt-4" type="button">Change Password</button>--}}
-        </form>
-        <button v-if="loggedUserRole === 'site_admin'" class="btn pm-btn pm-btn-danger delete-user" type="button" @click="deleteUser"><i class="fas fa-trash-alt"></i></button>
-    </div>
-@endsection
-
 @section('main-content')
     <div class="container" id="user-view" v-cloak>
         <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ route('user.index') }}">
             <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
         </a>
+        <div class="card profile mb-5">
+            <div class="card-body pb-5">
+                <div class="row no-gutters">
+                    <div class="col-12 col-md-4 col-lg-3 col-xl-2 company-image-container">
+                        <img class="rounded rounded-circle img-thumbnail" src="{{ $user->image_url }}" width="150px" height="150px">
+                    </div>
+                    <div class="col-12 col-md-8 col-lg-9 col-xl-10">
+                        <div class="d-flex justify-content-end">
+                            <button class="btn pm-btn pm-btn-outline-purple mb-3" @click="showUserFormControls = true" v-if="!showUserFormControls">
+                                <i class="fas fa-pencil-alt mr-2"></i>
+                                Edit
+                            </button>
+                        </div>
+                        <form @submit.prevent="saveUser">
+                            <div class="row">
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="first_name" class="form-label">First Name</label>
+                                        <p v-if="!showUserFormControls" class="editable form-control">@{{ originalUser.first_name }}</p>
+                                        <input name="first_name" tabindex="1" class="form-control" v-model="user.first_name" aria-label="First name" v-if="showUserFormControls">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">Email</label>
+                                        <p v-if="!showUserFormControls" class="editable form-control">@{{ originalUser.email }}</p>
+                                        <input name="email" tabindex="3" class="form-control" v-model="user.email" aria-label="Email" v-if="showUserFormControls">
+                                    </div>
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <div class="form-group">
+                                        <label for="last_name" class="form-label">Last Name</label>
+                                        <p v-if="!showUserFormControls" class="editable form-control">@{{ originalUser.last_name }}</p>
+                                        <input name="last_name" tabindex="2" class="form-control" v-model="user.last_name" aria-label="Last name" v-if="showUserFormControls">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">Phone</label>
+                                        <p v-if="!showUserFormControls" class="editable company-address form-control">@{{ originalUser.phone_number }}</p>
+                                        <input name="phone" tabindex="4" class="form-control" v-model="user.phone_number" aria-label="Company Phone" v-if="showUserFormControls">
+                                    </div>
+                                </div>
+                                <div class="col-12 form-controls">
+                                    <div class="form-group" v-if="showUserFormControls">
+                                        <button class="btn btn-sm btn-outline-primary mr-1" type="submit">
+                                            Save
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary" type="button" @click="cancelUser">
+                                            Cancel
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="row">
+                </div>
+            </div>
+        </div>
         <b-card no-body>
             <b-tabs card>
                 <b-tab title="CAMPAIGN" active>

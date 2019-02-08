@@ -33,6 +33,7 @@
             }
         }
     }
+
     .card-header {
         padding: 0;
         background-color: transparent;
@@ -43,9 +44,45 @@
             border: none;
         }
     }
+
+    .editable {
+        padding: 0 8px;
+        margin-top: 0;
+        min-height: 1.5rem;
+    }
+
+    .rounded-circle {
+        border-radius: 50% !important;
+    }
+
+    .form-controls {
+        text-align: right;
+    }
+
+    .form-label {
+        color: $brand-purple;
+        font-size: .6rem;
+        margin-bottom: -5px;
+    }
+
+    p.form-control {
+        background-color: transparent;
+        border: 0;
+        border-bottom: 1px solid #528;
+        height: auto;
+        padding-left: 0;
+        border-radius: 0;
+    }
+
     .card {
         background-color: transparent;
         border: none;
+
+        &.profile {
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
         .nav-tabs .nav-link {
             background-color: $brand-purple;
             color: #fff;
