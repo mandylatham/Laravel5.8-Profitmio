@@ -36,7 +36,7 @@
                 <div class="company-header--title">
                     <p>Company @{{ company.id }}</p>
                     <strong>@{{ company.name }}</strong>
-                    <p>@{{ company.type }}</p>
+                    <p class="mt-2 mb-0 text-capitalize">@{{ company.type }}</p>
                 </div>
             </div>
             <div class="col-4 col-md-2 company-postcard">

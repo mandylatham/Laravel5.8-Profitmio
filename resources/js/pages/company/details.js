@@ -127,9 +127,9 @@ window['app'] = new Vue({
                 .get(window.searchUserFormUrl)
                 .then(response => {
                     this.users = response.data;
-                    this.searchUserForm.page = response.current_page;
-                    this.searchUserForm.per_page = response.per_page;
-                    this.totalUsers = response.total;
+                    this.searchUserForm.page = response.meta.current_page;
+                    this.searchUserForm.per_page = response.meta.per_page;
+                    this.totalUsers = response.meta.total;
                     this.loadingUsers = false;
                 })
                 .catch(error => {
