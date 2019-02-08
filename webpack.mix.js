@@ -64,6 +64,9 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/campaigns/deployments/create.scss', 'public/css/deployments-create.css')
     .js('resources/js/pages/campaigns/deployments/edit.js', 'public/js/deployments-edit.js')
     .sass('resources/sass/campaigns/deployments/edit.scss', 'public/css/deployments-edit.css')
+    //Profile
+    .js('resources/js/pages/profile/profile.js', 'public/js/profile.js')
+    .sass('resources/sass/profile/profile.scss', 'public/css/profile.css')
     .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');
