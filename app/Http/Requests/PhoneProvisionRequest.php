@@ -27,7 +27,6 @@ class PhoneProvisionRequest extends FormRequest
             'phone_number' => 'required|size:12',
             'call_source_name' => 'required|string',
             'forward' => 'nullable|string',
-            'client_id' => 'required|numeric',
             'campaign_id' => 'required|numeric'
         ];
     }

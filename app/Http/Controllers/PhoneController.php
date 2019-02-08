@@ -45,9 +45,7 @@ class PhoneController extends Controller
     public function provision(PhoneProvisionRequest $request)
     {
         try {
-            $data = $request->only(['phone_number', 'client_id']);
-            $phoneNumber = $data['phone_number'];
-            $client_id = $data['client_id'];
+            $phoneNumber = $request->input(['phone_number']);
 
             if (! preg_match('/^[\+]?1[0-9]{10}$/', $phoneNumber)) {
                 throw new \Exception("Invalid phone number");
@@ -77,7 +75,6 @@ class PhoneController extends Controller
 
         $record = new PhoneNumber;
         $record->campaign_id = $request->campaign_id;
-        $record->client_id = $client_id;
         $record->phone_number = $phoneNumber;
         $record->call_source_name = $request->call_source_name;
         $record->forward = $request->forward;
@@ -95,37 +92,11 @@ class PhoneController extends Controller
      *
      * @return string
      */
-    public function fromCampaign(Request $request, Campaign $campaign)
+    public function forCampaign(Request $request, Campaign $campaign)
     {
         $campaign->load('phones');
-        $valid_filters = ['phone_number', 'forward'];
-        $filters = [];
 
-        foreach ($request->query as $name => $value) {
-            if (! empty($value) && in_array($name, $valid_filters)) {
-                $filter = [$name, '=', $value];
-                array_push($filters, $filter);
-            }
-        }
-
-        $phones = PhoneNumber::where('campaign_id', $campaign->id)
-            ->where($filters);
-
-        if ($request->query->has("sortField") && $request->query->get("sortField") != '') {
-            $phones = $phones->orderBy($request->query->get("sortField"), $request->query->get("sortOrder"));
-        }
-
-        $count = $phones->count();
-
-        if ($request->has("pageIndex") && $request->has("pageSize")) {
-            $toSkip = ($request->query("pageIndex") - 1) * $request->query("pageSize");
-
-            $phones = $phones->skip($toSkip)->take($request->query("pageSize"));
-
-            return json_encode(["itemsCount" => $count, "data" => $phones->get()]);
-        }
-
-        return $phones->get()->toJson();
+        return $campaign->phones;
     }
 
     /**

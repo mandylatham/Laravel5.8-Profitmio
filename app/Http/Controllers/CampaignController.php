@@ -113,8 +113,9 @@ class CampaignController extends Controller
 
     public function details(Campaign $campaign)
     {
+        $campaign->with('phones');
         return view('campaigns.details', [
-            'campaign' => $campaign->load('client', 'agency', 'schedules', 'phone_number')
+            'campaign' => $campaign
         ]);
     }
 
@@ -146,13 +147,10 @@ class CampaignController extends Controller
         if ($expires_at <= \Carbon\Carbon::now('UTC')) {
             $status = 'Expired';
         }
-        $campaign = new $this->campaign([
+        $campaign = Campaign::create([
             'name' => $request->input('name'),
             'status' => $status,
             'order_id' => $request->input('order'),
-            /**
-             * TODO: Get correct timezone (now user doesn't have a timezone, timezone is stored in company_user table)
-             */
             'starts_at' => $starts_at,
             'ends_at' => $ends_at,
             'agency_id' => $request->input('agency'),
@@ -167,19 +165,16 @@ class CampaignController extends Controller
             'service_dept_email' => $request->input('service_dept_email', []),
             'sms_on_callback' => (bool) $request->input('service_dept'),
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
-            'phone_number_id' => $request->input('phone_number_id'),
         ]);
 
         if (! $campaign->expires_at) {
-            $campaign->expires_at = $campaign->ends_at->addMonth();
+            $campaign->update(['expires_at' => $campaign->ends_at->addMonth()]);
         }
 
-        $campaign->save();
-
-        if ($campaign->phone) {
-            $phone = $campaign->phone;
-            $phone->campaign_id = $campaign->id;
-            $phone->save();
+        if ($request->has('phone_number_ids')) {
+            foreach ((array)$request->input('phone_number_ids') as $phone_number_id) {
+                PhoneNumber::find($phone_number_id)->update(['campaign_id' => $campaign->id]);
+            }
         }
 
         return response()->json(['message' => 'Resource created']);
@@ -190,7 +185,6 @@ class CampaignController extends Controller
     {
         $dealerships = Company::getDealerships();
         $agencies = Company::getAgencies();
-        $campaign->load("phone");
         $viewData = [
             'campaign' => $campaign,
             'dealerships' => $dealerships,
@@ -242,12 +236,7 @@ class CampaignController extends Controller
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'client_passthrough' => (bool) $request->input('client_passthrough'),
             'client_passthrough_email' => $request->input('client_passthrough_email', []),
-            'phone_number_id' => $request->input('phone_number_id'),
         ]);
-
-        if ($request->has('forward')) {
-            $campaign->phone->forward = $request->forward;
-        }
 
         $campaign->save();
 

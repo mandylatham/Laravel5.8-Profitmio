@@ -14,6 +14,8 @@
         window.saveCampaignUrl = @json(route('campaigns.update', ['campaign' => $campaign->id]));
         window.campaignStatsUrl = @json(route('campaigns.stats', ['campaign' => $campaign->id]));
         window.searchPhoneUrl = @json(route('phone.search'));
+        window.provisionPhoneUrl = @json(route('phone.provision'));
+        window.getCampaignPhonesUrl = @json(route('phone.list', ['campaign' => $campaign->id]));
     </script>
     <script src="{{ asset('js/campaigns-edit.js') }}"></script>
 @endsection
@@ -106,12 +108,19 @@
                                     <th>Call Source</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr v-if="phoneNumbers.length === 0">
+                                <tbody v-if="campaignPhones.length === 0">
+                                <tr>
                                     <td colspan="3">
                                         <div class="text-center text-danger font-weight-bold mt-4 mb-2">No Phone Numbers</div>
                                     </td>
                                 </tr>
+                                </tbody>
+                                <tbody v-else>
+                                    <tr v-for="phone in campaignPhones">
+                                        <td>@{{ phone.phone_number }}</td>
+                                        <td>@{{ phone.forward }}</td>
+                                        <td>@{{ phone.call_source_name }}</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </b-tab>
@@ -397,25 +406,24 @@
                 <div class="card-body">
                     <h5>Available Phone Numbers</h5>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="phone_number">Phone Number</label>
-                                <v-select name="phone_number" :options="availablePhoneNumbers" v-model="purchasePhoneNumberForm.phone_number" class="filter--v-select" @input="clearError(purchasePhoneNumberForm, 'phone_number')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('phone_number')}"></v-select>
+                                <v-select name="phone_number" :options="availablePhoneNumbers" index="value" v-model="purchasePhoneNumberForm.phone_number" class="filter--v-select" @input="clearError(purchasePhoneNumberForm, 'phone_number')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('phone_number')}"></v-select>
                                 <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'phone_number'"></input-errors>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="forward">Forward Number</label>
-                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward" @input="clearError(purchasePhoneNumberForm, 'forward')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('forward')}"></v-select>
+                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward"></v-select>
                                 <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'forward'"></input-errors>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="call_source">Call Source</label>
-                                <input type="text" class="form-control" name="call_source" v-model="purchasePhoneNumberForm.call_source" @input="clearError(purchasePhoneNumberForm, 'call_source')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('call_source')}"></v-select>
-                                <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'call_source'"></input-errors>
+                                <v-select name="call_source" :options="availableCallSources" index="name" v-model="purchasePhoneNumberForm.call_source_name" class="filter--v-select"></v-select>
                             </div>
                         </div>
                         <div class="col-12">

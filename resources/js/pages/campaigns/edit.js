@@ -2,6 +2,7 @@ import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
 import VueFormWizard from 'vue-form-wizard';
+import {filter} from 'lodash';
 import moment from 'moment';
 import Modal from 'bootstrap-vue';
 Vue.use(Modal);
@@ -17,16 +18,23 @@ window['app'] = new Vue({
     data: {
         addCrmExportEmail: '',
         adfCrmExportEmail: '',
+        agencies: [],
         agencySelected: window.agencySelected,
+        availableCallSources: [],
         availablePhoneNumbers: [],
         clientPassThroughEmail: '',
-        dealershipSelected: window.dealershipSelected,
-        agencies: [],
         datePickInputClasses: {
             class: 'form-control'
         },
         dealerships: [],
-        loading: false,
+        dealershipSelected: window.dealershipSelected,
+        callSources: [
+            {name: 'email', label: 'Email'},
+            {name: 'mailer', label: 'Mailer'},
+            {name: 'sms', label: 'SMS'},
+            {name: 'text_in', label: 'Text-In'},
+        ],
+        campaign: window.campaign,
         campaignForm: new Form({
             agency: null,
             adf_crm_export: window.campaign.adf_crm_export,
@@ -47,22 +55,28 @@ window['app'] = new Vue({
             start: moment.utc(window.campaign.starts_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD'),
             status: window.campaign.status
         }),
+        campaignPhones: [],
+        getCampaignPhonesForm: new Form(),
+        getCampaignPhonesUrl: window.getCampaignPhonesUrl,
         leadAlertEmail: '',
+        loading: false,
         loadingPhoneModal: false,
         loadingPurchaseNumber: false,
         phoneNumbers: [],
+        provisionPhoneUrl: window.provisionPhoneUrl,
         purchasePhoneNumberForm: new Form({
-            phone_number: null,
+            call_source_name: '',
+            campaign_id: window.campaign.id,
             forward: '',
-            call_source: ''
+            phone_number: null,
         }),
-        serviceDeptEmail: '',
         searchPhoneNumberForm: new Form({
             country: 'US',
             inPostalCode: '',
             contains: '',
             areaCode: '',
         }),
+        serviceDeptEmail: '',
         showAvailablePhoneNumbers: false,
         smsOnCallbackNumber: '',
         validation: [{
@@ -73,6 +87,13 @@ window['app'] = new Vue({
     mounted() {
         this.agencies = window.agencies;
         this.dealerships = window.dealerships;
+        this.getCampaignPhones();
+        _.map(this.callSources, (source, index) => {
+            let campaign_sources = _.map(this.campaignPhones, _.pick('call_source_name'));
+            if (campaign_sources.indexOf(source.name) >= 0) {
+                this.availableCallSources.push(source);
+            }
+        });
     },
     methods: {
         addFieldToAdditionalFeature: function (field, list) {
@@ -87,26 +108,29 @@ window['app'] = new Vue({
         closeModal: function (modalRef) {
             this.$refs[modalRef].hide();
         },
+        getCampaignPhones: function () {
+            this.getCampaignPhonesForm.get(window.getCampaignPhonesUrl)
+                .then((response) => {
+                    this.campaignPhones = response;
+                })
+                .catch((error) => {
+                    this.$toastr.error("Unable to fetch campaign phones: " + error);
+                });
+        },
         purchasePhoneNumber: function () {
             let invalid = false;
             this.purchasePhoneNumberForm.errors.clear();
-            ['phone_number', 'forward', 'call_source'].forEach(field => {
-                if (!this.purchasePhoneNumberForm[field]) {
-                    this.purchasePhoneNumberForm.errors.add(field, 'This field is required.');
-                    invalid = true;
-                }
-            });
-            if (invalid) return;
             this.loadingPurchaseNumber = true;
             this.purchasePhoneNumberForm
                 .post(window.provisionPhoneUrl)
-                .then(() => {
+                .then((request) => {
                     this.loadingPurchaseNumber = false;
-                    this.phoneNumbers.push(this.purchasePhoneNumberForm.data());
+                    delete this.availableCallSources[this.purchasePhoneNumberForm.call_source_name];
+                    this.getCampaignPhones();
                     this.closeModal('addPhoneModalRef');
-                }, () => {
+                }, (error) => {
                     this.loadingPurchaseNumber = false;
-                    this.$toastr.error('Unable to process your request.');
+                    this.$toastr.error('Unable to process your request: ' + error);
                 })
         },
         removeAdditionalFeature: function (index, list) {
@@ -150,13 +174,27 @@ window['app'] = new Vue({
             this.searchPhoneNumberForm
                 .post(window.searchPhoneUrl)
                 .then(response => {
-                    this.availablePhoneNumbers = response.numbers;
-                    this.loadingPhoneModal = false;
-                }, () => {
-                    this.$toastr.error('Unable to get phone numbers.');
+                    console.log(response);
+                    let modifiedNumbers = this.convertPhoneNumbersToOptions(response.numbers);
+                    this.availablePhoneNumbers = modifiedNumbers;
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
+                }, (error) => {
+                    this.$toastr.error('Unable to get phone numbers.');
+                    this.showAvailablePhoneNumbers = false;
+                    this.loadingPhoneModal = false;
                 });
+        },
+        convertPhoneNumbersToOptions: function (numbers) {
+            numbers.forEach((number) => {
+                number.label = number.phone + ' - ' + number.location;
+                number.value = number.phoneNumber;
+                delete number.location;
+                delete number.phone;
+                delete number.phoneNumber;
+                delete number.zip;
+            });
+            return numbers;
         },
         validateAccountsTab: function () {
             let valid = true;
