@@ -33,14 +33,6 @@
                         </v-select>
                     </div>
                     <div class="form-group">
-                        <label for="first_name">First Name</label>
-                        <input type="text" class="form-control" required v-model="userForm.first_name">
-                    </div>
-                    <div class="form-group">
-                        <label for="last_name">Last Name</label>
-                        <input type="text" class="form-control" required v-model="userForm.last_name">
-                    </div>
-                    <div class="form-group">
                         <label for="email">Email</label>
                         <input type="text" class="form-control" required v-model="userForm.email">
                     </div>
