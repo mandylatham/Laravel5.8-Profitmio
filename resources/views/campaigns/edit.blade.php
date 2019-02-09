@@ -16,6 +16,7 @@
         window.searchPhoneUrl = @json(route('phone.search'));
         window.provisionPhoneUrl = @json(route('phone.provision'));
         window.getCampaignPhonesUrl = @json(route('phone.list', ['campaign' => $campaign->id]));
+        window.savePhoneNumberUrl = @json(route('phone.store', ['campaign' => $campaign->id, 'phone' => ':phone_number_id']));
     </script>
     <script src="{{ asset('js/campaigns-edit.js') }}"></script>
 @endsection
@@ -100,17 +101,18 @@
                         <b-tab title="PHONE NUMBERS">
                             <h4 class="mt-4 mb-3"><button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Add Phone Number</button>
                             </h4>
-                            <table class="table table-sm table-bordered">
+                            <table class="table table-sm">
                                 <thead>
                                 <tr>
                                     <th>Number</th>
                                     <th>Forward</th>
                                     <th>Call Source</th>
+                                    <th></th>
                                 </tr>
                                 </thead>
                                 <tbody v-if="campaignPhones.length === 0">
                                 <tr>
-                                    <td colspan="3">
+                                    <td colspan="4">
                                         <div class="text-center text-danger font-weight-bold mt-4 mb-2">No Phone Numbers</div>
                                     </td>
                                 </tr>
@@ -118,8 +120,35 @@
                                 <tbody v-else>
                                     <tr v-for="phone in campaignPhones">
                                         <td>@{{ phone.phone_number }}</td>
-                                        <td>@{{ phone.forward }}</td>
-                                        <td>@{{ phone.call_source_name }}</td>
+                                        <td>
+                                            <p class="editable form-control" @click="showPhoneNumberForm[phone.id] = true">@{{ phone.forward }}</p>
+                                            <input type="text" class="form-control" v-model="editPhoneNumberForm[phone.id].forward" v-if="showPhoneNumberForm[phone.id]">
+                                            <div class="form-group" v-if="showPhoneNumberForm[phone.id]">
+                                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="savePhoneNumber(phone)">
+                                                    Save
+                                                </button>
+                                                <button id="cancel-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="savePhoneNumber(phone)">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <p class="editable form-control" @click="showPhoneNumberForm[phone.id] = true">@{{ getCallSourceName(phone.call_source_name) }}</p>
+                                            <input type="text" class="form-control" v-model="editPhoneNumberForm[phone.id].forward" v-if="showPhoneNumberForm[phone.id]">
+                                            <div class="form-group" v-if="showPhoneNumberForm[phone.id]">
+                                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="savePhoneNumber(phone)">
+                                                    Save
+                                                </button>
+                                                <button id="cancel-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="savePhoneNumber(phone)">
+                                                    Cancel
+                                                </button>
+                                            </div>
+                                        </td>
+                                        <td>
+                                            <button role="button" class="btn pm-btn btn-outline-purple" v-if="showPhoneNumberForm[phone.id]" @click="savePhoneNumber(phone)">
+                                                <i class="fa fa-edit-alt"></i>
+                                            </button>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

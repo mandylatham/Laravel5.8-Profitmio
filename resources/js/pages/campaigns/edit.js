@@ -5,6 +5,8 @@ import VueFormWizard from 'vue-form-wizard';
 import {filter} from 'lodash';
 import moment from 'moment';
 import Modal from 'bootstrap-vue';
+import { PackageIcon } from 'vue-feather-icons';
+import {generateRoute} from '../../common/helpers';
 Vue.use(Modal);
 Vue.use(VueFormWizard);
 
@@ -21,6 +23,7 @@ window['app'] = new Vue({
         agencies: [],
         agencySelected: window.agencySelected,
         availableCallSources: [],
+        availableEditCallSources: [],
         availablePhoneNumbers: [],
         clientPassThroughEmail: '',
         datePickInputClasses: {
@@ -56,6 +59,7 @@ window['app'] = new Vue({
             status: window.campaign.status
         }),
         campaignPhones: [],
+        editPhoneNumberForm: {},
         getCampaignPhonesForm: new Form(),
         getCampaignPhonesUrl: window.getCampaignPhonesUrl,
         leadAlertEmail: '',
@@ -78,6 +82,7 @@ window['app'] = new Vue({
         }),
         serviceDeptEmail: '',
         showAvailablePhoneNumbers: false,
+        showPhoneNumberForm: {},
         smsOnCallbackNumber: '',
         validation: [{
             classes: 'asdf',
@@ -88,14 +93,61 @@ window['app'] = new Vue({
         this.agencies = window.agencies;
         this.dealerships = window.dealerships;
         this.getCampaignPhones();
-        _.map(this.callSources, (source, index) => {
-            let campaign_sources = _.map(this.campaignPhones, _.pick('call_source_name'));
-            if (campaign_sources.indexOf(source.name) >= 0) {
-                this.availableCallSources.push(source);
-            }
-        });
     },
     methods: {
+        editPhoneNumber: function (value) {
+            console.log(value);
+            this.editPhoneNumberForm.reset();
+            this.editPhoneNumberForm.phone_number_id = value;
+            this.editPhoneNumberForm.forward = forward;
+            this.editPhoneNumberForm.call_source_name = call_source_name;
+        },
+        savePhoneNumber: function (phone) {
+            this.editPhoneNumberForm[phone.id].patch(generateRoute(window.savePhoneNumberUrl, {'phone_number_id': phone.id}))
+                .then((response) => {
+                    this.$toastr.success("Phone Updated");
+                })
+                .error((error) => {
+                    this.$toastr.error("Unable to update phone number");
+                });
+        },
+        setupPhoneNumberForms: function () {
+            console.log('test', this.campaignPhones.length);
+            if (this.campaignPhones.length > 0) {
+                console.log(this.campaignPhones);
+                for (var i=0; i < this.campaignPhones.length; i++) {
+                    let phone = this.campaignPhones[i];
+                    console.log(phone);
+                    this.showPhoneNumberForm[phone.id] = false;
+                    this.editPhoneNumberForm[phone.id] = new Form({
+                        phone_number_id: phone.id,
+                        forward: phone.forward,
+                        call_source_name: phone.call_source_name
+                    });
+                }
+            }
+        },
+        getCallSourceName: function (value) {
+            let displayValue = _.filter(this.callSources, {name: value});
+            if (displayValue.length == 1) {
+                return displayValue[0].label;
+            }
+            return '';
+        },
+        updateCallSources: function () {
+            this.availableCallSources = [];
+            let campaign_sources = _.map(this.campaignPhones, 'call_source_name');
+            if (campaign_sources.length == 0) {
+                this.availableCallSources = this.callSources;
+                return;
+            }
+
+            _.map(this.callSources, (source, index) => {
+                if (campaign_sources.indexOf(source.name) < 0) {
+                    this.availableCallSources.push(source);
+                }
+            });
+        },
         addFieldToAdditionalFeature: function (field, list) {
             if (!this[field]) return;
             list.push(this[field]);
@@ -112,6 +164,8 @@ window['app'] = new Vue({
             this.getCampaignPhonesForm.get(window.getCampaignPhonesUrl)
                 .then((response) => {
                     this.campaignPhones = response;
+                    this.updateCallSources();
+                    this.setupPhoneNumberForms();
                 })
                 .catch((error) => {
                     this.$toastr.error("Unable to fetch campaign phones: " + error);
@@ -126,6 +180,8 @@ window['app'] = new Vue({
                 .then((request) => {
                     this.loadingPurchaseNumber = false;
                     delete this.availableCallSources[this.purchasePhoneNumberForm.call_source_name];
+                    this.purchasePhoneNumberForm.reset();
+                    this.showAvailablePhoneNumbers = false;
                     this.getCampaignPhones();
                     this.closeModal('addPhoneModalRef');
                 }, (error) => {
