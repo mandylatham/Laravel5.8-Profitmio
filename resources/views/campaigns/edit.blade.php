@@ -126,14 +126,17 @@
                                         </td>
                                         <td>
                                             <p class="editable form-control" v-if="!showPhoneNumberForm[phone.id]" @click="enablePhoneNumberForm(phone)">@{{ getCallSourceName(phone.call_source_name) }}</p>
-                                            <input type="text" class="form-control" v-model="editPhoneNumberForm[phone.id].call_source_name" v-if="showPhoneNumberForm[phone.id]">
+                                            <v-select class="filter--v-select" index="name" v-model="editPhoneNumberForm[phone.id].call_source_name" :options="availableCallSourcesWithCurrent(phone.call_source_name)" v-if="showPhoneNumberForm[phone.id]"></v-select>
                                         </td>
                                         <td>
-                                            <button role="button" class="btn pm-btn btn-outline-purple" v-if="!showPhoneNumberForm[phone.id]" @click="editPhoneNumber(phone)">
+                                            <button role="button" class="btn pm-btn btn-outline-purple" v-if="false" @click="editPhoneNumber(phone)">
                                                 <i class="fa fa-edit"></i>
                                             </button>
-                                            <button role="button" class="btn pm-btn btn-purple" v-if="showPhoneNumberForm[phone.id]" @click="savePhoneNumber(phone)">
+                                            <button role="button" class="btn pm-btn pm-btn-purple" v-if="showPhoneNumberForm[phone.id]" @click="savePhoneNumber(phone)">
                                                 <i class="fa fa-save"></i>
+                                            </button>
+                                            <button role="button" class="btn pm-btn btn-outline-default" v-if="showPhoneNumberForm[phone.id]" @click="cancelPhoneNumber(phone)">
+                                                Cancel
                                             </button>
                                         </td>
                                     </tr>
@@ -432,7 +435,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="forward">Forward Number</label>
-                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward"></v-select>
+                                <input type="text" class="form-control" size="16" name="forward" v-model="purchasePhoneNumberForm.forward"></v-select>
                                 <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'forward'"></input-errors>
                             </div>
                         </div>

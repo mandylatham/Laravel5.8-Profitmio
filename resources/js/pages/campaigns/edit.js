@@ -95,6 +95,20 @@ window['app'] = new Vue({
         this.getCampaignPhones();
     },
     methods: {
+        availableCallSourcesWithCurrent: function (call_source_name) {
+            if (call_source_name === undefined) return;
+            let phoneSource = _.filter(this.callSources, {name: call_source_name});
+            if (phoneSource.length > 0) {
+                phoneSource = phoneSource[0];
+            }
+            let newSources = [];
+            for (var i=0; i < this.availableCallSources.length; i++) {
+                newSources.push(this.availableCallSources[i]);
+            }
+            newSources.push(phoneSource);
+            console.log(newSources);
+            return newSources;
+        },
         enablePhoneNumberForm: function (phone) {
             this.$set(this.showPhoneNumberForm, phone.id, true);
         },
@@ -107,11 +121,20 @@ window['app'] = new Vue({
         savePhoneNumber: function (phone) {
             this.editPhoneNumberForm[phone.id].patch(generateRoute(window.savePhoneNumberUrl, {'phone_number_id': phone.id}))
                 .then((response) => {
+                    Vue.set(this.showPhoneNumberForm, phone.id, false);
+                    this.getCampaignPhones();
                     this.$toastr.success("Phone Updated");
                 })
-                .error((error) => {
+                .catch((error) => {
                     this.$toastr.error("Unable to update phone number");
                 });
+        },
+        cancelPhoneNumber: function (phone) {
+            Vue.set(this.editPhoneNumberForm, phone.id, new Form({
+                forward: phone.forward,
+                call_source_name: phone.call_source_name,
+            }));
+            Vue.set(this.showPhoneNumberForm, phone.id, false);
         },
         setupPhoneNumberForms: function () {
             if (this.campaignPhones.length > 0) {

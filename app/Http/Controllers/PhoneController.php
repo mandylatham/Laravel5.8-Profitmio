@@ -110,15 +110,15 @@ class PhoneController extends Controller
         return $campaign->phones->toJson();
     }
 
-    public function store(Request $request, PhoneNumber $phone)
+    public function store(Request $request, Campaign $campaign, $phone)
     {
+        $phone = PhoneNumber::findOrFail($phone);
         $source = Str::lower($request->input('call_source_name'));
-        $source = in_array($source, ['mailer', 'email', 'sms']) ? $source : '';
+        $source = in_array($source, array_keys(PhoneNumber::$callSources)) ? $source : '';
         $phone->update([
             'forward' => $request->input('forward'),
             'call_source_name' => $source,
         ]);
-
         return $phone->fresh();
     }
 
