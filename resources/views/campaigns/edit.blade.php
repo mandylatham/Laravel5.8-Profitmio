@@ -105,6 +105,7 @@
                                     Add Phone Number
                                 </button>
                             </h4>
+                            <p class="alert alert-info" v-if="campaignPhones.length > 0">Click on a row to edit</p>
                             <table class="table table-sm">
                                 <thead>
                                 <tr>
@@ -123,7 +124,7 @@
                                 </tbody>
                                 <tbody v-else>
                                     <tr v-for="phone in campaignPhones">
-                                        <td><p class="form-control">@{{ phone.phone_number }}</p></td>
+                                        <td @click="enablePhoneNumberForm(phone)"><p class="form-control">@{{ phone.phone_number }}</p></td>
                                         <td>
                                             <p class="editable form-control" v-if="!showPhoneNumberForm[phone.id]" @click="enablePhoneNumberForm(phone)">@{{ phone.forward }}</p>
                                             <input type="text" class="form-control" v-model="editPhoneNumberForm[phone.id].forward" v-if="showPhoneNumberForm[phone.id]">
