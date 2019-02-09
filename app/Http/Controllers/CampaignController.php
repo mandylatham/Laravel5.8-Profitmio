@@ -6,6 +6,7 @@ use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\EmailLog;
 use App\Models\Recipient;
+use App\Models\PhoneNumber;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\NewCampaignRequest;

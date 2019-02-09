@@ -14,7 +14,7 @@ class PhoneSearchRequest extends FormRequest
      */
     public function authorize()
     {
-        return auth()->user()->isAdmin() || auth()->user()->isAgencyUser();
+        return auth()->user()->isAdmin();
     }
 
     /**

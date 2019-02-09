@@ -38,7 +38,7 @@ class PhoneController extends Controller
 
             return response()->json($data);
         } catch (\Exception $e) {
-            return response(["error" => "There was a problem in the phone number subsystem"], 503);
+            return response(["error" => "Unable to perform phone number operation"], 503);
         }
     }
 
@@ -73,15 +73,15 @@ class PhoneController extends Controller
             return;
         }
 
-        $record = new PhoneNumber;
-        $record->campaign_id = $request->campaign_id;
-        $record->phone_number = $phoneNumber;
-        $record->call_source_name = $request->call_source_name;
-        $record->forward = $request->forward;
-        $record->sid = $provision->sid;
-        $record->save();
+        $phone = PhoneNumber::create([
+            'campaign_id' => $request->campaign_id,
+            'phone_number' => $phoneNumber,
+            'call_source_name' => $request->call_source_name,
+            'forward' => $request->forward,
+            'sid' => $provision->sid,
+        ]);
 
-        return $record;
+        return $phone;
     }
 
     /**

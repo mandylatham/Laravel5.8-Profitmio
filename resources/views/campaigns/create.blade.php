@@ -84,7 +84,11 @@
                         </div>
                     </tab-content>
                     <tab-content title="Phone Numbers" icon="fas fa-phone fa-rotate-90">
-                        <h4 class="mt-4 mb-3"><button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Add Phone Number</button>
+                        <h4 class="mt-4 mb-3" v-if="availableCallSources.length > 0">
+                            <button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal>
+                                <i class="fas fa-plus mr-2"></i>
+                                Add Phone Number
+                            </button>
                         </h4>
                         <table class="table table-sm table-bordered">
                             <thead>
@@ -94,12 +98,19 @@
                                 <th>Call Source</th>
                             </tr>
                             </thead>
-                            <tbody>
-                            <tr v-if="phoneNumbers.length === 0">
+                            <tbody v-if="phoneNumbers.length === 0">
+                            <tr>
                                 <td colspan="3">
                                     <div class="text-center text-danger font-weight-bold mt-4 mb-2">No Phone Numbers</div>
                                 </td>
                             </tr>
+                            </tbody>
+                            <tbody v-else>
+                                <tr v-for="phone in phoneNumbers">
+                                    <td><p>@{{ phone.phone_number }}</p></td>
+                                    <td><p>@{{ phone.forward }}</p></td>
+                                    <td><p>@{{ getCallSourceName(phone.call_source_name) }}</p></td>
+                                </tr>
                             </tbody>
                         </table>
                     </tab-content>
@@ -347,26 +358,23 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <p-radio color="primary" name="crountry" v-model="searchPhoneNumberForm.country" value="US">US</p-radio>
-                                <p-radio color="primary" name="crountry" v-model="searchPhoneNumberForm.country" value="CA">CA</p-radio>
+                                <p-radio color="primary" name="country" v-model="searchPhoneNumberForm.country" value="US">US</p-radio>
+                                <p-radio color="primary" name="country" v-model="searchPhoneNumberForm.country" value="CA">CA</p-radio>
                             </div>
                         </div>
                         <div class="col-3">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="area_code" placeholder="Area Code" v-model="searchPhoneNumberForm.area_code" @change="clearError(searchPhoneNumberForm, 'area_code')" :class="{'is-invalid': searchPhoneNumberForm.errors.has('area_code')}">
-                                <input-errors :error-bag="searchPhoneNumberForm.errors" :field="'area_code'"></input-errors>
+                                <input type="text" class="form-control" name="area_code" placeholder="Area Code" v-model="searchPhoneNumberForm.areaCode" @change="clearError(searchPhoneNumberForm)" :class="{'is-invalid': searchPhoneNumberForm.errors.has('area_code')}">
                             </div>
                         </div>
                         <div class="col-5">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="postal_code" placeholder="Zip" v-model="searchPhoneNumberForm.postal_code" @change="clearError(searchPhoneNumberForm, 'postal_code')" :class="{'is-invalid': searchPhoneNumberForm.errors.has('postal_code')}">
-                                <input-errors :error-bag="searchPhoneNumberForm.errors" :field="'postal_code'"></input-errors>
+                                <input type="text" class="form-control" name="postal_code" placeholder="Zip" v-model="searchPhoneNumberForm.inPostalCode" @change="clearError(searchPhoneNumberForm)" :class="{'is-invalid': searchPhoneNumberForm.errors.has('postal_code')}">
                             </div>
                         </div>
                         <div class="col-4">
                             <div class="form-group">
-                                <input type="text" class="form-control" name="contains" placeholder="Contains ex. Cars..." v-model="searchPhoneNumberForm.contains" @change="clearError(searchPhoneNumberForm, 'contains')" :class="{'is-invalid': searchPhoneNumberForm.errors.has('contains')}">
-                                <input-errors :error-bag="searchPhoneNumberForm.errors" :field="'contains'"></input-errors>
+                                <input type="text" class="form-control" name="contains" placeholder="Contains ex. Cars..." v-model="searchPhoneNumberForm.contains" @change="clearError(searchPhoneNumberForm)" :class="{'is-invalid': searchPhoneNumberForm.errors.has('contains')}">
                             </div>
                         </div>
                         <div class="col-12">
@@ -380,31 +388,28 @@
             </div>
             <div class="card mt-3 text-center p-3" v-if="showAvailablePhoneNumbers && availablePhoneNumbers.length === 0">
                 <strong class="text-danger">Your search returned no results.</strong>
-                <div>Please try again.</div>
             </div>
             <div class="card mt-3" v-if="showAvailablePhoneNumbers && availablePhoneNumbers.length > 0">
                 <div class="card-body">
                     <h5>Available Phone Numbers</h5>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="phone_number">Phone Number</label>
-                                <v-select name="phone_number" :options="availablePhoneNumbers" v-model="purchasePhoneNumberForm.phone_number" class="filter--v-select" @input="clearError(purchasePhoneNumberForm, 'phone_number')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('phone_number')}"></v-select>
+                                <v-select name="phone_number" :options="availablePhoneNumbers" index="value" v-model="purchasePhoneNumberForm.phone_number" class="filter--v-select" @input="clearError(purchasePhoneNumberForm, 'phone_number')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('phone_number')}"></v-select>
                                 <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'phone_number'"></input-errors>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="forward">Forward Number</label>
-                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward" @input="clearError(purchasePhoneNumberForm, 'forward')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('forward')}"></v-select>
-                                <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'forward'"></input-errors>
+                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward"></v-select>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
-                                <label for="call_source">Call Source</label>
-                                <input type="text" class="form-control" name="call_source" v-model="purchasePhoneNumberForm.call_source" @input="clearError(purchasePhoneNumberForm, 'call_source')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('call_source')}"></v-select>
-                                <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'call_source'"></input-errors>
+                                <label for="call_source_name">Call Source</label>
+                                <v-select name="call_source_name" :options="availableCallSources" index="name" v-model="purchasePhoneNumberForm.call_source_name" class="filter--v-select"></v-select>
                             </div>
                         </div>
                         <div class="col-12">

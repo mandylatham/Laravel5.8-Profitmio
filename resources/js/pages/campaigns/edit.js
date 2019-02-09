@@ -251,7 +251,6 @@ window['app'] = new Vue({
             this.searchPhoneNumberForm
                 .post(window.searchPhoneUrl)
                 .then(response => {
-                    console.log(response);
                     let modifiedNumbers = this.convertPhoneNumbersToOptions(response.numbers);
                     this.availablePhoneNumbers = modifiedNumbers;
                     this.showAvailablePhoneNumbers = true;

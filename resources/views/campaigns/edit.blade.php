@@ -391,8 +391,8 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <p-radio color="primary" name="crountry" v-model="searchPhoneNumberForm.country" value="US">US</p-radio>
-                                <p-radio color="primary" name="crountry" v-model="searchPhoneNumberForm.country" value="CA">CA</p-radio>
+                                <p-radio color="primary" name="country" v-model="searchPhoneNumberForm.country" value="US">US</p-radio>
+                                <p-radio color="primary" name="country" v-model="searchPhoneNumberForm.country" value="CA">CA</p-radio>
                             </div>
                         </div>
                         <div class="col-3">
