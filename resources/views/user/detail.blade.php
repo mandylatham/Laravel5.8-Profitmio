@@ -23,6 +23,7 @@
         window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.campaignQ = @json($campaignQ);
+        window.isAdmin = @json(auth()->user()->isAdmin());
         @if (auth()->user()->isAdmin())
             window.userRole = 'site_admin';
         @else

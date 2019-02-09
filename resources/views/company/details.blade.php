@@ -8,6 +8,12 @@
 
 @section('body-script')
     <script>
+        window.campaignStatsUrl = "{{ route('campaigns.stats', ['campaign' => ':campaignId']) }}";
+        window.appointmentsUrl = "{{ route('appointment.for-calendar-display') }}";
+        window.campaignViewUrl = "{{ route('campaigns.view', ['campaign' => ':campaignId']) }}";
+        window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
+        window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
+        window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
         window.searchUserFormUrl = "{{ route('user.for-user-display') }}";
         window.userEditUrl = "{{ route('user.view', ['user' => ':userId']) }}";
@@ -19,6 +25,7 @@
         window.company = @json($company);
         window.indexUrl = "{{ route('company.index') }}";
         window.updateUrl = "{{ route('company.update', ['company' => $company->id]) }}";
+        window.isAdmin = @json(auth()->user()->isAdmin());
     </script>
     <script src="{{ asset('js/company-details.js') }}"></script>
 @endsection
@@ -139,7 +146,7 @@
                             @endif
                             <div class="row no-gutters mt-3">
                                 <div class="col-12">
-                                    <div class="loader-spinner" v-if="loadingCampaigns">
+                                    <div class="loader-spinner table-loader-spinner" v-if="loadingCampaigns">
                                         <spinner-icon></spinner-icon>
                                     </div>
                                     <div class="no-items-row" v-if="countActiveCampaigns === 0 && countInactiveCampaigns === 0">
@@ -167,7 +174,7 @@
                             </div>
                             <div class="row no-gutters mt-3">
                                 <div class="col-12">
-                                    <div class="loader-spinner" v-if="loadingUsers">
+                                    <div class="loader-spinner table-loader-spinner" v-if="loadingUsers">
                                         <spinner-icon></spinner-icon>
                                     </div>
                                     <div class="no-items-row" v-if="users.length === 0">
