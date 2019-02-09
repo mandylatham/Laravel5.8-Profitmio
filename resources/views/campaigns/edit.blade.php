@@ -119,34 +119,21 @@
                                 </tbody>
                                 <tbody v-else>
                                     <tr v-for="phone in campaignPhones">
-                                        <td>@{{ phone.phone_number }}</td>
+                                        <td><p class="form-control">@{{ phone.phone_number }}</p></td>
                                         <td>
-                                            <p class="editable form-control" @click="showPhoneNumberForm[phone.id] = true">@{{ phone.forward }}</p>
+                                            <p class="editable form-control" v-if="!showPhoneNumberForm[phone.id]" @click="enablePhoneNumberForm(phone)">@{{ phone.forward }}</p>
                                             <input type="text" class="form-control" v-model="editPhoneNumberForm[phone.id].forward" v-if="showPhoneNumberForm[phone.id]">
-                                            <div class="form-group" v-if="showPhoneNumberForm[phone.id]">
-                                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="savePhoneNumber(phone)">
-                                                    Save
-                                                </button>
-                                                <button id="cancel-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="savePhoneNumber(phone)">
-                                                    Cancel
-                                                </button>
-                                            </div>
                                         </td>
                                         <td>
-                                            <p class="editable form-control" @click="showPhoneNumberForm[phone.id] = true">@{{ getCallSourceName(phone.call_source_name) }}</p>
-                                            <input type="text" class="form-control" v-model="editPhoneNumberForm[phone.id].forward" v-if="showPhoneNumberForm[phone.id]">
-                                            <div class="form-group" v-if="showPhoneNumberForm[phone.id]">
-                                                <button id="save-name-button" class="btn btn-sm btn-outline-primary mr-1" type="button" @click="savePhoneNumber(phone)">
-                                                    Save
-                                                </button>
-                                                <button id="cancel-name-button" class="btn btn-sm btn-outline-secondary" type="button" @click="savePhoneNumber(phone)">
-                                                    Cancel
-                                                </button>
-                                            </div>
+                                            <p class="editable form-control" v-if="!showPhoneNumberForm[phone.id]" @click="enablePhoneNumberForm(phone)">@{{ getCallSourceName(phone.call_source_name) }}</p>
+                                            <input type="text" class="form-control" v-model="editPhoneNumberForm[phone.id].call_source_name" v-if="showPhoneNumberForm[phone.id]">
                                         </td>
                                         <td>
-                                            <button role="button" class="btn pm-btn btn-outline-purple" v-if="showPhoneNumberForm[phone.id]" @click="savePhoneNumber(phone)">
-                                                <i class="fa fa-edit-alt"></i>
+                                            <button role="button" class="btn pm-btn btn-outline-purple" v-if="!showPhoneNumberForm[phone.id]" @click="editPhoneNumber(phone)">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button role="button" class="btn pm-btn btn-purple" v-if="showPhoneNumberForm[phone.id]" @click="savePhoneNumber(phone)">
+                                                <i class="fa fa-save"></i>
                                             </button>
                                         </td>
                                     </tr>

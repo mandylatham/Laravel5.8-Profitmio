@@ -95,12 +95,14 @@ window['app'] = new Vue({
         this.getCampaignPhones();
     },
     methods: {
-        editPhoneNumber: function (value) {
-            console.log(value);
-            this.editPhoneNumberForm.reset();
-            this.editPhoneNumberForm.phone_number_id = value;
-            this.editPhoneNumberForm.forward = forward;
-            this.editPhoneNumberForm.call_source_name = call_source_name;
+        enablePhoneNumberForm: function (phone) {
+            this.$set(this.showPhoneNumberForm, phone.id, true);
+        },
+        editPhoneNumber: function (phone) {
+            this.editPhoneNumberForm[phone.id].reset();
+            console.log(this.showPhoneNumberForm[phone.id]);
+            Vue.set(this.showPhoneNumberForm, phone.id, true);
+            console.log(this.showPhoneNumberForm[phone.id]);
         },
         savePhoneNumber: function (phone) {
             this.editPhoneNumberForm[phone.id].patch(generateRoute(window.savePhoneNumberUrl, {'phone_number_id': phone.id}))
@@ -112,18 +114,14 @@ window['app'] = new Vue({
                 });
         },
         setupPhoneNumberForms: function () {
-            console.log('test', this.campaignPhones.length);
             if (this.campaignPhones.length > 0) {
-                console.log(this.campaignPhones);
                 for (var i=0; i < this.campaignPhones.length; i++) {
                     let phone = this.campaignPhones[i];
-                    console.log(phone);
-                    this.showPhoneNumberForm[phone.id] = false;
-                    this.editPhoneNumberForm[phone.id] = new Form({
-                        phone_number_id: phone.id,
+                    Vue.set(this.showPhoneNumberForm, phone.id, false);
+                    Vue.set(this.editPhoneNumberForm, phone.id, new Form({
                         forward: phone.forward,
                         call_source_name: phone.call_source_name
-                    });
+                    }));
                 }
             }
         },
