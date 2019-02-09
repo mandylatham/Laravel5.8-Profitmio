@@ -17,6 +17,7 @@
         window.dropsUrl = "{{ route('drop.for-calendar-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
         window.q = @json($q);
+        window.isAdmin = @json(auth()->user()->isAdmin());
         window.searchFormUrl = "{{ route('campaign.for-user-display') }}";
     </script>
     <script src="{{ asset('js/dashboard.js') }}"></script>
