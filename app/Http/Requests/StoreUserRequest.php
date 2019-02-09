@@ -35,8 +35,6 @@ class StoreUserRequest extends FormRequest
             $possibleRoles = ['admin', 'user'];
         }
         return [
-            'first_name' => 'required',
-            'last_name' => 'required',
             'role' => [
                 'required',
                 Rule::in($possibleRoles)
