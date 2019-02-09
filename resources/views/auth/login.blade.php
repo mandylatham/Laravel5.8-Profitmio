@@ -12,7 +12,7 @@
         window.authUrl = "{{ route('auth.authenticate') }}";
     </script>
 </head>
-<body style="background-image: url('images/background-{{ rand(1,6)  }}.jpg')">
+<body style="background-image: url('img/background-{{ rand(1,6)  }}.jpg')">
     <div class="card" id="login" v-cloak>
         <div class="card-body">
             <div class="logo">

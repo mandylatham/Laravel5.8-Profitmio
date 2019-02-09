@@ -24,22 +24,29 @@
 @endsection
 
 @section('sidebar-content')
-    <div class="calendar-filters">
-        <p-radio @change="fetchCalendarData" class="p-default p-round" name="filter" v-model="filter" value="appointment">Appointments</p-radio>
-        <p-radio @change="fetchCalendarData" class="p-default p-round" name="filter" v-model="filter" value="drop">Scheduled Drops</p-radio>
-    </div>
-    <date-pick class="event-calendar" :events="calendarEvents" :parse-date="parseDate" v-model="selectedDate" :has-input-element="false"></date-pick>
-    <div class="events">
-        <header>
-            <span class="date">@{{ selectedDate | amDateFormat('DD') }}</span>
-            <span class="label">@{{ selectedDate | amDateFormat('MMMM Do, YYYY') }}</span>
-        </header>
-        <div class="event-list">
-            <div class="event appointment clearfix" v-for="e in eventsForDay">
-                <span class="title">@{{ e.title || 'No title' }}</span>
-                <span class="time">@{{ e.start | amDateTimeFormat('HH:mm:ss') }}</span>
+    <div id="sidebar--container" v-cloak>
+        <div class="calendar-filters">
+            <p-radio @change="fetchDayEvents() && fetchMonthEvents()" class="p-default p-round" name="filter" v-model="filter" value="appointment">Appointments</p-radio>
+            <p-radio @change="fetchDayEvents() && fetchMonthEvents()" class="p-default p-round" name="filter" v-model="filter" value="drop">Scheduled Drops</p-radio>
+        </div>
+        <div class="calendar-container mt-5">
+            <date-pick class="event-calendar" :events="monthEvents" :parse-date="parseDate" v-model="selectedDate" :has-input-element="false"></date-pick>
+            <div class="table-loader-spinner" v-if="loading">
+                <spinner-icon></spinner-icon>
             </div>
-            <div class="no-events" v-if="eventsForDay.length === 0">No Events.</div>
+        </div>
+        <div class="events">
+            <header>
+                <span class="date">@{{ selectedDate | amDateFormat('DD') }}</span>
+                <span class="label">@{{ selectedDate | amDateFormat('MMMM Do, YYYY') }}</span>
+            </header>
+            <div class="event-list">
+                <div class="event appointment clearfix" v-for="e in calendarEvents">
+                    <span class="title">@{{ e.title || 'No title' }}</span>
+                    <span class="time">@{{ e.start | amDateTimeFormat('HH:mm:ss') }}</span>
+                </div>
+                <div class="no-events" v-if="calendarEvents.length === 0">No Events.</div>
+            </div>
         </div>
     </div>
 @endsection
