@@ -99,7 +99,11 @@
                             </button>
                         </b-tab>
                         <b-tab title="PHONE NUMBERS">
-                            <h4 class="mt-4 mb-3"><button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Add Phone Number</button>
+                            <h4 class="mt-4 mb-3" v-if="availableCallSources.length > 0">
+                                <button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal>
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Add Phone Number
+                                </button>
                             </h4>
                             <table class="table table-sm">
                                 <thead>
@@ -419,7 +423,6 @@
             </div>
             <div class="card mt-3 text-center p-3" v-if="showAvailablePhoneNumbers && availablePhoneNumbers.length === 0">
                 <strong class="text-danger">Your search returned no results.</strong>
-                <div>Please try again.</div>
             </div>
             <div class="card mt-3" v-if="showAvailablePhoneNumbers && availablePhoneNumbers.length > 0">
                 <div class="card-body">
@@ -435,7 +438,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="forward">Forward Number</label>
-                                <input type="text" class="form-control" size="16" name="forward" v-model="purchasePhoneNumberForm.forward"></v-select>
+                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward"></v-select>
                                 <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'forward'"></input-errors>
                             </div>
                         </div>

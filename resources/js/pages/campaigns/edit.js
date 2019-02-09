@@ -258,7 +258,7 @@ window['app'] = new Vue({
                     this.loadingPhoneModal = false;
                 }, (error) => {
                     this.$toastr.error('Unable to get phone numbers.');
-                    this.showAvailablePhoneNumbers = false;
+                    this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 });
         },

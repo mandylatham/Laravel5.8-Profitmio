@@ -22,24 +22,24 @@ class PhoneController extends Controller
     public function searchAvailable(PhoneSearchRequest $request)
     {
         $data = $request->only(['areaCode', 'inPostalCode', 'contains', 'country']);
-//        $data = $request->only(['area_code', 'postal_code', 'contains', 'country']);
-
         $data['country'] = array_key_exists('country', $data) ? $data['country'] : 'US';
+        try {
+            $twilioNumbers = Twilio::phoneNumberLookup($data);
+            $numbers = [];
+            foreach ($twilioNumbers['numbers'] as $number) {
+                $num['phone'] = $number->friendlyName;
+                $num['phoneNumber'] = $number->phoneNumber;
+                $num['location'] = trim($number->rateCenter . ' ' . $number->region .  ' ' . $number->isoCountry);
+                $num['zip'] = $number->postalCode;
 
-        $twilioNumbers = Twilio::phoneNumberLookup($data);
+                $numbers[] = $num;
+            }
+            $data['numbers'] = $numbers;
 
-        $numbers = [];
-        foreach ($twilioNumbers['numbers'] as $number) {
-            $num['phone'] = $number->friendlyName;
-            $num['phoneNumber'] = $number->phoneNumber;
-            $num['location'] = trim($number->rateCenter . ' ' . $number->region .  ' ' . $number->isoCountry);
-            $num['zip'] = $number->postalCode;
-
-            $numbers[] = $num;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response(["error" => "There was a problem in the phone number subsystem"], 503);
         }
-        $data['numbers'] = $numbers;
-
-        return response()->json($data);
     }
 
     public function provision(PhoneProvisionRequest $request)
