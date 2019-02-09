@@ -98,14 +98,15 @@ window['app'] = new Vue({
             this.loadingPurchaseNumber = true;
             this.purchasePhoneNumberForm
                 .post(window.provisionPhoneUrl)
-                .then(() => {
+                .then((response) => {
                     this.loadingPurchaseNumber = false;
                     this.phoneNumbers.push(this.purchasePhoneNumberForm.data());
                     this.closeModal('addPhoneModalRef');
-                }, () => {
+                })
+                .catch((error) => {
                     this.loadingPurchaseNumber = false;
                     this.$toastr.error('Unable to process your request.');
-                })
+                });
         },
         removeAdditionalFeature: function (index, list) {
           if (list[index]) {
