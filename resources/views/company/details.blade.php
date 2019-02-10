@@ -222,6 +222,25 @@
                                 </div>
                             </div>
                         </b-tab>
+                        <b-tab title="CAMPAIGN ACCESS" id="campaign-access-tab">
+                            @if($hasCampaigns)
+                            <div class="row no-gutters mb-md-3">
+                                <div class="col-12 col-md-7 campaigns-panel">
+                                    <input type="text" v-model="searchCampaignForm.q" class="form-control filter--search-box" aria-describedby="search"
+                                        placeholder="Search" @keyup.enter="fetchCampaigns">
+                                </div>
+                                <div class="col-12 col-md-5 users-panel">
+                                    
+                                </div>
+                            </div>
+                            @else
+                            <div class="row no-gutters mb-md-3">
+                                <div class="col-12">
+                                    <p class="alert alert-info">When a campaign is added, you can control access to it here</p>
+                                </div>
+                            </div>
+                            @endif
+                        </b-tab>
                     </b-tabs>
                 </b-card>
             </div>

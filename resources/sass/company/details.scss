@@ -175,6 +175,19 @@
         background-color: #fff;
     }
 
+    #campaign-access-tab {
+        padding: 0;
+        .campaigns-panel {
+            min-height: 350px;
+            padding: 1.8rem;
+        }
+        .users-panel {
+            background-color: #fff;
+            border: 2px solid #e0e0e0;
+            min-height: 350px;
+        }
+    }
+
     .template-field {
         @include media-breakpoint-up(md) {
             text-align: right
