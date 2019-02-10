@@ -43,7 +43,7 @@ window['app'] = new Vue({
         searchForm: new Form({
             search: null,
             page: 1,
-            per_page: 15,
+            per_page: 30,
             filter: null,
             label: null,
             media: null
@@ -79,8 +79,6 @@ window['app'] = new Vue({
             this.currentRecipientId = recipient.id;
             this.recipientKey = key;
 
-            console.log('window.innerWidth', window.innerWidth);
-
             const panel = this.$showPanel({
                 component: 'communication-side-panel',
                 cssClass: 'communication-side-panel',
@@ -98,7 +96,10 @@ window['app'] = new Vue({
             this.searchForm.search = '';
             this.fetchRecipients();
         },
-        onPageChanged: function () {},
+        onPageChanged: function ({page}) {
+            this.searchForm.page = page;
+            return this.fetchRecipients();
+        },
         pusherInit: function () {
             // TODO: Enable pusher logging - don't include this in production
             Pusher.logToConsole = true;
