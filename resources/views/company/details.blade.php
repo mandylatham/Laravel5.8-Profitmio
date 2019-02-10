@@ -41,7 +41,6 @@
                     <div class="card-body pb-5">
                         <div class="row no-gutters">
                             <div class="col-md-4 col-lg-3 col-xl-2 company-image-container mt-5">
-                                <img class="rounded rounded-circle img-thumbnail" src="{{ $company->image_url }}" width="150px" height="150px">
                             </div>
                             <div class="col-md pl-3">
                                 <div class="d-flex justify-content-end">
