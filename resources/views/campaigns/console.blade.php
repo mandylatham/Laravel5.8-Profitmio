@@ -8,8 +8,6 @@
 
 @section('body-script')
     <script>
-        window.filter = @json($filter);
-        window.label = @json($label);
         window.counters = @json($counters);
         window.campaign = @json($campaign);
         window.user = @json(auth()->user());
@@ -39,18 +37,18 @@
         <ul class="filter">
             <li class="all">
                 <a :class="{'active': activeFilterSection === 'all'}" href="javascript:;"
-                   @click="changeFilter('all')"><i class="fas fa-expand-arrows-alt"></i> All
-                    <span class="counter">@{{ this.counters.totalCount }}</span></a>
+                   @click="changeFilter('filter', 'all')"><i class="fas fa-expand-arrows-alt"></i> All
+                    <span class="counter">@{{ counters.total }}</span></a>
             </li>
             <li class="unread">
                 <a :class="{'active': activeFilterSection === 'unread'}" href="javascript:;"
-                   @click="changeFilter('unread')"><i class="far fa-flag"></i> Unread
-                    <span class="counter">@{{ this.counters.unread }}</span></a>
+                   @click="changeFilter('filter', 'unread')"><i class="far fa-flag"></i> Unread
+                    <span class="counter">@{{ counters.unread }}</span></a>
             </li>
             <li class="idle">
                 <a :class="{'active': activeFilterSection === 'idle'}" href="javascript:;"
-                   @click="changeFilter('idle')"><i class="far fa-hourglass"></i> Idle
-                    <span class="counter">@{{ this.counters.idle }}</span></a>
+                   @click="changeFilter('filter', 'idle')"><i class="far fa-hourglass"></i> Idle
+                    <span class="counter">@{{ counters.idle }}</span></a>
             </li>
         </ul>
 
@@ -59,19 +57,19 @@
 
         <ul class="media-type">
             <li class="calls">
-                <a :class="{'active': activeFilterSection === 'calls'}" href="javascript:;"
-                   @click="changeFilter('calls')"><i class="fas fa-phone"></i> Calls
-                    <span class="counter">@{{ this.counters.calls }}</span></a>
+                <a :class="{'active': activeFilterMedia === 'calls'}" href="javascript:;"
+                   @click="changeFilter('media', 'calls')"><i class="fas fa-phone"></i> Calls
+                    <span class="counter">@{{ counters.calls }}</span></a>
             </li>
             <li class="email">
-                <a :class="{'active': activeFilterSection === 'email'}" href="javascript:;"
-                   @click="changeFilter('email')"><i class="far fa-envelope"></i> Email
-                    <span class="counter">@{{ this.counters.email }}</span></a>
+                <a :class="{'active': activeFilterMedia === 'email'}" href="javascript:;"
+                   @click="changeFilter('media', 'email')"><i class="far fa-envelope"></i> Email
+                    <span class="counter">@{{ counters.email }}</span></a>
             </li>
             <li class="sms">
-                <a :class="{'active': activeFilterSection === 'sms'}" href="javascript:;"
-                   @click="changeFilter('sms')"><i class="far fa-comment-alt"></i> SMS
-                    <span class="counter">@{{ this.counters.sms }}</span></a>
+                <a :class="{'active': activeFilterMedia === 'sms'}" href="javascript:;"
+                   @click="changeFilter('media', 'sms')"><i class="far fa-comment-alt"></i> SMS
+                    <span class="counter">@{{ counters.sms }}</span></a>
             </li>
         </ul>
 
@@ -80,39 +78,39 @@
 
         <ul class="labels">
             <li class="no-label">
-                <a :class="{'active': activeLabelSection === 'no-label'}" href="javascript:;"
-                   @click="changeFilter('labelled', 'none')">No Label
-                    <span class="counter">@{{ this.labelCounts.not_labelled }}</span></a>
+                <a :class="{'active': activeLabelSection === 'none'}" href="javascript:;"
+                   @click="changeFilter('label', 'none')">No Label
+                    <span class="counter">@{{ counters.none }}</span></a>
             </li>
             <li class="interested">
                 <a :class="{'active': activeLabelSection === 'interested'}" href="javascript:;"
-                   @click="changeFilter('labelled', 'interested')">Interested
-                    <span class="counter">@{{ this.labelCounts.interested }}</span></a>
+                   @click="changeFilter('label', 'interested')">Interested
+                    <span class="counter">@{{ counters.interested }}</span></a>
             </li>
             <li class="appointment">
                 <a :class="{'active': activeLabelSection === 'appointment'}" href="javascript:;"
-                   @click="changeFilter('labelled', 'appointment')">Appointment
-                    <span class="counter">@{{ this.labelCounts.appointment }}</span></a>
+                   @click="changeFilter('label', 'appointment')">Appointment
+                    <span class="counter">@{{ counters.appointment }}</span></a>
             </li>
             <li class="callback">
                 <a :class="{'active': activeLabelSection === 'callback'}" href="javascript:;"
-                   @click="changeFilter('labelled', 'callback')">Callback
-                    <span class="counter">@{{ this.labelCounts.callback }}</span></a>
+                   @click="changeFilter('label', 'callback')">Callback
+                    <span class="counter">@{{ counters.callback }}</span></a>
             </li>
             <li class="service-dept">
-                <a :class="{'active': activeLabelSection === 'service-dept'}" href="javascript:;"
-                   @click="changeFilter('labelled', 'service-dept')">Service Dept
-                    <span class="counter">@{{ this.labelCounts.service }}</span></a>
+                <a :class="{'active': activeLabelSection === 'service'}" href="javascript:;"
+                   @click="changeFilter('label', 'service')">Service Dept
+                    <span class="counter">@{{ counters.service }}</span></a>
             </li>
             <li class="not-interested">
-                <a :class="{'active': activeLabelSection === 'not-interested'}" href="javascript:;"
-                   @click="changeFilter('labelled', 'not-interested')">Not Interested
-                    <span class="counter">@{{ this.labelCounts.not_interested }}</span></a>
+                <a :class="{'active': activeLabelSection === 'not_interested'}" href="javascript:;"
+                   @click="changeFilter('label', 'not_interested')">Not Interested
+                    <span class="counter">@{{ counters.not_interested }}</span></a>
             </li>
             <li class="wrong-tag">
-                <a :class="{'active': activeLabelSection === 'wrong-tag'}" href="javascript:;"
-                   @click="changeFilter('labelled', 'wrong-tag')">Wrong #
-                    <span class="counter">@{{ this.labelCounts.wrong_number }}</span></a>
+                <a :class="{'active': activeLabelSection === 'v'}" href="javascript:;"
+                   @click="changeFilter('label', 'wrong_number')">Wrong #
+                    <span class="counter">@{{ counters.wrong_number }}</span></a>
             </li>
         </ul>
     </nav>
@@ -124,7 +122,7 @@
 
 @section('main-content')
     <div id="console" class="container-fluid list-campaign-container" v-cloak>
-        <div class="row align-items-end no-gutters">
+        <div class="row">
             <div class="col-12 col-sm-5 col-lg-3 mb-3">
                 <a class="btn pm-btn pm-btn-blue go-back" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">
                     <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
@@ -136,16 +134,14 @@
                            aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
             </div>
         </div>
-
-        <div class="loader-spinner" v-if="loading">
+        <div class="no-items-row" v-if="recipients.length === 0">
+            No recipients found.
+        </div>
+        <div class="table-loader-spinner" v-if="loading">
             <spinner-icon></spinner-icon>
         </div>
-
-        <div id="recipients-list" class="container-fluid" v-if="recipients.length">
-            <div class="row" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
-                <div class="col-12 col-md-1 align-items-center">
-                    @{{ recipient.last_seen_ago }}
-                </div>
+        <div class="recipient-row" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
+            <div class="row no-gutters">
                 <div class="col-12 col-md-5">
                     <div class="name-wrapper">
                         <strong>@{{ recipient.name }}</strong>
@@ -155,14 +151,15 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-4">
-                    <div v-if="recipient.email"><i class="fa fa-envelope mr-2"></i> @{{ recipient.email }}</div>
-                    <div v-if="recipient.phone"><i class="fa fa-phone mr-2"></i> @{{ recipient.phone }}</div>
+                    <div class="phone-email" v-if="recipient.email"><i class="fa fa-envelope mr-2"></i> @{{ recipient.email }}</div>
+                    <div class="phone-email" v-if="recipient.phone"><i class="fa fa-phone mr-2"></i> @{{ recipient.phone }}</div>
+                </div>
+                <div class="col-12 col-md-3 text-center">
+                    @{{ recipient.last_seen_ago }}
                 </div>
             </div>
         </div>
-        <div class="no-items-row" v-else>
-            No recipients found.
-        </div>
+        <pm-pagination v-if="recipients.length > 0" class="mt-3" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
 
         <slideout-panel></slideout-panel>
     </div>

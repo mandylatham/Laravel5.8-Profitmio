@@ -409,14 +409,94 @@ class RecipientController extends Controller
      */
     public function getRecipients(Request $request, Campaign $campaign)
     {
-        $filter = $request->get('filter') ?: 'all';
-        $label = $request->get('label') ?: null;
+        $filter = $request->input('filter', null);
+        $label = $request->input('label', null);
+        $media = $request->input('media', null);
 
-        $viewData = $this->getRecipientData($request, $campaign, $filter, $label);
+        $recipients = $campaign->recipients();
 
-        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+        if ($filter === 'unread' || $filter === 'idle') {
+            $recipients->$filter();
+        }
 
-        return $viewData;
+        if ($media === 'calls' || $media === 'email' || $media === 'sms') {
+            $recipients->$media();
+        }
+
+        if ($label) {
+            $recipients->labelled($label);
+        }
+
+        if ($request->filled('search')) {
+            $recipients->search($request->input('search'));
+        }
+
+        return $recipients->paginate(30);
+
+        $recipients->join('responses as r1', function ($join) {
+            $join->on('recipients.id', '=', 'r1.id');
+        })
+            ->leftJoin('responses as r2', function ($join) {
+                $join->on('r1.id', '=', 'r2.id')
+                    ->on('r1.created_at', '<', 'r2.created_at');
+            })
+            ->whereNull('r2.created_at')
+            ->selectRaw('recipients.*, r1.created_at as last_seen')
+            ->orderBy('last_seen', 'desc');
+
+        $recipients = $recipients->paginate($this->pages);
+
+        $recipients->totalCount = Recipient::withResponses($campaign->id)->count();
+        $recipients->unread = Recipient::unread($campaign->id)->count();
+        $recipients->idle = Recipient::idle($campaign->id)->count();
+        $recipients->archived = Recipient::archived()->count();
+        $recipients->email = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+            )
+        )->count();
+        $recipients->calls = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+            )
+        )->count();
+        $recipients->sms = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+            )
+        )->count();
+
+        $recipients->labelCounts = Recipient::withResponses($campaign->id)
+            ->selectRaw("sum(interested) as interested, sum(not_interested) as not_interested,
+                sum(appointment) as appointment, sum(service) as service, sum(wrong_number) as wrong_number,
+                sum(car_sold) as car_sold, sum(heat) as heat_case, sum(callback) as callback,
+                sum(case when (interested = 0 and not_interested = 0 and appointment = 0 and service = 0 and
+                wrong_number = 0 and car_sold = 0 and heat = 0) then 1 else 0 end) as not_labelled")
+            ->first();
+
+        $viewData['campaign'] = $campaign;
+        $viewData['recipients'] = $recipients;
+        $viewData['filter'] = $filter;
+        $viewData['label'] = $label;
+        $viewData['counters'] = [
+            'totalCount'  => $recipients->totalCount,
+            'unread'      => $recipients->unread,
+            'idle'        => $recipients->idle,
+            'archived'    => $recipients->archived,
+            'email'       => $recipients->email,
+            'calls'       => $recipients->calls,
+            'sms'         => $recipients->sms,
+            'labelCounts' => array_map('intval', $recipients->labelCounts->toArray()),
+        ];
+
+//        $viewData = $this->getRecipientData($request, $campaign, $filter, $label);
+
+//        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+
+//        return $viewData;
     }
 
     public function showRecipientList(Request $request, Campaign $campaign, RecipientList $list)

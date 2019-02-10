@@ -161,11 +161,23 @@ class ResponseConsoleController extends Controller
      */
     public function show(Request $request, Campaign $campaign)
     {
-        $viewData = $this->getRecipientData($request, $campaign, 'all');
+        $counters = [];
+        $counters['total'] = $campaign->recipients()->count();
+        $counters['unread'] = $campaign->recipients()->unread()->count();
+        $counters['idle'] = $campaign->recipients()->idle()->count();
+        $counters['calls'] = $campaign->recipients()->calls()->count();
+        $counters['email'] = $campaign->recipients()->email()->count();
+        $counters['sms'] = $campaign->recipients()->sms()->count();
 
-        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number'];
+        foreach ($labels as $label) {
+            $counters[$label] = $campaign->recipients()->labelled($label)->count();
+        }
 
-        return view('campaigns.console', $viewData);
+        return view('campaigns.console', [
+            'counters' => $counters,
+            'campaign' => $campaign
+        ]);
     }
 
     /**

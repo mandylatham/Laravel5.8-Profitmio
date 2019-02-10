@@ -4,6 +4,7 @@ import Form from './../../common/form';
 import moment from 'moment';
 import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
+import {each} from 'lodash';
 
 toastr.options.positionClass = "toast-bottom-left"; 
 toastr.options.newestOnTop = true;
@@ -45,7 +46,7 @@ window['app'] = new Vue({
             per_page: 15,
             filter: null,
             label: null,
-            mediaType: null
+            media: null
         }),
         total: null,
         pusherKey: '',
@@ -60,16 +61,17 @@ window['app'] = new Vue({
     methods: {
         fetchRecipients() {
             this.loading = true;
-            this.searchForm.get(window.getRecipientsUrl)
+            this.searchForm
+                .get(window.getRecipientsUrl)
                 .then(response => {
-                    this.recipients = response.recipients.data;
-                    this.searchForm.page = response.recipients.current_page;
-                    this.searchForm.per_page = response.recipients.per_page;
-                    this.total = response.recipients.total;
-
+                    this.recipients = response.data;
+                    this.searchForm.page = response.current_page;
+                    this.searchForm.per_page = response.per_page;
+                    this.total = response.total;
                     this.loading = false;
                 })
                 .catch(error => {
+                    this.loading = false;
                     this.$toastr.error('Unable to get recipient');
                 });
         },
@@ -96,17 +98,7 @@ window['app'] = new Vue({
             this.searchForm.search = '';
             this.fetchRecipients();
         },
-        // toggleSidebar: function () {
-        //     let app = document.getElementById('app');
-        //
-        //     if (app.classList.contains('side-menu-open')) {
-        //         app.classList.add('navbar-side-menu-fix');
-        //         app.classList.remove('side-menu-open');
-        //         app.classList.remove('navbar-side-menu-fix');
-        //     } else {
-        //         app.classList.add('side-menu-open');
-        //     }
-        // },
+        onPageChanged: function () {},
         pusherInit: function () {
             // TODO: Enable pusher logging - don't include this in production
             Pusher.logToConsole = true;
@@ -136,7 +128,7 @@ window['app'] = new Vue({
             let channel = pusher.subscribe(channelName);
             channel.unbind(eventName);
         },
-        updateRecipients() {
+        registerPushesListeners() {
             this.pusher('private-campaign.' + this.campaign.id, 'recipients.updated', (data) => {
                 this.recipients = data.recipients.data;
                 this.searchForm.page = data.recipients.current_page;
@@ -153,13 +145,18 @@ window['app'] = new Vue({
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
         this.fetchRecipients();
-        this.updateRecipients();
+
+        this.registerPushesListeners();
 
         // Events
         window.Event.listen('filters.filter-changed', (data) => {
-            this.searchForm.filter = data.filter;
-            this.searchForm.label = data.label;
-
+            if (data.filter === 'media') {
+                this.searchForm.media = data.value;
+            } else if (data.filter === 'filter') {
+                this.searchForm.filter = data.value;
+            } else if (data.filter === 'label') {
+                this.searchForm.label = data.value;
+            }
             this.fetchRecipients();
         });
     }
@@ -171,36 +168,34 @@ window['sidebar'] = new Vue({
     el: '#sidebar-nav-content',
     data: {
         activeFilterSection: 'all',
-        activeLabelSection: '',
-        filter: '',
-        label: '',
-        counters: [],
-        labelCounts: {},
+        activeFilterMedia: null,
+        activeLabelSection: 'none',
+        counters: {},
         campaign: {},
     },
     mounted: function () {
-        console.log('window.counters', window.counters);
-        this.filter = window.filter;
-        this.label = window.label;
-        this.counters = window.counters;
-        this.labelCounts = window.counters.labelCounts;
+        each(window.counters, (value, key) => {
+            Vue.set(this.counters, key, value);
+        });
         this.campaign = window.campaign;
-        this.updateCounters();
+        this.registerPusherListeners();
     },
     methods: {
-        changeFilter: function (filter, label) {
-            this.activeFilterSection = filter;
-
-            if (label) {
-                this.activeLabelSection = label;
+        changeFilter: function (filter, value) {
+            if (filter === 'media' ) {
+                this.activeFilterMedia = value;
+            } else if (filter === 'filter') {
+                this.activeFilterSection = value;
+            } else if (filter === 'label') {
+                this.activeLabelSection = value;
             }
 
             window.Event.fire('filters.filter-changed', {
                 filter: filter,
-                label: label ? label : ''
+                value: value
             });
         },
-        updateCounters: function () {
+        registerPusherListeners: function () {
             window['app'].pusher('private-campaign.' + this.campaign.id, 'counts.updated', (data) => {
                 this.labelCounts = data.labelCounts
             });
