@@ -14,6 +14,9 @@
         window.saveCampaignUrl = @json(route('campaigns.update', ['campaign' => $campaign->id]));
         window.campaignStatsUrl = @json(route('campaigns.stats', ['campaign' => $campaign->id]));
         window.searchPhoneUrl = @json(route('phone.search'));
+        window.provisionPhoneUrl = @json(route('phone.provision'));
+        window.getCampaignPhonesUrl = @json(route('phone.list', ['campaign' => $campaign->id]));
+        window.savePhoneNumberUrl = @json(route('phone.store', ['campaign' => $campaign->id, 'phone' => ':phone_number_id']));
     </script>
     <script src="{{ asset('js/campaigns-edit.js') }}"></script>
 @endsection
@@ -96,22 +99,52 @@
                             </button>
                         </b-tab>
                         <b-tab title="PHONE NUMBERS">
-                            <h4 class="mt-4 mb-3"><button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal><i class="fas fa-plus mr-2"></i>Add Phone Number</button>
+                            <h4 class="mt-4 mb-3" v-if="availableCallSources.length > 0">
+                                <button class="btn pm-btn pm-btn-purple" type="button" v-b-modal.add-phone-modal>
+                                    <i class="fas fa-plus mr-2"></i>
+                                    Add Phone Number
+                                </button>
                             </h4>
-                            <table class="table table-sm table-bordered">
+                            <p class="alert alert-info" v-if="campaignPhones.length > 0">Click on a row to edit</p>
+                            <table class="table table-sm">
                                 <thead>
                                 <tr>
                                     <th>Number</th>
                                     <th>Forward</th>
                                     <th>Call Source</th>
+                                    <th></th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                <tr v-if="phoneNumbers.length === 0">
-                                    <td colspan="3">
+                                <tbody v-if="campaignPhones.length === 0">
+                                <tr>
+                                    <td colspan="4">
                                         <div class="text-center text-danger font-weight-bold mt-4 mb-2">No Phone Numbers</div>
                                     </td>
                                 </tr>
+                                </tbody>
+                                <tbody v-else>
+                                    <tr v-for="phone in campaignPhones">
+                                        <td @click="enablePhoneNumberForm(phone)"><p class="form-control">@{{ phone.phone_number }}</p></td>
+                                        <td>
+                                            <p class="editable form-control" v-if="!showPhoneNumberForm[phone.id]" @click="enablePhoneNumberForm(phone)">@{{ phone.forward }}</p>
+                                            <input type="text" class="form-control" v-model="editPhoneNumberForm[phone.id].forward" v-if="showPhoneNumberForm[phone.id]">
+                                        </td>
+                                        <td>
+                                            <p class="editable form-control" v-if="!showPhoneNumberForm[phone.id]" @click="enablePhoneNumberForm(phone)">@{{ getCallSourceName(phone.call_source_name) }}</p>
+                                            <v-select class="filter--v-select" index="name" v-model="editPhoneNumberForm[phone.id].call_source_name" :options="availableCallSourcesWithCurrent(phone.call_source_name)" v-if="showPhoneNumberForm[phone.id]"></v-select>
+                                        </td>
+                                        <td>
+                                            <button role="button" class="btn pm-btn btn-outline-purple" v-if="false" @click="editPhoneNumber(phone)">
+                                                <i class="fa fa-edit"></i>
+                                            </button>
+                                            <button role="button" class="btn pm-btn pm-btn-purple" v-if="showPhoneNumberForm[phone.id]" @click="savePhoneNumber(phone)">
+                                                <i class="fa fa-save"></i>
+                                            </button>
+                                            <button role="button" class="btn pm-btn btn-outline-default" v-if="showPhoneNumberForm[phone.id]" @click="cancelPhoneNumber(phone)">
+                                                Cancel
+                                            </button>
+                                        </td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </b-tab>
@@ -358,8 +391,8 @@
                     <div class="row">
                         <div class="col-12">
                             <div class="form-group">
-                                <p-radio color="primary" name="crountry" v-model="searchPhoneNumberForm.country" value="US">US</p-radio>
-                                <p-radio color="primary" name="crountry" v-model="searchPhoneNumberForm.country" value="CA">CA</p-radio>
+                                <p-radio color="primary" name="country" v-model="searchPhoneNumberForm.country" value="US">US</p-radio>
+                                <p-radio color="primary" name="country" v-model="searchPhoneNumberForm.country" value="CA">CA</p-radio>
                             </div>
                         </div>
                         <div class="col-3">
@@ -391,31 +424,29 @@
             </div>
             <div class="card mt-3 text-center p-3" v-if="showAvailablePhoneNumbers && availablePhoneNumbers.length === 0">
                 <strong class="text-danger">Your search returned no results.</strong>
-                <div>Please try again.</div>
             </div>
             <div class="card mt-3" v-if="showAvailablePhoneNumbers && availablePhoneNumbers.length > 0">
                 <div class="card-body">
                     <h5>Available Phone Numbers</h5>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="phone_number">Phone Number</label>
-                                <v-select name="phone_number" :options="availablePhoneNumbers" v-model="purchasePhoneNumberForm.phone_number" class="filter--v-select" @input="clearError(purchasePhoneNumberForm, 'phone_number')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('phone_number')}"></v-select>
+                                <v-select name="phone_number" :options="availablePhoneNumbers" index="value" v-model="purchasePhoneNumberForm.phone_number" class="filter--v-select" @input="clearError(purchasePhoneNumberForm, 'phone_number')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('phone_number')}"></v-select>
                                 <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'phone_number'"></input-errors>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="forward">Forward Number</label>
-                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward" @input="clearError(purchasePhoneNumberForm, 'forward')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('forward')}"></v-select>
+                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward"></v-select>
                                 <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'forward'"></input-errors>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-12">
                             <div class="form-group">
                                 <label for="call_source">Call Source</label>
-                                <input type="text" class="form-control" name="call_source" v-model="purchasePhoneNumberForm.call_source" @input="clearError(purchasePhoneNumberForm, 'call_source')" :class="{'is-invalid': purchasePhoneNumberForm.errors.has('call_source')}"></v-select>
-                                <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'call_source'"></input-errors>
+                                <v-select name="call_source" :options="availableCallSources" index="name" v-model="purchasePhoneNumberForm.call_source_name" class="filter--v-select"></v-select>
                             </div>
                         </div>
                         <div class="col-12">

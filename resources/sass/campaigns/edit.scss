@@ -73,6 +73,22 @@
         background-color: #fff;
     }
 
+    p.form-control {
+        border: 0;
+    }
+
+    p.editable {
+        cursor: pointer;
+        border: 1px solid #fff;;
+        &:hover {
+            border: 1px solid $brand-purple;
+        }
+    }
+
+    td.no-label {
+        border: 0;
+    }
+
     .pm-btn-submit {
         span {
             margin: 0;

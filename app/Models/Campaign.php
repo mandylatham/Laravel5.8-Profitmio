@@ -51,7 +51,8 @@ class Campaign extends Model
         'is_expired',
         'text_responses_count',
         'phone_responses_count',
-        'email_responses_count'
+        'email_responses_count',
+        'call_sources_in_use',
     ];
 
     protected $casts = [
@@ -191,11 +192,6 @@ class Campaign extends Model
         return $template;
     }
 
-    public function phone()
-    {
-        return $this->hasOne(PhoneNumber::class, 'id', 'phone_number_id');
-    }
-
     public function phones()
     {
         return $this->hasMany(PhoneNumber::class);
@@ -309,5 +305,13 @@ class Campaign extends Model
     public function getIsNotExpiredAttribute()
     {
         return $this->expires_at && !$this->isExpired;
+    }
+
+    /**
+     * Get the 
+     */
+    public function getCallSourcesInUseAttribute()
+    {
+        return $this->phones()->select('call_source_name')->get()->pluck('call_source_name')->toArray();
     }
 }

@@ -67,7 +67,7 @@ class DeploymentController extends Controller
             throw new \Exception('No SMS phone number available for campaign ' . $campaign->id);
         }
 
-        $from = $campaign->phone()->whereCallSourceName('sms')->first()->phone_number;
+        $from = $campaign->phones()->whereCallSourceName('sms')->first()->phone_number;
         $to = $recipient->phone;
         $message = $text;
         $mediaUrl = null;
