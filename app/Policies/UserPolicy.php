@@ -50,4 +50,9 @@ class UserPolicy
     {
         return auth()->user()->isAdmin();
     }
+
+    public function siteAdmin(User $user)
+    {
+        return $user->isAdmin();
+    }
 }

@@ -42,8 +42,16 @@
     font-size: 14px;
     margin-top: 1rem;
 }
+
+.table-loader-spinner {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+}
+
+.calendar-container {
+    position: relative;
+}
+
 .event-calendar {
-    margin-top: 30px;
     .vdpInnerWrap {
         background: transparent;
         color: #fff;
@@ -63,11 +71,17 @@
             border-left-color: #fff;
         }
     }
+
     .vdpTable {
         thead {
             display: none;
         }
         .vdpRow {
+            &.selected .vdpCell {
+                color: #572E8D;
+                background-color: #edf0f5;
+            }
+
             .vdpCell {
                 border-right: 1px solid #fff;
                 border-bottom: 1px solid #fff;

@@ -17,8 +17,6 @@ window['app'] = new Vue({
         roles: [],
         userForm: new Form({
             role: null,
-            first_name: '',
-            last_name: '',
             email: '',
             company: null
         })
@@ -54,7 +52,7 @@ window['app'] = new Vue({
                 .then(() => {
                     this.loading = false;
                     this.$swal({
-                        title: 'User Added',
+                        title: 'Invitation Sent',
                         type: 'success',
                         allowOutsideClick: false
                     }).then(() => {
@@ -62,8 +60,13 @@ window['app'] = new Vue({
                     });
                 })
                 .catch(e => {
-                    this.$toastr.error("Unable to process your request");
                     this.loading = false;
+                    if (e.error !== undefined){
+                        this.$toastr.error("Unable to process invitation: " + e.error);
+                        return;
+                    }
+
+                    this.$toastr.error("Unable to process the invitation");
                 });
         }
     }

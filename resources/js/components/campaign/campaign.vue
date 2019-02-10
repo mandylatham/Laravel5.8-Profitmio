@@ -21,10 +21,9 @@
                 </div>
             </div>
             <div class="campaign-postcard" v-if="campaign.text_responses_count === 0 && campaign.phone_responses_count === 0 && campaign.email_responses_count === 0">
-                <div class="campaign-chart--labels">
-                    <span class="sms"> 0 sms</span>
-                    <span class="call">0 call</span>
-                    <span class="email">0 email</span>
+                <div class="no-responses">
+                    <i class="fas fa-chart-pie"></i>
+                    <span class="no-responses-label">No Responses</span>
                 </div>
             </div>
         </div>
@@ -43,9 +42,9 @@
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links">
-            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
-            <a :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
-            <a :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
+            <a v-if="isAdmin" :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
+            <a v-if="isAdmin" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
+            <a v-if="isAdmin" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
         </div>
     </div>
@@ -59,35 +58,32 @@
                 <p>{{ campaign.name }}</p>
             </div>
         </div>
-        <div class="col-4 col-md-2 campaign-postcard--image" v-if="!isAdmin">
+        <div class="col-6 col-md-2 campaign-postcard--image" v-if="!isAdmin">
             <img src="" alt="">
         </div>
-        <div class="col-4 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
-            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
+        <div class="col-6 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
+            <a  v-if="isAdmin" :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
         </div>
-        <div class="col-4 col-md-2 campaign-date">
+        <div class="col-6 col-md-2 campaign-date">
             <span class="label">End Date:</span>
             <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>
     </div>
-        <div class="col-4 col-md-3 campaign-chart">
+        <div class="col-12 col-md-3 campaign-chart">
             <div class="row no-gutters" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">
-                <div class="col-6 campaign-chart--charts">
+                <div class="col-7 campaign-chart--charts">
                     <pie-chart height="70px" :colors="['#572E8D', '#e7f386', '#67A7CC']" :legend="false" :data="pieChartDataSet"></pie-chart>
                 </div>
-                <div class="col-6 campaign-chart--labels">
+                <div class="col-5 campaign-chart--labels">
 
                     <span class="sms">{{ campaign.text_responses_count }} sms</span>
                     <span class="call">{{ campaign.phone_responses_count }} call</span>
                     <span class="email">{{ campaign.email_responses_count }} email</span>
                 </div>
             </div>
-            <div class="row no-gutters pl-3" v-if="campaign.text_responses_count === 0 && campaign.phone_responses_count === 0 && campaign.email_responses_count === 0">
-                <div class="col-12 campaign-chart--labels">
-                    <span class="sms">0 sms</span>
-                    <span class="call">0 call</span>
-                    <span class="email">0 email</span>
-                </div>
+            <div class="no-responses" v-if="campaign.text_responses_count === 0 && campaign.phone_responses_count === 0 && campaign.email_responses_count === 0">
+               <i class="fas fa-chart-pie"></i>
+               <span class="no-responses-label">No Responses</span>
             </div>
         </div>
     </div>

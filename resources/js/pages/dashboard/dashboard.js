@@ -2,10 +2,6 @@ import Vue from 'vue';
 import './../../common';
 import moment from 'moment';
 import Form from './../../common/form';
-import 'vue-toastr-2/dist/vue-toastr-2.min.css'
-import VueToastr2 from 'vue-toastr-2';
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
 // Chart Library
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
@@ -109,28 +105,17 @@ window['app'] = new Vue({
 });
 
 window['sidebar'] = new Vue({
-    el: '#sidebar',
+    el: '#sidebar--container',
     components: {
-        'date-pick': require('./../../components/date-pick/date-pick')
-    },
-    computed: {
-        eventsForDay: function () {
-            const events = [];
-            if (this.selectedDate) {
-                this.calendarEvents.forEach(e => {
-                    if (e.date === this.selectedDate) {
-                        events.push(e);
-                    }
-                });
-            }
-            return events;
-        }
+        'date-pick': require('./../../components/date-pick/date-pick'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
     },
     data: {
+        loading: true,
         appointmentSelected: true,
         calendarEvents: [],
+        monthEvents: [],
         dropsSelected: true,
-        // eventsForDay: [],
         filter: 'appointment',
         selectedDate: moment().format('YYYY-MM-DD'),
     },
@@ -138,68 +123,77 @@ window['sidebar'] = new Vue({
         parseDate: function (date, format) {
             return moment(date, format).toDate();
         },
-        // onDaySelected: function (dateSelected) {
-        //     const eventsForDay = [];
-        //     this.calendarEvents.forEach(e => {
-        //         if (e.date === dateSelected) {
-        //             eventsForDay.push(e);
-        //         }
-        //     });
-        //     this.eventsForDay = eventsForDay;
-        // },
-        fetchCalendarData: function () {
-            const promises = [];
+        fetchMonthEvents: function () {
+            let url = '';
             if (this.filter === 'appointment') {
-                promises.push(
-                    axios
-                        .get(window.appointmentsUrl, {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            params: {
-                                per_page: 100,
-                                start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('month').format('YYYY-MM-DD'),
-                                end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD')
-                            },
-                            data: null
-                        })
-                        .then(response => {
-                            this.calendarEvents = response.data;
-                        })
-                );
+                url = window.appointmentsUrl;
+            } else if (this.filter === 'drop') {
+                url = window.dropsUrl;
             }
-            if (this.filter === 'drop') {
-                promises.push(
-                    axios
-                        .get(window.dropsUrl, {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                            params: {
-                                per_page: 100,
-                                start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('month').format('YYYY-MM-DD'),
-                                end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('month').format('YYYY-MM-DD')
-                            },
-                            data: null
-                        })
-                        .then(response => {
-                            this.calendarEvents = response.data;
-                        })
-                );
+            return axios
+                .get(url, {
+                    params: {
+                        per_page: 100,
+                        start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('month').startOf('week').add(1, 'day').format('YYYY-MM-DD'),
+                        end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('month').endOf('week').add(1, 'day').format('YYYY-MM-DD')
+                    },
+                    data: null
+                })
+                .then(response => {
+                    this.monthEvents = response.data;
+                });
+        },
+        fetchDayEvents: function () {
+            this.loading = true;
+            let url = '';
+            if (this.filter === 'appointment') {
+                url = window.appointmentsUrl;
+            } else if (this.filter === 'drop') {
+                url = window.dropsUrl;
             }
-            return Promise.all(promises);
+            return axios
+                .get(url, {
+                    params: {
+                        per_page: 100,
+                        start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('week').add(1, 'day').format('YYYY-MM-DD'),
+                        end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('week').add(1, 'day').format('YYYY-MM-DD')
+                    },
+                    data: null
+                })
+                .then(response => {
+                    this.loading = false;
+                    this.calendarEvents = response.data;
+                }, () => {
+                    this.loading = false;
+                });
+        },
+        selectWeek: function () {
+            const date = moment(this.selectedDate, 'YYYY-MM-DD');
+            const row = document.querySelector('.vdpRow.selected');
+            if (row) {
+                row.classList.remove('selected');
+            }
+            document.querySelector('[data-id="' + date.format('YYYY-M-D') + '"]').parentNode.classList.add('selected');
         }
     },
     mounted() {
-        this.fetchCalendarData();
+        this.fetchDayEvents();
+        this.fetchMonthEvents();
+        this.selectWeek();
     },
     watch: {
         selectedDate: function (newDate, oldDate) {
             newDate = moment(newDate, 'YYYY-MM-DD');
             oldDate = moment(oldDate, 'YYYY-MM-DD');
-            // Month Changed, fetch new data for calendar
-            if (newDate.format('MMYYYY') !== oldDate.format('MMYYYY')) {
-                this.fetchCalendarData();
+            if (newDate.format('DDMMYYYY') !== oldDate.format('DDMMYYYY')) {
+                if (newDate.format('MMYYYY') !== oldDate.format('MMYYYY')) {
+                    this.fetchMonthEvents();
+                }
+                // Don't remove setTimeout, it waits the calendar to render the next month
+                setTimeout(() => {
+                    this.fetchDayEvents();
+                    this.selectWeek();
+                }, 0);
             }
         }
     }

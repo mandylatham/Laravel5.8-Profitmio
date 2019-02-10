@@ -105,8 +105,8 @@ class UserController extends Controller
             $user = new $this->user();
             $user->is_admin = $request->input('role') == 'site_admin' ? true : false;
             $user->password = '';
-            $user->first_name = $request->input('first_name');
-            $user->last_name = $request->input('last_name');
+            $user->first_name = '';
+            $user->last_name = '';
             $user->email = $request->input('email');
             $user->save();
         }

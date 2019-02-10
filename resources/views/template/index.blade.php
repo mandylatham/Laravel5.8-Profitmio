@@ -22,7 +22,7 @@
     <div class="container" id="template-index" v-cloak>
         <div class="row align-items-end no-gutters mb-md-3">
             <div class="col-12 col-sm-7 col-lg-9">
-                <button v-b-modal.add-template-modal class="pm-btn-purple mr-3">
+                <button v-b-modal.add-template-modal class="btn pm-btn pm-btn-purple mr-3">
                     <i class="fa fa-plus mr-2"></i>
                     Add new template
                 </button>
