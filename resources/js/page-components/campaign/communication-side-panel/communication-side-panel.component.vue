@@ -104,7 +104,7 @@
                 </div>
             </div>
 
-            <div class="mail-attachments" v-if="threads.phone">
+            <div class="mail-attachments" v-if="threads.phone.length">
                 <h4>Calls</h4>
                 <ul class="list-group">
 
@@ -126,7 +126,7 @@
                 </ul>
             </div>
 
-            <div class="panel panel-primary messaging-panel sms-messages" v-if="threads.text">
+            <div class="panel panel-primary messaging-panel sms-messages" v-if="threads.text.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
@@ -184,7 +184,7 @@
                 </div>
             </div>
 
-            <div class="panel panel-primary messaging-panel email-messages" v-if="threads.email">
+            <div class="panel panel-primary messaging-panel email-messages" v-if="threads.email.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
