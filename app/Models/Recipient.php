@@ -205,7 +205,7 @@ class Recipient extends Model
 
     public function scopeWithResponses($query, $campaignId)
     {
-        return $query->whereIn('recipients.id',
+        return $query->whereIn('recipients.recipients.id',
             result_array_values(
                 DB::select("
                     select distinct(recipient_id) from responses where campaign_id = {$campaignId}
@@ -214,11 +214,17 @@ class Recipient extends Model
         );
     }
 
-    public function scopeUnread($query)
+    public function scopeUnread($query, $campaign_id)
     {
-        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
-            ->where('read', 0)
-            ->where('incoming', 1);
+        return $query->whereIn('recipients.id',
+            result_array_values(
+                \DB::select("
+                    select recipient_id from responses where response_id in (
+                    select max(response_id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
+                    ) and incoming = 1 and `read` = 0
+                ")
+            )
+        );
     }
 
     public function scopeCalls($query)
@@ -229,8 +235,15 @@ class Recipient extends Model
 
     public function scopeIdle($query)
     {
-        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
-            ->where('incoming', 0);
+        return $query->whereIn('recipients.id',
+            result_array_values(
+                \DB::select("
+                    select recipient_id from responses where response_id in (
+                    select max(response_id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
+                    ) and incoming = 0
+                ")
+            )
+        );
     }
 
     public function scopeEmail($query)
