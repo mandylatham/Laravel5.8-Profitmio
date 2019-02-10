@@ -8,6 +8,12 @@
 
 @section('body-script')
     <script>
+        window.campaignStatsUrl = "{{ route('campaigns.stats', ['campaign' => ':campaignId']) }}";
+        window.appointmentsUrl = "{{ route('appointment.for-calendar-display') }}";
+        window.campaignViewUrl = "{{ route('campaigns.view', ['campaign' => ':campaignId']) }}";
+        window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
+        window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
+        window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
         window.searchUserFormUrl = "{{ route('user.for-user-display') }}";
         window.userEditUrl = "{{ route('user.view', ['user' => ':userId']) }}";
@@ -19,12 +25,16 @@
         window.company = @json($company);
         window.indexUrl = "{{ route('company.index') }}";
         window.updateUrl = "{{ route('company.update', ['company' => $company->id]) }}";
+        window.isAdmin = @json(auth()->user()->isAdmin());
     </script>
     <script src="{{ asset('js/company-details.js') }}"></script>
 @endsection
 
 @section('main-content')
-    <div class="container mt-3" id="company-details" v-cloak>
+    <div class="container" id="company-details" v-cloak>
+        <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ route('company.index') }}">
+            <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
+        </a>
         <div class="row mb-3">
             <div class="col-12">
                 <div class="card profile mb-5">
@@ -67,17 +77,17 @@
                                             <input name="address2" class="form-control" v-model="modifiedCompany.address2" aria-label="Company Address2" v-if="showCompanyFormControls">
                                         </div>
                                         <div class="row no-gutters">
-                                            <div class="form-group col-6">
+                                            <div class="form-group col-12 col-lg-6">
                                                 <label class="form-label">City</label>
                                                 <p v-if="!showCompanyFormControls" class="editable company-city form-control">@{{ company.city }}</p>
                                                 <input name="city" class="form-control" v-model="modifiedCompany.city" aria-label="Company City" v-if="showCompanyFormControls">
                                             </div>
-                                            <div class="form-group col-3">
+                                            <div class="form-group col-6 col-lg-3">
                                                 <label class="form-label">State</label>
                                                 <p v-if="!showCompanyFormControls" class="editable company-state form-control">@{{ company.state }}</p>
                                                 <input name="state" class="form-control" v-model="modifiedCompany.state" aria-label="Company State" v-if="showCompanyFormControls">
                                             </div>
-                                            <div class="form-group col-3">
+                                            <div class="form-group col-6 col-lg-3">
                                                 <label class="form-label">Zip</label>
                                                 <p v-if="!showCompanyFormControls" class="editable company-zip form-control">@{{ company.zip }}</p>
                                                 <input name="zip" class="form-control" v-model="modifiedCompany.zip" aria-label="Company Zip" v-if="showCompanyFormControls">
@@ -127,16 +137,16 @@
                     <b-tabs card>
                         <b-tab title="CAMPAIGNS" active>
                             @if($hasCampaigns)
-                            <div class="row align-items-end no-gutters mb-md-3">
+                            <div class="row no-gutters mb-md-3">
                                 <div class="col-12 col-sm-5 col-lg-4 offset-sm-7 offset-lg-8">
                                     <input type="text" v-model="searchCampaignForm.q" class="form-control filter--search-box" aria-describedby="search"
                                         placeholder="Search" @keyup.enter="fetchCampaigns">
                                 </div>
                             </div>
                             @endif
-                            <div class="row align-items-end no-gutters mt-3">
+                            <div class="row no-gutters mt-3">
                                 <div class="col-12">
-                                    <div class="loader-spinner" v-if="loadingCampaigns">
+                                    <div class="loader-spinner table-loader-spinner" v-if="loadingCampaigns">
                                         <spinner-icon></spinner-icon>
                                     </div>
                                     <div class="no-items-row" v-if="countActiveCampaigns === 0 && countInactiveCampaigns === 0">
@@ -153,7 +163,7 @@
                             </div>
                         </b-tab>
                         <b-tab title="USERS">
-                            <div class="row align-items-end no-gutters mb-md-4">
+                            <div class="row no-gutters mb-md-4">
                                 <div class="col-12 col-sm-5 col-lg-4">
                                 </div>
                                 <div class="col-none col-sm-2 col-lg-4"></div>
@@ -162,9 +172,9 @@
                                            placeholder="Search" @keyup.enter="fetchUsers">
                                 </div>
                             </div>
-                            <div class="row align-items-end no-gutters mt-3">
+                            <div class="row no-gutters mt-3">
                                 <div class="col-12">
-                                    <div class="loader-spinner" v-if="loadingUsers">
+                                    <div class="loader-spinner table-loader-spinner" v-if="loadingUsers">
                                         <spinner-icon></spinner-icon>
                                     </div>
                                     <div class="no-items-row" v-if="users.length === 0">

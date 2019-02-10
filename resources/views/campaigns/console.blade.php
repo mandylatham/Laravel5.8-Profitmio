@@ -125,12 +125,15 @@
 @section('main-content')
     <div id="console" class="container-fluid list-campaign-container" v-cloak>
         <div class="row align-items-end no-gutters">
-            <div class="col-12 offset-sm-7 col-sm-5 offset-lg-9 col-lg-3 search-wrapper mb-3">
-                <div class="clearable">
-                    <input type="text" v-model="searchForm.search" class="form-control filter--search-box"
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
+                <a class="btn pm-btn pm-btn-blue go-back" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">
+                    <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
+                </a>
+            </div>
+            <div class="col-none col-sm-2 col-lg-6"></div>
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
+                <input type="text" v-model="searchForm.search" class="form-control filter--search-box"
                            aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
-                    <i class="clearable__clear" :class="{'show': searchForm.search}" @click="clearSearch">&times;</i>
-                </div>
             </div>
         </div>
 
@@ -157,8 +160,8 @@
                 </div>
             </div>
         </div>
-        <div id="recipients-list" v-else>
-            <p>No recipients found.</p>
+        <div class="no-items-row" v-else>
+            No recipients found.
         </div>
 
         <slideout-panel></slideout-panel>
