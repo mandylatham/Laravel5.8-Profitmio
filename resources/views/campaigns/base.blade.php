@@ -3,8 +3,7 @@
 ])
 
 @section('sidebar-content')
-    <div class="company-data">
-        <div class="company-data--image" :style="{backgroundImage: 'url(\'' + user.image_url + '\')'}"></div>
+    <div class="company-data mt-5">
         <h3>{{ $campaign->name }}</h3>
     </div>
     <nav class="company-navigation">
