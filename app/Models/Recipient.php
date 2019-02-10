@@ -237,9 +237,9 @@ class Recipient extends Model
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
-                    select recipient_id from responses where responses.id in (
-                    select max(responses.id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
+                DB::select("
+                    select recipient_id from responses where id in (
+                    select max(id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
                     ) and incoming = 0
                 ")
             )
@@ -263,10 +263,10 @@ class Recipient extends Model
         return $query->whereNotNull('archived_at');
     }
 
-    public function scopeLabelled($query, $label)
+    public function scopeLabelled($query, $label, $campaignId)
     {
         if ($label == 'none') {
-            return $query->where([
+            return $query->where('recipients.campaign_id', $campaignId)->where([
                 'interested'     => 0,
                 'not_interested' => 0,
                 'service'        => 0,
@@ -278,7 +278,7 @@ class Recipient extends Model
             ]);
         }
 
-        return $query->where($label, 1);
+        return $query->where('recipients.campaign_id', $campaignId)->where($label, 1);
     }
 
     public function scopeSearch($query, $searchString)

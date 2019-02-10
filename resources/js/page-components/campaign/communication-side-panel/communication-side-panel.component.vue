@@ -107,7 +107,6 @@
             <div class="mail-attachments" v-if="threads.phone.length">
                 <h4>Calls</h4>
                 <ul class="list-group">
-
                     <li class="list-group-item" v-for="call in threads.phone">
                         <i class="fas fa-phone"></i>
                         Called at {{ call.created_at }}
@@ -143,12 +142,9 @@
                     </div>
 
                     <div class="sms-message-container">
-
                         <div v-for="msg in threads.text">
-
                             <div class="message-wrapper"
                                  :class="{'inbound-message': msg.incoming, 'outbound-message': !msg.incoming}">
-
                                 <div class="message-time" v-if="msg.created_at_formatted">{{
                                     msg.created_at_formatted }}
                                 </div>
@@ -156,7 +152,6 @@
                                         class="text-danger">UNKNOWN RECEIVE DATE</span></div>
 
                                 <div class="message unread">{{ msg.message_formatted }}</div>
-
                                 <div class="checkbox" v-if="msg.incoming">
                                     <label>
                                         <input type="checkbox" class="message-read" :checked="msg.read"
@@ -188,9 +183,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
-
                 <div class="panel-body">
-
                     <div v-if="threads.emailDrop">
                         <div class="message-time" style="margin-left: 25px">{{ threads.emailDrop.send_at_formatted
                             }}
@@ -202,9 +195,7 @@
                     </div>
 
                     <div class="email-message-container">
-
                         <div v-for="msg in threads.email">
-
                             <div class="message-wrapper"
                                  :class="{'inbound-message': msg.incoming, 'outbound-message': !msg.incoming}">
 
