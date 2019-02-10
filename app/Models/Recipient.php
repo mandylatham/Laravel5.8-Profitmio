@@ -214,13 +214,13 @@ class Recipient extends Model
         );
     }
 
-    public function scopeUnread($query, $campaign_id)
+    public function scopeUnread($query, $campaignId)
     {
         return $query->whereIn('recipients.id',
             result_array_values(
                 \DB::select("
-                    select recipient_id from responses where response_id in (
-                    select max(response_id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
+                    select recipient_id from responses where responses.id in (
+                    select max(responses.id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
                     ) and incoming = 1 and `read` = 0
                 ")
             )
@@ -233,13 +233,13 @@ class Recipient extends Model
             ->where('responses.type', 'phone');
     }
 
-    public function scopeIdle($query)
+    public function scopeIdle($query, $campaignId)
     {
         return $query->whereIn('recipients.id',
             result_array_values(
                 \DB::select("
-                    select recipient_id from responses where response_id in (
-                    select max(response_id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
+                    select recipient_id from responses where responses.id in (
+                    select max(responses.id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
                     ) and incoming = 0
                 ")
             )

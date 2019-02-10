@@ -176,8 +176,8 @@ class ResponseConsoleController extends Controller
     {
         $counters = [];
         $counters['total'] = $campaign->recipients()->count();
-        $counters['unread'] = $campaign->recipients()->unread()->count();
-        $counters['idle'] = $campaign->recipients()->idle()->count();
+        $counters['unread'] = $campaign->recipients()->unread($campaign->id)->count();
+        $counters['idle'] = $campaign->recipients()->idle($campaign->id)->count();
         $counters['calls'] = $campaign->recipients()->calls()->count();
         $counters['email'] = $campaign->recipients()->email()->count();
         $counters['sms'] = $campaign->recipients()->sms()->count();
