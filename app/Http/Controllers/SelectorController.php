@@ -21,6 +21,6 @@ class SelectorController extends Controller
     public function updateActiveCompany(UpdateActiveCompanyRequest $request)
     {
         session(['activeCompany' => $request->input('company')]);
-        return redirect()->intended('dashboard');
+        return response()->json(['redirect_url' => route('dashboard')]);
     }
 }

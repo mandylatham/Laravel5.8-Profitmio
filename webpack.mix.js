@@ -67,5 +67,8 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     //Profile
     .js('resources/js/pages/profile/profile.js', 'public/js/profile.js')
     .sass('resources/sass/profile/profile.scss', 'public/css/profile.css')
+    //Selector
+    .js('resources/js/pages/selector/select-company.js', 'public/js/select-company.js')
+    .sass('resources/sass/selector/select-company.scss', 'public/css/select-company.css')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');
