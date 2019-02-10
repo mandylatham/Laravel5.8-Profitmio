@@ -413,7 +413,9 @@ class RecipientController extends Controller
         $label = $request->input('label', null);
         $media = $request->input('media', null);
 
-        $recipients = $campaign->recipients();
+        $recipients = Recipient::where('campaign_id', $campaign->id)
+            ->select('recipients.*')
+            ->withResponses();
 
         if ($filter === 'unread' || $filter === 'idle') {
             $recipients->$filter();

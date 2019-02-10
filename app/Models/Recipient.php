@@ -203,15 +203,10 @@ class Recipient extends Model
         return $query->search($q);
     }
 
-    public function scopeWithResponses($query, $campaignId)
+    public function scopeWithResponses($query)
     {
-        return $query->whereIn('recipients.id',
-            result_array_values(
-                DB::select("
-                    select distinct(recipient_id) from responses where campaign_id = {$campaignId}
-                ")
-            )
-        );
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->groupBy('recipients.id');
     }
 
     public function scopeUnread($query)
