@@ -96,7 +96,7 @@ class ResponseConsoleController extends Controller
             $join->on('recipients.id', '=', 'r1.id');
         })
             ->leftJoin('responses as r2', function ($join) {
-                $join->on('r1.id', '=', 'r2.id')
+                $join->on('r1.recipient_id', '=', 'r2.recipient_id')
                     ->on('r1.created_at', '<', 'r2.created_at');
             })
             ->whereNull('r2.created_at')
