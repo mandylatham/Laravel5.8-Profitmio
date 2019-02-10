@@ -203,17 +203,28 @@ class Recipient extends Model
         return $query->search($q);
     }
 
-    public function scopeWithResponses($query)
+    public function scopeWithResponses($query, $campaignId)
     {
-        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
-            ->groupBy('recipients.id');
+        return $query->whereIn('recipients.id',
+            result_array_values(
+                DB::select("
+                    select distinct(recipient_id) from responses where campaign_id = {$campaignId}
+                ")
+            )
+        );
     }
 
-    public function scopeUnread($query)
+    public function scopeUnread($query, $campaignId)
     {
-        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
-            ->where('read', 0)
-            ->where('incoming', 1);
+        return $query->whereIn('recipients.id',
+            result_array_values(
+                \DB::select("
+                    select distinct(id) from responses where responses.id in (
+                    select max(responses.id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
+                    ) and incoming = 1 and `read` = 0
+                ")
+            )
+        );
     }
 
     public function scopeCalls($query)
@@ -222,10 +233,17 @@ class Recipient extends Model
             ->where('responses.type', 'phone');
     }
 
-    public function scopeIdle($query)
+    public function scopeIdle($query, $campaignId)
     {
-        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
-            ->where('incoming', 0);
+        return $query->whereIn('recipients.id',
+            result_array_values(
+                DB::select("
+                    select recipient_id from responses where id in (
+                    select max(id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
+                    ) and incoming = 0
+                ")
+            )
+        );
     }
 
     public function scopeEmail($query)
@@ -245,10 +263,10 @@ class Recipient extends Model
         return $query->whereNotNull('archived_at');
     }
 
-    public function scopeLabelled($query, $label)
+    public function scopeLabelled($query, $label, $campaignId)
     {
         if ($label == 'none') {
-            return $query->where([
+            return $query->where('recipients.campaign_id', $campaignId)->where([
                 'interested'     => 0,
                 'not_interested' => 0,
                 'service'        => 0,
@@ -260,7 +278,7 @@ class Recipient extends Model
             ]);
         }
 
-        return $query->where($label, 1);
+        return $query->where('recipients.campaign_id', $campaignId)->where($label, 1);
     }
 
     public function scopeSearch($query, $searchString)

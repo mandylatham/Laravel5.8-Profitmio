@@ -162,16 +162,33 @@ class ResponseConsoleController extends Controller
     public function show(Request $request, Campaign $campaign)
     {
         $counters = [];
-        $counters['total'] = $campaign->recipients()->count();
-        $counters['unread'] = $campaign->recipients()->unread()->count();
-        $counters['idle'] = $campaign->recipients()->idle()->count();
-        $counters['calls'] = $campaign->recipients()->calls()->count();
-        $counters['email'] = $campaign->recipients()->email()->count();
-        $counters['sms'] = $campaign->recipients()->sms()->count();
+        $counters['total'] = Recipient::withResponses($campaign->id)->count();
+        $counters['unread'] = Recipient::unread($campaign->id)->count();
+        $counters['idle'] = Recipient::idle($campaign->id)->count();
+        $counters['calls'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+            )
+        )->count();
+        $counters['email'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+            )
+        )->count();
+        $counters['sms'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+            )
+        )->count();
 
-        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number'];
+        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
         foreach ($labels as $label) {
-            $counters[$label] = $campaign->recipients()->labelled($label)->count();
+            $counters[$label] = Recipient::withResponses($campaign->id)
+                ->labelled($label, $campaign->id)
+                ->count();
         }
 
         return view('campaigns.console', [

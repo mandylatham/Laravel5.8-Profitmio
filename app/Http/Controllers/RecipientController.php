@@ -410,23 +410,49 @@ class RecipientController extends Controller
     public function getRecipients(Request $request, Campaign $campaign)
     {
         $filter = $request->input('filter', null);
-        $label = $request->input('label', null);
-        $media = $request->input('media', null);
 
-        $recipients = Recipient::where('campaign_id', $campaign->id)
-            ->select('recipients.*')
-            ->withResponses();
+        $recipients = Recipient::where('recipients.campaign_id', $campaign->id)
+            ->select('recipients.*');
+
+        if (!$filter || $filter === 'all') {
+            $recipients->withResponses($campaign->id);
+        }
 
         if ($filter === 'unread' || $filter === 'idle') {
-            $recipients->$filter();
+            $recipients->$filter($campaign->id);
         }
 
-        if ($media === 'calls' || $media === 'email' || $media === 'sms') {
-            $recipients->$media();
+        if ($filter == 'email') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+                )
+            );
         }
 
-        if ($label) {
-            $recipients->labelled($label);
+        if ($filter == 'sms') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+                )
+            );
+        }
+
+        if ($filter == 'calls') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+                )
+            );
+        }
+
+        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
+        if (in_array($filter, $labels)) {
+            $recipients = Recipient::withResponses($campaign->id)
+                ->labelled($filter, $campaign->id);
         }
 
         if ($request->filled('search')) {
