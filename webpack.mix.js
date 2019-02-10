@@ -67,6 +67,5 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     //Profile
     .js('resources/js/pages/profile/profile.js', 'public/js/profile.js')
     .sass('resources/sass/profile/profile.scss', 'public/css/profile.css')
-    .copyDirectory('resources/remark_assets', 'public/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');
