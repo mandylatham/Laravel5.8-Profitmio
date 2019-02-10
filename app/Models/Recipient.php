@@ -205,7 +205,7 @@ class Recipient extends Model
 
     public function scopeWithResponses($query, $campaignId)
     {
-        return $query->whereIn('recipients.recipients.id',
+        return $query->whereIn('recipients.id',
             result_array_values(
                 DB::select("
                     select distinct(recipient_id) from responses where campaign_id = {$campaignId}
