@@ -4,6 +4,11 @@
 #user-create {
     padding-top: 2rem;
     padding-bottom: 2rem;
+
+    .user-create--container {
+        background-color: #fff;
+    }
+
     .pm-btn-submit {
         span {
             margin: 0;
