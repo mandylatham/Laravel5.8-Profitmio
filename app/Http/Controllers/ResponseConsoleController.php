@@ -157,7 +157,7 @@ class ResponseConsoleController extends Controller
             'totalCount'  => $recipients->totalCount,
             'unread'      => $recipients->unread,
             'idle'        => $recipients->idle,
-            'archived'    => $recipients->archived,recipients
+            'archived'    => $recipients->archived,
             'email'       => $recipients->email,
             'calls'       => $recipients->calls,
             'sms'         => $recipients->sms,
