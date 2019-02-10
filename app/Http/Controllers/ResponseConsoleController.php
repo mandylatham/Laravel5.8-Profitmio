@@ -89,7 +89,20 @@ class ResponseConsoleController extends Controller
         }
 
         if ($request->has('search')) {
-            $recipients->searchByQuery($request->input('search'));
+            $recipients->where(function ($query) use ($request) {
+				$keywords = explode(' ', $request->search);
+				foreach ($keywords as $keyword) {
+
+					$query->orWhere('first_name', 'like', '%' . $keyword . '%')
+						->orWhere('last_name', 'like', '%' . $keyword . '%')
+						->orWhere('email', 'like', '%' . $keyword . '%')
+						->orWhere('phone', 'like', '%' . $keyword . '%')
+						->orWhere('make', 'like', '%' . $keyword . '%')
+						->orWhere('model', 'like', '%' . $keyword . '%')
+						->orWhere('year', 'like', '%' . $keyword . '%');
+				}
+            });
+            // $recipients->searchByQuery($request->input('search'));
         }
 
         $recipients->join('responses as r1', function ($join) {
@@ -144,7 +157,7 @@ class ResponseConsoleController extends Controller
             'totalCount'  => $recipients->totalCount,
             'unread'      => $recipients->unread,
             'idle'        => $recipients->idle,
-            'archived'    => $recipients->archived,
+            'archived'    => $recipients->archived,recipients
             'email'       => $recipients->email,
             'calls'       => $recipients->calls,
             'sms'         => $recipients->sms,
