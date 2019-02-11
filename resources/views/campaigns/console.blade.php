@@ -28,7 +28,7 @@
         window.removeLabelUrl = "{{ route('recipient.remove-label', ['recipient' => ':recipientId']) }}";
         window.recipientGetResponsesUrl = "{{ route('recipient.get-responses', ['recipient' => ':recipientId']) }}";
     </script>
-    <script src="//js.pusher.com/4.3/pusher.min.js"></script>
+    {{--<script src="//js.pusher.com/4.3/pusher.min.js"></script>--}}
     <script src="{{ asset('js/console.js') }}"></script>
 @endsection
 

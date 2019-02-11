@@ -5,12 +5,15 @@ import moment from 'moment';
 import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
 import {each} from 'lodash';
+import PusherService from "../../common/pusher-service";
 
 toastr.options.positionClass = "toast-bottom-left"; 
 toastr.options.newestOnTop = true;
 toastr.options.progressBar = true;
 
 Vue.use(VueSlideoutPanel);
+
+let pusherService = null;
 
 // Main vue
 window['app'] = new Vue({
@@ -64,6 +67,7 @@ window['app'] = new Vue({
             this.searchForm
                 .get(window.getRecipientsUrl)
                 .then(response => {
+                    console.log('response', response);
                     this.recipients = response.data;
                     this.searchForm.page = response.current_page;
                     this.searchForm.per_page = response.per_page;
@@ -100,42 +104,46 @@ window['app'] = new Vue({
             this.searchForm.page = page;
             return this.fetchRecipients();
         },
-        pusherInit: function () {
-            // TODO: Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true;
-
-            return new Pusher(this.pusherKey, {
-                cluster: this.pusherCluster,
-                forceTLS: true,
-                authEndpoint: this.pusherAuthEndpoint,
-                auth: {
-                    headers: {
-                        'X-CSRF-Token': window.csrfToken
+        registerGlobalEventListeners() {
+            // Events
+            window.Event.listen('removed.recipient.label', (data) => {
+                this.recipients.forEach((recipient, index) => {
+                    if (recipient.id === data.recipientId) {
+                        this.$delete(this.recipients[index].labels, data.label);
                     }
+                });
+            });
+
+            window.Event.listen('added.recipient.label', (data) => {
+                this.recipients.forEach(recipient => {
+                    if (recipient.id === data.recipientId) {
+                        this.$set(recipient.labels, data.label, data.labelText);
+                    }
+                });
+            });
+
+            window.Event.listen('filters.filter-changed', (data) => {
+                if (data.filter === 'media') {
+                    this.searchForm.media = data.value;
+                } else if (data.filter === 'filter') {
+                    this.searchForm.filter = data.value;
+                } else if (data.filter === 'label') {
+                    this.searchForm.label = data.value;
                 }
+                this.fetchRecipients();
             });
-        },
-        pusher: function (channelName, eventName, callback) {
-            let pusher = this.pusherInit();
 
-            let channel = pusher.subscribe(channelName);
-            channel.bind(eventName, function (data) {
-                callback(data);
-            });
         },
-        pusherUnbindEvent: function (channelName, eventName) {
-            let pusher = this.pusherInit();
-
-            let channel = pusher.subscribe(channelName);
-            channel.unbind(eventName);
-        },
-        registerPushesListeners() {
-            this.pusher('private-campaign.' + this.campaign.id, 'recipients.updated', (data) => {
-                this.recipients = data.recipients.data;
-                this.searchForm.page = data.recipients.current_page;
-                this.searchForm.per_page = data.recipients.per_page;
-                this.total = data.recipients.total;
-            });
+        registerPusherListeners() {
+            pusherService
+                .subscribe('private-campaign.' + this.campaign.id)
+                .bind('recipients.updated', (data) => {
+                    this.recipients = data.recipients.data;
+                    this.searchForm.page = data.recipients.current_page;
+                    this.searchForm.per_page = data.recipients.per_page;
+                    this.total = data.recipients.total;
+                    // this.labelCounts = data.labelCounts
+                });
         }
     },
     mounted() {
@@ -145,21 +153,13 @@ window['app'] = new Vue({
         this.pusherCluster = window.pusherCluster;
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
+        pusherService = new PusherService();
+
         this.fetchRecipients();
 
-        this.registerPushesListeners();
-
-        // Events
-        window.Event.listen('filters.filter-changed', (data) => {
-            if (data.filter === 'media') {
-                this.searchForm.media = data.value;
-            } else if (data.filter === 'filter') {
-                this.searchForm.filter = data.value;
-            } else if (data.filter === 'label') {
-                this.searchForm.label = data.value;
-            }
-            this.fetchRecipients();
-        });
+        this.registerPusherListeners();
+        
+        this.registerGlobalEventListeners();
     }
 });
 
@@ -197,9 +197,11 @@ window['sidebar'] = new Vue({
             });
         },
         registerPusherListeners: function () {
-            window['app'].pusher('private-campaign.' + this.campaign.id, 'counts.updated', (data) => {
-                this.labelCounts = data.labelCounts
-            });
+            pusherService
+                .subscribe('private-campaign.' + this.campaign.id)
+                .bind('counts.updated', (data) => {
+                    this.labelCounts = data.labelCounts
+                });
         },
     }
 });
