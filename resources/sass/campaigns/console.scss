@@ -4,10 +4,9 @@
 @import './../components/pm-pagination';
 
 .sidebar-toggler {
-    border-radius: 5px;
-    background-color: #67a7cc;
-    border-color: #67a7cc;
-    color: #fff !important;
+    background-color: fff;
+    color: $brand-purple !important;
+    margin-left: -15px;
 }
 
 #sidebar-nav-content {
@@ -73,6 +72,13 @@
 #console {
     padding: 1rem;
     position: relative;
+
+    .go-back {
+        border: 0;
+        background-color: transparent;
+        color: $brand-purple;
+        padding-bottom: 0;
+    }
 
     .phone-email {
         height: 100%;

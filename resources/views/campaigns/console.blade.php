@@ -134,7 +134,7 @@
     <div id="console" class="container-fluid list-campaign-container" v-cloak>
         <div class="row">
             <div class="col-12 col-sm-5 col-lg-3 mb-3">
-                <a class="btn pm-btn pm-btn-blue go-back" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">
+                <a class="btn pm-btn go-back" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">
                     <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
                 </a>
             </div>

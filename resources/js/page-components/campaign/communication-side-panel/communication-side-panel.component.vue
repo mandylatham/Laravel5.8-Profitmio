@@ -309,13 +309,8 @@
         computed: {
             labelDropdownOptions: function () {
                 let options = this.labelDropdownItems;
-<<<<<<< HEAD
                 this.labels.forEach((label,index) => {
                     delete options[index];
-=======
-                this.labels.forEach((label, text) => {
-                    options.delete(label);
->>>>>>> feature/fix-console-filters
                 });
                 return options
             }
