@@ -80,6 +80,41 @@ window['app'] = new Vue({
         onPageChanged(event) {
             this.searchDropForm.page = event.page;
             return this.fetchData();
+        },
+        startDrop(drop) {
+            if (drop.sms_phones === 0) {
+                this.$swal({
+                    title: "Cannot send SMS",
+                    text: "This campaign does not have a phone number from which to send SMS messages!",
+                    footer: '<a href="'+window.campaignEditUrl+'">Click here to add one</a>',
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonText: "Ok",
+                    allowOutsideClick: false,
+                });
+            } else {
+                this.$swal({
+                    title: "Are you sure?",
+                    text: "Do you want to start this drop?",
+                    type: "info",
+                    showCancelButton: true,
+                    confirmButtonColor: "#38c172",
+                    confirmButtonText: "Yes",
+                    cancelButtonText: "No",
+                    allowOutsideClick: false,
+                    showLoaderOnConfirm: true,
+                    preConfirm: () => {
+                        return axios.get(generateRoute(window.startDropUrl, {'dropId': drop.id}));
+                    }
+                }).then(result => {
+                    if (result.value) {
+                        drop.status = 'Processing';
+                        window.location.href = generateRoute(this.dropRunSmsUrl, {'dropId': drop.id});
+                    }
+                }, error => {
+                    this.$toastr.error('Unable to process your request');
+                });
+            }
         }
     },
     mounted() {
