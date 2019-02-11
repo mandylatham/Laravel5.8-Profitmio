@@ -133,17 +133,6 @@ window['app'] = new Vue({
                 this.fetchRecipients();
             });
 
-        },
-        registerPusherListeners() {
-            pusherService
-                .subscribe('private-campaign.' + this.campaign.id)
-                .bind('recipients.updated', (data) => {
-                    this.recipients = data.recipients.data;
-                    this.searchForm.page = data.recipients.current_page;
-                    this.searchForm.per_page = data.recipients.per_page;
-                    this.total = data.recipients.total;
-                    // this.labelCounts = data.labelCounts
-                });
         }
     },
     mounted() {
@@ -153,16 +142,11 @@ window['app'] = new Vue({
         this.pusherCluster = window.pusherCluster;
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
-        pusherService = new PusherService();
-
         this.fetchRecipients();
-
-        this.registerPusherListeners();
         
         this.registerGlobalEventListeners();
     }
 });
-
 
 // Sidebar
 window['sidebar'] = new Vue({
@@ -179,6 +163,9 @@ window['sidebar'] = new Vue({
             Vue.set(this.counters, key, value);
         });
         this.campaign = window.campaign;
+
+        pusherService = new PusherService();
+
         this.registerPusherListeners();
     },
     methods: {
@@ -200,8 +187,9 @@ window['sidebar'] = new Vue({
             pusherService
                 .subscribe('private-campaign.' + this.campaign.id)
                 .bind('counts.updated', (data) => {
-                    console.log('data', data);
-                    // this.labelCounts = data.labelCounts
+                    each(data, (value, key) => {
+                        Vue.set(this.counters, key, value);
+                    });
                 });
         },
     }

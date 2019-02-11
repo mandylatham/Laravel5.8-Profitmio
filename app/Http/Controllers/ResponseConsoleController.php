@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Classes\MailgunService;
 use App\Events\CampaignCountsUpdated;
 use App\Events\RecipientTextResponseReceived;
+use App\Events\RecipientEmailResponseReceived;
+use App\Events\RecipientPhoneResponseReceived;
 use App\Models\Campaign;
 use App\Models\EmailLog;
 use App\Models\PhoneNumber;
@@ -400,7 +402,8 @@ class ResponseConsoleController extends Controller
 
         $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
         $recipient->save();
-        broadcast(new CampaignCountsUpdated($campaign));
+
+        event(new RecipientEmailResponseReceived($campaign, $recipient, $response));
 
         if ($campaign->client_passthrough && !empty($campaign->client_passthrough_email)) {
             $this->mailgun->sendPassthroughEmail(
@@ -425,7 +428,7 @@ class ResponseConsoleController extends Controller
      */
     public function emailReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        if ($campaign->isExpired) {
+        if ($campaign->isExpired()) {
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
@@ -465,8 +468,6 @@ class ResponseConsoleController extends Controller
         ]);
         $response->save();
 
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
-
         # Log the transaction
         $log = new EmailLog([
             'message_id'   => str_replace(['<', '>'], '', $reply->getId()),
@@ -477,9 +478,7 @@ class ResponseConsoleController extends Controller
             'recipient'    => $recipient->email,
         ]);
         $log->save();
-
-        return response(json_encode(['error' => 0, 'message' => 'Your email has been sent.']), 200)
-            ->header('Content-Type', 'text/json');
+        return response()->json(['response' => $response]);
     }
 
     /**
@@ -561,6 +560,8 @@ class ResponseConsoleController extends Controller
 
             $response->save();
 
+            event(new RecipientPhoneResponseReceived($campaign, $recipient, $response));
+
             return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
                 '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
                 ->header('Content-Type', 'text/xml');
@@ -639,6 +640,7 @@ class ResponseConsoleController extends Controller
 
             $response->recipient_id = $recipient->id;
             $response->save();
+
             event(new RecipientTextResponseReceived($campaign, $recipient, $response));
 
             if ($this->isUnsubscribeMessage($message)) {

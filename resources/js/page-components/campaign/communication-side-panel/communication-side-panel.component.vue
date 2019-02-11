@@ -222,18 +222,20 @@
                         </div>
                     </div>
 
-                    <div id="email-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
-                        <div class="input-group">
-                            <input type="text" id="email-message" class="form-control message-field" name="message"
-                                   placeholder="Type your message..." v-model="emailMessage">
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-primary waves-effect send-email"
-                                        @click="sendEmail">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
+
+                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired">
+                        <div id="email-form">
+                            <div class="input-group">
+                                <input type="text" id="email-message" class="form-control message-field" name="message"
+                                       placeholder="Type your message..." v-model="emailMessage">
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary waves-effect send-email">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -254,13 +256,16 @@
         beforeDestroy() {
             pusherService.disconnect();
         },
-        mounted() {
-            pusherService = new PusherService();
-            this.getResponses();
-        },
         components: {
             'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
             DatePicker
+        },
+        computed: {
+            labelDropdownOptions: function () {
+                return pickBy(this.labelDropdownItems, (label, index) => {
+                    return !this.labels[index];
+                });
+            }
         },
         data() {
             return {
@@ -305,28 +310,6 @@
                     }
                 }
             }
-        },
-        props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
-        computed: {
-            labelDropdownOptions: function () {
-                return pickBy(this.labelDropdownItems, (label, index) => {
-                    return !this.labels[index];
-                });
-            }
-        },
-        watch: {
-            selectedLabel: function (newVal) {
-                this.addLabel(newVal.value);
-            },
-            appointmentSelectedDateUnformatted: function (newVal) {
-                let d = new Date(newVal);
-                // date format: YYYY-MM-DD
-                let formattedDate = d.getFullYear() + '-' + this.pad2(d.getMonth() + 1) + '-' + this.pad2(d.getDate());
-                // time format: HH:mm
-                let formattedTime = this.pad2(d.getHours()) + ':' + this.pad2(d.getMinutes());
-                this.appointmentSelectedDate = formattedDate;
-                this.appointmentSelectedTime = formattedTime;
-            },
         },
         methods: {
             closePanel() {
@@ -454,14 +437,29 @@
                     });
             },
             sendEmail: function () {
+                const emailMessage = this.emailMessage;
+                // Add temporal message, this message will be replaced
+                this.threads.email.push({
+                    created_at_formatted: moment().format('YYYY-MM-DD H:mm A'),
+                    incoming: 0,
+                    message: emailMessage,
+                    message_formatted: emailMessage,
+                    type: "email",
+                });
+                this.emailMessage = '';
+                const indexOfMessage = this.threads.email.length - 1;
                 axios.post(generateRoute(window.sendEmailUrl, {'recipientId': this.recipientId}),
                     {
-                        message: this.emailMessage
+                        message: emailMessage
                     })
-                    .then((response) => {
-                        this.$toastr.success('Email sent.');
-                    })
-                    .catch((response) => {
+                    .then(response => {
+                        this.threads.email.splice(indexOfMessage, 1, response.data.response);
+                    }, () => {
+                        // Reset text message if empty
+                        if (!this.emailMessage) {
+                            this.emailMessage = emailMessage;
+                        }
+                        this.threads.email.splice(indexOfMessage, 1);
                         this.$toastr.error('Failed to send email.');
                     });
             },
@@ -507,12 +505,47 @@
                     });
             },
             registerPusherListeners: function () {
+                // Sms
                 pusherService
                     .subscribe('private-campaign.' + this.campaign.id)
                     .bind('recipient.' + this.recipient.id + '.text-response-received', data => {
                         this.threads.text.push(data.response);
                     });
+
+                // Email
+                pusherService
+                    .subscribe('private-campaign.' + this.campaign.id)
+                    .bind('recipient.' + this.recipient.id + '.email-response-received', data => {
+                        console.log('data', data);
+                        this.threads.email.push(data.response);
+                    });
+
+                // Phone
+                pusherService
+                    .subscribe('private-campaign.' + this.campaign.id)
+                    .bind('recipient.' + this.recipient.id + '.phone-response-received', data => {
+                        this.threads.phone.push(data.response);
+                    });
             }
+        },
+        mounted() {
+            pusherService = new PusherService();
+            this.getResponses();
+        },
+        props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
+        watch: {
+            selectedLabel: function (newVal) {
+                this.addLabel(newVal.value);
+            },
+            appointmentSelectedDateUnformatted: function (newVal) {
+                let d = new Date(newVal);
+                // date format: YYYY-MM-DD
+                let formattedDate = d.getFullYear() + '-' + this.pad2(d.getMonth() + 1) + '-' + this.pad2(d.getDate());
+                // time format: HH:mm
+                let formattedTime = this.pad2(d.getHours()) + ':' + this.pad2(d.getMinutes());
+                this.appointmentSelectedDate = formattedDate;
+                this.appointmentSelectedTime = formattedTime;
+            },
         }
     }
 </script>
