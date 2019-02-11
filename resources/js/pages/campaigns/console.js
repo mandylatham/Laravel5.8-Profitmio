@@ -176,7 +176,6 @@ window['sidebar'] = new Vue({
     },
     mounted: function () {
         each(window.counters, (value, key) => {
-            console.log(key, value);
             Vue.set(this.counters, key, value);
         });
         this.campaign = window.campaign;

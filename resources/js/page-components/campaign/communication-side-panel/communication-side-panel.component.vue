@@ -104,7 +104,7 @@
                 </div>
             </div>
 
-            <div class="mail-attachments" v-if="threads.phone.length">
+            <div class="mail-attachments" v-if="threads.phone && threads.phone.length">
                 <h4>Calls</h4>
                 <ul class="list-group">
                     <li class="list-group-item" v-for="call in threads.phone">
@@ -125,7 +125,7 @@
                 </ul>
             </div>
 
-            <div class="panel panel-primary messaging-panel sms-messages" v-if="threads.text.length">
+            <div class="panel panel-primary messaging-panel sms-messages" v-if="threads.text && threads.text.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
@@ -179,7 +179,7 @@
                 </div>
             </div>
 
-            <div class="panel panel-primary messaging-panel email-messages" v-if="threads.email.length">
+            <div class="panel panel-primary messaging-panel email-messages" v-if="threads.email && threads.email.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
@@ -293,8 +293,8 @@
         computed: {
             labelDropdownOptions: function () {
                 let options = this.labelDropdownItems;
-                this.labels.forEach((label,text) => {
-                    options.delete(label);
+                this.labels.forEach((label,index) => {
+                    delete options[index];
                 });
                 return options
             }
@@ -315,13 +315,13 @@
         },
         methods: {
             updateLabelDropdown() {
-                each(this.labelDropdownItems, label => {
+                for (var label in this.labelDropdownItems) {
                     if (this.labels[label] === undefined) {
                         this.$set(this.labelsDropdown, label, this.labelDropdownItems[label]);
                     } else {
                         this.$delete(this.labelsDropdown, label);
                     }
-                });
+                }
             },
             closePanel() {
                 window['app'].pusherUnbindEvent('private-campaign.' + this.campaign.id, 'response.' + this.recipientId + '.updated');
@@ -351,7 +351,6 @@
 
                 axios.get(generateRoute(window.getResponsesUrl, {'recipientId': recipientId}))
                     .then(({data: r}) => {
-                        console.log('r', r);
                         this.recipient = r.recipient;
                         this.threads = r.threads;
                         this.appointments = r.appointments;
@@ -364,7 +363,6 @@
                         this.setLoading(false);
                     })
                     .catch((response) => {
-                        console.log('response error', response);
                         this.setLoading(false);
                         this.$toastr.error("Couldn't fetch responses.");
                     });
