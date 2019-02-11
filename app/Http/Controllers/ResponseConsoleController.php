@@ -493,7 +493,7 @@ class ResponseConsoleController extends Controller
      */
     public function smsReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        if (!$campaign->isExpired()) {
+        if ($campaign->isExpired()) {
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
