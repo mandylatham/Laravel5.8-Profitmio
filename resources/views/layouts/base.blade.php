@@ -10,8 +10,9 @@
 
     @yield('head-styles')
     <script>
-        window.loggedUser = @json($loggedUser);
+        window.loggedUser = @json(auth()->user()->isAdmin());
         window.isAdmin = @json(auth()->user()->isAdmin());
+        window.timezone = @json(auth()->user()->getTimezone(\App\Models\Company::findOrFail(get_active_company())));
     </script>
     @yield('head-script')
 </head>

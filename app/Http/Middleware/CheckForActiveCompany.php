@@ -19,6 +19,16 @@ class CheckForActiveCompany
         if (!$user) {
             return redirect()->route('login');
         }
+        // Set active company to support company
+        if ($user->isAdmin() && !session()->get('activeCompany')) {
+            session([
+                'activeCompany' => $user->companies()
+                    ->where('companies.type', 'support')
+                    ->where('company_user.is_active', true)
+                    ->first()
+                    ->id
+            ]);
+        }
         if (!$user->isAdmin() && !session()->get('activeCompany')) {
             // If user has only 1 company, select that company by default
             if (count($user->getActiveCompanies()) == 1) {
