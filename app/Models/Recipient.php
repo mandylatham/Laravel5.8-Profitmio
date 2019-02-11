@@ -187,7 +187,7 @@ class Recipient extends Model
             $labels['wrong_number'] = 'Wrong Number';
         }
 
-        return $labels;
+        return (object)$labels;
     }
 
     public function getEmailAttribute()

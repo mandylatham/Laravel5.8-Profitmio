@@ -58,7 +58,7 @@ class Response extends Model
 
     public function getCreatedAtFormattedAttribute()
     {
-        return $this->created_at ? $this->created_at->timezone(Auth::user()->timezone)->format('Y-m-d g:i A T') . ' ' . ($this->created_at->timezone(Auth::user()->timezone)->diffForHumans()) : '';
+        return $this->created_at ? $this->created_at->timezone(auth()->user()->timezone)->format('Y-m-d g:i A T') . ' ' . ($this->created_at->timezone(auth()->user()->timezone)->diffForHumans()) : '';
     }
 
     public function getMessageFormattedAttribute()

@@ -30,9 +30,9 @@
                     </div>
                 </div>
                 <div class="col-4">
-                    <b-dropdown right text="Add Label" :disabled="Object.keys(labelsDropdown).length === 0"
+                    <b-dropdown right text="Add Label" :disabled="Object.keys(labelDropdownOptions).length === 0"
                                 class="float-right">
-                        <b-dropdown-item v-for="(label, index) in labelsDropdown" :key="index" :value="index"
+                        <b-dropdown-item v-for="(label, index) in labelDropdownOptions" :key="index" :value="index"
                                          @click="addLabel(index, label)">{{ label }}
                         </b-dropdown-item>
                     </b-dropdown>
@@ -167,19 +167,19 @@
                         </div>
                     </div>
 
-                    <div id="sms-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
-                        <div class="input-group">
-                            <input type="text" id="sms-message" class="form-control message-field" name="message"
-                                   placeholder="Type your message..." v-model="textMessage">
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-primary waves-effect send-sms"
-                                        @click="sendText">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
+                    <form @submit.prevent="sendText">
+                        <div id="sms-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
+                            <div class="input-group">
+                                <input type="text" id="sms-message" class="form-control message-field" name="message"
+                                       placeholder="Type your message..." v-model="textMessage">
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary waves-effect send-sms">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
+                    </form>
                 </div>
             </div>
 
@@ -222,18 +222,20 @@
                         </div>
                     </div>
 
-                    <div id="email-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
-                        <div class="input-group">
-                            <input type="text" id="email-message" class="form-control message-field" name="message"
-                                   placeholder="Type your message..." v-model="emailMessage">
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-primary waves-effect send-email"
-                                        @click="sendEmail">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
+
+                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired">
+                        <div id="email-form">
+                            <div class="input-group">
+                                <input type="text" id="email-message" class="form-control message-field" name="message"
+                                       placeholder="Type your message..." v-model="emailMessage">
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary waves-effect send-email">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -242,9 +244,10 @@
 
 <script>
     import axios from 'axios';
+    import moment from 'moment';
     import {generateRoute} from './../../../common/helpers';
     import DatePicker from 'vue2-datepicker';
-    import {each} from 'lodash';
+    import {pickBy} from 'lodash';
     import PusherService from './../../../common/pusher-service';
 
     let pusherService = null;
@@ -253,13 +256,16 @@
         beforeDestroy() {
             pusherService.disconnect();
         },
-        mounted() {
-            pusherService = new PusherService();
-            this.getResponses();
-        },
         components: {
             'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
             DatePicker
+        },
+        computed: {
+            labelDropdownOptions: function () {
+                return pickBy(this.labelDropdownItems, (label, index) => {
+                    return !this.labels[index];
+                });
+            }
         },
         data() {
             return {
@@ -305,40 +311,7 @@
                 }
             }
         },
-        props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
-        computed: {
-            labelDropdownOptions: function () {
-                let options = this.labelDropdownItems;
-                this.labels.forEach((label,index) => {
-                    delete options[index];
-                });
-                return options
-            }
-        },
-        watch: {
-            selectedLabel: function (newVal) {
-                this.addLabel(newVal.value);
-            },
-            appointmentSelectedDateUnformatted: function (newVal) {
-                let d = new Date(newVal);
-                // date format: YYYY-MM-DD
-                let formattedDate = d.getFullYear() + '-' + this.pad2(d.getMonth() + 1) + '-' + this.pad2(d.getDate());
-                // time format: HH:mm
-                let formattedTime = this.pad2(d.getHours()) + ':' + this.pad2(d.getMinutes());
-                this.appointmentSelectedDate = formattedDate;
-                this.appointmentSelectedTime = formattedTime;
-            },
-        },
         methods: {
-            updateLabelDropdown() {
-                for (var label in this.labelDropdownItems) {
-                    if (this.labels[label] === undefined) {
-                        this.$set(this.labelsDropdown, label, this.labelDropdownItems[label]);
-                    } else {
-                        this.$delete(this.labelsDropdown, label);
-                    }
-                }
-            },
             closePanel() {
                 this.$emit('closePanel', {});
             },
@@ -372,7 +345,6 @@
                         this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
 
                         this.registerPusherListeners();
-                        this.updateLabelDropdown();
                         this.setLoading(false);
                     })
                     .catch((response) => {
@@ -437,31 +409,59 @@
                     });
             },
             sendText: function () {
+                const textMessage = this.textMessage;
+                // Add temporal message, this message will be replaced
+                this.threads.text.push({
+                    created_at_formatted: moment().format('YYYY-MM-DD H:mm A'),
+                    incoming: 0,
+                    message: textMessage,
+                    message_formatted: textMessage,
+                    read: 1,
+                    type: "text",
+                });
+                this.textMessage = '';
+                const indexOfMessage = this.threads.text.length - 1;
                 axios.post(generateRoute(window.sendTextUrl, {'recipientId': this.recipientId}),
                     {
-                        message: this.textMessage
+                        message: textMessage
                     })
-                    .then((response) => {
-                        this.$toastr.success('Text sent.');
-                    })
-                    .catch((response) => {
+                    .then(response => {
+                        this.threads.text.splice(indexOfMessage, 1, response.data.response);
+                    }, () => {
+                        // Reset text message if empty
+                        if (!this.textMessage) {
+                            this.textMessage = textMessage;
+                        }
+                        this.threads.text.splice(indexOfMessage, 1);
                         this.$toastr.error('Failed to send text.');
                     });
             },
             sendEmail: function () {
+                const emailMessage = this.emailMessage;
+                // Add temporal message, this message will be replaced
+                this.threads.email.push({
+                    created_at_formatted: moment().format('YYYY-MM-DD H:mm A'),
+                    incoming: 0,
+                    message: emailMessage,
+                    message_formatted: emailMessage,
+                    type: "email",
+                });
+                this.emailMessage = '';
+                const indexOfMessage = this.threads.email.length - 1;
                 axios.post(generateRoute(window.sendEmailUrl, {'recipientId': this.recipientId}),
                     {
-                        message: this.emailMessage
+                        message: emailMessage
                     })
-                    .then((response) => {
-                        this.$toastr.success('Email sent.');
-                    })
-                    .catch((response) => {
+                    .then(response => {
+                        this.threads.email.splice(indexOfMessage, 1, response.data.response);
+                    }, () => {
+                        // Reset text message if empty
+                        if (!this.emailMessage) {
+                            this.emailMessage = emailMessage;
+                        }
+                        this.threads.email.splice(indexOfMessage, 1);
                         this.$toastr.error('Failed to send email.');
                     });
-            },
-            selectLabel: function (label) {
-                this.selectedLabel = label;
             },
             addLabel: function (label, labelText) {
                 this.$set(this.labels, label, labelText);
@@ -472,7 +472,6 @@
                 });
                 axios.post(generateRoute(window.addLabelUrl, {'recipientId': this.recipientId}), {label})
                     .then((response) => {
-                        // this.updateLabelDropdown();
                     }, () => {
                         this.$delete(this.labels, label);
                         window.Event.fire('added.recipient.label', {
@@ -495,7 +494,6 @@
                         label: key
                     })
                     .then(() => {
-                        // this.updateLabelDropdown();
                     }, () => {
                         this.$set(this.labels, key, label);
                         this.$toastr.error('Failed to remove label.');
@@ -507,45 +505,47 @@
                     });
             },
             registerPusherListeners: function () {
-                console.log('register');
+                // Sms
                 pusherService
                     .subscribe('private-campaign.' + this.campaign.id)
-                    .bind('response.' + this.recipient.id + '.updated', data => {
+                    .bind('recipient.' + this.recipient.id + '.text-response-received', data => {
+                        this.threads.text.push(data.response);
+                    });
+
+                // Email
+                pusherService
+                    .subscribe('private-campaign.' + this.campaign.id)
+                    .bind('recipient.' + this.recipient.id + '.email-response-received', data => {
                         console.log('data', data);
-                        // axios.get(generateRoute(window.recipientGetResponsesUrl, {'recipientId': this.recipientId}),
-                        //     {
-                        //         params: {
-                        //             list: data
-                        //         }
-                        //     })
-                        //     .then((response) => {
-                        //
-                        //         if (response.data.appointments) {
-                        //             this.appointments = response.data.appointments;
-                        //         }
-                        //
-                        //         if (response.data.threads) {
-                        //             this.threads = response.data.threads;
-                        //         }
-                        //
-                        //         if (response.data.recipient) {
-                        //             this.recipient = response.data.recipient;
-                        //         }
-                        //
-                        //         if (response.data.recipient.labels) {
-                        //             this.labels = response.data.recipient.labels;
-                        //         }
-                        //
-                        //         // TODO: check why is whole slidePanel flickering when loading is enabled
-                        //         // this.setLoading(false);
-                        //     })
-                        //     .catch((response) => {
-                        //         this.$toastr.error('Failed to update responses.');
-                        //         // TODO: check why is whole slidePanel flickering when loading is enabled
-                        //         // this.setLoading(false);
-                        //     });
+                        this.threads.email.push(data.response);
+                    });
+
+                // Phone
+                pusherService
+                    .subscribe('private-campaign.' + this.campaign.id)
+                    .bind('recipient.' + this.recipient.id + '.phone-response-received', data => {
+                        this.threads.phone.push(data.response);
                     });
             }
+        },
+        mounted() {
+            pusherService = new PusherService();
+            this.getResponses();
+        },
+        props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
+        watch: {
+            selectedLabel: function (newVal) {
+                this.addLabel(newVal.value);
+            },
+            appointmentSelectedDateUnformatted: function (newVal) {
+                let d = new Date(newVal);
+                // date format: YYYY-MM-DD
+                let formattedDate = d.getFullYear() + '-' + this.pad2(d.getMonth() + 1) + '-' + this.pad2(d.getDate());
+                // time format: HH:mm
+                let formattedTime = this.pad2(d.getHours()) + ':' + this.pad2(d.getMinutes());
+                this.appointmentSelectedDate = formattedDate;
+                this.appointmentSelectedTime = formattedTime;
+            },
         }
     }
 </script>
