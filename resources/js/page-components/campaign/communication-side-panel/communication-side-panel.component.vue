@@ -152,7 +152,7 @@
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
                                 </div>
-                                <div class="message-time" v-else><span
+                                <div class="message-time"  :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}" v-else><span
                                     class="text-danger">UNKNOWN RECEIVE DATE</span></div>
 
                                 <div class="message" :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}">{{ msg.message_formatted }}</div>
@@ -199,17 +199,15 @@
 
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
-                            <div class="message-wrapper"
-                                 :class="{'inbound-message': msg.incoming, 'outbound-message': !msg.incoming}">
-
+                            <div class="message-wrapper">
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
                                 </div>
-                                <div class="message-time" v-else><span
+                                <div class="message-time" :class="{'inbound-message': msg.incoming, 'outbound-message': !msg.incoming}" v-else><span
                                     class="text-danger">UNKNOWN RECEIVE DATE</span></div>
 
-                                <div class="message unread">{{ msg.message_formatted }}</div>
+                                <div class="message unread" :class="{'inbound-message': msg.incoming, 'outbound-message': !msg.incoming}">{{ msg.message_formatted }}</div>
 
                                 <div class="checkbox" v-if="msg.incoming">
                                     <label>
