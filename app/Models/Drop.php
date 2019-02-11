@@ -28,7 +28,7 @@ class Drop extends Model
         'sms_phones'
     ];
 
-    public function includeSmsPhonesAttribute()
+    public function getSmsPhonesAttribute()
     {
         return $this->campaign->phones()->whereCallSourceName('sms')->count();
     }

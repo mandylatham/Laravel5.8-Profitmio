@@ -459,6 +459,11 @@ class RecipientController extends Controller
             $recipients->search($request->input('search'));
         }
 
+//        $recipients->join('responses', 'responses.recipient_id', '=', 'recipients.id');
+//            ->selectRaw("recipients.*, MAX(responses.created_at) as last_seen_ago")
+//            ->groupBy('recipients.id');
+
+
         return $recipients->paginate($request->input('per_page', 30));
     }
 

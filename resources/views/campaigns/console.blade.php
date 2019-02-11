@@ -166,8 +166,8 @@
                         <div v-if="recipient.phone"><i class="fa fa-phone mr-2"></i> @{{ recipient.phone }}</div>
                     </div>
                 </div>
-                <div class="col-12 col-md-3 text-center">
-                    @{{ recipient.last_seen_ago }}
+                <div class="col-12 col-md-3 text-center d-flex flex-column justify-content-center">
+                    @{{ recipient.last_seen | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A') }}
                 </div>
             </div>
         </div>
