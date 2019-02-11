@@ -35,11 +35,16 @@ class CampaignSchedule extends Model
         'system_id',
     ];
 
-    protected $appends = ['send_at_formatted'];
+    protected $appends = ['send_at_formatted', 'sms_phones'];
 
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
+    }
+
+    public function getSmsPhonesAttribute()
+    {
+        return $this->campaign->phones()->whereCallSourceName('sms')->count();
     }
 
     public function recipients()
@@ -55,7 +60,7 @@ class CampaignSchedule extends Model
     public static function searchByRequest(Request $request, Campaign $campaign)
     {
         $query = self::select([
-                'send_at', 'type', 'started_at', 'recipient_group', 'status', 'text_message', 'percentage_complete', 'completed_at', 'campaign_schedules.id',
+                'send_at', 'type', 'campaign_id', 'started_at', 'recipient_group', 'status', 'text_message', 'percentage_complete', 'completed_at', 'campaign_schedules.id',
                 \DB::raw("case when type in ('email', 'sms') then
                 (select count(*) from deployment_recipients where deployment_id = campaign_schedules.id)
                 else

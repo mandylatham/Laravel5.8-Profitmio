@@ -222,6 +222,7 @@ Route::group(['middleware' => 'auth'], function () {
     //region DEPLOYMENT
     /* TODO: change nomenclature to Drops */
     Route::group(['prefix' => '/drop/{deployment}', 'middleware' => 'can:change-campaigns'], function () {
+        Route::get('/start', 'DeploymentController@start')->name('deployments.start');
         Route::get('/pause', 'DeploymentController@pause')->name('deployment.pause');
         Route::get('/resume', 'DeploymentController@resume')->name('deployment.resume');
         Route::post('/delete', 'DeploymentController@delete')->name('deployment.delete');
