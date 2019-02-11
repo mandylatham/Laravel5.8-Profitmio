@@ -26,7 +26,7 @@ class Response extends Model
         'recording_url',
     ];
 
-    protected $appends = ['created_at_formatted', 'message_formatted'];
+    protected $appends = ['message_formatted'];
 
     public function campaign()
     {
@@ -54,11 +54,6 @@ class Response extends Model
         }
 
         return $url;
-    }
-
-    public function getCreatedAtFormattedAttribute()
-    {
-        return $this->created_at ? $this->created_at->timezone(auth()->user()->timezone)->format('Y-m-d g:i A T') . ' ' . ($this->created_at->timezone(auth()->user()->timezone)->diffForHumans()) : '';
     }
 
     public function getMessageFormattedAttribute()
