@@ -148,8 +148,9 @@
                     <div class="sms-message-container">
                         <div v-for="msg in threads.text">
                             <div class="message-wrapper">
-                                <div class="message-time" v-if="msg.created_at_formatted">{{
-                                    msg.created_at_formatted }}
+                                <div class="message-time" v-if="msg.created_at">{{
+                                    msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
+                                    msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
                                 </div>
                                 <div class="message-time" v-else><span
                                     class="text-danger">UNKNOWN RECEIVE DATE</span></div>
@@ -165,7 +166,6 @@
                             </div>
                         </div>
                     </div>
-
                     <form @submit.prevent="sendText">
                         <div id="sms-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
                             <div class="input-group">
@@ -202,8 +202,9 @@
                             <div class="message-wrapper"
                                  :class="{'inbound-message': msg.incoming, 'outbound-message': !msg.incoming}">
 
-                                <div class="message-time" v-if="msg.created_at_formatted">{{
-                                    msg.created_at_formatted }}
+                                <div class="message-time" v-if="msg.created_at">{{
+                                    msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
+                                    msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
                                 </div>
                                 <div class="message-time" v-else><span
                                     class="text-danger">UNKNOWN RECEIVE DATE</span></div>
@@ -248,6 +249,9 @@
     import DatePicker from 'vue2-datepicker';
     import {pickBy} from 'lodash';
     import PusherService from './../../../common/pusher-service';
+    import './../../../filters/m-utc-parse.filter';
+    import './../../../filters/m-format-localized.filter';
+    import './../../../filters/m-duration-for-humans.filter';
 
     let pusherService = null;
 
@@ -411,7 +415,7 @@
                 const textMessage = this.textMessage;
                 // Add temporal message, this message will be replaced
                 this.threads.text.push({
-                    created_at_formatted: moment().format('YYYY-MM-DD H:mm A'),
+                    created_at: moment.utc().format('YYYY-MM-DD HH:mm:dd'),
                     incoming: 0,
                     message: textMessage,
                     message_formatted: textMessage,
@@ -439,7 +443,7 @@
                 const emailMessage = this.emailMessage;
                 // Add temporal message, this message will be replaced
                 this.threads.email.push({
-                    created_at_formatted: moment().format('YYYY-MM-DD H:mm A'),
+                    created_at: moment.utc().format('YYYY-MM-DD HH:mm:ss'),
                     incoming: 0,
                     message: emailMessage,
                     message_formatted: emailMessage,
