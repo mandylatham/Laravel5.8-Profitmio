@@ -163,6 +163,14 @@ class Recipient extends Model
             $labels['not_interested'] = 'Not Interested';
         }
 
+        if ((bool)$this->callback) {
+            $labels['callback'] = 'Callback';
+        }
+
+        if ((bool)$this->appointment) {
+            $labels['appointment'] = 'Appointment';
+        }
+
         if ((bool)$this->service) {
             $labels['service'] = 'Service Dept';
         }
