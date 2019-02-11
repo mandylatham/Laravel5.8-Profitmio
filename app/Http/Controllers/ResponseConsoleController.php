@@ -498,7 +498,7 @@ class ResponseConsoleController extends Controller
         }
 
         $sms_phone_number = $campaign->phones()->whereCallSourceName('sms')->firstOrFail();
-        $reply = \Twilio::sendSms($sms_phone_number, $recipient->phone, $request->input('message'));
+        $reply = \Twilio::sendSms($sms_phone_number->phone_number, $recipient->phone, $request->input('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'text')
