@@ -518,10 +518,7 @@ class ResponseConsoleController extends Controller
         ]);
         $response->save();
 
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
-
-        return response(json_encode(['error' => 0, 'message' => 'Your text message has been sent.']), 200)
-            ->header('Content-Type', 'text/json');
+        return response()->json(['response' => $response]);
     }
 
     /**

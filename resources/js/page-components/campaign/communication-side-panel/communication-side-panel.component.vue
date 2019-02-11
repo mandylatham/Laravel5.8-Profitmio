@@ -167,19 +167,19 @@
                         </div>
                     </div>
 
-                    <div id="sms-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
-                        <div class="input-group">
-                            <input type="text" id="sms-message" class="form-control message-field" name="message"
-                                   placeholder="Type your message..." v-model="textMessage">
-                            <div class="input-group-btn">
-                                <button type="button" class="btn btn-primary waves-effect send-sms"
-                                        @click="sendText">
-                                    <i class="fas fa-paper-plane"></i>
-                                </button>
+                    <form @submit.prevent="sendText">
+                        <div id="sms-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
+                            <div class="input-group">
+                                <input type="text" id="sms-message" class="form-control message-field" name="message"
+                                       placeholder="Type your message..." v-model="textMessage">
+                                <div class="input-group-btn">
+                                    <button type="submit" class="btn btn-primary waves-effect send-sms">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
                             </div>
                         </div>
-                    </div>
-
+                    </form>
                 </div>
             </div>
 
@@ -242,6 +242,7 @@
 
 <script>
     import axios from 'axios';
+    import moment from 'moment';
     import {generateRoute} from './../../../common/helpers';
     import DatePicker from 'vue2-datepicker';
     import {pickBy} from 'lodash';
@@ -425,14 +426,30 @@
                     });
             },
             sendText: function () {
+                const textMessage = this.textMessage;
+                // Add temporal message, this message will be replaced
+                this.threads.text.push({
+                    created_at_formatted: moment().format('YYYY-MM-DD H:mm A'),
+                    incoming: 0,
+                    message: textMessage,
+                    message_formatted: textMessage,
+                    read: 1,
+                    type: "text",
+                });
+                this.textMessage = '';
+                const indexOfMessage = this.threads.text.length - 1;
                 axios.post(generateRoute(window.sendTextUrl, {'recipientId': this.recipientId}),
                     {
-                        message: this.textMessage
+                        message: textMessage
                     })
-                    .then((response) => {
-                        this.$toastr.success('Text sent.');
-                    })
-                    .catch((response) => {
+                    .then(response => {
+                        this.threads.text.splice(indexOfMessage, 1, response.data.response);
+                    }, () => {
+                        // Reset text message if empty
+                        if (!this.textMessage) {
+                            this.textMessage = textMessage;
+                        }
+                        this.threads.text.splice(indexOfMessage, 1);
                         this.$toastr.error('Failed to send text.');
                     });
             },
@@ -493,40 +510,7 @@
                 pusherService
                     .subscribe('private-campaign.' + this.campaign.id)
                     .bind('recipient.' + this.recipient.id + '.text-response-received', data => {
-                        console.log('data', data);
                         this.threads.text.push(data.response);
-                        // axios.get(generateRoute(window.recipientGetResponsesUrl, {'recipientId': this.recipientId}),
-                        //     {
-                        //         params: {
-                        //             list: data
-                        //         }
-                        //     })
-                        //     .then((response) => {
-                        //
-                        //         if (response.data.appointments) {
-                        //             this.appointments = response.data.appointments;
-                        //         }
-                        //
-                        //         if (response.data.threads) {
-                        //             this.threads = response.data.threads;
-                        //         }
-                        //
-                        //         if (response.data.recipient) {
-                        //             this.recipient = response.data.recipient;
-                        //         }
-                        //
-                        //         if (response.data.recipient.labels) {
-                        //             this.labels = response.data.recipient.labels;
-                        //         }
-                        //
-                        //         // TODO: check why is whole slidePanel flickering when loading is enabled
-                        //         // this.setLoading(false);
-                        //     })
-                        //     .catch((response) => {
-                        //         this.$toastr.error('Failed to update responses.');
-                        //         // TODO: check why is whole slidePanel flickering when loading is enabled
-                        //         // this.setLoading(false);
-                        //     });
                     });
             }
         }

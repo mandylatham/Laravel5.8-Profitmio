@@ -115,9 +115,9 @@ window['app'] = new Vue({
             });
 
             window.Event.listen('added.recipient.label', (data) => {
-                this.recipients.forEach(recipient => {
+                this.recipients.forEach((recipient, index) => {
                     if (recipient.id === data.recipientId) {
-                        this.$set(recipient.labels, data.label, data.labelText);
+                        this.$set(this.recipients[index].labels, data.label, data.labelText);
                     }
                 });
             });
@@ -200,7 +200,8 @@ window['sidebar'] = new Vue({
             pusherService
                 .subscribe('private-campaign.' + this.campaign.id)
                 .bind('counts.updated', (data) => {
-                    this.labelCounts = data.labelCounts
+                    console.log('data', data);
+                    // this.labelCounts = data.labelCounts
                 });
         },
     }
