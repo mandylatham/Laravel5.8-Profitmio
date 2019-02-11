@@ -173,6 +173,12 @@
           align-self: flex-start;
         }
 
+        .outbound-message {
+          background-color: #eee;
+          color: #333,
+          border-color: #efefef;
+        }
+
         .message-time {
           font-family: 'Operator Mono', 'Source Sans Pro', Menlo, Monaco, Consolas, Courier New, monospace;
           font-size: 10px;

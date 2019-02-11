@@ -506,7 +506,7 @@ class ResponseConsoleController extends Controller
             ->where('recipient_id', $recipient->id)
             ->update(['read' => true]);
 
-        $response = new Response([
+        $response = Response::create([
             'campaign_id'   => $campaign->id,
             'recipient_id'  => $recipient->id,
             'message'       => $request->get('message'),
@@ -515,7 +515,6 @@ class ResponseConsoleController extends Controller
             'type'          => 'text',
             'recording_sid' => 0,
         ]);
-        $response->save();
 
         return response()->json(['response' => $response]);
     }

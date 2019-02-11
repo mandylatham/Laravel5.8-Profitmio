@@ -29,10 +29,8 @@ class RecipientTextResponseReceived implements ShouldBroadcast
      * @param Campaign  $campaign  Campaign
      * @param Recipient $recipient Recipient
      */
-    public function __construct(Campaign $campaign, Recipient $recipient, Response $response)
+    public function __construct(Response $response)
     {
-        $this->campaign = $campaign;
-        $this->recipient = $recipient;
         $this->response = $response;
     }
 
@@ -43,7 +41,7 @@ class RecipientTextResponseReceived implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('campaign.' . $this->campaign->id);
+        return new PrivateChannel('campaign.' . $response->campaign_id);
     }
 
     /**
@@ -53,7 +51,7 @@ class RecipientTextResponseReceived implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'recipient.' . $this->recipient->id . '.text-response-received';
+        return 'recipient.' . $response->recipient_id . '.text-response-received';
     }
 
     public function broadcastWith()
