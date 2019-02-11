@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\MailgunService;
 use App\Events\CampaignCountsUpdated;
-use App\Events\CampaignResponseUpdated;
+use App\Events\RecipientTextResponseReceived;
 use App\Models\Campaign;
 use App\Models\EmailLog;
 use App\Models\PhoneNumber;
@@ -642,7 +642,7 @@ class ResponseConsoleController extends Controller
 
             $response->recipient_id = $recipient->id;
             $response->save();
-            broadcast(new CampaignResponseUpdated($recipient));
+            event(new RecipientTextResponseReceived($campaign, $recipient, $response));
 
             if ($this->isUnsubscribeMessage($message)) {
                 Log::debug('unsubscribing recipient #' . $recipient->id);

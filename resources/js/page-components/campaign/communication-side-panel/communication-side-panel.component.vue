@@ -30,9 +30,9 @@
                     </div>
                 </div>
                 <div class="col-4">
-                    <b-dropdown right text="Add Label" :disabled="Object.keys(labelsDropdown).length === 0"
+                    <b-dropdown right text="Add Label" :disabled="Object.keys(labelDropdownOptions).length === 0"
                                 class="float-right">
-                        <b-dropdown-item v-for="(label, index) in labelsDropdown" :key="index" :value="index"
+                        <b-dropdown-item v-for="(label, index) in labelDropdownOptions" :key="index" :value="index"
                                          @click="addLabel(index, label)">{{ label }}
                         </b-dropdown-item>
                     </b-dropdown>
@@ -244,7 +244,7 @@
     import axios from 'axios';
     import {generateRoute} from './../../../common/helpers';
     import DatePicker from 'vue2-datepicker';
-    import {each} from 'lodash';
+    import {pickBy} from 'lodash';
     import PusherService from './../../../common/pusher-service';
 
     let pusherService = null;
@@ -308,11 +308,9 @@
         props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
         computed: {
             labelDropdownOptions: function () {
-                let options = this.labelDropdownItems;
-                this.labels.forEach((label,index) => {
-                    delete options[index];
+                return pickBy(this.labelDropdownItems, (label, index) => {
+                    return !this.labels[index];
                 });
-                return options
             }
         },
         watch: {
@@ -330,15 +328,6 @@
             },
         },
         methods: {
-            updateLabelDropdown() {
-                for (var label in this.labelDropdownItems) {
-                    if (this.labels[label] === undefined) {
-                        this.$set(this.labelsDropdown, label, this.labelDropdownItems[label]);
-                    } else {
-                        this.$delete(this.labelsDropdown, label);
-                    }
-                }
-            },
             closePanel() {
                 this.$emit('closePanel', {});
             },
@@ -372,7 +361,6 @@
                         this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
 
                         this.registerPusherListeners();
-                        this.updateLabelDropdown();
                         this.setLoading(false);
                     })
                     .catch((response) => {
@@ -460,9 +448,6 @@
                         this.$toastr.error('Failed to send email.');
                     });
             },
-            selectLabel: function (label) {
-                this.selectedLabel = label;
-            },
             addLabel: function (label, labelText) {
                 this.$set(this.labels, label, labelText);
                 window.Event.fire('added.recipient.label', {
@@ -472,7 +457,6 @@
                 });
                 axios.post(generateRoute(window.addLabelUrl, {'recipientId': this.recipientId}), {label})
                     .then((response) => {
-                        // this.updateLabelDropdown();
                     }, () => {
                         this.$delete(this.labels, label);
                         window.Event.fire('added.recipient.label', {
@@ -495,7 +479,6 @@
                         label: key
                     })
                     .then(() => {
-                        // this.updateLabelDropdown();
                     }, () => {
                         this.$set(this.labels, key, label);
                         this.$toastr.error('Failed to remove label.');
@@ -507,11 +490,11 @@
                     });
             },
             registerPusherListeners: function () {
-                console.log('register');
                 pusherService
                     .subscribe('private-campaign.' + this.campaign.id)
-                    .bind('response.' + this.recipient.id + '.updated', data => {
+                    .bind('recipient.' + this.recipient.id + '.text-response-received', data => {
                         console.log('data', data);
+                        this.threads.text.push(data.response);
                         // axios.get(generateRoute(window.recipientGetResponsesUrl, {'recipientId': this.recipientId}),
                         //     {
                         //         params: {
