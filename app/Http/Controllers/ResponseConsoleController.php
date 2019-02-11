@@ -640,8 +640,9 @@ class ResponseConsoleController extends Controller
             $response->recipient_id = $recipient->id;
             $response->save();
 
-            event(new RecipientTextResponseReceived($campaign, $recipient, $response));
+            event(new RecipientTextResponseReceived($response));
 
+            // ubsubscribe happens at twilio level
             if ($this->isUnsubscribeMessage($message)) {
                 Log::debug('unsubscribing recipient #' . $recipient->id);
                 $suppress = new \App\SmsSuppression([
