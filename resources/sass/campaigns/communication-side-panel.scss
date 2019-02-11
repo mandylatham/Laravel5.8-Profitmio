@@ -169,14 +169,19 @@
         }
 
         .inbound-message {
+          background-color: #0b96e5;
+          border: 1px solid #9cc2ff;
+          color: #fff;
           text-align: left;
           align-self: flex-start;
+          margin-left: 0;
         }
 
         .outbound-message {
           background-color: #eee;
           color: #333;
           border-color: #efefef;
+          margin-right: 0;
         }
 
         .message-time {
@@ -188,12 +193,9 @@
         }
 
         .message {
-          background-color: #0b96e5;
-          border: 1px solid #9cc2ff;
-          color: #fff;
           padding: 12px 20px;
           border-radius: 8px;
-          width: 100%;
+          width: 80%;
           text-align: left;
         }
 
