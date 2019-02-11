@@ -30,19 +30,20 @@
                     </div>
                 </div>
                 <div class="col-4">
-                    <b-dropdown right text="Add Label" :disabled="Object.keys(labelsDropdown).length === 0" class="float-right">
+                    <b-dropdown right text="Add Label" :disabled="Object.keys(labelsDropdown).length === 0"
+                                class="float-right">
                         <b-dropdown-item v-for="(label, index) in labelsDropdown" :key="index" :value="index"
-                                         @click="addLabel(index)">{{ label }}
+                                         @click="addLabel(index, label)">{{ label }}
                         </b-dropdown-item>
                     </b-dropdown>
                 </div>
             </div>
 
-            <div class="row align-items-end no-gutters mt-4 mb-3">
-                <div class="col-12 labels-wrapper" v-if="Object.keys(this.labels).length > 0">
+            <div class="row align-items-end no-gutters mt-4 mb-3" v-if="Object.keys(labels).length > 0">
+                <div class="col-12 labels-wrapper">
                     <ul class="labels">
-                        <li :class="index" v-for="(label, index) in this.labels">{{ label }}<i
-                                class="fas fa-times" @click="removeLabel(index)"></i></li>
+                        <li :class="index" v-for="(label, index) in labels">{{ label }}<i
+                            class="fas fa-times" @click="removeLabel(label, index)"></i></li>
                     </ul>
                 </div>
             </div>
@@ -86,13 +87,16 @@
             <div id="new-appointment" class="mail-attachments mb-3" v-else>
                 <div class="alert alert-info" role="alert">
                     {{ recipient.name }} does not have any appointments yet.
-                    <button class="btn pm-btn btn-primary" @click="showNewApptForm = !showNewApptForm">Add new appointment</button>
+                    <button class="btn pm-btn btn-primary" @click="showNewApptForm = !showNewApptForm">Add new
+                        appointment
+                    </button>
                 </div>
                 <div id="add-appointment-form" class="card" v-if="showNewApptForm">
                     <div class="card-body">
                         <div class="form-group">
                             <label for="appointment_date" class="form-check-label">Select Appointment Date</label>
-                            <date-picker id="appointment_date" class="form-control" v-model="appointmentSelectedDateUnformatted"
+                            <date-picker id="appointment_date" class="form-control"
+                                         v-model="appointmentSelectedDateUnformatted"
                                          type="datetime" format="YYYY-MM-DD hh:mm" :lang="timePickerLang"
                                          :minute-step="5" confirm></date-picker>
                         </div>
@@ -149,7 +153,7 @@
                                     msg.created_at_formatted }}
                                 </div>
                                 <div class="message-time" v-else><span
-                                        class="text-danger">UNKNOWN RECEIVE DATE</span></div>
+                                    class="text-danger">UNKNOWN RECEIVE DATE</span></div>
 
                                 <div class="message unread">{{ msg.message_formatted }}</div>
                                 <div class="checkbox" v-if="msg.incoming">
@@ -203,7 +207,7 @@
                                     msg.created_at_formatted }}
                                 </div>
                                 <div class="message-time" v-else><span
-                                        class="text-danger">UNKNOWN RECEIVE DATE</span></div>
+                                    class="text-danger">UNKNOWN RECEIVE DATE</span></div>
 
                                 <div class="message unread">{{ msg.message_formatted }}</div>
 
@@ -241,10 +245,16 @@
     import {generateRoute} from './../../../common/helpers';
     import DatePicker from 'vue2-datepicker';
     import {each} from 'lodash';
+    import PusherService from './../../../common/pusher-service';
+
+    let pusherService = null;
 
     export default {
+        beforeDestroy() {
+            pusherService.disconnect();
+        },
         mounted() {
-            // this.resetVars();
+            pusherService = new PusherService();
             this.getResponses();
         },
         components: {
@@ -256,7 +266,13 @@
                 showNewApptForm: false,
                 disableBgClick: false,
                 recipient: [],
-                threads: [],
+                threads: {
+                    email: [],
+                    phone: [],
+                    text: [],
+                    textDrop: {},
+                    emailDrop: {}
+                },
                 appointments: [],
                 rest: [],
                 loading: false,
@@ -293,8 +309,13 @@
         computed: {
             labelDropdownOptions: function () {
                 let options = this.labelDropdownItems;
+<<<<<<< HEAD
                 this.labels.forEach((label,index) => {
                     delete options[index];
+=======
+                this.labels.forEach((label, text) => {
+                    options.delete(label);
+>>>>>>> feature/fix-console-filters
                 });
                 return options
             }
@@ -324,8 +345,6 @@
                 }
             },
             closePanel() {
-                window['app'].pusherUnbindEvent('private-campaign.' + this.campaign.id, 'response.' + this.recipientId + '.updated');
-                // this.resetVars();
                 this.$emit('closePanel', {});
             },
             resetVars() {
@@ -346,7 +365,6 @@
             },
             getResponses: function () {
                 this.setLoading(true);
-                const campaignId = this.campaign.id;
                 const recipientId = this.recipientId;
 
                 axios.get(generateRoute(window.getResponsesUrl, {'recipientId': recipientId}))
@@ -358,7 +376,7 @@
                         this.notes = r.recipient.notes;
                         this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
 
-                        this.updateResponses(this.recipient);
+                        this.registerPusherListeners();
                         this.updateLabelDropdown();
                         this.setLoading(false);
                     })
@@ -450,77 +468,89 @@
             selectLabel: function (label) {
                 this.selectedLabel = label;
             },
-            addLabel: function (label) {
-                axios.post(generateRoute(window.addLabelUrl, {'recipientId': this.recipientId}),{ label: label })
+            addLabel: function (label, labelText) {
+                this.$set(this.labels, label, labelText);
+                window.Event.fire('added.recipient.label', {
+                    recipientId: this.recipientId,
+                    label,
+                    labelText
+                });
+                axios.post(generateRoute(window.addLabelUrl, {'recipientId': this.recipientId}), {label})
                     .then((response) => {
-                        this.$set(this.labels, response.data.label, response.data.labelText);
-                        this.$toastr.success('Label added.');
-                        this.updateLabelDropdown();
-                    })
-                    .catch((response) => {
+                        // this.updateLabelDropdown();
+                    }, () => {
+                        this.$delete(this.labels, label);
+                        window.Event.fire('added.recipient.label', {
+                            recipientId: this.recipientId,
+                            label,
+                            labelText
+                        });
                         this.$toastr.error('Failed to add label.');
                     });
             },
-            removeLabel: function (label) {
+            removeLabel: function (label, key) {
+                this.$delete(this.labels, key);
+                window.Event.fire('removed.recipient.label', {
+                    recipientId: this.recipientId,
+                    label: key,
+                    labelText: label
+                });
                 axios.post(generateRoute(window.removeLabelUrl, {'recipientId': this.recipientId}),
                     {
-                        label: label
+                        label: key
                     })
-                    .then((response) => {
-                        this.$delete(this.labels, label);
-                        this.$toastr.success('Label removed.');
-                        this.updateLabelDropdown();
-                    })
-                    .catch((response) => {
+                    .then(() => {
+                        // this.updateLabelDropdown();
+                    }, () => {
+                        this.$set(this.labels, key, label);
                         this.$toastr.error('Failed to remove label.');
+                        window.Event.fire('removed.recipient.label', {
+                            recipientId: this.recipientId,
+                            label: key,
+                            labelText: label
+                        });
                     });
             },
-            updateResponses: function (recipient) {
-
-                if (recipient) {
-
-                    window['app'].pusher('private-campaign.' + this.campaign.id, 'response.' + recipient.id + '.updated', (data) => {
-
-                        if (data) {
-                            // TODO: check why is whole slidePanel flickering when loading is enabled
-                            // this.setLoading(true);
-
-                            axios.get(generateRoute(window.recipientGetResponsesUrl, {'recipientId': this.recipientId}),
-                                {
-                                    params: {
-                                        list: data
-                                    }
-                                })
-                                .then((response) => {
-
-                                    if (response.data.appointments) {
-                                        this.appointments = response.data.appointments;
-                                    }
-
-                                    if (response.data.threads) {
-                                        this.threads = response.data.threads;
-                                    }
-
-                                    if (response.data.recipient) {
-                                        this.recipient = response.data.recipient;
-                                    }
-
-                                    if (response.data.recipient.labels) {
-                                        this.labels = response.data.recipient.labels;
-                                    }
-
-                                    // TODO: check why is whole slidePanel flickering when loading is enabled
-                                    // this.setLoading(false);
-                                })
-                                .catch((response) => {
-                                    this.$toastr.error('Failed to update responses.');
-                                    // TODO: check why is whole slidePanel flickering when loading is enabled
-                                    // this.setLoading(false);
-                                });
-                        }
+            registerPusherListeners: function () {
+                console.log('register');
+                pusherService
+                    .subscribe('private-campaign.' + this.campaign.id)
+                    .bind('response.' + this.recipient.id + '.updated', data => {
+                        console.log('data', data);
+                        // axios.get(generateRoute(window.recipientGetResponsesUrl, {'recipientId': this.recipientId}),
+                        //     {
+                        //         params: {
+                        //             list: data
+                        //         }
+                        //     })
+                        //     .then((response) => {
+                        //
+                        //         if (response.data.appointments) {
+                        //             this.appointments = response.data.appointments;
+                        //         }
+                        //
+                        //         if (response.data.threads) {
+                        //             this.threads = response.data.threads;
+                        //         }
+                        //
+                        //         if (response.data.recipient) {
+                        //             this.recipient = response.data.recipient;
+                        //         }
+                        //
+                        //         if (response.data.recipient.labels) {
+                        //             this.labels = response.data.recipient.labels;
+                        //         }
+                        //
+                        //         // TODO: check why is whole slidePanel flickering when loading is enabled
+                        //         // this.setLoading(false);
+                        //     })
+                        //     .catch((response) => {
+                        //         this.$toastr.error('Failed to update responses.');
+                        //         // TODO: check why is whole slidePanel flickering when loading is enabled
+                        //         // this.setLoading(false);
+                        //     });
                     });
-                }
-            },
+            }
         }
     }
 </script>
