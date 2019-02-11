@@ -32,6 +32,12 @@ class RecipientBuilder
             return;
         }
 
+        foreach ($list->fieldmap as $key => $value) {
+            if ($value === null) {
+                unset($this->listFields[$key]);
+            }
+        }
+
         if ($list->type == 'mixed') {
             array_push($this->listFields, 'is_database');
         }
@@ -74,7 +80,7 @@ class RecipientBuilder
                 }
             }
             foreach ($this->listFields as $field) {
-                if (array_key_exists($field, $list->fieldmap)) {
+                if (array_key_exists($field, $list->fieldmap) && $this->fieldmap[$field] !== null) {
                     $staging[$field] = $this->sanitize($row[$list->fieldmap[$field]], true);
                 }
             }
@@ -109,9 +115,11 @@ class RecipientBuilder
     protected function makeMediaCopy($media)
     {
         if ($media->disk == 'local') {
+            \Log::debug("RecipientBuilder: adding local file to local directory");
             return Storage::disk('local')->put($media->file_name, Storage::disk('local')->get($media->id . '/' . $media->file_name));
         }
 
+        \Log::debug("RecipientBuilder: adding {$media->disk} file to local directory");
         return Storage::disk('local')->put($media->file_name, Storage::disk($media->disk)->get($media->getPath()));
     }
 
