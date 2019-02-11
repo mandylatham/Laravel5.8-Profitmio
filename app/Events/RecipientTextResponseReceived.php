@@ -41,7 +41,7 @@ class RecipientTextResponseReceived implements ShouldBroadcast
      */
     public function broadcastOn()
     {
-        return new PrivateChannel('campaign.' . $response->campaign_id);
+        return new PrivateChannel('campaign.' . $this->response->campaign_id);
     }
 
     /**
@@ -51,7 +51,7 @@ class RecipientTextResponseReceived implements ShouldBroadcast
      */
     public function broadcastAs()
     {
-        return 'recipient.' . $response->recipient_id . '.text-response-received';
+        return 'recipient.' . $this->response->recipient_id . '.text-response-received';
     }
 
     public function broadcastWith()
