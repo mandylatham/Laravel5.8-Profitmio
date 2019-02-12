@@ -556,8 +556,10 @@ class ResponseConsoleController extends Controller
             }
 
             $response->recipient_id = $recipient->id;
-
             $response->save();
+
+            $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
+            $recipient->save();
 
             event(new RecipientPhoneResponseReceived($campaign, $recipient, $response));
 

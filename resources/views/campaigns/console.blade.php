@@ -167,7 +167,7 @@
                     </div>
                 </div>
                 <div class="col-12 col-md-3 text-center d-flex flex-column justify-content-center">
-                    @{{ recipient.last_seen | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A') }}
+                    @{{ recipient.last_responded_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A') }}
                 </div>
             </div>
         </div>

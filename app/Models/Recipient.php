@@ -52,7 +52,6 @@ class Recipient extends Model
     ];
 
     protected $appends = [
-        'last_seen',
         'name',
         'vehicle',
         'location',
@@ -128,14 +127,6 @@ class Recipient extends Model
     public function getNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;
-    }
-
-    public function getLastSeenAttribute()
-    {
-        $lastResponse = $this->responses()
-            ->selectRaw('MAX(responses.created_at) as created_at')
-            ->first();
-        return $lastResponse ? $lastResponse->created_at->setTimezone('UTC')->toDateTimeString() : $this->created_at->setTimezone('UTC')->toDateTimeString();
     }
 
     public function getLocationAttribute()
