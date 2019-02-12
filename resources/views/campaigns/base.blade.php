@@ -9,12 +9,6 @@
     <nav class="company-navigation">
         <ul>
             <li>
-                <a class="{{ \Route::current()->getName() === 'campaigns.stats' ? 'active' : '' }}" href="{{ route('campaigns.stats', ['campaign' => $campaign->id]) }}">
-                    <i class="pm-font-stats-icon"></i>
-                    <span>STATS</span>
-                </a>
-            </li>
-            <li>
                 <a class="{{ \Route::current()->getName() === 'campaigns.drops.index' ? 'active' : '' }}" href="{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-drops-icon"></i>
                     <span>DROPS</span>

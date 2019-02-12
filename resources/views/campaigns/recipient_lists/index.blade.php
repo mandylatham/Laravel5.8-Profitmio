@@ -104,7 +104,7 @@
         <b-modal ref="addPhoneModalRef" id="upload-recipient-modal" size="lg" hide-footer>
             <template slot="modal-header">
                 <h4>Upload Recipients</h4>
-                <span class="close-modal-header float-right" @click="closeModal()">
+                <span class="close-modal-header float-right" @click="closeModal('addPhoneModalRef')">
                     <i class="fas fa-times float-right"></i>
                 </span>
             </template>
