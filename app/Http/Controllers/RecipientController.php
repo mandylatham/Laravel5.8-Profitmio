@@ -459,7 +459,7 @@ class RecipientController extends Controller
             $recipients->search($request->input('search'));
         }
 
-        return $recipients->paginate($request->input('per_page', 30));
+        return $recipients->orderBy('last_responded_at', 'DESC')->paginate($request->input('per_page', 30));
     }
 
     public function showRecipientList(Request $request, Campaign $campaign, RecipientList $list)
