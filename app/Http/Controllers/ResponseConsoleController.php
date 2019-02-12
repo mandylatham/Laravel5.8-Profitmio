@@ -544,7 +544,7 @@ class ResponseConsoleController extends Controller
                     'call_phone_number_id' => $phone_number_id,
                     'incoming'             => 1,
                     'type'                 => 'phone',
-                    'duration'             => $request->get('CallDuration'),
+                    'duration'             => $request->get('CallDuration')?: 0,
                     'campaign_id'          => $campaign->id,
                     'response_source'      => $request->get('From'),
                     'response_destination' => $request->get('To'),
