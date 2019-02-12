@@ -74,6 +74,8 @@
             background-color: #f44336;
           }
 
+          &.appointment,
+          &.callback,
           &.interested,
           &.service {
             color: #fff;
@@ -106,6 +108,7 @@
     .call-in-wrapper {
       > ul {
         list-style: none;
+        padding-left: 0;
       }
     }
 

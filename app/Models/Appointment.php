@@ -10,6 +10,7 @@ class Appointment extends Model
 {
     protected $table = 'appointments';
 
+    const TYPE_DISCUSSION = 'discussion';
     const TYPE_CALLBACK = 'callback';
     const TYPE_APPOINTMENT = 'appointment';
 

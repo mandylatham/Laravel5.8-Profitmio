@@ -43,7 +43,7 @@
                 <div class="col-12 labels-wrapper">
                     <ul class="labels">
                         <li :class="index" v-for="(label, index) in labels">{{ label }}<i
-                            class="fas fa-times" @click="removeLabel(label, index)"></i></li>
+                            class="fas fa-times" @click="removeLabel(label, index)" v-if="index != 'appointment' && index != 'callback'"></i></li>
                     </ul>
                 </div>
             </div>
@@ -58,10 +58,10 @@
                 </div>
             </div>
             <div class="call-in-wrapper" v-if="appointments.length">
-                <h4>Call Ins</h4>
                 <ul class="list-group">
                     <li class="list-group-item" v-for="appointment in appointments">
                         <div v-if="appointment.type === 'callback'">
+                            <span class="mr-2">Callback Requested</span>
                             <i class="fas fa-phone mr-2"></i>
                             {{ appointment.name }} @ {{ appointment.phone_number }}
                             <div class="checkbox" style="padding-top: 6px; margin-left: 8px;">
@@ -74,10 +74,11 @@
                         </div>
                         <div v-else-if="appointment.type === 'discussion'">
                             <i class="fas fa-question-circle mr-2"></i>
-                            <span class="mr-2">Just Curious</span>
+                            <span class="mr-2">Curiosity Call</span>
                             <span>{{ recipient.name }} called, but did not elect to reserve a callback or an appointment</span>
                         </div>
                         <div v-else-if="appointment.type === 'appointment'">
+                            <span class="mr-2">Appointment</span>
                             <i class="fas fa-calendar mr-2"></i>
                             {{ appointment.appointment_at_formatted }}
                         </div>
@@ -109,7 +110,7 @@
             </div>
 
             <div class="mail-attachments" v-if="threads.phone && threads.phone.length">
-                <h4>Calls</h4>
+                <h5>Call History</h5>
                 <ul class="list-group">
                     <li class="list-group-item" v-for="call in threads.phone">
                         <i class="fas fa-phone"></i>
@@ -391,6 +392,8 @@
                         appointment_time: this.appointmentSelectedTime
                     })
                     .then((response) => {
+                        this.showNewApptForm = false;
+                        this.appointments.push(response.data);
                         this.$toastr.success('Appointment added.');
                     })
                     .catch((response) => {

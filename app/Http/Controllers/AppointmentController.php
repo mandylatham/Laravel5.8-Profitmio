@@ -195,7 +195,7 @@ class AppointmentController extends Controller
 
         if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT])) {
             if ($campaign->adf_crm_export) {
-                $alert_emails = explode(',', $campaign->adf_crm_export_email);
+                $alert_emails = (array)$campaign->adf_crm_export_email;
                 foreach ($alert_emails as $email) {
                     $email = trim($email);
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -214,7 +214,7 @@ class AppointmentController extends Controller
         }
 
         if ($campaign->lead_alerts) {
-            $alert_emails = explode(',', $campaign->lead_alert_email);
+            $alert_emails = (array)$campaign->lead_alert_email;
 
             foreach ($alert_emails as $email) {
                 $email = trim($email);
@@ -313,7 +313,6 @@ class AppointmentController extends Controller
     {
         if ($request->has('appointment_date_time')) {
             $dateTime = explode(' ', $request->input('appointment_date_time'));
-
             $appointment_at = new Carbon($dateTime[0] . ' ' . $dateTime[1], Auth::user()->timezone);
         } else {
             $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'),
@@ -331,13 +330,14 @@ class AppointmentController extends Controller
             'auto_model'     => $recipient->model,
             'phone_number'   => $recipient->phone,
             'email'          => $recipient->email,
+            'type'           => 'appointment',
         ]);
 
         $recipient->update(['appointment' => true, 'last_responded_at' => \Carbon\Carbon::now('UTC')]);
 
         if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT])) {
             if ($campaign->adf_crm_export) {
-                $alert_emails = explode(',', $campaign->adf_crm_export_email);
+                $alert_emails = (array)$campaign->adf_crm_export_email;
                 foreach ($alert_emails as $email) {
                     $email = trim($email);
                     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -356,7 +356,7 @@ class AppointmentController extends Controller
         }
 
         if ($campaign->lead_alerts) {
-            $alert_emails = explode(',', $campaign->lead_alert_email);
+            $alert_emails = (array)$campaign->lead_alert_email;
 
             foreach ($alert_emails as $email) {
                 $email = trim($email);
@@ -378,9 +378,7 @@ class AppointmentController extends Controller
 
         event(new CampaignCountsUpdated($campaign));
 
-        return response()->json([
-            'appointment_at' => $appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y h:i A"),
-        ]);
+        return $appointment;
     }
 
     /**
