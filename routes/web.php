@@ -1,10 +1,8 @@
 <?php
 
 Route::impersonate();
-use Illuminate\Http\Response;
+
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 //region OUTSIDE API CALLS
@@ -32,11 +30,6 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
-
-    // TODO: move to better location
-    Route::get('/current-user', function (){
-        return Auth::user();
-    });
 
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
@@ -189,15 +182,21 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/responses/export-nonresponders', 'ResponseController@getNonResponders');
             Route::any('/get-responses-hash', 'ResponseController@getResponsesHash');
             Route::any('/responses/{recipient}/get-text-hash', 'ResponseController@getTextHash');
-            Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
+            // TODO: remove me from this routes group
+            // Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
             Route::any('/responses/{recipient}/get-email-hash', 'ResponseController@getEmailHash');
             Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
             Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
             Route::any('/get-response-list', 'ResponseController@getResponseList');
-            Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
+            // TODO: remove me from this routes group
+            // Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
             Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
             Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console')->name('campaign.recipient.email-response');
         });
+
+        Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
+        Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
+
         Route::get('/recipients/for-user-display', 'RecipientController@getRecipients')->name('campaign.recipient.for-user-display');
         Route::get('/response-console', 'ResponseConsoleController@show')->name('campaign.response-console.index');
         Route::get('/response-console/unread', 'ResponseConsoleController@showUnread')->name('campaign.response-console.index.unread');
