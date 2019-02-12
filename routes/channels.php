@@ -27,5 +27,5 @@ Broadcast::channel('campaign.{campaign}', function ($user, $campaign) {
         return false;
     }
 
-    return ($campaign->agency_id == $user->id);
+    return $campaign->users()->where('users.id', $user->id)->count();
 });
