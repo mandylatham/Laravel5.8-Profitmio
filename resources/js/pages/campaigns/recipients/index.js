@@ -36,6 +36,9 @@ window['app'] = new Vue({
         uploadRecipientsUrl: ''
     },
     methods: {
+        closeModal: function (modalRef) {
+            this.$refs[modalRef].hide();
+        },
         deleteDrop(drop) {
             this.$swal({
                 title: "Are you sure?",
