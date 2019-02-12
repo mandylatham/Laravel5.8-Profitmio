@@ -140,6 +140,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns')->name('campaigns.store');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['check.active.company','can:view,campaign']], function () {
         Route::group(['middleware' => ['can:site-admin,App\Models\User']], function () {
+            Route::post('/user-access/{user}', 'CampaignController@toggleCampaignUserAccess')->name('campaigns.toggle-user-access');
             Route::get('/stats', 'CampaignController@showStats')->name('campaigns.stats');
             Route::get('/', 'CampaignController@show')->name('campaigns.view');
             Route::delete('/', 'CampaignController@delete');

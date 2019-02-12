@@ -20,6 +20,9 @@ Vue.use(Vuelidate);
 import { helpers, required, minLength, url } from 'vuelidate/lib/validators';
 import { isNorthAmericanPhoneNumber, isCanadianPostalCode, isUnitedStatesPostalCode, looseAddressMatch } from './../../common/validators';
 import './../../components/campaign/campaign';
+import Modal from 'bootstrap-vue';
+Vue.use(Modal);
+import axios from 'axios';
 
 window['app'] = new Vue({
     el: '#app',
@@ -29,6 +32,13 @@ window['app'] = new Vue({
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
     },
     computed: {
+        campaignAccessUsersPagination: function () {
+            return {
+                page: this.searchCampaignAccessUser.page,
+                per_page: this.searchCampaignAccessUser.per_page,
+                total: this.totalCampaignAccessUser
+            };
+        },
         usersPagination: function () {
             return {
                 page: this.searchUserForm.page,
@@ -55,10 +65,12 @@ window['app'] = new Vue({
         }
     },
     data: {
+        campaignSelected: null,
         campaigns: [],
         company: {},
         companyIndex: '',
         loadingUsers: false,
+        loadingCampaignAccessUsers: false,
         modifiedCompany: {},
         searchCampaignForm: new Form({
             q: localStorage.getItem('companyCampaignQ') || '',
@@ -72,6 +84,13 @@ window['app'] = new Vue({
             per_page: 15,
             company: window.company.id
         }),
+        searchCampaignAccessUser: new Form({
+            q: localStorage.getItem('companyUserQ') || '',
+            page: 1,
+            per_page: 15,
+            company: window.company.id,
+            campaign: null
+        }),
         updateForm: new Form({
             name: '',
             address: '',
@@ -82,12 +101,13 @@ window['app'] = new Vue({
         }),
         updateUrl: '',
         users: [],
+        usersForCampaignAccess: [],
         companyFormFields: ['name', 'address', 'address2', 'city', 'state', 'zip'],
         showCompanyFormControls: false,
         loadingCampaigns: false,
         total: 0,
         totalUsers: 0,
-
+        totalCampaignAccessUser: 0,
         userEditUrl: '',
         userImpersonateUrl: '',
     },
@@ -104,6 +124,15 @@ window['app'] = new Vue({
         this.fetchUsers();
     },
     methods: {
+        openCampaignAccessModal: function (campaign) {
+            this.usersForCampaignAccess = [];
+            this.campaignSelected = campaign;
+            this.fetchUsersForCampaignAccess(campaign);
+            this.$refs.configureAccessModal.show();
+        },
+        closeModal: function () {
+            this.$refs.configureAccessModal.hide();
+        },
         fetchCampaigns() {
             localStorage.setItem('companyCampaignQ', this.searchCampaignForm.q);
             this.loadingCampaigns = true;
@@ -136,6 +165,23 @@ window['app'] = new Vue({
                     this.$toastr.error("Unable to get users");
                 });
         },
+        fetchUsersForCampaignAccess(campaign) {
+            localStorage.setItem('companyCampaignAccessUsersQ', this.searchCampaignAccessUser.q);
+            this.loadingCampaignAccessUsers = true;
+            this.searchCampaignAccessUser.campaign = campaign.id;
+            this.searchCampaignAccessUser
+                .get(generateRoute(window.searchCampaignAccessUserUrl, {'campaign': campaign.id}))
+                .then(response => {
+                    this.usersForCampaignAccess = response.data;
+                    this.searchCampaignAccessUser.page = response.meta.current_page;
+                    this.searchCampaignAccessUser.per_page = response.meta.per_page;
+                    this.totalCampaignAccessUser = response.meta.total;
+                    this.loadingCampaignAccessUsers = false;
+                })
+                .catch(error => {
+                    this.$toastr.error("Unable to get users");
+                });
+        },
         updateFields: function () {
             // update the form
             this.companyFormFields.forEach((field) => {
@@ -156,9 +202,24 @@ window['app'] = new Vue({
             }
             return royal;
         },
+        toggleCampaignAccess: function (user) {
+            axios.post(generateRoute(window.toggleCampaignAccessUserUrl, {
+                userId: user.id,
+                campaignId: this.campaignSelected.id
+            })).then(() => {
+                this.$toastr.success("Access updated.");
+            }, () => {
+                this.$toastr.error("Unable to process your request");
+                user.has_access = !user.has_access;
+            })
+        },
         onCampaignPageChanged(event) {
             this.searchCampaignForm.page = event.page;
             return this.fetchCampaigns();
+        },
+        onCampaignAccessUserPageChanged(event) {
+            this.searchCampaignAccessUser.page = event.page;
+            return this.fetchUsersForCampaignAccess();
         },
         onUserPageChanged(event) {
             this.searchUserForm.page = event.page;

@@ -7,6 +7,7 @@ use App\Models\Company;
 use App\Models\EmailLog;
 use App\Models\Recipient;
 use App\Models\PhoneNumber;
+use App\Models\User;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\NewCampaignRequest;
@@ -249,5 +250,12 @@ class CampaignController extends Controller
         $campaign->delete();
 
         return redirect()->route('campaigns.index');
+    }
+
+    public function toggleCampaignUserAccess(Campaign $campaign, User $user)
+    {
+        $campaign->users()->toggle($user->id);
+
+        return response()->json(['message' => 'Resource updated.']);
     }
 }

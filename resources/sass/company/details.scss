@@ -175,17 +175,19 @@
         background-color: #fff;
     }
 
+    .company-access-row {
+        background-color: $brand-white;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.7rem;
+        .access-link {
+            float: right;
+        }
+    }
+
     #campaign-access-tab {
-        padding: 0;
-        .campaigns-panel {
-            min-height: 350px;
-            padding: 1.8rem;
-        }
-        .users-panel {
-            background-color: #fff;
-            border: 2px solid #e0e0e0;
-            min-height: 350px;
-        }
+        padding: 2rem;
+        position: relative;
     }
 
     .template-field {
@@ -280,6 +282,12 @@
                 border-right: 3px solid #fff;
             }
         }
+    }
+}
+
+#configure-access {
+    .pm-pagination {
+        width: 80%;
     }
 }
 

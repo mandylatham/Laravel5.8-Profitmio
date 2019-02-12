@@ -18,6 +18,8 @@
         window.searchUserFormUrl = "{{ route('user.for-user-display') }}";
         window.userEditUrl = "{{ route('user.view', ['user' => ':userId']) }}";
         window.userImpersonateUrl = "{{ route('admin.impersonate', ['user' => ':userId']) }}";
+        window.searchCampaignAccessUserUrl = "{{ route('user.for-user-display') }}";
+        window.toggleCampaignAccessUserUrl = "{{ route('campaigns.toggle-user-access', ['campaign' => ':campaignId', 'user' => ':userId']) }}";
         @if (!auth()->user()->isAdmin())
         window.userActivateUrl = "{{ route('user.activate', ['user' => ':userId', 'company' => get_active_company()]) }}";
         window.userDeactivateUrl = "{{ route('user.deactivate', ['user' => ':userId', 'company' => get_active_company()]) }}";
@@ -224,26 +226,70 @@
                         </b-tab>
                         <b-tab title="CAMPAIGN ACCESS" id="campaign-access-tab">
                             @if($hasCampaigns)
-                            <div class="row no-gutters mb-md-3">
-                                <div class="col-12 col-md-7 campaigns-panel">
-                                    <input type="text" v-model="searchCampaignForm.q" class="form-control filter--search-box" aria-describedby="search"
-                                        placeholder="Search" @keyup.enter="fetchCampaigns">
+                                <div class="row no-gutters mb-md-3">
+                                    <div class="col-12 col-sm-5 col-lg-4 offset-sm-7 offset-lg-8">
+                                        <input type="text" v-model="searchCampaignForm.q" class="form-control filter--search-box" aria-describedby="search"
+                                               placeholder="Search" @keyup.enter="fetchCampaigns">
+                                    </div>
                                 </div>
-                                <div class="col-12 col-md-5 users-panel">
-                                    
-                                </div>
+                            @endif
+                            <div class="loader-spinner table-loader-spinner" v-if="loadingCampaigns">
+                                <spinner-icon></spinner-icon>
                             </div>
-                            @else
-                            <div class="row no-gutters mb-md-3">
-                                <div class="col-12">
-                                    <p class="alert alert-info">When a campaign is added, you can control access to it here</p>
-                                </div>
+                            <div class="no-items-row" v-if="countActiveCampaigns === 0 && countInactiveCampaigns === 0">
+                                No Items
                             </div>
+                            <div class="company-access-row" v-for="campaign in campaigns">
+                                <strong class="ml-3">Campaign @{{ campaign.id }}</strong>
+                                <span>@{{ campaign.name }}</span>
+                                <span class="access-link">
+                                    <a class="btn pm-btn pm-btn-purple" href="javascript:;" @click="openCampaignAccessModal(campaign)">Configure Access</a>
+                                </span>
+                            </div>
+                            @if($hasCampaigns)
+                                <pm-pagination class="mt-3" :pagination="campaignsPagination" @page-changed="onCampaignPageChanged"></pm-pagination>
                             @endif
                         </b-tab>
                     </b-tabs>
                 </b-card>
             </div>
         </div>
+        <b-modal ref="configureAccessModal" id="configure-access" hide-footer>
+            <template slot="modal-header">
+                <h4>Campaign Access</h4>
+                <span class="close-modal-header float-right" @click="closeModal">
+                    <i class="fas fa-times float-right"></i>
+                </span>
+            </template>
+            <div class="card">
+                <div class="card-body">
+                    <input type="text" v-model="searchCampaignAccessUser.q" class="form-control mb-3 filter--search-box" aria-describedby="search"
+                           placeholder="Search" @keyup.enter="fetchUsersForCampaignAccess(campaignSelected)">
+                    <div class="loader-spinner table-loader-spinner" v-if="loadingCampaignAccessUsers">
+                        <spinner-icon></spinner-icon>
+                    </div>
+                    <div class="no-items-row" v-if="usersForCampaignAccess.length === 0">
+                        No Items
+                    </div>
+                    <table class="table table-bordered table-sm" v-if="usersForCampaignAccess.length > 0">
+                        <thead>
+                            <th></th>
+                            <th>User</th>
+                        </thead>
+                        <tbody>
+                            <tr v-for="user in usersForCampaignAccess">
+                                <td width="20%" class="align-middle text-center">
+                                    <p-check color="primary" class="p-default p-fill p-switch" v-model="user.has_access" @change="toggleCampaignAccess(user)">&nbsp;</p-check>
+                                </td>
+                                <td class="align-middle">
+                                    @{{  user.first_name }} @{{ user.last_name }}
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <pm-pagination :pagination="campaignAccessUsersPagination" @page-changed="onCampaignAccessUserPageChanged"></pm-pagination>
+                </div>
+            </div>
+        </b-modal>
     </div>
 @endsection
