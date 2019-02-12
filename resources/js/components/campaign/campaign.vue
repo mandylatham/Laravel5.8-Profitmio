@@ -42,7 +42,6 @@
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links">
-            <a v-if="isAdmin" :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
             <a v-if="isAdmin" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
             <a v-if="isAdmin" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
@@ -62,7 +61,6 @@
             <img src="" alt="">
         </div>
         <div class="col-6 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
-            <a  v-if="isAdmin" :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
         </div>
         <div class="col-6 col-md-2 campaign-date">
