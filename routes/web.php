@@ -37,8 +37,8 @@ Route::group(['middleware' => 'auth'], function () {
         return redirect()->route('dashboard');
     });
 
-    Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('appointment.update-called-status')->middleware('can:change-console');
-    Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('callback.update-called-status')->middleware('can:change-console');
+    Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('appointment.update-called-status');
+    Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('callback.update-called-status');
 
     //region PROFILE
     Route::group(['prefix' => 'profile'], function () {
@@ -184,6 +184,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::any('/responses/{recipient}/get-text-hash', 'ResponseController@getTextHash');
             // TODO: remove me from this routes group
             // Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
+            Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
             Route::any('/responses/{recipient}/get-email-hash', 'ResponseController@getEmailHash');
             Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
             Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
@@ -191,7 +192,7 @@ Route::group(['middleware' => 'auth'], function () {
             // TODO: remove me from this routes group
             // Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
             Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
-            Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console')->name('campaign.recipient.email-response');
+            Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->name('campaign.recipient.email-response');
         });
 
         Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
@@ -238,7 +239,7 @@ Route::group(['middleware' => 'auth'], function () {
     //endregion
 
     //region RESPONSE
-    Route::post('/response/{response}/update-read-status', 'ResponseController@updateReadStatus')->name('response.update-read-status')->middleware('can:change-console');
+    Route::post('/response/{response}/update-read-status', 'ResponseController@updateReadStatus')->name('response.update-read-status');
     //endregion
 
     //region SYSTEM
