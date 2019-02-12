@@ -344,7 +344,7 @@ class RecipientController extends Controller
             $join->on('recipients.id', '=', 'r1.id');
         })
             ->leftJoin('responses as r2', function ($join) {
-                $join->on('r1.id', '=', 'r2.id')
+                $join->on('r1.recipient_id', '=', 'r2.recipient_id')
                     ->on('r1.created_at', '<', 'r2.created_at');
             })
             ->whereNull('r2.created_at')
@@ -409,14 +409,57 @@ class RecipientController extends Controller
      */
     public function getRecipients(Request $request, Campaign $campaign)
     {
-        $filter = $request->get('filter') ?: 'all';
-        $label = $request->get('label') ?: null;
+        $filter = $request->input('filter', null);
 
-        $viewData = $this->getRecipientData($request, $campaign, $filter, $label);
+        $recipients = Recipient::where('recipients.campaign_id', $campaign->id)
+            ->select('recipients.*');
 
-        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+        if (!$filter || $filter === 'all') {
+            $recipients->withResponses($campaign->id);
+        }
 
-        return $viewData;
+        if ($filter === 'unread' || $filter === 'idle') {
+            $recipients->$filter($campaign->id);
+        }
+
+        if ($filter == 'email') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+                )
+            );
+        }
+
+        if ($filter == 'sms') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+                )
+            );
+        }
+
+        if ($filter == 'calls') {
+            $recipients = Recipient::withResponses($campaign->id)->whereIn(
+                'recipients.id',
+                result_array_values(
+                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+                )
+            );
+        }
+
+        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
+        if (in_array($filter, $labels)) {
+            $recipients = Recipient::withResponses($campaign->id)
+                ->labelled($filter, $campaign->id);
+        }
+
+        if ($request->filled('search')) {
+            $recipients->search($request->input('search'));
+        }
+
+        return $recipients->orderBy('last_responded_at', 'DESC')->paginate($request->input('per_page', 30));
     }
 
     public function showRecipientList(Request $request, Campaign $campaign, RecipientList $list)

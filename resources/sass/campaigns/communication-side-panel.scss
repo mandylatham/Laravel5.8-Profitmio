@@ -168,32 +168,44 @@
           align-self: flex-end;
         }
 
-        .inbound-message {
-          text-align: left;
-          align-self: flex-start;
-        }
-
-        .message-time {
-          font-family: 'Operator Mono', 'Source Sans Pro', Menlo, Monaco, Consolas, Courier New, monospace;
-          font-size: 10px;
-          letter-spacing: .2em;
-          color: #4d4d4d;
-          margin: 0 8px;
-        }
-
-        .message {
-          background-color: #0b96e5;
-          border: 1px solid #9cc2ff;
-          color: #fff;
-          padding: 12px 20px;
-          border-radius: 8px;
-          width: 100%;
-          text-align: left;
-        }
-
         .message-wrapper {
           padding: 6px;
           width: 100%;
+
+            .message-time {
+              font-family: 'Operator Mono', 'Source Sans Pro', Menlo, Monaco, Consolas, Courier New, monospace;
+              font-size: 10px;
+              letter-spacing: .2em;
+              color: #4d4d4d;
+              margin: 0 8px;
+                &.outbound-message {
+                    margin-left: auto;
+                }
+            }
+
+            .message {
+              padding: 12px 20px;
+              border-radius: 8px;
+              width: 80%;
+              text-align: left;
+                &.inbound-message {
+                    background-color: #0b96e5;
+                    border: 1px solid #9cc2ff;
+                    color: #fff;
+                    text-align: left;
+                    align-self: flex-start;
+                    margin-left: 0;
+                }
+
+                &.outbound-message {
+                    margin-left: auto;
+                    background-color: #eee;
+                    color: #333;
+                    border-color: #efefef;
+                    margin-right: 0;
+                }
+            }
+
         }
 
         #sms-form,

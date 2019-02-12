@@ -52,12 +52,13 @@ class Recipient extends Model
     ];
 
     protected $appends = [
-        'last_seen_ago',
         'name',
         'vehicle',
         'location',
         'labels',
     ];
+
+    protected $searchable = ['first_name', 'last_name'];
 
     public static $mappable = [
         'first_name',
@@ -97,7 +98,7 @@ class Recipient extends Model
 
     public function responses()
     {
-        return $this->hasOne(Response::class, 'recipient_id', 'recipient_id');
+        return $this->hasMany(Response::class, 'recipient_id', 'id');
     }
 
     public function suppressions()
@@ -128,14 +129,6 @@ class Recipient extends Model
         return $this->first_name . ' ' . $this->last_name;
     }
 
-    public function getLastSeenAgoAttribute()
-    {
-        $tz = isset(Auth::user()->timezone) ?: 'America/New_York';
-
-        return $this->last_seen ? (new Carbon($this->last_seen))->timezone($tz)->diffForHumans(Carbon::now(),
-                true) . ' ago' : '';
-    }
-
     public function getLocationAttribute()
     {
         $location = [];
@@ -161,6 +154,14 @@ class Recipient extends Model
             $labels['not_interested'] = 'Not Interested';
         }
 
+        if ((bool)$this->callback) {
+            $labels['callback'] = 'Callback';
+        }
+
+        if ((bool)$this->appointment) {
+            $labels['appointment'] = 'Appointment';
+        }
+
         if ((bool)$this->service) {
             $labels['service'] = 'Service Dept';
         }
@@ -177,7 +178,7 @@ class Recipient extends Model
             $labels['wrong_number'] = 'Wrong Number';
         }
 
-        return $labels;
+        return (object)$labels;
     }
 
     public function getEmailAttribute()
@@ -216,13 +217,19 @@ class Recipient extends Model
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                DB::select("
-                    select recipient_id from responses where id in (
-                    select max(id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
+                \DB::select("
+                    select distinct(id) from responses where responses.id in (
+                    select max(responses.id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
                     ) and incoming = 1 and `read` = 0
                 ")
             )
         );
+    }
+
+    public function scopeCalls($query)
+    {
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'phone');
     }
 
     public function scopeIdle($query, $campaignId)
@@ -238,12 +245,24 @@ class Recipient extends Model
         );
     }
 
+    public function scopeEmail($query)
+    {
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'email');
+    }
+
+    public function scopeSms($query)
+    {
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'text');
+    }
+
     public function scopeArchived($query)
     {
         return $query->whereNotNull('archived_at');
     }
 
-    public function scopeLabelled($query, $campaignId, $label)
+    public function scopeLabelled($query, $label, $campaignId)
     {
         if ($label == 'none') {
             return $query->where('recipients.campaign_id', $campaignId)->where([

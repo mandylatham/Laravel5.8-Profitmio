@@ -22,6 +22,16 @@ class UserTableSeeder extends Seeder
         $user->password = bcrypt('password');
         $user->save();
 
+        $company = Company::where('type', 'support')->first();
+
+        $company->users()->save($user, [
+            'completed_at' => Carbon::now()->toDateTimeString(),
+            'config' => json_encode([
+                'timezone' => 'US/Alaska'
+            ]),
+            'role' => 'admin'
+        ]);
+
         $faker = Faker\Factory::create();
         factory(User::class, 50)
             ->create()

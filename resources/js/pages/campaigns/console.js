@@ -4,12 +4,19 @@ import Form from './../../common/form';
 import moment from 'moment';
 import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
+import {each} from 'lodash';
+import PusherService from "../../common/pusher-service";
+import './../../filters/m-utc-parse.filter';
+import './../../filters/m-format-localized.filter';
+import './../../filters/m-duration-for-humans.filter';
 
 toastr.options.positionClass = "toast-bottom-left"; 
 toastr.options.newestOnTop = true;
 toastr.options.progressBar = true;
 
 Vue.use(VueSlideoutPanel);
+
+let pusherService = null;
 
 // Main vue
 window['app'] = new Vue({
@@ -42,10 +49,10 @@ window['app'] = new Vue({
         searchForm: new Form({
             search: null,
             page: 1,
-            per_page: 15,
+            per_page: 30,
             filter: null,
             label: null,
-            mediaType: null
+            media: null
         }),
         total: null,
         pusherKey: '',
@@ -60,24 +67,24 @@ window['app'] = new Vue({
     methods: {
         fetchRecipients() {
             this.loading = true;
-            this.searchForm.get(window.getRecipientsUrl)
+            this.searchForm
+                .get(window.getRecipientsUrl)
                 .then(response => {
-                    this.recipients = response.recipients.data;
-                    this.searchForm.page = response.recipients.current_page;
-                    this.searchForm.per_page = response.recipients.per_page;
-                    this.total = response.recipients.total;
-
+                    console.log('response', response);
+                    this.recipients = response.data;
+                    this.searchForm.page = response.current_page;
+                    this.searchForm.per_page = response.per_page;
+                    this.total = response.total;
                     this.loading = false;
                 })
                 .catch(error => {
+                    this.loading = false;
                     this.$toastr.error('Unable to get recipient');
                 });
         },
         showPanel: function (recipient, key) {
             this.currentRecipientId = recipient.id;
             this.recipientKey = key;
-
-            console.log('window.innerWidth', window.innerWidth);
 
             const panel = this.$showPanel({
                 component: 'communication-side-panel',
@@ -96,53 +103,39 @@ window['app'] = new Vue({
             this.searchForm.search = '';
             this.fetchRecipients();
         },
-        // toggleSidebar: function () {
-        //     let app = document.getElementById('app');
-        //
-        //     if (app.classList.contains('side-menu-open')) {
-        //         app.classList.add('navbar-side-menu-fix');
-        //         app.classList.remove('side-menu-open');
-        //         app.classList.remove('navbar-side-menu-fix');
-        //     } else {
-        //         app.classList.add('side-menu-open');
-        //     }
-        // },
-        pusherInit: function () {
-            // TODO: Enable pusher logging - don't include this in production
-            Pusher.logToConsole = true;
-
-            return new Pusher(this.pusherKey, {
-                cluster: this.pusherCluster,
-                forceTLS: true,
-                authEndpoint: this.pusherAuthEndpoint,
-                auth: {
-                    headers: {
-                        'X-CSRF-Token': window.csrfToken
+        onPageChanged: function ({page}) {
+            this.searchForm.page = page;
+            return this.fetchRecipients();
+        },
+        registerGlobalEventListeners() {
+            // Events
+            window.Event.listen('removed.recipient.label', (data) => {
+                this.recipients.forEach((recipient, index) => {
+                    if (recipient.id === data.recipientId) {
+                        this.$delete(this.recipients[index].labels, data.label);
                     }
+                });
+            });
+
+            window.Event.listen('added.recipient.label', (data) => {
+                this.recipients.forEach((recipient, index) => {
+                    if (recipient.id === data.recipientId) {
+                        this.$set(this.recipients[index].labels, data.label, data.labelText);
+                    }
+                });
+            });
+
+            window.Event.listen('filters.filter-changed', (data) => {
+                if (data.filter === 'media') {
+                    this.searchForm.media = data.value;
+                } else if (data.filter === 'filter') {
+                    this.searchForm.filter = data.value;
+                } else if (data.filter === 'label') {
+                    this.searchForm.label = data.value;
                 }
+                this.fetchRecipients();
             });
-        },
-        pusher: function (channelName, eventName, callback) {
-            let pusher = this.pusherInit();
 
-            let channel = pusher.subscribe(channelName);
-            channel.bind(eventName, function (data) {
-                callback(data);
-            });
-        },
-        pusherUnbindEvent: function (channelName, eventName) {
-            let pusher = this.pusherInit();
-
-            let channel = pusher.subscribe(channelName);
-            channel.unbind(eventName);
-        },
-        updateRecipients() {
-            this.pusher('private-campaign.' + this.campaign.id, 'recipients.updated', (data) => {
-                this.recipients = data.recipients.data;
-                this.searchForm.page = data.recipients.current_page;
-                this.searchForm.per_page = data.recipients.per_page;
-                this.total = data.recipients.total;
-            });
         }
     },
     mounted() {
@@ -153,57 +146,54 @@ window['app'] = new Vue({
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
         this.fetchRecipients();
-        this.updateRecipients();
-
-        // Events
-        window.Event.listen('filters.filter-changed', (data) => {
-            this.searchForm.filter = data.filter;
-            this.searchForm.label = data.label;
-
-            this.fetchRecipients();
-        });
+        
+        this.registerGlobalEventListeners();
     }
 });
-
 
 // Sidebar
 window['sidebar'] = new Vue({
     el: '#sidebar-nav-content',
     data: {
         activeFilterSection: 'all',
-        activeLabelSection: '',
-        filter: '',
-        label: '',
-        counters: [],
-        labelCounts: {},
+        activeFilterMedia: null,
+        activeLabelSection: 'none',
+        counters: {},
         campaign: {},
     },
     mounted: function () {
-        console.log('window.counters', window.counters);
-        this.filter = window.filter;
-        this.label = window.label;
-        this.counters = window.counters;
-        this.labelCounts = window.counters.labelCounts;
+        each(window.counters, (value, key) => {
+            Vue.set(this.counters, key, value);
+        });
         this.campaign = window.campaign;
-        this.updateCounters();
+
+        pusherService = new PusherService();
+
+        this.registerPusherListeners();
     },
     methods: {
-        changeFilter: function (filter, label) {
-            this.activeFilterSection = filter;
-
-            if (label) {
-                this.activeLabelSection = label;
+        changeFilter: function (filter, value) {
+            if (filter === 'media' ) {
+                this.activeFilterMedia = value;
+            } else if (filter === 'filter') {
+                this.activeFilterSection = value;
+            } else if (filter === 'label') {
+                this.activeLabelSection = value;
             }
 
             window.Event.fire('filters.filter-changed', {
                 filter: filter,
-                label: label ? label : ''
+                value: value
             });
         },
-        updateCounters: function () {
-            window['app'].pusher('private-campaign.' + this.campaign.id, 'counts.updated', (data) => {
-                this.labelCounts = data.labelCounts
-            });
+        registerPusherListeners: function () {
+            pusherService
+                .subscribe('private-campaign.' + this.campaign.id)
+                .bind('counts.updated', (data) => {
+                    each(data, (value, key) => {
+                        Vue.set(this.counters, key, value);
+                    });
+                });
         },
     }
 });

@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Classes\MailgunService;
 use App\Events\CampaignCountsUpdated;
-use App\Events\CampaignResponseUpdated;
+use App\Events\RecipientTextResponseReceived;
+use App\Events\RecipientEmailResponseReceived;
+use App\Events\RecipientPhoneResponseReceived;
 use App\Models\Campaign;
 use App\Models\EmailLog;
 use App\Models\PhoneNumber;
@@ -89,14 +91,27 @@ class ResponseConsoleController extends Controller
         }
 
         if ($request->has('search')) {
-            $recipients->searchByQuery($request->input('search'));
+            $recipients->where(function ($query) use ($request) {
+				$keywords = explode(' ', $request->search);
+				foreach ($keywords as $keyword) {
+
+					$query->orWhere('first_name', 'like', '%' . $keyword . '%')
+						->orWhere('last_name', 'like', '%' . $keyword . '%')
+						->orWhere('email', 'like', '%' . $keyword . '%')
+						->orWhere('phone', 'like', '%' . $keyword . '%')
+						->orWhere('make', 'like', '%' . $keyword . '%')
+						->orWhere('model', 'like', '%' . $keyword . '%')
+						->orWhere('year', 'like', '%' . $keyword . '%');
+				}
+            });
+            // $recipients->searchByQuery($request->input('search'));
         }
 
         $recipients->join('responses as r1', function ($join) {
             $join->on('recipients.id', '=', 'r1.id');
         })
             ->leftJoin('responses as r2', function ($join) {
-                $join->on('r1.id', '=', 'r2.id')
+                $join->on('r1.recipient_id', '=', 'r2.recipient_id')
                     ->on('r1.created_at', '<', 'r2.created_at');
             })
             ->whereNull('r2.created_at')
@@ -161,11 +176,40 @@ class ResponseConsoleController extends Controller
      */
     public function show(Request $request, Campaign $campaign)
     {
-        $viewData = $this->getRecipientData($request, $campaign, 'all');
+        $counters = [];
+        $counters['total'] = Recipient::withResponses($campaign->id)->count();
+        $counters['unread'] = Recipient::unread($campaign->id)->count();
+        $counters['idle'] = Recipient::idle($campaign->id)->count();
+        $counters['calls'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+            )
+        )->count();
+        $counters['email'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+            )
+        )->count();
+        $counters['sms'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+            )
+        )->count();
 
-        $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console');
+        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
+        foreach ($labels as $label) {
+            $counters[$label] = Recipient::withResponses($campaign->id)
+                ->labelled($label, $campaign->id)
+                ->count();
+        }
 
-        return view('campaigns.console', $viewData);
+        return view('campaigns.console', [
+            'counters' => $counters,
+            'campaign' => $campaign
+        ]);
     }
 
     /**
@@ -358,7 +402,8 @@ class ResponseConsoleController extends Controller
 
         $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
         $recipient->save();
-        broadcast(new CampaignCountsUpdated($campaign));
+
+        event(new RecipientEmailResponseReceived($campaign, $recipient, $response));
 
         if ($campaign->client_passthrough && !empty($campaign->client_passthrough_email)) {
             $this->mailgun->sendPassthroughEmail(
@@ -383,7 +428,7 @@ class ResponseConsoleController extends Controller
      */
     public function emailReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        if ($campaign->isExpired) {
+        if ($campaign->isExpired()) {
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
@@ -423,8 +468,6 @@ class ResponseConsoleController extends Controller
         ]);
         $response->save();
 
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
-
         # Log the transaction
         $log = new EmailLog([
             'message_id'   => str_replace(['<', '>'], '', $reply->getId()),
@@ -435,9 +478,7 @@ class ResponseConsoleController extends Controller
             'recipient'    => $recipient->email,
         ]);
         $log->save();
-
-        return response(json_encode(['error' => 0, 'message' => 'Your email has been sent.']), 200)
-            ->header('Content-Type', 'text/json');
+        return response()->json(['response' => $response]);
     }
 
     /**
@@ -452,12 +493,12 @@ class ResponseConsoleController extends Controller
      */
     public function smsReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        if (!$campaign->isExpired()) {
+        if ($campaign->isExpired()) {
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
         $sms_phone_number = $campaign->phones()->whereCallSourceName('sms')->firstOrFail();
-        $reply = \Twilio::sendSms($sms_phone_number, $recipient->phone, $request->input('message'));
+        $reply = \Twilio::sendSms($sms_phone_number->phone_number, $recipient->phone, $request->input('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'text')
@@ -465,7 +506,7 @@ class ResponseConsoleController extends Controller
             ->where('recipient_id', $recipient->id)
             ->update(['read' => true]);
 
-        $response = new Response([
+        $response = Response::create([
             'campaign_id'   => $campaign->id,
             'recipient_id'  => $recipient->id,
             'message'       => $request->get('message'),
@@ -474,12 +515,8 @@ class ResponseConsoleController extends Controller
             'type'          => 'text',
             'recording_sid' => 0,
         ]);
-        $response->save();
 
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
-
-        return response(json_encode(['error' => 0, 'message' => 'Your text message has been sent.']), 200)
-            ->header('Content-Type', 'text/json');
+        return response()->json(['response' => $response]);
     }
 
     /**
@@ -519,8 +556,12 @@ class ResponseConsoleController extends Controller
             }
 
             $response->recipient_id = $recipient->id;
-
             $response->save();
+
+            $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
+            $recipient->save();
+
+            event(new RecipientPhoneResponseReceived($campaign, $recipient, $response));
 
             return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
                 '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
@@ -600,8 +641,10 @@ class ResponseConsoleController extends Controller
 
             $response->recipient_id = $recipient->id;
             $response->save();
-            broadcast(new CampaignResponseUpdated($recipient));
 
+            event(new RecipientTextResponseReceived($response));
+
+            // ubsubscribe happens at twilio level
             if ($this->isUnsubscribeMessage($message)) {
                 Log::debug('unsubscribing recipient #' . $recipient->id);
                 $suppress = new \App\SmsSuppression([

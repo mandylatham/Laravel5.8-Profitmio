@@ -364,6 +364,26 @@ class DeploymentController extends Controller
         ]);
     }
 
+
+    public function start(Campaign $campaign, Drop $drop)
+    {
+        try {
+            $drop->status = "Processing";
+            $drop->started_at = Carbon::now()->toDateTimeString();
+            $drop->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => $e->getMessage()
+            ], 422);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'The drop has been started'
+        ]);
+    }
+
     /**
      * @param \App\Models\Campaign                            $campaign
      * @param \App\Http\Requests\BulkDeploymentRequest $request

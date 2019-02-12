@@ -1,10 +1,8 @@
 <?php
 
 Route::impersonate();
-use Illuminate\Http\Response;
+
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Broadcast;
-use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Route;
 
 //region OUTSIDE API CALLS
@@ -33,19 +31,14 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 //region AUTHENTICATED REQUESTS ONLY
 Route::group(['middleware' => 'auth'], function () {
 
-    // TODO: move to better location
-    Route::get('/current-user', function (){
-        return Auth::user();
-    });
-
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
 
-    Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('appointment.update-called-status')->middleware('can:change-console');
-    Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('callback.update-called-status')->middleware('can:change-console');
+    Route::post('/appointment/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('appointment.update-called-status');
+    Route::post('/callback/{appointment}/update-called-status', 'AppointmentController@updateCalledStatus')->name('callback.update-called-status');
 
     //region PROFILE
     Route::group(['prefix' => 'profile'], function () {
@@ -85,18 +78,18 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region USER
     Route::group(['prefix' => 'user'], function () {
-        Route::get('', 'UserController@index')->name('user.index')->middleware(['check.active.company', 'can:list,App\Models\User']);
-        Route::get('for-user-display', 'UserController@getForUserDisplay')->middleware(['check.active.company', 'can:list,App\Models\User'])->name('user.for-user-display');
-        Route::get('/create', 'UserController@create')->name('user.create')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
-        Route::get('{user}', 'UserController@view')->name('user.view')->middleware(['check.active.company', 'can:list,App\Models\User']);
-        Route::get('/{user}/edit', 'UserController@edit')->name('user.edit')->middleware(['check.active.company', 'can:edit-user,user']);
-        Route::get('/{user}/activate', 'UserController@activate')->name('user.activate')->middleware(['check.active.company', 'can:edit-user,user']);
-        Route::get('/{user}/deactivate', 'UserController@deactivate')->name('user.deactivate')->middleware(['check.active.company', 'can:edit-user,user']);
-        Route::post('', 'UserController@store')->name('user.store')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
-        Route::post('{user}', 'UserController@update')->name('user.update')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
-        Route::post('{user}/avatar', 'UserController@updateAvatar')->name('user.update-avatar')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
-        Route::post('{user}/company-data', 'UserController@updateCompanyData')->name('user.update-company-data')->middleware(['check.active.company', 'can:create-user,App\Models\User']);
-        Route::delete('/{user}', 'UserController@delete')->name('user.delete')->middleware(['check.active.company', 'can:delete-user,App\Models\User']);
+        Route::get('', 'UserController@index')->name('user.index')->middleware([ 'can:list,App\Models\User']);
+        Route::get('for-user-display', 'UserController@getForUserDisplay')->middleware([ 'can:list,App\Models\User'])->name('user.for-user-display');
+        Route::get('/create', 'UserController@create')->name('user.create')->middleware([ 'can:create-user,App\Models\User']);
+        Route::get('{user}', 'UserController@view')->name('user.view')->middleware([ 'can:list,App\Models\User']);
+        Route::get('/{user}/edit', 'UserController@edit')->name('user.edit')->middleware([ 'can:edit-user,user']);
+        Route::get('/{user}/activate', 'UserController@activate')->name('user.activate')->middleware([ 'can:edit-user,user']);
+        Route::get('/{user}/deactivate', 'UserController@deactivate')->name('user.deactivate')->middleware([ 'can:edit-user,user']);
+        Route::post('', 'UserController@store')->name('user.store')->middleware([ 'can:create-user,App\Models\User']);
+        Route::post('{user}', 'UserController@update')->name('user.update')->middleware([ 'can:create-user,App\Models\User']);
+        Route::post('{user}/avatar', 'UserController@updateAvatar')->name('user.update-avatar')->middleware([ 'can:create-user,App\Models\User']);
+        Route::post('{user}/company-data', 'UserController@updateCompanyData')->name('user.update-company-data')->middleware([ 'can:create-user,App\Models\User']);
+        Route::delete('/{user}', 'UserController@delete')->name('user.delete')->middleware([ 'can:delete-user,App\Models\User']);
     });
     //endregion
 
@@ -138,7 +131,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
     Route::get('/campaigns/new', 'CampaignController@createNew')->name('campaigns.create')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns')->name('campaigns.store');
-    Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['check.active.company','can:view,campaign']], function () {
+    Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['can:view,campaign']], function () {
         Route::group(['middleware' => ['can:site-admin,App\Models\User']], function () {
             Route::post('/user-access/{user}', 'CampaignController@toggleCampaignUserAccess')->name('campaigns.toggle-user-access');
             Route::get('/stats', 'CampaignController@showStats')->name('campaigns.stats');
@@ -190,15 +183,22 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/responses/export-nonresponders', 'ResponseController@getNonResponders');
             Route::any('/get-responses-hash', 'ResponseController@getResponsesHash');
             Route::any('/responses/{recipient}/get-text-hash', 'ResponseController@getTextHash');
-            Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
+            // TODO: remove me from this routes group
+            // Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
+            Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
             Route::any('/responses/{recipient}/get-email-hash', 'ResponseController@getEmailHash');
             Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
             Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
             Route::any('/get-response-list', 'ResponseController@getResponseList');
-            Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
+            // TODO: remove me from this routes group
+            // Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
             Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
-            Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->middleware('can:respond-console')->name('campaign.recipient.email-response');
+            Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->name('campaign.recipient.email-response');
         });
+
+        Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
+        Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
+
         Route::get('/recipients/for-user-display', 'RecipientController@getRecipients')->name('campaign.recipient.for-user-display');
         Route::get('/response-console', 'ResponseConsoleController@show')->name('campaign.response-console.index');
         Route::get('/response-console/unread', 'ResponseConsoleController@showUnread')->name('campaign.response-console.index.unread');
@@ -212,7 +212,7 @@ Route::group(['middleware' => 'auth'], function () {
     //endregion
 
     //region RECIPIENT
-    Route::group(['prefix' => '/recipient/{recipient}', 'middleware' => ['check.active.company','can:update,recipient']], function () {
+    Route::group(['prefix' => '/recipient/{recipient}', 'middleware' => ['can:update,recipient']], function () {
         Route::post('/add-label', 'RecipientController@addLabel')->name('recipient.add-label');
         Route::post('/remove-label', 'RecipientController@removeLabel')->name('recipient.remove-label');
         Route::post('/update-notes', 'RecipientController@updateNotes')->name('recipient.update-notes');
@@ -223,6 +223,7 @@ Route::group(['middleware' => 'auth'], function () {
     //region DEPLOYMENT
     /* TODO: change nomenclature to Drops */
     Route::group(['prefix' => '/drop/{deployment}', 'middleware' => 'can:change-campaigns'], function () {
+        Route::get('/start', 'DeploymentController@start')->name('deployments.start');
         Route::get('/pause', 'DeploymentController@pause')->name('deployment.pause');
         Route::get('/resume', 'DeploymentController@resume')->name('deployment.resume');
         Route::post('/delete', 'DeploymentController@delete')->name('deployment.delete');
@@ -239,7 +240,7 @@ Route::group(['middleware' => 'auth'], function () {
     //endregion
 
     //region RESPONSE
-    Route::post('/response/{response}/update-read-status', 'ResponseController@updateReadStatus')->name('response.update-read-status')->middleware('can:change-console');
+    Route::post('/response/{response}/update-read-status', 'ResponseController@updateReadStatus')->name('response.update-read-status');
     //endregion
 
     //region SYSTEM

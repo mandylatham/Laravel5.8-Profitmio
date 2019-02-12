@@ -32,6 +32,7 @@ class AdminController extends Controller
 
     public function impersonateUser(Request $request, User $user)
     {
+        session()->forget('activeCompany');
         if ($request->has('company')) {
             session(['activeCompany' => $request->input('company')]);
         }

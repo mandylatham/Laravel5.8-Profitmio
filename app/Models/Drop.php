@@ -24,6 +24,16 @@ class Drop extends Model
 
     protected $primaryKey = 'id';
 
+    protected $appends = [
+        'sms_phones'
+    ];
+
+    public function getSmsPhonesAttribute()
+    {
+        return $this->campaign->phones()->whereCallSourceName('sms')->count();
+    }
+
+
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id', 'id');

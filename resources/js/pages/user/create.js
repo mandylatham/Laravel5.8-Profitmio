@@ -35,7 +35,7 @@ window['app'] = new Vue({
             axios
                 .get(window.getCompaniesUrl, {
                     params: {
-                        per_page: 100
+                        per_page: 1000
                     }
                 })
                 .then(response => {
