@@ -152,6 +152,9 @@
         </div>
         <div class="recipient-row" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
             <div class="row no-gutters">
+                <div class="col-12 col-md-1 text-center d-flex flex-column justify-content-center">
+                    @{{ recipient.last_responded_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A') }}
+                </div>
                 <div class="col-12 col-md-5 d-flex flex-column justify-content-center">
                     <div class="name-wrapper">
                         <strong>@{{ recipient.name }}</strong>
@@ -165,9 +168,6 @@
                         <div v-if="recipient.email"><i class="fa fa-envelope mr-2"></i> @{{ recipient.email }}</div>
                         <div v-if="recipient.phone"><i class="fa fa-phone mr-2"></i> @{{ recipient.phone }}</div>
                     </div>
-                </div>
-                <div class="col-12 col-md-3 text-center d-flex flex-column justify-content-center">
-                    @{{ recipient.last_responded_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A') }}
                 </div>
             </div>
         </div>
