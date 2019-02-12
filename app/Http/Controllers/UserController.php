@@ -212,7 +212,7 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $user->update($request->except(['password']));
+        $user->update($request->except(['password', 'email']));
 
         return response()->json([]);
 

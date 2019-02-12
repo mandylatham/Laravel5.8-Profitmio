@@ -62,7 +62,7 @@
                                     <div class="form-group">
                                         <label for="email" class="form-label">Email</label>
                                         <p v-if="!showUserFormControls" class="editable form-control">@{{ originalUser.email }}</p>
-                                        <input name="email" tabindex="3" class="form-control" v-model="user.email" aria-label="Email" v-if="showUserFormControls">
+                                        <input name="email" tabindex="3" class="form-control" disabled v-model="user.email" aria-label="Email" v-if="showUserFormControls">
                                     </div>
                                 </div>
                                 <div class="col-12 col-md-6">
