@@ -32,6 +32,15 @@
                     <span>EDIT</span>
                 </a>
             </li>
+            <li>
+                <hr>
+            </li>
+            <li>
+                <a class="{{ \Route::current()->getName() === 'campaign.response-console.index' ? 'active' : '' }}" href="{{ route('campaign.response-console.index', ['campaign' => $campaign->id]) }}">
+                    <i class="fa fa-terminal"></i>
+                    <span>CONSOLE</span>
+                </a>
+            </li>
         </ul>
     </nav>
 @endsection
