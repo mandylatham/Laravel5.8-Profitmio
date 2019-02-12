@@ -52,7 +52,6 @@ class Recipient extends Model
     ];
 
     protected $appends = [
-        'last_seen_ago',
         'name',
         'vehicle',
         'location',
@@ -99,7 +98,7 @@ class Recipient extends Model
 
     public function responses()
     {
-        return $this->hasOne(Response::class, 'recipient_id', 'recipient_id');
+        return $this->hasMany(Response::class, 'recipient_id', 'id');
     }
 
     public function suppressions()
@@ -128,14 +127,6 @@ class Recipient extends Model
     public function getNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;
-    }
-
-    public function getLastSeenAgoAttribute()
-    {
-        $tz = isset(Auth::user()->timezone) ?: 'America/New_York';
-
-        return $this->last_seen ? (new Carbon($this->last_seen))->timezone($tz)->diffForHumans(Carbon::now(),
-                true) . ' ago' : '';
     }
 
     public function getLocationAttribute()
