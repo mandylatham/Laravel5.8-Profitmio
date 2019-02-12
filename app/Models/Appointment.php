@@ -118,4 +118,9 @@ class Appointment extends Model
     {
         return $this->belongsTo(Recipient::class, 'recipient_id', 'id');
     }
+
+    public function campaign()
+    {
+        return $this->belongsTo(Campaign::class);
+    }
 }

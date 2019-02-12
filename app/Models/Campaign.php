@@ -53,6 +53,7 @@ class Campaign extends Model
         'phone_responses_count',
         'email_responses_count',
         'call_sources_in_use',
+        'appointment_counts',
     ];
 
     protected $casts = [
@@ -66,6 +67,11 @@ class Campaign extends Model
     public function agency()
     {
         return $this->hasOne(Company::class, 'id', 'agency_id');
+    }
+
+    public function appointments()
+    {
+        return $this->hasMany(Appointment::class);
     }
 
     public function dealership()
@@ -313,5 +319,10 @@ class Campaign extends Model
     public function getCallSourcesInUseAttribute()
     {
         return $this->phones()->select('call_source_name')->get()->pluck('call_source_name')->toArray();
+    }
+
+    public function getAppointmentCountsAttribute()
+    {
+        return $this->appointments()->count();
     }
 }
