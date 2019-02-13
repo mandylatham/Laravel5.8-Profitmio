@@ -13,6 +13,11 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 
+/**
+ * This event emit the total of campaign's responses (unread, with labels, phone, sms, etc)
+ * Class CampaignCountsUpdated
+ * @package App\Events
+ */
 class CampaignCountsUpdated implements ShouldBroadcast
 {
     use SerializesModels;
