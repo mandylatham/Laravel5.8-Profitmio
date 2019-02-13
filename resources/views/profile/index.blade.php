@@ -36,7 +36,7 @@
                             </div>
                             <div class="form-group">
                                 <label class="form-label" label="email">Email</label>
-                                <input name="email" class="form-control" v-model="userForm.email">
+                                <input name="email" class="form-control" v-model="userForm.email" disabled>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn pm-btn pm-btn-purple" :disabled="loadingUserForm">
