@@ -2,12 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Sofa\Eloquence\Eloquence;
 
 class Recipient extends Model
@@ -215,15 +213,14 @@ class Recipient extends Model
 
     public function scopeUnread($query, $campaignId)
     {
-        return $query->whereIn('recipients.id',
-            result_array_values(
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->whereIn('responses.id', result_array_values(
                 \DB::select("
                     select distinct(id) from responses where responses.id in (
                     select max(responses.id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
                     ) and incoming = 1 and `read` = 0
                 ")
-            )
-        );
+            ));
     }
 
     public function scopeCalls($query)

@@ -3,12 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Classes\MailgunService;
+use App\Events\CampaignCountsUpdated;
 use App\Models\Appointment;
 use App\Models\Campaign;
 use App\Models\Recipient;
 use App\Models\Response;
 use App\Models\ResponseThread;
-use App\Services\PusherBroadcastingService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use League\Csv\Writer;
@@ -34,7 +34,6 @@ class ResponseController extends Controller
      * @param Response $response
      * @param Request  $request
      * @return string
-     * @throws \Pusher\PusherException
      */
     public function updateReadStatus(Response $response, Request $request)
     {
@@ -42,7 +41,7 @@ class ResponseController extends Controller
 
         $response->save();
 
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($response->recipient);
+        event(new CampaignCountsUpdated($response->campaign));
 
         return $response->toJson();
     }
