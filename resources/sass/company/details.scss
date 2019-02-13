@@ -175,6 +175,21 @@
         background-color: #fff;
     }
 
+    .company-access-row {
+        background-color: $brand-white;
+        border-radius: 5px;
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.7rem;
+        .access-link {
+            float: right;
+        }
+    }
+
+    #campaign-access-tab {
+        padding: 2rem;
+        position: relative;
+    }
+
     .template-field {
         @include media-breakpoint-up(md) {
             text-align: right
@@ -267,6 +282,12 @@
                 border-right: 3px solid #fff;
             }
         }
+    }
+}
+
+#configure-access {
+    .pm-pagination {
+        width: 80%;
     }
 }
 
