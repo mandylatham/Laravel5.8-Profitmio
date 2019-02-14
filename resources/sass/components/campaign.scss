@@ -246,5 +246,15 @@
                 margin: 0;
             }
         }
+
+        @include media-breakpoint-down(sm) {
+            .campaign-date {
+                border-right: 0;
+            }
+
+            .campaign-chart {
+                margin-top: 3px;
+            }
+        }
     }
 }
