@@ -135,16 +135,12 @@
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
 
+                <div class="message-drop-text" v-if="threads.textDrop.text_message">
+                    <strong class="mb-3">Original Message</strong>
+                    <div>{{ threads.textDrop.text_message }}</div>
+                </div>
+
                 <div class="panel-body">
-                    <div v-if="threads.textDrop">
-                        <strong class="vertical-text">Original Message</strong>
-                        <div class="message-time" style="margin-left: 25px">{{ threads.textDrop.send_at_formatted
-                            }}
-                        </div>
-                        <p class="message original-message">
-                            {{ threads.textDrop.text_message }}
-                        </p>
-                    </div>
 
                     <div class="sms-message-container">
                         <div v-for="msg in threads.text">
@@ -188,17 +184,11 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
+                <div class="message-drop-text" v-if="threads.emailDrop.email_html">
+                    <strong class="mb-3">Original Message</strong>
+                    <div v-html="threads.emailDrop.email_html"></div>
+                </div>
                 <div class="panel-body">
-                    <div v-if="threads.emailDrop">
-                        <div class="message-time" style="margin-left: 25px">{{ threads.emailDrop.send_at_formatted
-                            }}
-                        </div>
-                        <strong class="vertical-text">Original Message</strong>
-
-                        <div class="message original-message email-original" v-html="threads.emailDrop.email_html">
-                        </div>
-                    </div>
-
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
@@ -246,7 +236,7 @@
 <script>
     import axios from 'axios';
     import moment from 'moment';
-    import {generateRoute} from './../../../common/helpers';
+    import {generateRoute, replacePlaceholders} from './../../../common/helpers';
     import DatePicker from 'vue2-datepicker';
     import {pickBy} from 'lodash';
     import PusherService from './../../../common/pusher-service';
@@ -347,6 +337,13 @@
                         this.rest = r.rest;
                         this.notes = r.recipient.notes;
                         this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
+
+                        if (this.threads.textDrop && this.threads.textDrop.text_message) {
+                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.recipient);
+                        }
+                        if (this.threads.emailDrop && this.threads.emailDrop.email_html) {
+                            this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.recipient);
+                        }
 
                         this.registerPusherListeners();
                         this.setLoading(false);
@@ -522,7 +519,6 @@
                 pusherService
                     .subscribe('private-campaign.' + this.campaign.id)
                     .bind('recipient.' + this.recipient.id + '.email-response-received', data => {
-                        console.log('data', data);
                         this.threads.email.push(data.response);
                     });
 
