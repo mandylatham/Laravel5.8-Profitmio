@@ -216,11 +216,6 @@ class RecipientController extends Controller
 
             $recipient->save();
 
-            $class = 'badge-danger';
-            if (in_array($request->label, ['interested', 'appointment', 'service'])) {
-                $class = 'badge-success';
-            }
-
             if ($sendNotifications) {
                 event(new ServiceDeptLabelAdded($recipient));
             }

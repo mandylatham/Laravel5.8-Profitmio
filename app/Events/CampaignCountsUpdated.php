@@ -10,6 +10,11 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Support\Facades\DB;
 
+/**
+ * This event emit the total of campaign's responses (unread, with labels, phone, sms, etc)
+ * Class CampaignCountsUpdated
+ * @package App\Events
+ */
 class CampaignCountsUpdated implements ShouldBroadcast
 {
     use SerializesModels;
