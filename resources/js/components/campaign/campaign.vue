@@ -63,8 +63,13 @@
                 <p>{{ campaign.name }}</p>
             </div>
         </div>
-        <div class="col-6 col-md-2 campaign-postcard--image" v-if="!isAdmin">
-            <img src="" alt="">
+        <div class="col-6 col-md-2 campaign-links" v-if="!isAdmin">
+            <div class="row no-gutters">
+                <div class="col-12 col-sm-6">
+                    <i class="fa fa-calendar appointments-logo"></i>
+                    <p>{{ campaign.appointment_count }} Appointments</p>
+                </div>
+            </div>
         </div>
         <div class="col-6 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
@@ -72,7 +77,7 @@
         <div class="col-6 col-md-2 campaign-date">
             <span class="label">End Date:</span>
             <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>
-    </div>
+        </div>
         <div class="col-12 col-md-3 campaign-chart">
             <div class="row no-gutters" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">
                 <div class="col-7 campaign-chart--charts">

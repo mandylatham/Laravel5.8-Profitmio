@@ -200,6 +200,11 @@ class User extends Authenticatable implements HasMedia
         }
     }
 
+    public function replies()
+    {
+        return $this->hasMany(Response::class);
+    }
+
     public function invitations()
     {
         return $this->hasMany(CompanyUser::class, 'user_id', 'id');
@@ -357,5 +362,14 @@ class User extends Authenticatable implements HasMedia
     {
         session(['filters.user.index.q' => $q]);
         return $query->search($q);
+    }
+
+    public function registerMediaCollections()
+    {
+        $disk = env('APP_ENV') == 'local' ? 'public' : 'media_public';
+
+        $this
+            ->addMediaCollection('profile-image')
+            ->useDisk($disk);
     }
 }

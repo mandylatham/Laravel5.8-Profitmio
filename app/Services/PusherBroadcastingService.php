@@ -7,7 +7,7 @@ use Pusher\Pusher;
 
 class PusherBroadcastingService
 {
-    // TODO: remove this class when it's not in use
+    // TODO: remove this class when not in use anymore
     /**
      * @param Recipient $recipient
      * @param array     $data

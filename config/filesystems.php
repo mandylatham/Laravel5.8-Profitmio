@@ -60,8 +60,15 @@ return [
             'key' => env('S3_KEY'),
             'secret' => env('S3_SECRET'),
             'region' => env('S3_REGION'),
-            'bucket' => env('S3_MEDIA_BUCKET'),
-            'url' => 'https://google.com'
+            'bucket' => env('PRIVATE_MEDIA_BUCKET'),
+        ],
+
+        'media_public' => [
+            'driver' => 's3',
+            'key' => env('S3_KEY'),
+            'secret' => env('S3_SECRET'),
+            'region' => env('S3_REGION'),
+            'bucket' => env('PUBLIC_MEDIA_BUCKET'),
         ],
 
         's3' => [
@@ -71,20 +78,6 @@ return [
             'region' => env('AWS_DEFAULT_REGION'),
             'bucket' => env('AWS_BUCKET'),
             'url' => env('AWS_URL'),
-        ],
-
-        'company-images' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/company'),
-            'url' => env('APP_URL').'/storage',
-            'visitbility' => 'public',
-        ],
-
-        'user-images' => [
-            'driver' => 'local',
-            'root' => storage_path('app/public/user'),
-            'url' => env('APP_URL').'/storage',
-            'visitbility' => 'public',
         ],
 
     ],

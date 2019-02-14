@@ -7,10 +7,12 @@ use Illuminate\Http\Request;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Sofa\Eloquence\Eloquence;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class Company extends Model
+class Company extends Model implements HasMedia
 {
-    use LogsActivity, Eloquence, SoftDeletes;
+    use LogsActivity, Eloquence, SoftDeletes, HasMediaTrait;
 
     const TYPE_SUPPORT = 'support';
     const TYPE_AGENCY = 'agency';
@@ -34,11 +36,22 @@ class Company extends Model
         'image_url',
     ];
 
+    protected $appends = ['image'];
+
     protected static $logAttributes = ['id', 'name', 'type'];
 
     public function activeCampaigns()
     {
         return $this->campaigns()->where('status', 'Active');
+    }
+
+    public function getImageAttribute()
+    {
+        $image = $this->getMedia('company-photo')->last();
+        if ($image) {
+            return $image->getFullUrl();
+        }
+        return '';
     }
 
     public function users()
@@ -158,4 +171,14 @@ class Company extends Model
     {
         return $query->search($q);
     }
+
+    public function registerMediaCollections()
+    {
+        $disk = env('APP_ENV') == 'local' ? 'public' : 'media_public';
+
+        $this
+            ->addMediaCollection('company-image')
+            ->useDisk($disk);
+    }
 }
+

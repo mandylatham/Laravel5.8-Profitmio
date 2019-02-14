@@ -394,6 +394,7 @@ class ResponseConsoleController extends Controller
             'in_reply_to'   => $request->get('In-Reply-To'),
             'subject'       => $request->get('subject'),
             'type'          => 'email',
+            'user_id'       => $request->user()->id,
             'recording_sid' => 0,
             'incoming'      => 1,
         ]);
@@ -404,6 +405,7 @@ class ResponseConsoleController extends Controller
         $recipient->save();
 
         event(new RecipientEmailResponseReceived($campaign, $recipient, $response));
+        event(new CampaignCountsUpdated($campaign));
 
         if ($campaign->client_passthrough && !empty($campaign->client_passthrough_email)) {
             $this->mailgun->sendPassthroughEmail(
@@ -513,6 +515,7 @@ class ResponseConsoleController extends Controller
             'incoming'      => 0,
             'read'          => 1,
             'type'          => 'text',
+            'user_id'       => $request->user()->id,
             'recording_sid' => 0,
         ]);
 
@@ -562,6 +565,7 @@ class ResponseConsoleController extends Controller
             $recipient->save();
 
             event(new RecipientPhoneResponseReceived($campaign, $recipient, $response));
+            event(new CampaignCountsUpdated($campaign));
 
             return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
                 '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
@@ -643,6 +647,7 @@ class ResponseConsoleController extends Controller
             $response->save();
 
             event(new RecipientTextResponseReceived($response));
+            event(new CampaignCountsUpdated($campaign));
 
             // ubsubscribe happens at twilio level
             if ($this->isUnsubscribeMessage($message)) {

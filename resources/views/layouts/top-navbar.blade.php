@@ -18,7 +18,7 @@
             </template>
         </b-navbar-toggle>
 
-        <b-navbar-nav class="navbar-menu m-0 ml-md-3 ml-lg-6 ml-xl-10">
+        <b-navbar-nav class="navbar-menu m-0 ml-md-3">
             <div class="pm-logo-reversed d-md-none text-center">
                 <img src="/img/logo-reversed.png" alt="Logo Reversed">
             </div>

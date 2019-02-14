@@ -246,5 +246,23 @@
                 margin: 0;
             }
         }
+
+        .campaign-links {
+            border-left: 3px solid #edf0f5;
+        }
+
+        @include media-breakpoint-down(sm) {
+            .campaign-date {
+                border-right: 0;
+            }
+
+            .campaign-chart {
+                margin-top: 3px;
+            }
+
+            .campaign-links {
+                border-left: none;
+            }
+        }
     }
 }

@@ -215,10 +215,16 @@
 
                 }
 
-                #sms-form,
-                #email-form {
-                    margin-top: 20px;
-                }
+        .message-wrapper {
+          &.outbound-message {
+            margin-left: auto;
+          }
+        }
+
+        #sms-form,
+        #email-form {
+          margin-top: 20px;
+        }
 
                 #sms-message,
                 #email-message {

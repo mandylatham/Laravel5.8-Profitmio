@@ -144,7 +144,8 @@
 
                     <div class="sms-message-container">
                         <div v-for="msg in threads.text">
-                            <div class="message-wrapper">
+                            <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
+                                <div class="message-user">{{ msg.reply_user }}</div>
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
@@ -190,7 +191,8 @@
                 <div class="panel-body">
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
-                            <div class="message-wrapper">
+                            <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
+                                <div class="message-user">{{ msg.reply_user }}</div>
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}

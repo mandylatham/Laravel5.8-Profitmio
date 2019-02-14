@@ -26,7 +26,7 @@ class Response extends Model
         'recording_url',
     ];
 
-    protected $appends = ['message_formatted'];
+    protected $appends = ['message_formatted', 'reply_user'];
 
     public function campaign()
     {
@@ -36,6 +36,11 @@ class Response extends Model
     public function recipient()
     {
         return $this->belongsTo(Recipient::class, 'recipient_id', 'id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function scopeInboundEmail($query)
@@ -59,5 +64,19 @@ class Response extends Model
     public function getMessageFormattedAttribute()
     {
         return $this->message ? str_replace('@', '&#64;', $this->message) : '';
+    }
+
+    public function getReplyUserAttribute()
+    {
+        // Provide internal user name
+        if (! $this->incoming) {
+            if ($this->user) {
+                return $this->user->name . ' (id: ' . $this->user->id . ')';
+            }
+            return $this->campaign->dealership->name;
+        }
+
+        // Provide recipient name
+        return $this->recipient->name ?: 'Unknown Name';
     }
 }
