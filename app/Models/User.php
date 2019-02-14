@@ -200,6 +200,11 @@ class User extends Authenticatable implements HasMedia
         }
     }
 
+    public function replies()
+    {
+        return $this->hasMany(Response::class);
+    }
+
     public function invitations()
     {
         return $this->hasMany(CompanyUser::class, 'user_id', 'id');

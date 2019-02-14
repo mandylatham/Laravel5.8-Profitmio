@@ -175,15 +175,22 @@
           padding: 6px;
           width: 100%;
 
+            .message-user {
+              font-family: 'Operator Mono', 'Source Sans Pro', Menlo, Monaco, Consolas, Courier New, monospace;
+              font-size: 14px;
+              font-weight: 600;
+              color: #4d4d4d;
+              margin: 0 8px;
+                &.outbound-message {
+                    margin-left: auto;
+                }
+            }
             .message-time {
               font-family: 'Operator Mono', 'Source Sans Pro', Menlo, Monaco, Consolas, Courier New, monospace;
               font-size: 10px;
               letter-spacing: .2em;
               color: #4d4d4d;
               margin: 0 8px;
-                &.outbound-message {
-                    margin-left: auto;
-                }
             }
 
             .message {
@@ -209,6 +216,12 @@
                 }
             }
 
+        }
+
+        .message-wrapper {
+          &.outbound-message {
+            margin-left: auto;
+          }
         }
 
         #sms-form,

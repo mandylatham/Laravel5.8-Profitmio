@@ -394,6 +394,7 @@ class ResponseConsoleController extends Controller
             'in_reply_to'   => $request->get('In-Reply-To'),
             'subject'       => $request->get('subject'),
             'type'          => 'email',
+            'user_id'       => $request->user()->id,
             'recording_sid' => 0,
             'incoming'      => 1,
         ]);
@@ -514,6 +515,7 @@ class ResponseConsoleController extends Controller
             'incoming'      => 0,
             'read'          => 1,
             'type'          => 'text',
+            'user_id'       => $request->user()->id,
             'recording_sid' => 0,
         ]);
 
