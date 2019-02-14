@@ -211,6 +211,29 @@ class CompanyController extends Controller
         ]);
     }
 
+    public function updateAvatar(Company $company, Request $request, FileReceiver $receiver)
+    {
+        // check if the upload is success, throw exception or return response you need
+        if ($receiver->isUploaded() === false) {
+            throw new UploadMissingFileException();
+        }
+        // receive the file
+        $save = $receiver->receive();
+
+        // check if the upload has finished (in chunk mode it will send smaller files)
+        if ($save->isFinished()) {
+            $image = $company->addMedia($save->getFile())->toMediaCollection('company-photo', 'public');
+            return response()->json(['location' => $image->getFullUrl()], 201);
+        }
+
+        // we are in chunk mode, lets send the current progress
+        /** @var AbstractHandler $handler */
+        $handler = $save->handler();
+        return response()->json([
+            "done" => $handler->getPercentageDone()
+        ]);
+    }
+
     //region User Resource
     /**
      * Show lists of users

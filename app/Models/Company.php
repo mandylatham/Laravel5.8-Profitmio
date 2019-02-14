@@ -36,11 +36,22 @@ class Company extends Model implements HasMedia
         'image_url',
     ];
 
+    protected $appends = ['image'];
+
     protected static $logAttributes = ['id', 'name', 'type'];
 
     public function activeCampaigns()
     {
         return $this->campaigns()->where('status', 'Active');
+    }
+
+    public function getImageAttribute()
+    {
+        $image = $this->getMedia('company-photo')->last();
+        if ($image) {
+            return $image->getFullUrl();
+        }
+        return '';
     }
 
     public function users()

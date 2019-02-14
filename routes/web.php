@@ -253,6 +253,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => 'companies'], function () {
         Route::get('/', 'CompanyController@index')->middleware('can:create')->name('company.index');
         Route::post('/', 'CompanyController@store')->middleware('can:create,App\Models\Company')->name('company.store');
+        Route::post('{company}/avatar', 'CompanyController@updateAvatar')->name('companies.update-avatar');
 
         Route::get('for-dropdown', 'CompanyController@getForDropdown')->name('company.for-dropdown');
         Route::get('for-user-display', 'CompanyController@getForUserDisplay')->name('company.for-user-display');
