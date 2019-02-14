@@ -135,7 +135,10 @@
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
 
-                <div class="message-drop-text" v-if="threads.emailDrop.text_message">{{ threads.emailDrop.text_message}}</div>
+                <div class="message-drop-text" v-if="threads.textDrop.text_message">
+                    <strong class="mb-3">Original Message</strong>
+                    <div>{{ threads.textDrop.text_message }}</div>
+                </div>
 
                 <div class="panel-body">
 
@@ -180,7 +183,10 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
-                <div class="message-drop-text" v-if="threads.emailDrop.text_message" v-html="threads.emailDrop.text_message"></div>
+                <div class="message-drop-text" v-if="threads.emailDrop.email_html">
+                    <strong class="mb-3">Original Message</strong>
+                    <div v-html="threads.emailDrop.email_html"></div>
+                </div>
                 <div class="panel-body">
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
@@ -228,7 +234,7 @@
 <script>
     import axios from 'axios';
     import moment from 'moment';
-    import {generateRoute} from './../../../common/helpers';
+    import {generateRoute, replacePlaceholders} from './../../../common/helpers';
     import DatePicker from 'vue2-datepicker';
     import {pickBy} from 'lodash';
     import PusherService from './../../../common/pusher-service';
@@ -329,6 +335,13 @@
                         this.rest = r.rest;
                         this.notes = r.recipient.notes;
                         this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
+
+                        if (this.threads.textDrop && this.threads.textDrop.text_message) {
+                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.recipient);
+                        }
+                        if (this.threads.emailDrop && this.threads.emailDrop.email_html) {
+                            this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.recipient);
+                        }
 
                         this.registerPusherListeners();
                         this.setLoading(false);
@@ -504,7 +517,6 @@
                 pusherService
                     .subscribe('private-campaign.' + this.campaign.id)
                     .bind('recipient.' + this.recipient.id + '.email-response-received', data => {
-                        console.log('data', data);
                         this.threads.email.push(data.response);
                     });
 
