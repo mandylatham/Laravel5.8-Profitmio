@@ -2,7 +2,6 @@
 
 Route::impersonate();
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 //region OUTSIDE API CALLS
