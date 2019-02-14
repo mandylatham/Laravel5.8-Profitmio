@@ -38,6 +38,11 @@ class Response extends Model
         return $this->belongsTo(Recipient::class, 'recipient_id', 'id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function scopeInboundEmail($query)
     {
         return $query->where('type', 'email')->where('incoming', 1);
