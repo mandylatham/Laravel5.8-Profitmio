@@ -43,6 +43,13 @@
             <div class="card-body pb-5">
                 <div class="row no-gutters">
                     <div class="col-12 col-md-4 col-lg-3 col-xl-2 company-image-container">
+                        <div class="user-avatar" v-if="!editImage" :style="{backgroundImage: 'url(' + originalUser.image_url + ')'}">
+                            <span class="user-avatar--selector" @click="editImage = !editImage">
+                                <i class="fas fa-pencil-alt mr-2"></i>
+                            </span>
+                        </div>
+                        <resumable v-if="editImage" :target-url="targetUrl" ref="resumable" @file-added="onFileAdded"
+                        @file-success="onFileSuccess"></resumable>
                     </div>
                     <div class="col-12 col-md-8 col-lg-9 col-xl-10">
                         <div class="d-flex justify-content-end">
