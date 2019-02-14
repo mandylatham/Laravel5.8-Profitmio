@@ -16,6 +16,7 @@ window['app'] = new Vue({
     el: '#user-view',
     components: {
         'campaign': require('./../../components/campaign/campaign'),
+        'resumable': require('./../../components/resumable/resumable'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
         'user-role': require('./../../components/user-role/user-role')
@@ -50,6 +51,7 @@ window['app'] = new Vue({
         }
     },
     data: {
+        editImage: false,
         searchCampaignFormUrl: null,
         searchCompanyForm: new Form({
             q: localStorage.getItem('companyQ'),
@@ -79,6 +81,7 @@ window['app'] = new Vue({
         tableOptions: {
             mobile: 'lg'
         },
+        targetUrl: window.updateUserPhotoUrl,
         timezones: [],
         formUrl: '',
         loggedUserRole: '',
@@ -172,6 +175,14 @@ window['app'] = new Vue({
             this.searchCompanyForm.page = event.page;
             return this.fetchCompanies();
         },
+        onFileAdded() {
+            this.$refs.resumable.startUpload();
+        },
+        onFileSuccess(event) {
+            const response = JSON.parse(event.message);
+            this.originalUser.image_url = response.location;
+            this.editImage = false;
+        },
         updateCompanyData(company) {
             const data = {
                 company: company.id
@@ -210,89 +221,3 @@ window['app'] = new Vue({
         }
     }
 });
-
-// window['sidebar'] = new Vue({
-//     el: '#sidebar-content',
-//     components: {
-//         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-//         'vue-dropzone': vue2Dropzone
-//     },
-//     data: {
-//         dropzoneOptions: {
-//             url: window.updateUserPhotoUrl,
-//             thumbnailWidth: 150,
-//             headers: {
-//                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-//             },
-//             method: 'post',
-//             paramName: 'image',
-//             maxFiles: 1,
-//             acceptedFiles: 'image/*'
-//         },
-//         enableInputs: false,
-//         editUserForm: new Form(window.user),
-//         loading: false,
-//         loggedUserRole: '',
-//         showAvatarImage: true,
-//         user: {},
-//     },
-//     methods: {
-//         deleteUser: function () {
-//             this.$swal({
-//                 title: "Are you sure?",
-//                 text: "You will not be able to undo this operation!",
-//                 type: "warning",
-//                 showCancelButton: true,
-//                 confirmButtonColor: "#DD6B55",
-//                 confirmButtonText: "Yes",
-//                 cancelButtonText: "No",
-//                 allowOutsideClick: false,
-//                 showLoaderOnConfirm: true,
-//                 preConfirm: () => {
-//                     return axios.delete(window.deleteUserUrl);
-//                 }
-//             }).then(result => {
-//                 if (result.value) {
-//                     this.$swal({
-//                         title: 'User Deleted',
-//                         type: 'success',
-//                         allowOutsideClick: false
-//                     }).then(() => {
-//                         window.location.replace(window.userIndexUrl);
-//                     });
-//                 }
-//             }, error => {
-//                 this.$toastr.error('Unable to process your request');
-//             });
-//         },
-//         profileImageUploaded: function (file, response) {
-//             this.$toastr.success('Image uploaded!');
-//             this.user.image_url = response.location;
-//             this.showAvatarImage = true;
-//         },
-//         profileImageError: function () {
-//             this.$toastr.error('Unable to process your request');
-//             this.showAvatarImage = true;
-//         },
-//         saveUser: function () {
-//             this.loading = true;
-//             this.editUserForm
-//                 .post(generateRoute(window.updateUserUrl, {userId: window.user.id}))
-//                 .then(() => {
-//                     this.enableInputs = false;
-//                     this.$toastr.success('User updated!');
-//                     this.loading = false;
-//                     this.user = this.editUserForm.data();
-//                 })
-//                 .catch(e => {
-//                     this.$toastr.error("Unable to process your request");
-//                     this.loading = false;
-//                 });
-//         }
-//
-//     },
-//     mounted: function () {
-//         this.user = window.user;
-//         this.loggedUserRole = window.userRole;
-//     }
-// });

@@ -28,6 +28,7 @@ window['app'] = new Vue({
     el: '#app',
     components: {
         'campaign': require('./../../components/campaign/campaign'),
+        'resumable': require('./../../components/resumable/resumable'),
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
     },
@@ -69,6 +70,7 @@ window['app'] = new Vue({
         campaigns: [],
         company: {},
         companyIndex: '',
+        editImage: false,
         loadingUsers: false,
         loadingCampaignAccessUsers: false,
         modifiedCompany: {},
@@ -105,6 +107,7 @@ window['app'] = new Vue({
         companyFormFields: ['name', 'address', 'address2', 'city', 'state', 'zip'],
         showCompanyFormControls: false,
         loadingCampaigns: false,
+        targetUrl: window.updateCompanyImageUrl,
         total: 0,
         totalUsers: 0,
         totalCampaignAccessUser: 0,
@@ -220,6 +223,14 @@ window['app'] = new Vue({
         onCampaignAccessUserPageChanged(event) {
             this.searchCampaignAccessUser.page = event.page;
             return this.fetchUsersForCampaignAccess();
+        },
+        onFileAdded() {
+            this.$refs.resumable.startUpload();
+        },
+        onFileSuccess(event) {
+            const response = JSON.parse(event.message);
+            this.company.image = response.location;
+            this.editImage = false;
         },
         onUserPageChanged(event) {
             this.searchUserForm.page = event.page;
