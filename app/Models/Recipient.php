@@ -2,10 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Events\CampaignCountsUpdated;
+use App\Events\RecipientLabelAdded;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Sofa\Eloquence\Eloquence;
 
 class Recipient extends Model
@@ -216,7 +220,7 @@ class Recipient extends Model
         return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
             ->whereIn('responses.id', result_array_values(
                 \DB::select("
-                    select distinct(id) from responses where responses.id in (
+                    select distinct(recipient_id) from responses where responses.id in (
                     select max(responses.id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
                     ) and incoming = 1 and `read` = 0
                 ")
