@@ -70,7 +70,6 @@ window['app'] = new Vue({
             this.searchForm
                 .get(window.getRecipientsUrl)
                 .then(response => {
-                    console.log('response', response);
                     this.recipients = response.data;
                     this.searchForm.page = response.current_page;
                     this.searchForm.per_page = response.per_page;

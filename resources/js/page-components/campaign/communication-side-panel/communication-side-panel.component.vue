@@ -135,16 +135,9 @@
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
 
+                <div class="message-drop-text" v-if="threads.emailDrop.text_message">{{ threads.emailDrop.text_message}}</div>
+
                 <div class="panel-body">
-                    <div v-if="threads.textDrop">
-                        <strong class="vertical-text">Original Message</strong>
-                        <div class="message-time" style="margin-left: 25px">{{ threads.textDrop.send_at_formatted
-                            }}
-                        </div>
-                        <p class="message original-message">
-                            {{ threads.textDrop.text_message }}
-                        </p>
-                    </div>
 
                     <div class="sms-message-container">
                         <div v-for="msg in threads.text">
@@ -187,17 +180,8 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
+                <div class="message-drop-text" v-if="threads.emailDrop.text_message" v-html="threads.emailDrop.text_message"></div>
                 <div class="panel-body">
-                    <div v-if="threads.emailDrop">
-                        <div class="message-time" style="margin-left: 25px">{{ threads.emailDrop.send_at_formatted
-                            }}
-                        </div>
-                        <strong class="vertical-text">Original Message</strong>
-
-                        <div class="message original-message email-original" v-html="threads.emailDrop.email_html">
-                        </div>
-                    </div>
-
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
                             <div class="message-wrapper">
