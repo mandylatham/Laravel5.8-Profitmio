@@ -323,6 +323,8 @@ class Campaign extends Model
 
     public function getAppointmentCountsAttribute()
     {
-        return $this->appointments()->count();
+        return $this->appointments()
+            ->whereNotNull('appointments.appointment_at')
+            ->count();
     }
 }
