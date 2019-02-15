@@ -2,6 +2,8 @@ import Vue from 'vue';
 import './../../common';
 import moment from 'moment';
 import Form from './../../common/form';
+import './../../filters/m-utc-parse.filter';
+import './../../filters/m-format-localized.filter';
 // Chart Library
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
@@ -126,36 +128,45 @@ window['sidebar'] = new Vue({
         },
         fetchMonthEvents: function () {
             let url = '';
+            let dateProp = '';
             if (this.filter === 'appointment') {
                 url = window.appointmentsUrl;
+                dateProp = 'appointment_at';
             } else if (this.filter === 'drop') {
                 url = window.dropsUrl;
+                dateProp = 'send_at';
             }
             return axios
                 .get(url, {
                     params: {
-                        per_page: 100,
+                        per_page: 1000,
                         start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('month').startOf('week').format('YYYY-MM-DD'),
                         end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('month').endOf('week').format('YYYY-MM-DD')
                     },
                     data: null
                 })
                 .then(response => {
-                    this.monthEvents = response.data;
+                    response.data.data.forEach(d => {
+                        d.date = moment(d[dateProp], 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD');
+                    });
+                    this.monthEvents = response.data.data;
                 });
         },
         fetchDayEvents: function () {
             this.loading = true;
             let url = '';
+            let dateProp = '';
             if (this.filter === 'appointment') {
                 url = window.appointmentsUrl;
+                dateProp = 'appointment_at';
             } else if (this.filter === 'drop') {
                 url = window.dropsUrl;
+                dateProp = 'send_at';
             }
             return axios
                 .get(url, {
                     params: {
-                        per_page: 100,
+                        per_page: 1000,
                         start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD'),
                         end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('week').format('YYYY-MM-DD')
                     },
@@ -163,7 +174,10 @@ window['sidebar'] = new Vue({
                 })
                 .then(response => {
                     this.loading = false;
-                    this.calendarEvents = response.data;
+                    response.data.data.forEach(d => {
+                        d.date = moment(d[dateProp], 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD');
+                    });
+                    this.calendarEvents = response.data.data;
                 }, () => {
                     this.loading = false;
                 });
@@ -190,11 +204,13 @@ window['sidebar'] = new Vue({
                 if (newDate.format('MMYYYY') !== oldDate.format('MMYYYY')) {
                     this.fetchMonthEvents();
                 }
-                // Don't remove setTimeout, it waits the calendar to render the next month
-                setTimeout(() => {
-                    this.fetchDayEvents();
-                    this.selectWeek();
-                }, 0);
+                if (newDate.week() !== oldDate.week()) {
+                    // Don't remove setTimeout, it waits the calendar to render the next month
+                    setTimeout(() => {
+                        this.fetchDayEvents();
+                        this.selectWeek();
+                    }, 0);
+                }
             }
         }
     }

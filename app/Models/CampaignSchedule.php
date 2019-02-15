@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Sofa\Eloquence\Eloquence;
+use Carbon\Carbon;
 
 class CampaignSchedule extends Model
 {
@@ -87,6 +88,6 @@ class CampaignSchedule extends Model
      */
     public function getSendAtFormattedAttribute()
     {
-        return $this->send_at ? $this->send_at->timezone(Auth::user()->timezone)->format('Y-m-d g:i A T') : '';
+        return $this->send_at ? Carbon::createFromFormat('Y-m-d H:i:s', $this->send_at)->format('Y-m-d g:i A T') : '';
     }
 }
