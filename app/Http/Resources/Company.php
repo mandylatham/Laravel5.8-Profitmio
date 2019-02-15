@@ -35,6 +35,7 @@ class Company extends JsonResource
             $data['role'] = $userModel->getRole($this->resource);
             $data['timezone'] = $userModel->getTimezone($this->resource);
             $data['active_campaigns_for_user'] = count($userModel->getActiveCampaignsForCompany($this->resource));
+            $data['is_profile_ready'] = $this->isUserProfileReady($userModel->id);
         }
         $this->whenPivotLoaded('company_user', function () use (&$data) {
             $data['role'] = $this->pivot->role;

@@ -150,6 +150,17 @@
                 width: 30%;
                 flex-grow: 0;
                 flex-shrink: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                .ci-img {
+                    background-size: cover;
+                    background-position: 50% 50%;
+                    background-color: #fff;
+                    border-radius: 50%;
+                    width: 50px;
+                    height: 50px;
+                }
             }
             &--data {
                 padding-left: 1rem;
@@ -178,6 +189,11 @@
             justify-content: center;
             padding: 1rem;
             align-items: center;
+        }
+        &-resend-invitation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         &-active-campaigns {
             background-color: $brand-white;

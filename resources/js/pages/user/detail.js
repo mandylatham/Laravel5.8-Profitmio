@@ -69,6 +69,7 @@ window['app'] = new Vue({
         showUserFormControls: false,
         loadingCompanies: true,
         loadingCampaigns: true,
+        loadingInvitation: false,
         originalUser: {},
         total: null,
         totalCompanies: null,
@@ -153,7 +154,11 @@ window['app'] = new Vue({
         fetchCompanies() {
             this.searchCompanyForm.user = window.user.id;
             this.loadingCompanies = true;
-            localStorage.setItem('companyQ', this.searchCompanyForm.q);
+            if (this.searchCompanyForm.q) {
+                localStorage.setItem('companyQ', this.searchCompanyForm.q);
+            } else {
+                localStorage.removeItem('companyQ');
+            }
             this.searchCompanyForm
                 .get(window.searchCompaniesFormUrl)
                 .then(response => {
@@ -182,6 +187,23 @@ window['app'] = new Vue({
             const response = JSON.parse(event.message);
             this.originalUser.image_url = response.location;
             this.editImage = false;
+        },
+        resendInvitation(company) {
+            this.loadingInvitation = true;
+            axios
+                .get(window.resendInvitationUrl, {
+                    params: {
+                        user: this.user.id,
+                        company: company.id
+                    },
+                })
+                .then(response => {
+                    this.loadingInvitation = false;
+                    this.$toastr.success('Invitation Sent!');
+                }, () => {
+                    this.loadingInvitation = false;
+                    this.$toastr.error('Unable to process your request.');
+                })
         },
         updateCompanyData(company) {
             const data = {

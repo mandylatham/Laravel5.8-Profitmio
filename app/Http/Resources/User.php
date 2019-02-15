@@ -22,6 +22,10 @@ class User extends JsonResource
             'is_admin' => (int) $this->is_admin,
             'email' => $this->email,
             'phone_number' => $this->phone_number,
+            'is_profile_ready' => $this->when($request->filled('company') && auth()->user()->isAdmin(), function () use ($request) {
+                $company = \App\Models\Company::find($request->input('company'));
+                return $company->isUserProfileReady($this->id);
+            }),
             'has_access' => $this->when($request->filled('campaign') && $request->filled('company'), function () use ($request) {
                 $company = \App\Models\Company::find($request->input('company'));
                 if ($this->resource->isAdmin() || $this->resource->isCompanyAdmin($company->id)) {

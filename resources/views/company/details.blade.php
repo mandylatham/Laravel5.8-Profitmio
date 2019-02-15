@@ -19,6 +19,7 @@
         window.userEditUrl = "{{ route('user.view', ['user' => ':userId']) }}";
         window.userImpersonateUrl = "{{ route('admin.impersonate', ['user' => ':userId']) }}";
         window.searchCampaignAccessUserUrl = "{{ route('user.for-user-display') }}";
+        window.resendInvitationUrl = "{{ route('admin.resend-invitation') }}";
         window.toggleCampaignAccessUserUrl = "{{ route('campaigns.toggle-user-access', ['campaign' => ':campaignId', 'user' => ':userId']) }}";
         window.updateCompanyImageUrl = "{{ route('companies.update-avatar', ['company' => $company->id]) }}";
         @if (!auth()->user()->isAdmin())
@@ -235,8 +236,9 @@
                                                 <div
                                                     class="user-row--id justify-content-center justify-content-xl-start">
                                                     <strong class="mr-2">ID: @{{ user.id }}</strong>
-                                                    <span
+                                                    <span v-if="user.first_name && user.last_name"
                                                         class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
+                                                    <span class="user-name" v-if="!user.first_name && !user.last_name">No Name</span>
                                                     <user-role class="ml-3" :role="'site_admin'"
                                                                v-if="user.is_admin"></user-role>
                                                 </div>
@@ -274,12 +276,12 @@
                                                        title="Impersonate" v-if="user.has_active_companies">
                                                         <i class="fas fa-lock-open mr-3"></i> Impersonate
                                                     </a>
-                                                    <a :href="generateRoute(userEditUrl, {'userId': user.id})"
+                                                    <button :disabled="loadingInvitation"
                                                        class="btn btn-link pm-btn-link pm-btn-link-black"
-                                                       title="Has Pending Invitations"
-                                                       v-if="user.has_pending_invitations">
-                                                        <i class="fas fa-envelope mr-3"></i> Has Pending Invitations
-                                                    </a>
+                                                       v-if="!user.is_profile_ready" @click="resendInvitation(user)">
+                                                        <span v-if="!loadingInvitation"><i class="fas fa-envelope mr-3"></i>Resend Invitation</span>
+                                                        <spinner-icon :size="'sm'" v-if="loadingInvitation"></spinner-icon>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
