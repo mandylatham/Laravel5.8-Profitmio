@@ -30,7 +30,7 @@
             <p-radio @change="fetchDayEvents() && fetchMonthEvents()" class="p-default p-round" name="filter" v-model="filter" value="drop">Scheduled Drops</p-radio>
         </div>
         <div class="calendar-container mt-5">
-            <date-pick class="event-calendar" :events="monthEvents" :parse-date="parseDate" v-model="selectedDate" :has-input-element="false"></date-pick>
+            <date-pick class="event-calendar" :events="monthEvents" :parse-date="parseDate" :start-week-on-sunday="true" v-model="selectedDate" :has-input-element="false"></date-pick>
             <div class="table-loader-spinner" v-if="loading">
                 <spinner-icon></spinner-icon>
             </div>

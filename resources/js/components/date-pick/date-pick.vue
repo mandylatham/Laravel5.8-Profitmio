@@ -137,6 +137,10 @@
 
 <script>
 
+    /**
+     * Component forked from https://github.com/dbrekalo/vue-date-pick (tag v1.0.7)
+     */
+
     import moment from 'moment';
 
     const formatRE = /,|\.|-| |:|\/|\\/;
@@ -180,7 +184,8 @@
                     'May', 'June', 'July', 'August',
                     'September', 'October', 'November', 'December'
                 ])
-            }
+            },
+            startWeekOnSunday: {type: Boolean, default: false}
         },
 
         data() {
@@ -231,11 +236,13 @@
                 const date = new Date(year, month, 1);
                 const today = new Date();
 
+                const offset = this.startWeekOnSunday ? 1 : 0;
+
                 // append prev month dates
                 const startDay = date.getDay() || 7;
 
-                if (startDay > 1) {
-                    for (let i = startDay - 2; i >= 0; i--) {
+                if (startDay > (1 - offset)) {
+                    for (let i = startDay - (2 - offset); i >= 0; i--) {
 
                         const prevDate = new Date(date);
                         prevDate.setDate(-i);
@@ -338,6 +345,13 @@
             }
 
         },
+
+        mounted() {
+            if (this.startWeekOnSunday) {
+                this.setWeekdaysToStartOnSunday();
+            }
+        },
+
 
         beforeDestroy() {
 
@@ -652,6 +666,10 @@
 
                 this.$emit('input', this.formatDateToString(currentDate, this.format));
 
+            },
+
+            setWeekdaysToStartOnSunday() {
+                this.weekdays.unshift(this.weekdays.pop());
             }
 
         }
