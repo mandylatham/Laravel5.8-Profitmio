@@ -4,31 +4,30 @@
     <prospect>
         <requestdate>{{ date(DATE_ATOM, time()) }}</requestdate>
         <vehicle>
-            <year>{{ $appointment->auto_year }}</year>
-            <make>{{ $appointment->make }}</make>
-            <model>{{ $appointment->model }}</model>
+            <year>{{ $recipient->year }}</year>
+            <make>{{ $recipient->make }}</make>
+            <model>{{ $recipient->model }}</model>
         </vehicle>
         <customer>
             <contact>
-                <name part="first">{{ $appointment->first_name }}</name>
-                <name part="last">{{ $appointment->last_name }}</name>
-                <email>{{ $appointment->email }}</email>
-                <phone type="voice">{{ $appointment->phone_number }}</phone>
-                <phone type="voice">{{ $appointment->alt_phone_number }}</phone>
+                <name part="first">{{ $recipient->first_name }}</name>
+                <name part="last">{{ $recipient->last_name }}</name>
+                <email>{{ $recipient->email }}</email>
+                <phone type="voice">{{ $recipient->phone }}</phone>
                 <address type="home">
-                    <street line="1">{{ $appointment->address }}</street>
+                    <street line="1">{{ $recipient->address }}</street>
                     <apartment/>
-                    <city>{{ $appointment->city }}</city>
-                    <regioncode>{{ $appointment->state }}</regioncode>
-                    <postalcode>{{ $appointment->zip }}</postalcode>
+                    <city>{{ $recipient->city }}</city>
+                    <regioncode>{{ $recipient->state }}</regioncode>
+                    <postalcode>{{ $recipient->zip }}</postalcode>
                 </address>
             </contact>
-            <comments>The contact, {{ $appointment->first_name }} {{ $apointment->last_name }} has called to request an appointment at {{ $appointment->appointment_at }}</comments>
+            <comments>This lead, {{ $recipient->first_name }} {{ $recipient->last_name }} has been manually submitted to your CRM by Profit Miner user, {{ $user->name }}</comments>
         </customer>
         <vendor>
-            <vendorname>{{ $campaign->agency->organization }}</vendorname>
+            <vendorname>{{ $campaign->agency->name }}</vendorname>
             <contact primarycontact="1">
-                <name part="full">{{ $campaign->agency->organization }}</name>
+                <name part="full">{{ $campaign->agency->name }}</name>
             </contact>
         </vendor>
         <provider>

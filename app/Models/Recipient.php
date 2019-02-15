@@ -51,6 +51,7 @@ class Recipient extends Model
         'subgroup',
         'from_dealer_db',
         'callback',
+        'sent_to_crm',
     ];
 
     protected $appends = [
