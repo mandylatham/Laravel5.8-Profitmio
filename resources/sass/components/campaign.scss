@@ -3,6 +3,24 @@
     overflow: hidden;
     margin-bottom: 1rem;
 
+    .campaign-apointment-totals {
+        font-size: 4.5rem;
+        color: $brand-purple;
+        text-align: center;
+        .far {
+            margin-right: 0.5rem;
+        }
+        .total {
+            margin-left: 0.5rem;
+        }
+    }
+
+    .btn-console-outline {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+        border-radius: 0;
+    }
+
     .no-responses {
         width: 100%;
         height: 100%;

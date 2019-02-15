@@ -38,6 +38,7 @@ window['app'] = new Vue({
     },
     data: {
         companies: [],
+        companySelected: null,
         selectedDate: moment().format('YYYY-MM-DD'),
         searchFormUrl: null,
         searchForm: new Form({

@@ -41,16 +41,20 @@
                 <strong>{{ daysLeft }}</strong>
             </div>
         </div>
-        <div class="col-6 col-md-3 campaign-links">
-            <div class="row no-gutters">
-                <a v-if="isAdmin" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
-                <div v-else class="col-12 col-sm-6">
-                    <i class="fa fa-calendar appointments-logo"></i>
-                    <p>{{ campaign.appointment_count }} Appointments</p>
-                </div>
-                <a v-if="isAdmin" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
-                <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
+        <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
+            <a :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
+            <a :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
+            <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
+        </div>
+        <div class="col-6 col-md-3 campaign-links" v-else>
+            <div class="campaign-apointment-totals">
+                <i class="far fa-calendar-check"></i>
+                <span class="total">{{ campaign.appointment_counts }}</span>
             </div>
+            <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})" class="btn btn-console-outline pm-btn-outline-purple">
+                <span class="fa fa-terminal"></span> Console
+            </a>
         </div>
     </div>
     <div class="row no-gutters campaign-component inactive" v-else-if="!campaignActive">
