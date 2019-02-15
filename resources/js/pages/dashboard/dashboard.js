@@ -38,6 +38,7 @@ window['app'] = new Vue({
     },
     data: {
         companies: [],
+        companySelected: null,
         selectedDate: moment().format('YYYY-MM-DD'),
         searchFormUrl: null,
         searchForm: new Form({
@@ -134,8 +135,8 @@ window['sidebar'] = new Vue({
                 .get(url, {
                     params: {
                         per_page: 100,
-                        start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('month').startOf('week').add(1, 'day').format('YYYY-MM-DD'),
-                        end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('month').endOf('week').add(1, 'day').format('YYYY-MM-DD')
+                        start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('month').startOf('week').format('YYYY-MM-DD'),
+                        end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('month').endOf('week').format('YYYY-MM-DD')
                     },
                     data: null
                 })
@@ -155,8 +156,8 @@ window['sidebar'] = new Vue({
                 .get(url, {
                     params: {
                         per_page: 100,
-                        start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('week').add(1, 'day').format('YYYY-MM-DD'),
-                        end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('week').add(1, 'day').format('YYYY-MM-DD')
+                        start_date: moment(this.selectedDate, 'YYYY-MM-DD').startOf('week').format('YYYY-MM-DD'),
+                        end_date: moment(this.selectedDate, 'YYYY-MM-DD').endOf('week').format('YYYY-MM-DD')
                     },
                     data: null
                 })
