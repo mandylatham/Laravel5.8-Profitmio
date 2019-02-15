@@ -210,7 +210,6 @@ class AppointmentController extends Controller
                     }
                 }
             }
-
         }
 
         if ($campaign->lead_alerts) {
@@ -241,7 +240,7 @@ class AppointmentController extends Controller
                 $to = $campaign->sms_on_callback_number;
                 $message = $this->getCallbackMessage($appointment);
                 TwilioClient::sendSms($from, $to, $message);
-            } catch (\Exception $exception) {
+            } catch (\Exception $e) {
                 Log::error("Unable to send callback SMS: " . $e->getMessage());
             }
         }
