@@ -3,19 +3,35 @@
 namespace App\Listeners;
 
 use App\Events\AppointmentCreated;
-use Illuminate\Queue\InteractsWithQueue;
+use App\Models\Appointment;
+use App\Services\CrmService;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\InteractsWithQueue;
+use Illuminate\Log\Logger;
 
 class SendAppointmentNotifications
 {
+    private const CALLBACK_MESSAGE = 'Profit Miner callback requested for %s at %s';
+
+    /**
+     * Crm Service
+     */
+    private $crm;
+
+    /**
+     * Log Service
+     */
+    private $log;
+
     /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(CrmService $crm, Logger $log)
     {
-        //
+        $this->crm = $crm;
+        $this->log = $log;
     }
 
     /**
@@ -30,26 +46,7 @@ class SendAppointmentNotifications
         $campaign    = $appointment->campaign;
         
         if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT])) {
-            if ($campaign->adf_crm_export) {
-                $alert_emails = (array)$campaign->adf_crm_export_email;
-                foreach ($alert_emails as $email) {
-                    $email = trim($email);
-                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        $this->log->error("AppointmentController@insert (line 82): Skipping crm notification to invalid email, $email");
-                        $this->log->channel('operations')->notice('SendAppointmentNotifications: unable to send recipient (id:'.$appointment->recipient->id.') to CRM using invalid email (email:'.$email.')');
-                        continue;
-                    }
-                    try {
-                        $this->mail->to($email)->send(new CrmNotification($campaign, $appointment));
-                        $appointment->recipient->update(['sent_to_crm' => true])
-                            && \Log::channel('operations')->info('recipient (id:'.$appointment->recipient->id.') sent to crm');
-                        $this->log->debug("AppointmentController@insert: Sent crm alerts for appointment #{$appointment->id}");
-                        $this->log->channel('operations')->info('SendAppointmentNotifications: recipient  (id:'.$appointment->recipient->id.') pushed to CRM using email (email:'.$email.')');
-                    } catch (\Exception $e) {
-                        $this->log->error("Unable to send crm notification: " . $e->getMessage());
-                    }
-                }
-            }
+            $this->crm->sendAppointment($appointment);
         }
 
         if ($campaign->lead_alerts) {
@@ -87,5 +84,16 @@ class SendAppointmentNotifications
                 Log::error("Unable to send callback SMS: " . $e->getMessage());
             }
         }
+    }
+
+    /**
+     * @param Appointment $appointment
+     * @return string
+     */
+    private function getCallbackMessage(Appointment $appointment): string
+    {
+        $name = $appointment->first_name . ' ' . $appointment->last_name;
+
+        return sprintf(self::CALLBACK_MESSAGE, $name, $appointment->phone_number);
     }
 }

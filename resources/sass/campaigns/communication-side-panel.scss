@@ -98,6 +98,12 @@
             }
         }
 
+        .recipient-action {
+            padding: 1px 6px;
+            cursor: inherit;
+            border-radius: 2px;
+        }
+
         .mail-attachments {
             .list-group {
                 list-style: none;

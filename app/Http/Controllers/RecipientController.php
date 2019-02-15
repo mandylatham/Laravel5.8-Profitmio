@@ -16,10 +16,12 @@ use App\Models\Recipient;
 use App\Models\RecipientList;
 use App\Models\Response;
 use App\Services\PusherBroadcastingService;
+use App\Services\CrmService;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
@@ -31,6 +33,15 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 class RecipientController extends Controller
 {
     protected $pages = 15;
+
+    private $crm;
+    private $log;
+
+    public function __construct(CrmService $crm, Logger $log)
+    {
+        $this->crm = $crm;
+        $this->log = $log;
+    }
 
     public function forUserDisplay(Campaign $campaign)
     {
@@ -1224,5 +1235,16 @@ class RecipientController extends Controller
         }
 
         return $data;
+    }
+
+    public function sendToCrm(Recipient $recipient)
+    {
+        try {
+            $this->crm->sendRecipient($recipient, \Auth::user());
+            return response()->json(['message' => 'Successfully sent recipient to CRM']);
+        } catch (\Exception $e) {
+            $this->log->error("Unable to send recipient to crm: " .$e->getMessage());
+            abort(500, 'Unable to send to CRM');
+        }
     }
 }

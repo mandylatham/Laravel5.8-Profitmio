@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Events\CampaignCountsUpdated;
+use App\Events\AppointmentCreated;
 use App\Classes\MailgunService;
-use App\Mail\CrmNotification;
+use App\Mail\CrmAppointmentNotification;
 use App\Mail\LeadNotification;
 use App\Models\Appointment;
 use App\Models\Campaign;
@@ -191,59 +192,8 @@ class AppointmentController extends Controller
         }
         $recipient->save();
 
+        event(new AppointmentCreated($appointment));
         event(new CampaignCountsUpdated($campaign));
-
-        if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT])) {
-            if ($campaign->adf_crm_export) {
-                $alert_emails = (array)$campaign->adf_crm_export_email;
-                foreach ($alert_emails as $email) {
-                    $email = trim($email);
-                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        $this->log->error("AppointmentController@insert (line 82): Skipping crm notification to invalid email, $email");
-                        continue;
-                    }
-                    try {
-                        $this->mail->to($email)->send(new CrmNotification($campaign, $appointment));
-                        $this->log->debug("AppointmentController@insert: Sent crm alerts for appointment #{$appointment->id}");
-                    } catch (\Exception $e) {
-                        $this->log->error("Unable to send crm notification: " . $e->getMessage());
-                    }
-                }
-            }
-        }
-
-        if ($campaign->lead_alerts) {
-            $alert_emails = (array)$campaign->lead_alert_email;
-
-            foreach ($alert_emails as $email) {
-                $email = trim($email);
-
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $this->log->error("AppointmentController@insert (line 82): Skipping lead notification to invalid email, $email");
-
-                    continue;
-                }
-
-                try {
-                    $this->mail->to($email)->send(new LeadNotification($campaign, $appointment));
-                    $this->log->debug("AppointmentController@insert: Sent lead alerts for appointment #{$appointment->id}");
-                } catch (\Exception $e) {
-                    $this->log->error("Unable to send lead notification: " . $e->getMessage());
-                }
-            }
-        }
-
-        if (($appointment->type == Appointment::TYPE_CALLBACK) && ($campaign->sms_on_callback == 1)) {
-            try {
-                $phone = $campaign->phones()->whereCallSourceName('sms')->orderBy('id', 'desc')->firstOrFail();
-                $from = $phone->phone_number;
-                $to = $campaign->sms_on_callback_number;
-                $message = $this->getCallbackMessage($appointment);
-                TwilioClient::sendSms($from, $to, $message);
-            } catch (\Exception $e) {
-                Log::error("Unable to send callback SMS: " . $e->getMessage());
-            }
-        }
 
         return response()->json(['error' => 0, 'message' => 'The appointment has been saved.']);
     }
@@ -334,60 +284,9 @@ class AppointmentController extends Controller
 
         $recipient->update(['appointment' => true, 'last_responded_at' => \Carbon\Carbon::now('UTC')]);
 
-        if (in_array($appointment->type, [Appointment::TYPE_APPOINTMENT])) {
-            if ($campaign->adf_crm_export) {
-                $alert_emails = (array)$campaign->adf_crm_export_email;
-                foreach ($alert_emails as $email) {
-                    $email = trim($email);
-                    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                        $this->log->error("AppointmentController@insert (line 82): Skipping crm notification to invalid email, $email");
-                        continue;
-                    }
-                    try {
-                        $this->mail->to($email)->send(new CrmNotification($campaign, $appointment));
-                        $this->log->debug("AppointmentController@insert: Sent crm alerts for appointment #{$appointment->id}");
-                    } catch (\Exception $e) {
-                        $this->log->error("Unable to send crm notification: " . $e->getMessage());
-                    }
-                }
-
-            }
-        }
-
-        if ($campaign->lead_alerts) {
-            $alert_emails = (array)$campaign->lead_alert_email;
-
-            foreach ($alert_emails as $email) {
-                $email = trim($email);
-
-                if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                    $this->log->error("AppointmentController@insert (line 82): Skipping lead notification to invalid email, $email");
-
-                    continue;
-                }
-
-                try {
-                    $this->mail->to($email)->send(new LeadNotification($campaign, $appointment));
-                    $this->log->debug("AppointmentController@insert: Sent lead alerts for appointment #{$appointment->id}");
-                } catch (\Exception $e) {
-                    $this->log->error("Unable to send lead notification: " . $e->getMessage());
-                }
-            }
-        }
-
+        event(new AppointmentCreated($appointment));
         event(new CampaignCountsUpdated($campaign));
 
         return $appointment;
-    }
-
-    /**
-     * @param Appointment $appointment
-     * @return string
-     */
-    private function getCallbackMessage(Appointment $appointment): string
-    {
-        $name = $appointment->first_name . ' ' . $appointment->last_name;
-
-        return sprintf(self::CALLBACK_MESSAGE, $name, $appointment->phone_number);
     }
 }

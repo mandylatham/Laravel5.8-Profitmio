@@ -60,37 +60,41 @@
             <div class="call-in-wrapper" v-if="appointments.length">
                 <ul class="list-group">
                     <li class="list-group-item" v-for="appointment in appointments">
-                        <div v-if="appointment.type === 'callback'">
-                            <span class="mr-2">Callback Requested</span>
-                            <i class="fas fa-phone mr-2"></i>
+                        <div v-if="appointment.type === 'callback'" class="alert" :class="{'alert-success': appointment.called_back, 'alert-warning': !appointment.called_back}">
+                            <span class="btn recipient-action mr-2" :class="{'btn-success': appointment.called_back, 'btn-warning': !appointment.called_back}">
+                                <i class="fa fa-phone-square mr-2"></i>
+                                Callback Requested
+                            </span>
                             {{ appointment.name }} @ {{ appointment.phone_number }}
-                            <div class="checkbox" style="padding-top: 6px; margin-left: 8px;">
-                                <label>
-                                    <input type="checkbox" class="toggle_called" :checked="appointment.called_back"
-                                           @click="appointmentCalledBackToggle($event, appointment.id)">
-                                    Called
-                                </label>
-                            </div>
+                            <label class="ml-2">
+                                <input type="checkbox" class="toggle_called" :checked="appointment.called_back"
+                                        @click="appointmentCalledBackToggle($event, appointment)">
+                                Called
+                            </label>
                         </div>
-                        <div v-else-if="appointment.type === 'discussion'">
-                            <i class="fas fa-question-circle mr-2"></i>
-                            <span class="mr-2">Curiosity Call</span>
+                        <div v-else-if="appointment.type === 'discussion'" class="alert alert-info">
+                            <span class="btn btn-info recipient-action mr-2">
+                                <i class="fas fa-question-circle mr-2"></i>
+                                Curiosity Call
+                            </span>
                             <span>{{ recipient.name }} called, but did not elect to reserve a callback or an appointment</span>
                         </div>
-                        <div v-else-if="appointment.type === 'appointment'">
-                            <span class="mr-2">Appointment</span>
-                            <i class="fas fa-calendar mr-2"></i>
+                        <div v-else-if="appointment.type === 'appointment'" class="alert alert-success">
+                            <span class="btn btn-success recipient-action mr-2">
+                                <i class="fa fa-calendar-check mr-2"></i>
+                                Appointment
+                            </span>
                             {{ appointment.appointment_at_formatted }}
                         </div>
                     </li>
                 </ul>
             </div>
-            <div id="new-appointment" class="mail-attachments mb-3" v-else>
+            <div id="new-appointment" class="mail-attachments mb-3" v-if="needsAppointment()">
                 <div class="alert alert-info" role="alert">
-                    {{ recipient.name }} does not have any appointments yet.
-                    <button class="btn pm-btn btn-primary" @click="showNewApptForm = !showNewApptForm">Add new
-                        appointment
+                    <button class="btn pm-btn btn-primary mr-2" @click="showNewApptForm = !showNewApptForm">
+                        Add Appointment
                     </button>
+                    {{ recipient.name }} has no appointments.
                 </div>
                 <div id="add-appointment-form" class="card" v-if="showNewApptForm">
                     <div class="card-body">
@@ -107,6 +111,17 @@
                         </button>
                     </div>
                 </div>
+            </div>
+
+            <div class="alert alert-info" role="alert" v-if="campaign.adf_crm_export && !recipient.sent_to_crm">
+                <button class="btn pm-btn btn-primary mr-2" @click.once="sendToCrm()">
+                    Send to CRM
+                </button>
+                {{ recipient.name }} has not been sent to the CRM.
+            </div>
+            <div class="alert alert-success" role="alert" v-if="campaign.adf_crm_export && recipient.sent_to_crm">
+                <i class="fa fa-database mr-2"></i>
+                {{ recipient.name }} has already been sent to the CRM.
             </div>
 
             <div class="mail-attachments" v-if="threads.phone && threads.phone.length">
@@ -135,7 +150,7 @@
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
 
-                <div class="message-drop-text" v-if="threads.textDrop.text_message">
+                <div class="message-drop-text" v-if="threads.textDrop && threads.textDrop.text_message">
                     <strong class="mb-3">Original Message</strong>
                     <div>{{ threads.textDrop.text_message }}</div>
                 </div>
@@ -184,7 +199,7 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
-                <div class="message-drop-text" v-if="threads.emailDrop.email_html">
+                <div class="message-drop-text" v-if="threads.emailDrop && threads.emailDrop.email_html">
                     <strong class="mb-3">Original Message</strong>
                     <div v-html="threads.emailDrop.email_html"></div>
                 </div>
@@ -372,12 +387,16 @@
                         this.$toastr.error('Failed to add note.');
                     });
             },
-            appointmentCalledBackToggle: function (event, appointmentId) {
-                axios.post(generateRoute(window.appointmentUpdateCalledStatusUrl, {'appointmentId': appointmentId}),
+            needsAppointment: function () {
+                return _.filter(this.appointments, {type: "appointment"}).length == 0;
+            },
+            appointmentCalledBackToggle: function (event, appointment) {
+                axios.post(generateRoute(window.appointmentUpdateCalledStatusUrl, {'appointmentId': appointment.id}),
                     {
                         called_back: event.target.checked
                     })
                     .then((response) => {
+                        appointment.called_back = !appointment.called_back;
                         this.$toastr.success('Called status updated.');
                     })
                     .catch((response) => {
@@ -409,6 +428,17 @@
                     })
                     .catch((response) => {
                         this.$toastr.error('Failed to update message read status.');
+                    });
+            },
+            sendToCrm: function () {
+                axios.post(generateRoute(window.sendCrmUrl, {'recipientId': this.recipientId}))
+                    .then(response => {
+                        this.recipient.sent_to_crm = true;
+                        this.$toastr.success("Recipient sent to CRM");
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        this.$toastr.error("Unable to send recipient to CRM at this time");
                     });
             },
             sendText: function () {

@@ -212,6 +212,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region RECIPIENT
     Route::group(['prefix' => '/recipient/{recipient}', 'middleware' => ['can:update,recipient']], function () {
+        Route::post('/send-to-crm', 'RecipientController@sendToCrm')->name('recipient.send-to-crm');
         Route::post('/add-label', 'RecipientController@addLabel')->name('recipient.add-label');
         Route::post('/remove-label', 'RecipientController@removeLabel')->name('recipient.remove-label');
         Route::post('/update-notes', 'RecipientController@updateNotes')->name('recipient.update-notes');
