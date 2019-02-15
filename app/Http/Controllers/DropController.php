@@ -27,16 +27,22 @@ class DropController extends Controller
 
     public function getCampaignIds()
     {
-        $ids = $this->campaign->select('id');
+        $ids = $this->campaign->select('campaigns.id');
         $company = $this->company->findOrFail(get_active_company());
+        $loggedUser = auth()->user();
 
-        if ($company->isDealership()) {
-            $ids->where('dealership_id', $company->id);
-        } else if ($company->isAgency()) {
-            $ids->where('agency_id', $company->id);
+//        if ($company->isDealership()) {
+//            $ids->where('dealership_id', $company->id);
+//        } else if ($company->isAgency()) {
+//            $ids->where('agency_id', $company->id);
+//        }
+
+        if (!$loggedUser->isCompanyAdmin($company->id)) {
+            $ids->join('campaign_user', 'campaign_user.campaign_id', '=', 'campaigns.id')
+                ->where('campaign_user.user_id', $loggedUser->id);
         }
 
-        return $ids->get()->toArray();
+        return $ids->get()->pluck('id')->toArray();
     }
 
     public function getForCalendarDisplay(Request $request)
@@ -45,19 +51,17 @@ class DropController extends Controller
 
         // Get the Campaigns
         $drops = $this->drop->whereIn('campaign_id', $ids)
-            ->whereNull('deleted_at')
-            ->selectRaw("
-				concat('Campaign ', campaign_id, ': ', type, ' drop') as title, send_at as start")
-            ->get();
-        $drops = $drops->map(function ($item) {
-            return [
-                'title' => $item->title,
-                'start' => $item->send_at->toDateTimeString(),
-                'date' => $item->send_at->toDateString()
-            ];
-        });
+            ->select('campaign_schedules.*')
+            ->whereNull('deleted_at');
 
-        return $drops;
+        if ($request->has('start_date')) {
+            $drops->where('send_at', '>=', $request->input('start_date'));
+        }
+
+        if ($request->has('end_date')) {
+            $drops->where('send_at', '<=', $request->input('end_date'));
+        }
+        return $drops->paginate($request->input('per_page', 50));
     }
 
 }

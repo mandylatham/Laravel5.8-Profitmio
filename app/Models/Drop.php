@@ -13,7 +13,7 @@ class Drop extends Model
     protected $table = 'campaign_schedules';
 
     public $dates = [
-        'send_at', 'created_at', 'updated_at', 'deleted_at', 'completed_at',
+        'created_at', 'updated_at', 'deleted_at', 'completed_at',
     ];
 
     public $fillable = [
@@ -47,15 +47,6 @@ class Drop extends Model
     public function recipients()
     {
         return $this->belongsToMany(Recipient::class, 'deployment_recipients', 'deployment_id', 'recipient_id');
-    }
-
-    public function getSendAtAttribute($value)
-    {
-        if (\Auth::user() instanceof \App\Models\User) {
-            return \Carbon\Carbon::parse($value)->timezone(\Auth::user()->timezone);
-        }
-
-        return \Carbon\Carbon::parse($value);
     }
 
     public function scopeInGroup($query, $group_id)

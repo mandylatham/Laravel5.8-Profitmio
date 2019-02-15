@@ -128,10 +128,13 @@ window['sidebar'] = new Vue({
         },
         fetchMonthEvents: function () {
             let url = '';
+            let dateProp = '';
             if (this.filter === 'appointment') {
                 url = window.appointmentsUrl;
+                dateProp = 'appointment_at';
             } else if (this.filter === 'drop') {
                 url = window.dropsUrl;
+                dateProp = 'send_at';
             }
             return axios
                 .get(url, {
@@ -143,22 +146,22 @@ window['sidebar'] = new Vue({
                     data: null
                 })
                 .then(response => {
-                    if (this.filter === 'appointment') {
-                        response.data.data.forEach(d => {
-                            d.date = moment(d.appointment_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD');
-                        });
-                        this.monthEvents = response.data.data;
-                    }
+                    response.data.data.forEach(d => {
+                        d.date = moment(d[dateProp], 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD');
+                    });
                     this.monthEvents = response.data.data;
                 });
         },
         fetchDayEvents: function () {
             this.loading = true;
             let url = '';
+            let dateProp = '';
             if (this.filter === 'appointment') {
                 url = window.appointmentsUrl;
+                dateProp = 'appointment_at';
             } else if (this.filter === 'drop') {
                 url = window.dropsUrl;
+                dateProp = 'send_at';
             }
             return axios
                 .get(url, {
@@ -172,7 +175,7 @@ window['sidebar'] = new Vue({
                 .then(response => {
                     this.loading = false;
                     response.data.data.forEach(d => {
-                        d.date = moment(d.appointment_at, 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD');
+                        d.date = moment(d[dateProp], 'YYYY-MM-DD HH:mm:ss').format('YYYY-MM-DD');
                     });
                     this.calendarEvents = response.data.data;
                 }, () => {
