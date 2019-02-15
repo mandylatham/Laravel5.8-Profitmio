@@ -25,7 +25,7 @@ Vue.use(Modal);
 import axios from 'axios';
 
 window['app'] = new Vue({
-    el: '#app',
+    el: '#company-details',
     components: {
         'campaign': require('./../../components/campaign/campaign'),
         'resumable': require('./../../components/resumable/resumable'),
