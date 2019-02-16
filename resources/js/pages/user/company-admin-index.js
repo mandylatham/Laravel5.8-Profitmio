@@ -83,7 +83,6 @@ window['app'] = new Vue({
                 this.$toastr.error('Unable to process your request');
             });
         },
-
         activateUser: function (user) {
             this.$swal({
                 title: "Are you sure?",

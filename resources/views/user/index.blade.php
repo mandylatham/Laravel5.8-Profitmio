@@ -14,14 +14,12 @@
     <script>
         window.searchFormUrl = "{{ route('user.for-user-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
-        window.companySelected = @json($companySelected);
         window.userEditUrl = "{{ route('user.view', ['user' => ':userId']) }}";
         window.userImpersonateUrl = "{{ route('admin.impersonate', ['user' => ':userId']) }}";
         @if (!auth()->user()->isAdmin())
         window.userActivateUrl = "{{ route('user.activate', ['user' => ':userId', 'company' => get_active_company()]) }}";
         window.userDeactivateUrl = "{{ route('user.deactivate', ['user' => ':userId', 'company' => get_active_company()]) }}";
         @endif
-        window.q = @json($q);
     </script>
     @if (auth()->user()->isAdmin())
         <script src="{{ asset('js/site-admin-user-index.js') }}"></script>
@@ -63,7 +61,8 @@
                         <div class="col-12 col-md-8 col-xl-3">
                             <div class="user-row--id justify-content-center justify-content-xl-start">
                                 <strong class="mr-2">ID: @{{ user.id }}</strong>
-                                <span class="user-name">@{{ user.first_name }} @{{ user.last_name }}</span>
+                                <span class="user-name" v-if="user.first_name && user.last_name">@{{ user.first_name }} @{{ user.last_name }}</span>
+                                <span class="user-name" v-if="!user.first_name && !user.last_name">No Name</span>
                                 <user-role class="ml-3" :role="'site_admin'" v-if="user.is_admin"></user-role>
                             </div>
                         </div>

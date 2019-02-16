@@ -68,10 +68,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return view('user.index', [
-            'companySelected' => $this->company->find(session('filters.user.index.company')),
-            'q' => session('filters.user.index.q')
-        ]);
+        return view('user.index', []);
     }
 
     public function create()
@@ -114,12 +111,12 @@ class UserController extends Controller
             $user->email = $request->input('email');
             $user->save();
         }
+        $urlData = [];
         if ($user->isAdmin()) {
-            $processRegistration = URL::temporarySignedRoute(
-                'registration.complete.show', Carbon::now()->addMinutes(60), [
-                    'id' => $user->getKey()
-                ]
-            );
+            $urlData = [
+                'id' => $user->getKey()
+            ];
+            $company = $this->company->where('type', 'support')->first();
         } else {
             // Attach to company if user is not admin
             if (auth()->user()->isAdmin()) {
@@ -128,24 +125,25 @@ class UserController extends Controller
                 $company = $this->company->findOrFail(get_active_company());
             }
 
-            $user->companies()->attach($company->id, [
-                'role' => $request->input('role')
-            ]);
-
-            $processRegistration = URL::temporarySignedRoute(
-                'registration.complete.show', Carbon::now()->addMinutes(60), [
-                    'id' => $user->getKey(),
-                    'company' => $company->id
-                ]
-            );
+            $urlData = [
+                'id' => $user->getKey(),
+                'company' => $company->id
+            ];
 
             $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
         }
 
+        $user->companies()->attach($company->id, [
+            'role' => $request->input('role', 'user')
+        ]);
+
+        $processRegistration = URL::temporarySignedRoute(
+            'registration.complete.show', Carbon::now()->addMinutes(60), $urlData
+        );
+
         Mail::to($user)->send(new InviteUser($user, $processRegistration));
 
         return response()->json([], 201);
-//        return redirect()->route('user.index');
     }
 
     /**

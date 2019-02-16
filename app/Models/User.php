@@ -336,31 +336,21 @@ class User extends Authenticatable implements HasMedia
             $query->filterByCompany(Company::findOrFail($request->input('company')));
         } else if (!$loggedUser->isAdmin() && $loggedUser->isCompanyAdmin(get_active_company())) {
             $query->filterByCompany(Company::findOrFail(get_active_company()));
-        } else if (!$request->has('company')) {
-            session()->forget('filters.user.index.company');
         }
         if ($request->has('q')) {
             $query->filterByQuery($request->input('q'));
-        } else {
-            session()->forget('filters.user.index.q');
         }
         return $query;
     }
 
     public function scopeFilterByCompany($query, Company $company)
     {
-        session(['filters.user.index.company' => $company->id]);
         return $query->join('company_user', 'users.id', '=', 'company_user.user_id')
             ->where('company_id', $company->id);
-//        return $query->join(function ($query) use ($company) {
-//            $query->orWhere('agency_id', $company->id);
-//            $query->orWhere('dealership_id', $company->id);
-//        });
     }
 
     public function scopeFilterByQuery($query, $q)
     {
-        session(['filters.user.index.q' => $q]);
         return $query->search($q);
     }
 

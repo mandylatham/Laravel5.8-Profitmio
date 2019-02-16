@@ -74,6 +74,7 @@ window['app'] = new Vue({
         loadingUsers: false,
         loadingCampaignAccessUsers: false,
         modifiedCompany: {},
+        loadingInvitation: false,
         searchCampaignForm: new Form({
             q: localStorage.getItem('companyCampaignQ') || '',
             page: 1,
@@ -184,6 +185,23 @@ window['app'] = new Vue({
                 .catch(error => {
                     this.$toastr.error("Unable to get users");
                 });
+        },
+        resendInvitation(user) {
+            this.loadingInvitation = true;
+            axios
+                .get(window.resendInvitationUrl, {
+                    params: {
+                        user: user.id,
+                        company: this.company.id
+                    },
+                })
+                .then(response => {
+                    this.loadingInvitation = false;
+                    this.$toastr.success('Invitation Sent!');
+                }, () => {
+                    this.loadingInvitation = false;
+                    this.$toastr.error('Unable to process your request.');
+                })
         },
         updateFields: function () {
             // update the form

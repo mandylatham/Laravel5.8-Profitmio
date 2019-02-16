@@ -68,6 +68,8 @@ class AdminController extends Controller
 
         $this->mail->to($user)->send(new InviteUser($user, $processRegistration));
 
-        return redirect()->back();
+        return response()->json(['message' => 'Invitation sent.']);
+//
+//        return redirect()->back();
     }
 }
