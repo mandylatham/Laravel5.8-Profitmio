@@ -80,7 +80,7 @@ class RecipientBuilder
                 }
             }
             foreach ($this->listFields as $field) {
-                if (array_key_exists($field, $list->fieldmap) && $this->fieldmap[$field] !== null) {
+                if (array_key_exists($field, $list->fieldmap) && $list->fieldmap[$field] !== null) {
                     $staging[$field] = $this->sanitize($row[$list->fieldmap[$field]], true);
                 }
             }
