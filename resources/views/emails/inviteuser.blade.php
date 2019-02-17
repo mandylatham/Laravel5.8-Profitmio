@@ -123,13 +123,12 @@
                         <td style="padding: 20px 0px 30px 0px;" class="logo">
                             <table border="0" cellpadding="0" cellspacing="0" width="100%">
                                 <tr>
-                                    <td bgcolor="#ffffff" width="100" align="left"><a href="{{ secure_url('') }}" target="_blank"><img alt="Logo" src="https://s3.amazonaws.com/profitminer/profitminer-light.png" width="52" height="78" style="display: block; font-family: Helvetica, Arial, sans-serif; color: #666666; font-size: 16px;" border="0"></a></td>
+                                    <td bgcolor="#ffffff" width="100" align="left"><a href="{{ secure_url('') }}" target="_blank"><img alt="Logo" src="{{ secure_url('') }}/img/logo-large.png" width="120" height="auto" style="display: block; font-family: Helvetica, Arial, sans-serif; color: #666666; font-size: 16px;" border="0"></a></td>
                                     <td bgcolor="#ffffff" width="400" align="right" class="mobile-hide">
                                         <table border="0" cellpadding="0" cellspacing="0">
                                             <tr>
                                                 <td align="right" style="padding: 0 0 5px 0; font-size: 14px; font-family: Arial, sans-serif; color: #666666; text-decoration: none;">
                                                     <span style="color: #666666; text-decoration: none;">
-                                                        {{--Visit your Profitminer account.--}}
                                                     </span>
                                                 </td>
                                             </tr>
@@ -163,7 +162,6 @@
                                                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                                     <tr>
                                                         <td>
-                                                            <a href="{{$processLink}}" target="_blank"><img src="https://s3.amazonaws.com/profitminer/email_notification_template.png" width="500" height="200" border="0" alt="Complete your account!" style="display: block; padding: 0; color: #666666; text-decoration: none; font-family: Helvetica, arial, sans-serif; font-size: 16px; width: 500px; height: 200px;" class="img-max"></a>
                                                         </td>
                                                     </tr>
                                                 </table>
@@ -194,7 +192,7 @@
                                             <td align="center" style="padding: 25px 0 0 0;" class="padding-copy">
                                                 <table border="0" cellspacing="0" cellpadding="0" class="responsive-table">
                                                     <tr>
-                                                        <td align="center"><a href="{{$processLink}}" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #5D9CEC; border-top: 15px solid #5D9CEC; border-bottom: 15px solid #5D9CEC; border-left: 25px solid #5D9CEC; border-right: 25px solid #5D9CEC; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Complete your account &rarr;</a></td>
+                                                        <td align="center"><a href="{{$processLink}}" target="_blank" style="font-size: 16px; font-family: Helvetica, Arial, sans-serif; font-weight: normal; color: #ffffff; text-decoration: none; background-color: #5D9CEC; border-top: 15px solid #5D9CEC; border-bottom: 15px solid #5D9CEC; border-left: 25px solid #5D9CEC; border-right: 25px solid #5D9CEC; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; display: inline-block;" class="mobile-button">Accept Invitation</a></td>
                                                     </tr>
                                                 </table>
                                             </td>
@@ -221,7 +219,7 @@
                         <table width="500" border="0" cellspacing="0" cellpadding="0" align="center" class="responsive-table">
                             <tr>
                                 <td align="center" valign="middle" style="font-size: 12px; line-height: 18px; font-family: Helvetica, Arial, sans-serif; color:#666666;">
-                                    <span class="appleFooter" style="color:#666666;">1200 W. Causeway Approach, Mandeville, LA 70433, USA</span><br><a class="original-only" style="color: #666666; text-decoration: none;">Unsubscribe</a><span class="original-only" style="font-family: Arial, sans-serif; font-size: 12px; color: #444444;">&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</span><a style="color: #666666; text-decoration: none;">View this email in your browser</a>
+                                    {{--<span class="appleFooter" style="color:#666666;">1200 W. Causeway Approach, Mandeville, LA 70433, USA</span>--}}
                                 </td>
                             </tr>
                         </table>
