@@ -13,7 +13,7 @@ class Drop extends Model
     protected $table = 'campaign_schedules';
 
     public $dates = [
-        'created_at', 'updated_at', 'deleted_at', 'completed_at',
+        'send_at', 'created_at', 'updated_at', 'deleted_at', 'completed_at',
     ];
 
     public $fillable = [
