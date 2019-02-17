@@ -5,7 +5,7 @@ namespace App\Listeners;
 use App\Events\AppointmentCreated;
 use App\Models\Appointment;
 use App\Services\CrmService;
-use App\Jobs\LeadNotification;
+use App\Mail\LeadNotification;
 use App\Facades\TwilioClient;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
