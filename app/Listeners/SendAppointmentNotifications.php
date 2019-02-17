@@ -8,6 +8,7 @@ use App\Services\CrmService;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Log\Logger;
+use Illuminate\Mail\Mailer;
 
 class SendAppointmentNotifications
 {
@@ -24,14 +25,20 @@ class SendAppointmentNotifications
     private $log;
 
     /**
+     * Mail Service
+     */
+    private $mail;
+
+    /**
      * Create the event listener.
      *
      * @return void
      */
-    public function __construct(CrmService $crm, Logger $log)
+    public function __construct(CrmService $crm, Logger $log, Mailer $mail)
     {
         $this->crm = $crm;
         $this->log = $log;
+        $this->mail = $mail;
     }
 
     /**

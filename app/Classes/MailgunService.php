@@ -156,10 +156,9 @@ class MailgunService
      */
     public function sendPassthroughEmail(Campaign $campaign, Recipient $recipient, $subject, $html, $text)
     {
-        $emails = explode(',', $campaign->client_passthrough_email);
         $from = $this->getFromLine($campaign, $recipient, $campaign->client);
 
-        foreach ($emails as $email) {
+        foreach ((array)$campaign->client_passthrough_email as $email) {
             $this->mailgun->messages()->send('mg.automotive-alerts.com', [
                 'from'    => $from,
                 'to'      => trim($email),
