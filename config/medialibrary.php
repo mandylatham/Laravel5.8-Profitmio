@@ -6,8 +6,8 @@ return [
      * The filesystems on which to store added files and derived images by default. Choose
      * one or more of the filesystems you configured in app/config/filesystems.php
      */
-    'defaultFilesystem' => env('APP_ENV') == 'local' ? 'local' : 'media',
-    'disk_name' => env('APP_ENV') == 'local' ? 'local' : 'media',
+    'defaultFilesystem' => in_array(env('APP_ENV'), ['local','testing']) ? 'local' : 'media',
+    'disk_name' => in_array(env('APP_ENV'), ['local','testing']) ? 'local' : 'media',
 
     /*
      * The maximum file size of an item in bytes. Adding a file
