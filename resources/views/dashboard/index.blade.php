@@ -8,6 +8,7 @@
 
 @section('body-script')
     <script>
+        window.campaignEditUrl = "{{ route('campaigns.edit', ['campaign' => ':campaignId']) }}";
         window.campaignStatsUrl = "{{ route('campaigns.stats', ['campaign' => ':campaignId']) }}";
         window.appointmentsUrl = "{{ route('appointment.for-calendar-display') }}";
         window.campaignViewUrl = "{{ route('campaigns.view', ['campaign' => ':campaignId']) }}";

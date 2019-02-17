@@ -46,6 +46,7 @@
             <a :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
             <a :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
+            <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})"><span class="fas fa-edit"></span> Edit</a>
         </div>
         <div class="col-6 col-md-3 campaign-links" v-else>
             <div class="campaign-apointment-totals">
@@ -128,6 +129,7 @@
             return {
                 isAdmin: false,
                 campaignClosed: true,
+                campaignEditUrl: '',
                 campaignStatsUrl: '',
                 campaignDropIndex: '',
                 campaignRecipientIndex: '',
@@ -153,6 +155,7 @@
         },
         mounted: function () {
             this.isAdmin = window.isAdmin;
+            this.campaignEditUrl = window.campaignEditUrl;
             this.campaignStatsUrl = window.campaignStatsUrl;
             this.campaignDropIndex = window.campaignDropIndex;
             this.campaignRecipientIndex = window.campaignRecipientIndex;
