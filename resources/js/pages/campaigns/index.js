@@ -44,8 +44,8 @@ window['app'] = new Vue({
     data: {
         searchFormUrl: null,
         searchForm: new Form({
-            company: null,
-            q: null,
+            company: localStorage.getItem('campaignsIndexCompany') ? JSON.parse(localStorage.getItem('campaignsIndexCompany')) : undefined,
+            q: localStorage.getItem('campaignsIndexQ'),
             page: 1,
             per_page: 15,
         }),
@@ -62,8 +62,7 @@ window['app'] = new Vue({
     },
     mounted() {
         this.searchFormUrl = window.searchFormUrl;
-        this.companySelected = window.companySelected;
-        this.searchForm.q = window.q;
+        this.companySelected = localStorage.getItem('campaignsIndexCompany') ? JSON.parse(localStorage.getItem('campaignsIndexCompany')) : undefined;
 
         axios
             .get(window.getCompanyUrl, {
@@ -88,9 +87,16 @@ window['app'] = new Vue({
         },
         fetchData() {
             if (this.companySelected) {
+                localStorage.setItem('campaignsIndexCompany', JSON.stringify(this.companySelected));
                 this.searchForm.company = this.companySelected.id;
             } else {
                 this.searchForm.company = null;
+                localStorage.removeItem('campaignsIndexCompany');
+            }
+            if (this.searchForm.q) {
+                localStorage.setItem('campaignsIndexQ', this.searchForm.q);
+            } else {
+                localStorage.removeItem('campaignsIndexQ');
             }
             this.isLoading = true;
             this.searchForm.get(this.searchFormUrl)

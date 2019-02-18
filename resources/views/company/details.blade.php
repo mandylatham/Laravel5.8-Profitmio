@@ -309,7 +309,7 @@
                                 No Items
                             </div>
                             <div class="company-access-row" v-for="campaign in campaigns">
-                                <strong class="ml-3">Campaign @{{ campaign.id }}</strong>
+                                <strong class="mr-3">Campaign @{{ campaign.id }}</strong>
                                 <span>@{{ campaign.name }}</span>
                                 <span class="access-link">
                                     <a class="btn pm-btn pm-btn-purple" href="javascript:;"

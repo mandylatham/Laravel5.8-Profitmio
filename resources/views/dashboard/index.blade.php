@@ -17,7 +17,6 @@
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
         window.dropsUrl = "{{ route('drop.for-calendar-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
-        window.q = @json($q);
         window.isAdmin = @json(auth()->user()->isAdmin());
         window.searchFormUrl = "{{ route('campaign.for-user-display') }}";
     </script>
