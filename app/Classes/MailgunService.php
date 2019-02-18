@@ -3,6 +3,7 @@
 namespace App\Classes;
 
 use App\Models\Campaign;
+use App\Models\Company;
 use App\Models\Drop;
 use App\Models\Recipient;
 use App\Models\User;

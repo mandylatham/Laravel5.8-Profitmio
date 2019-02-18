@@ -38,8 +38,9 @@ class DropWorker
     {
         return Drop::emailDueInMinutes($minutes)
             ->whereNull('notified_at')
-            ->whereRaw("expires_at >= current_timestamp")
-            ->with(['campaign', 'campaign.dealership', 'recipients'])
+	    ->with(['campaign' => function ($q) { $q->whereRaw("expires_at >= current_timestamp"); }])
+	    ->has('campaign')
+            ->with(['campaign.dealership', 'recipients'])
             ->orderBy('send_at')
             ->get();
     }
