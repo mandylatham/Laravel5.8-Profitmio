@@ -67,7 +67,7 @@
                         <div class="avatar-placeholder" v-if="!loggedUser.image_Url">
                             <i class="fas fa-user"></i>
                         </div>
-                        <span>@{{ loggedUser.first_name }}</span>
+                        <span>@{{ loggedUser.name }}</span>
                     </template>
                     <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>
                     <b-dropdown-item @click="signout('{{ route('logout') }}')">Signout</b-dropdown-item>
