@@ -74,11 +74,11 @@ class AppointmentController extends Controller
         $company = $this->company->findOrFail(get_active_company());
         $loggedUser = auth()->user();
 
-//        if ($company->isDealership()) {
-//            $ids->where('dealership_id', $company->id);
-//        } else if ($company->isAgency()) {
-//            $ids->where('agency_id', $company->id);
-//        }
+        if ($company->isDealership()) {
+            $ids->where('dealership_id', $company->id);
+        } else if ($company->isAgency()) {
+            $ids->where('agency_id', $company->id);
+        }
 
         if (!$loggedUser->isCompanyAdmin($company->id)) {
             $ids->join('campaign_user', 'campaign_user.campaign_id', '=', 'campaigns.id')
@@ -97,11 +97,11 @@ class AppointmentController extends Controller
             ->select('appointments.*');
 
         if ($request->has('start_date')) {
-            $appointments->where('appointment_at', '>=', $request->input('start_date'));
+            $appointments->whereDate('appointment_at', '>=', $request->input('start_date'));
         }
 
         if ($request->has('end_date')) {
-            $appointments->where('appointment_at', '<=', $request->input('end_date'));
+            $appointments->whereDate('appointment_at', '<=', $request->input('end_date'));
         }
         return $appointments->paginate($request->input('per_page', 50));
     }

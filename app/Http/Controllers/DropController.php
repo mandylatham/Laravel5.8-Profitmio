@@ -31,11 +31,11 @@ class DropController extends Controller
         $company = $this->company->findOrFail(get_active_company());
         $loggedUser = auth()->user();
 
-//        if ($company->isDealership()) {
-//            $ids->where('dealership_id', $company->id);
-//        } else if ($company->isAgency()) {
-//            $ids->where('agency_id', $company->id);
-//        }
+        if ($company->isDealership()) {
+            $ids->where('dealership_id', $company->id);
+        } else if ($company->isAgency()) {
+            $ids->where('agency_id', $company->id);
+        }
 
         if (!$loggedUser->isCompanyAdmin($company->id)) {
             $ids->join('campaign_user', 'campaign_user.campaign_id', '=', 'campaigns.id')
@@ -55,11 +55,11 @@ class DropController extends Controller
             ->whereNull('deleted_at');
 
         if ($request->has('start_date')) {
-            $drops->where('send_at', '>=', $request->input('start_date'));
+            $drops->whereDate('send_at', '>=', $request->input('start_date'));
         }
 
         if ($request->has('end_date')) {
-            $drops->where('send_at', '<=', $request->input('end_date'));
+            $drops->whereDate('send_at', '<=', $request->input('end_date'));
         }
         return $drops->paginate($request->input('per_page', 50));
     }
