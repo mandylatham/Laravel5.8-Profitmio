@@ -1,7 +1,7 @@
 <?php namespace App\Classes;
 
-use App\Drop;
-use App\EmailLog;
+use App\Models\Drop;
+use App\Models\EmailLog;
 use Carbon\Carbon;
 use Log;
 
