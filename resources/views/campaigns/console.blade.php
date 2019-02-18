@@ -85,47 +85,56 @@
         <ul class="labels">
             <li class="no-label">
                 <a :class="{'active': activeFilterSection === 'none'}" href="javascript:;"
-                   @click="changeFilter('filter', 'none')">No Label
+                   @click="changeFilter('filter', 'none')">
+                    <span class="label no-label">No Label</span>
                     <span class="counter">@{{ counters.none }}</span></a>
             </li>
             <li class="interested">
                 <a :class="{'active': activeFilterSection === 'interested'}" href="javascript:;"
-                   @click="changeFilter('filter', 'interested')">Interested
+                   @click="changeFilter('filter', 'interested')">
+                    <span class="label interested">Interested</span>
                     <span class="counter">@{{ counters.interested }}</span></a>
             </li>
             <li class="appointment">
                 <a :class="{'active': activeFilterSection === 'appointment'}" href="javascript:;"
-                   @click="changeFilter('filter', 'appointment')">Appointment
+                   @click="changeFilter('filter', 'appointment')">
+                    <span class="label appointment">Appointment</span>
                     <span class="counter">@{{ counters.appointment }}</span></a>
             </li>
             <li class="callback">
                 <a :class="{'active': activeFilterSection === 'callback'}" href="javascript:;"
-                   @click="changeFilter('filter', 'callback')">Callback
+                   @click="changeFilter('filter', 'callback')">
+                    <span class="label callback">Callback</span>
                     <span class="counter">@{{ counters.callback }}</span></a>
             </li>
             <li class="service-dept">
                 <a :class="{'active': activeFilterSection === 'service'}" href="javascript:;"
-                   @click="changeFilter('filter', 'service')">Service Dept
+                   @click="changeFilter('filter', 'service')">
+                    <span class="label service-dept">Service Dept</span>
                     <span class="counter">@{{ counters.service }}</span></a>
             </li>
             <li class="not-interested">
                 <a :class="{'active': activeFilterSection === 'not_interested'}" href="javascript:;"
-                   @click="changeFilter('filter', 'not_interested')">Not Interested
+                   @click="changeFilter('filter', 'not_interested')">
+                    <span class="label not-interested">Not Interested</span>
                     <span class="counter">@{{ counters.not_interested }}</span></a>
             </li>
             <li class="wrong-tag">
                 <a :class="{'active': activeFilterSection === 'wrong_number'}" href="javascript:;"
-                   @click="changeFilter('filter', 'wrong_number')">Wrong #
+                   @click="changeFilter('filter', 'wrong_number')">
+                    <span class="label wrong-number">Wrong #</span>
                     <span class="counter">@{{ counters.wrong_number }}</span></a>
             </li>
             <li class="wrong-tag">
                 <a :class="{'active': activeFilterSection === 'car_sold'}" href="javascript:;"
-                   @click="changeFilter('filter', 'car_sold')">Car Sold
+                   @click="changeFilter('filter', 'car_sold')">
+                    <span class="label car-sold">Car Sold</span>
                     <span class="counter">@{{ counters.car_sold }}</span></a>
             </li>
             <li class="wrong-tag">
                 <a :class="{'active': activeFilterSection === 'heat'}" href="javascript:;"
-                   @click="changeFilter('filter', 'heat')">Heat Case
+                   @click="changeFilter('filter', 'heat')">
+                    <span class="label heat-case">Heat Case</span>
                     <span class="counter">@{{ counters.heat }}</span></a>
             </li>
         </ul>
