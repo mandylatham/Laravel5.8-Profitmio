@@ -46,7 +46,7 @@ class RecipientController extends Controller
     public function forUserDisplay(Campaign $campaign)
     {
         return RecipientListResource::collection(RecipientList::whereCampaignId($campaign->id)
-            ->with('rceipravel ients')
+            ->with('recipients')
             ->paginate(15));
     }
 
@@ -249,7 +249,7 @@ class RecipientController extends Controller
      */
     public function show(Campaign $campaign)
     {
-        $viewData['campaign'] = $campaign;
+        $viewData['campaign'] = $campaign->load('recipientLists');
 
         return view('campaigns.recipient_lists.index', $viewData);
     }
