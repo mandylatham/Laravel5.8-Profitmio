@@ -61,6 +61,7 @@ window['app'] = new Vue({
     },
     filters: {
         shortDate: function(value) {
+            if (value == "") { return; }
             return moment(String(value)).format('MM/DD/YYYY hh:mm A')
         }
     },
