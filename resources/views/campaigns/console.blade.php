@@ -9,6 +9,7 @@
 @section('body-script')
     <script>
         window.baseUrl = @json(route("campaign.response-console.index", ['campaign' => $campaign->id]).'/');
+        window.activeFilter = @json($activeFilter);
         window.counters = @json($counters);
         window.campaign = @json($campaign);
         window.user = @json(auth()->user());

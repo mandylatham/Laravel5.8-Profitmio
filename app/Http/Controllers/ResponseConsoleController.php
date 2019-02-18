@@ -211,7 +211,8 @@ class ResponseConsoleController extends Controller
 
         return view('campaigns.console', [
             'counters' => $counters,
-            'campaign' => $campaign
+            'campaign' => $campaign,
+            'activeFilter' => 'all',
         ]);
     }
 
@@ -242,6 +243,7 @@ class ResponseConsoleController extends Controller
         $viewData = $this->getRecipientData($request, $campaign, 'unread');
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console/unread');
+        $viewData['activeFilter'] = 'unread';
 
         return view('campaigns.console', $viewData);
     }
@@ -256,6 +258,7 @@ class ResponseConsoleController extends Controller
         $viewData = $this->getRecipientData($request, $campaign, 'idle');
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console/idle');
+        $viewData['activeFilter'] = 'idle';
 
         return view('campaigns.console', $viewData);
     }
@@ -270,6 +273,7 @@ class ResponseConsoleController extends Controller
         $viewData = $this->getRecipientData($request, $campaign, 'archived');
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console/archived');
+        $viewData['activeFilter'] = 'archived';
 
         return view('campaigns.console', $viewData);
     }
@@ -285,6 +289,7 @@ class ResponseConsoleController extends Controller
         $viewData = $this->getRecipientData($request, $campaign, 'labelled', $label);
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console/labelled/' . $label);
+        $viewData['activeFilter'] = $label;
 
         return view('campaigns.console', $viewData);
     }
@@ -299,6 +304,7 @@ class ResponseConsoleController extends Controller
         $viewData = $this->getRecipientData($request, $campaign, 'calls');
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console/calls');
+        $viewData['activeFilter'] = 'calls';
 
         return view('campaigns.console', $viewData);
     }
@@ -313,6 +319,7 @@ class ResponseConsoleController extends Controller
         $viewData = $this->getRecipientData($request, $campaign, 'email');
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console/email');
+        $viewData['activeFilter'] = 'email';
 
         return view('campaigns.console', $viewData);
     }
@@ -327,6 +334,7 @@ class ResponseConsoleController extends Controller
         $viewData = $this->getRecipientData($request, $campaign, 'text');
 
         $viewData['recipients']->withPath('/campaign/' . $campaign->id . '/response-console/sms');
+        $viewData['activeFilter'] = 'text';
 
         return view('campaigns.console', $viewData);
     }
