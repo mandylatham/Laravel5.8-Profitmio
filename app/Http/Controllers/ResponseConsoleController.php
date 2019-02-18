@@ -163,7 +163,7 @@ class ResponseConsoleController extends Controller
             'email'       => $recipients->email,
             'calls'       => $recipients->calls,
             'sms'         => $recipients->sms,
-            'labelCounts' => array_map('intval', $recipients->labelCounts->toArray()),
+            'labelCounts' => array_map('intval', $recipients->labelCounts->setAppends([])->toArray()),
         ];
 
         return $viewData;
