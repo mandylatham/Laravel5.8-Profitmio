@@ -66,10 +66,7 @@ class TemplateController extends Controller
 
     public function index()
     {
-        return view('template.index', [
-            'companySelected' => Company::find(session('filters.template.index.company')),
-            'q' => session('filters.template.index.q')
-        ]);
+        return view('template.index', []);
     }
 
     public function getForUserDisplay(Request $request)

@@ -10,10 +10,8 @@
     <script>
         window.searchFormUrl = "{{ route('template.for-user-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
-        window.companySelected = @json($companySelected);
         window.templateEdit = "{{ route('template.edit', ['template' => ':templateId']) }}";
         window.templateDelete = "{{ route('template.delete', ['template' => ':templateId']) }}";
-        window.q = @json($q);
     </script>
     <script src="{{ asset('js/media-template-index.js') }}"></script>
 @endsection

@@ -10,13 +10,11 @@
     <script>
         window.searchFormUrl = "{{ route('campaign.for-user-display') }}";
         window.getCompanyUrl = "{{ route('company.for-dropdown') }}";
-        window.companySelected = @json($companySelected);
         window.campaignEditUrl = "{{ route('campaigns.edit', ['campaign' => ':campaignId']) }}";
         window.campaignStatsUrl = "{{ route('campaigns.stats', ['campaign' => ':campaignId']) }}";
         window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
         window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
-        window.q = @json($q);
         window.isAdmin = @json(auth()->user()->isAdmin());
     </script>
     <script src="{{ asset('js/campaign-index.js') }}"></script>

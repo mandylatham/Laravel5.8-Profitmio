@@ -38,7 +38,7 @@ window['app'] = new Vue({
         searchFormUrl: null,
         searchForm: new Form({
             type: null,
-            q: null,
+            q: localStorage.getItem('templatesIndexQ'),
             page: 1,
             per_page: 15,
         }),
@@ -59,8 +59,6 @@ window['app'] = new Vue({
         this.templateEdit = window.templateEdit;
         this.templateDelete = window.templateDelete;
         this.searchFormUrl = window.searchFormUrl;
-        this.companySelected = window.companySelected;
-        this.searchForm.q = window.q;
 
         axios
             .get(window.searchFormUrl, {
@@ -84,10 +82,10 @@ window['app'] = new Vue({
             return this.fetchData();
         },
         fetchData: function () {
-            if (this.companySelected) {
-                this.searchForm.companySelected = this.companySelected.id;
+            if (this.searchForm.q) {
+                localStorage.setItem('templatesIndexQ', this.searchForm.q);
             } else {
-                this.searchForm.companySelected = null;
+                localStorage.removeItem('templatesIndexQ');
             }
             this.isLoading = true;
             this.searchForm.get(this.searchFormUrl)
