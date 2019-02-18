@@ -226,7 +226,7 @@ class Campaign extends Model
             ->whereNull('deleted_at');
 
         if (!$loggedUser->isAdmin()) {
-	    $company = Company::findOrFail(get_active_company());
+            $company = Company::findOrFail(get_active_company());
             if ($loggedUser->isCompanyUser($company->id)) {
                 $campaignsId = \DB::table('campaign_user')
                     ->whereUserId($loggedUser->id)

@@ -14,7 +14,7 @@ export default class ErrorBag {
     }
 
     add(field, message) {
-        this.errors[field] = this.errors[field] || [];
+        Vue.set(this.errors, field, this.errors[field] || []);
         this.errors[field].push(message);
     }
 

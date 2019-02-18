@@ -86,8 +86,8 @@ export default class Form {
                 axios[method](url, { params: this.data() })
                   .then(response => {
                       resolve(response.data);
-                  })
-                  .catch(error => {
+                  }, error => {
+                      console.log('error', error);
                       reject(error);
                   });
 
@@ -95,8 +95,8 @@ export default class Form {
                 axios[method](url, this.data())
                   .then(response => {
                       resolve(response.data);
-                  })
-                  .catch(error => {
+                  }, error => {
+                      console.log('error', error);
                       reject(error);
                   });
             }
