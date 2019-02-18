@@ -57,11 +57,11 @@ class Campaign extends Model
     ];
 
     protected $casts = [
-        'sms_on_callback_number' => 'json',
-        'service_dept_email' => 'json',
-        'adf_crm_export_email' => 'json',
-        'lead_alert_email' => 'json',
-        'client_passthrough_email' => 'json'
+        'sms_on_callback_number' => 'array',
+        'service_dept_email' => 'array',
+        'adf_crm_export_email' => 'array',
+        'lead_alert_email' => 'array',
+        'client_passthrough_email' => 'array'
     ];
 
     public function agency()

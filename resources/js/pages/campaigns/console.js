@@ -190,6 +190,8 @@ window['sidebar'] = new Vue({
             }
             newUrl += value;
             window.history.pushState("", "", newUrl);
+            this.activeFilter = value;
+            this.activeFilterSection = value;
 
             window.Event.fire('filters.filter-changed', {
                 filter: filter,
