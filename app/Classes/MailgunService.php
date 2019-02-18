@@ -156,7 +156,7 @@ class MailgunService
      */
     public function sendPassthroughEmail(Campaign $campaign, Recipient $recipient, $subject, $html, $text)
     {
-        $from = $this->getFromLine($campaign, $recipient, $campaign->client);
+        $from = $this->getFromLine($campaign, $recipient, $campaign->dealership);
 
         foreach ((array)$campaign->client_passthrough_email as $email) {
             $this->mailgun->messages()->send('mg.automotive-alerts.com', [
@@ -182,7 +182,7 @@ class MailgunService
     public function getMessage(Drop $drop, Recipient $recipient)
     {
         return [
-            'from'    => $this->getFromLine($drop->campaign, $recipient, $drop->campaign->client),
+            'from'    => $this->getFromLine($drop->campaign, $recipient, $drop->campaign->dealership),
             'to'      => $recipient->email,
             'subject' => $drop->subject,
             'html'    => $drop->email_html,
@@ -199,9 +199,9 @@ class MailgunService
      * @param User      $client
      * @return string
      */
-    public function getFromLine(Campaign $campaign, Recipient $recipient, User $client)
+    public function getFromLine(Campaign $campaign, Recipient $recipient, Company $dealsership)
     {
-        $from = $client->organization ?: "{$client->first_name} {$client->last_name}";
+        $from = $dealership->name;
 
         return "{$from} <" . str_slug("{$from}") . "_{$campaign->id}_{$recipient->id}@{$this->domain}>";
     }

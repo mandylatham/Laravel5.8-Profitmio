@@ -65,7 +65,7 @@ class SendDropNotifications extends Command
         }
 
         foreach ($drops as $drop) {
-            if (Drop::where('campaign_schedule_id', $drop->id)->whereNull('notified_at')->get()) {
+            if (Drop::where('id', $drop->id)->whereNull('notified_at')->get()) {
                 $this->info("Sending notification for drop #{$drop->id} under campaign #{$drop->campaign->id}");
                 $drop->notified_at = Carbon::now();
 
