@@ -34,8 +34,8 @@ window['app'] = new Vue({
                             });
                         }
                         this.errors = errs;
-                    } else if (error.message) {
-                        this.errorMessage = error.message;
+                    } else if (error && error.response && error.response.data && error.response.data.message) {
+                        this.errorMessage = error.response.data.message;
                     }
                     this.loading = false;
                 });
