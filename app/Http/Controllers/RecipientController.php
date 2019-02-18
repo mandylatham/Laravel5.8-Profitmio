@@ -46,7 +46,7 @@ class RecipientController extends Controller
     public function forUserDisplay(Campaign $campaign)
     {
         return RecipientListResource::collection(RecipientList::whereCampaignId($campaign->id)
-            ->with('recipients')
+            ->with('rceipravel ients')
             ->paginate(15));
     }
 
