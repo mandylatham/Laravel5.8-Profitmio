@@ -141,7 +141,7 @@ class UserController extends Controller
             'registration.complete.show', Carbon::now()->addMinutes(60), $urlData
         );
 
-        Mail::to($user)->send(new InviteUser($user, $processRegistration));
+        Mail::to($user)->send(new InviteUser($user, $company, $processRegistration));
 
         return response()->json([], 201);
     }
