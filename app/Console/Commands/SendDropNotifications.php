@@ -65,15 +65,14 @@ class SendDropNotifications extends Command
         }
 
         foreach ($drops as $drop) {
-            if (Drop::where('campaign_schedule_id', $drop->id)->whereNull('notified_at')->get()) {
+            if (Drop::where('id', $drop->id)->whereNull('notified_at')->get()) {
                 $this->info("Sending notification for drop #{$drop->id} under campaign #{$drop->campaign->id}");
                 $drop->notified_at = Carbon::now();
 
                 $drop->save();
 
                 if ($drop->campaign->lead_alerts) {
-                    $alert_emails = explode(',', $drop->campaign->lead_alert_email);
-                    foreach ($alert_emails as $email) {
+                    foreach ((array)$drop->campaign->lead_alert_email as $email) {
                         $email = trim($email);
                         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                             \Log::error("SendDropNotifications@handle (line 74): Skipping drop notification for invalid email, $email");

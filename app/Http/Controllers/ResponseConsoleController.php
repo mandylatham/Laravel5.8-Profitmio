@@ -59,7 +59,7 @@ class ResponseConsoleController extends Controller
         }
         if ($filter == 'labelled') {
             $recipients = Recipient::withResponses($campaign->id)
-                ->labelled($campaign->id, $label);
+                ->labelled($label, $campaign->id);
         }
         if ($filter == 'email') {
             $recipients = Recipient::withResponses($campaign->id)->whereIn(
@@ -163,7 +163,7 @@ class ResponseConsoleController extends Controller
             'email'       => $recipients->email,
             'calls'       => $recipients->calls,
             'sms'         => $recipients->sms,
-            'labelCounts' => array_map('intval', $recipients->labelCounts->toArray()),
+            'labelCounts' => array_map('intval', $recipients->labelCounts->setAppends([])->toArray()),
         ];
 
         return $viewData;
@@ -351,7 +351,7 @@ class ResponseConsoleController extends Controller
             abort(406);
         }
 
-        $existing = EmailLog::where('message_id', $messageId)->where('campaign_id', '!=', 0)->orderBy('email_log_id',
+        $existing = EmailLog::where('message_id', $messageId)->where('campaign_id', '!=', 0)->orderBy('id',
             'ASC')->first();
 
         if ($existing) {

@@ -23,7 +23,7 @@ class User extends Authenticatable implements HasMedia
     const ROLE_USER = 'user';
     const ROLE_ADMIN = 'admin';
 
-    protected $appends = ['image_url'];
+    protected $appends = ['image_url', 'name'];
 
     /**
      * The attributes that are mass assignable.
@@ -306,7 +306,7 @@ class User extends Authenticatable implements HasMedia
 
     public function getNameAttribute()
     {
-        return ucwords(Str::lower($this->first_name) . ' ' . Str::lower($this->last_name));
+        return ucwords(implode(' ', [Str::lower($this->first_name), Str::lower($this->last_name)]));
     }
 
     static function getPossibleTimezonesForUser()
