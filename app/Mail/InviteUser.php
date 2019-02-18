@@ -42,6 +42,13 @@ class InviteUser extends Mailable
      */
     public function build()
     {
-        return $this->view('emails.inviteuser');
+        return $this->from(['email' => 'no-reply@alerts.profitminer.io', 'name' => 'Profit Miner'])
+            ->subject('Profit Miner Invitation')
+            ->view('emails.inviteuser')
+            ->with([
+                'user' => $this->user;
+                'processLink' => $this->processLink;
+                'company' => $this->company;
+            ]);
     }
 }
