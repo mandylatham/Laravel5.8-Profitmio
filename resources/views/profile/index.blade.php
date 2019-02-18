@@ -1,219 +1,77 @@
-@extends('layouts.remark')
+@extends('layouts.base', [
+    'hasSidebar' => false
+])
 
-@section('header')
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.css') }}">
+@section('head-styles')
+    <link href="{{ asset('css/profile.css') }}" rel="stylesheet">
 @endsection
 
-@section('manualStyle')
-    .company-image {
-    width: 40px;
-    height: 40px;
-    background-size: cover;
-    background-position: 50% 50%;
-    background-color: #dadada;
-    border-radius: 50%;
-    }
+@section('body-script')
+    <script>
+        window.user = @json($user);
+        window.updateUserUrl = "{{ route('profile.update') }}";
+        window.updatePasswordUrl = "{{ route('profile.update-password') }}";
+    </script>
+    <script src="{{ asset('js/profile.js') }}"></script>
 @endsection
 
-@section('content')
-    <div class="page">
-        <div class="page-header container-fluid">
-            <div class="row-fluid">
-                <div class="col-md-6 offset-md-3">
-                    <h3 class="page-title text-default d-flex align-items-center">
-                        {{ $user->first_name }} {{ $user->last_name }}
-                    </h3>
-                    <div class="page-header-actions">
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="page-content container-fluid">
-            <div class="row-fluid" data-plugin="matchHeight" data-by-row="true">
-                <div class="col-md-6 offset-md-3">
-                    <div class="panel">
-                        <div class="panel-body" data-fv-live="enabled">
-                            @if ($errors->hasAny(['first_name', 'last_name', 'email']))
-                                <div class="alert alert-danger">
-                                    <h3>There were some errors:</h3>
-                                    <ul>
-                                        @foreach (['first_name', 'last_name', 'email'] as $field)
-                                            @foreach ($errors->get($field) as $message)
-                                                <li>{{ $message }}</li>
-                                            @endforeach
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-                            <form class="form" method="post" action="{{ route('profile.update') }}">
-                                {{ csrf_field() }}
-                                <div class="form-group">
-                                    <label for="first_name" class="floating-label">First Name</label>
-                                    <input type="text" class="form-control empty" name="first_name"
-                                           placeholder="First Name"
-                                           value="{{ $user->first_name  }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="last_name" class="floating-label">Last Name</label>
-                                    <input type="text" class="form-control empty" name="last_name"
-                                           placeholder="Last Name"
-                                           value="{{ $user->last_name }}" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="email" class="floating-label">Email</label>
-                                    <input type="email" class="form-control empty" name="email" placeholder="Email"
-                                           value="{{ $user->email  }}" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Update Account</button>
-                            </form>
-                        </div>
-                    </div>
-                    <div class="panel mt-30">
-                        <div class="panel-body" data-fv-live="enabled">
-                            @if ($errors->hasAny(['password', 'new_password', 'new_password_confirmation']))
-                                <div class="alert alert-danger">
-                                    <h3>There were some errors:</h3>
-                                    <ul>
-                                        @foreach (['password', 'new_password', 'new_password_confirmation'] as $field)
-                                            @foreach ($errors->get($field) as $message)
-                                                <li>{{ $message }}</li>
-                                            @endforeach
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-                            @if (session('success_message'))
-                                <div class="alert alert-success">
-                                    <ul>
-                                        <li>{{ session('success_message') }}</li>
-                                    </ul>
-                                </div>
-                            @endif
-                            <form class="form" method="post" action="{{ route('profile.update-password') }}">
-                                {{ csrf_field() }}
-                                <div class="form-group">
-                                    <label for="password" class="floating-label">Current Password</label>
-                                    <input type="password" class="form-control empty" name="password" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="new_password" class="floating-label">New Password</label>
-                                    <input type="password" class="form-control empty" name="new_password" required>
-                                </div>
-                                <div class="form-group">
-                                    <label for="new_password_confirmation" class="floating-label">Confirm New Password</label>
-                                    <input type="password" class="form-control empty" name="new_password_confirmation" required>
-                                </div>
-                                <button type="submit" class="btn btn-success">Update Password</button>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-                @if (!auth()->user()->isAdmin())
-                <div class="col-xxl-8 offset-xxl-2 col-md-12">
-                    <div class="panel panel-primary">
-                        <div class="panel-body">
-                            @if ($errors->count() > 0)
-                                <div class="alert alert-danger">
-                                    <h3>There were some errors:</h3>
-                                    <ul>
-                                        @foreach ($errors->all() as $message)
-                                            <li>{{ $message }}</li>
-                                        @endforeach
-                                    </ul>
-                                </div>
-                            @endif
-                            <div class="table-responsive">
-                                <table class="table table-striped table-hover">
-                                    <thead>
-                                    <tr>
-                                        <th>ID</th>
-                                        <th>Image</th>
-                                        <th>Name</th>
-                                        <th>Type</th>
-                                        <th>Role</th>
-                                        <th>Timezone</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    @foreach($companies as $company)
-                                        <tr class="user-row">
-                                            <td class="id-row v-center"><strong>{{ $company->id }}</strong></td>
-                                            <td width="60px" class="text-center">
-                                                <div class="company-image" style="background-image: url('{{ $company->image_url }}')"></div>
-                                            </td>
-                                            <td class="v-center">{{ $company->name }}</td>
-                                            <td class="text-capitalize v-center">{{ $company->type }}</td>
-                                            <td class="v-center">@role($user->getRole($company))</td>
-                                            <td class="v-center">
-                                                @php
-                                                    $timezones = $timezones ?? [];
-                                                    $timezones[$company->id] = $user->getTimezone($company);
-                                                @endphp
-                                                <select value="{{ $timezones[$company->id] }}" name="timezone" id="timezone_{{ $company->id }}" required class="form-control" data-plugin="select2">
-                                                    <option disabled {{ $timezones[$company->id] == '' ? 'selected' : '' }}>Choose Timezone...
-                                                    </option>
-                                                    @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
-                                                        <option {{ $timezones[$company->id] == $timezone ? 'selected' : '' }}>{{ $timezone }}</option>
-                                                    @endforeach
-                                                </select>
-                                            </td>
-                                            <td>
-                                                <a href="javascript:;" class="btn btn-sm btn-primary btn-round mb-5 btn-edit-timezone" data-company="{{ $company->id }}">
-                                                    Save
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    @endforeach
-                                    </tbody>
-                                </table>
+@section('main-content')
+    <div class="container" id="profile" v-cloak>
+        <div class="row">
+            <div class="col-12 col-sm-10 offset-sm-1 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+                <a class="btn pm-btn pm-btn-blue go-back mb-3 mt-3" href="{{ route('dashboard') }}">
+                    <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
+                </a>
+                <h1 class="mb-3 mt-3">Your Profile</h1>
+                <form @submit.prevent="updateProfile">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label" label="first_name">First Name</label>
+                                <input name="first_name" class="form-control" v-model="userForm.first_name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" label="last_name">Last Name</label>
+                                <input name="last_name" class="form-control" v-model="userForm.last_name">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" label="email">Email</label>
+                                <input name="email" class="form-control" v-model="userForm.email" disabled>
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn pm-btn pm-btn-purple" :disabled="loadingUserForm">
+                                    <span v-if="!loadingUserForm">Save</span>
+                                    <spinner-icon class="white" :size="'xs'" v-if="loadingUserForm"></spinner-icon>
+                                </button>
                             </div>
                         </div>
                     </div>
-                </div>
-                @endif
+                </form>
+                <form @submit.prevent="resetPassword">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label class="form-label">Current Password</label>
+                                <input type="password" required name="current_password" class="form-control" v-model="passwordForm.current_password">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">New Password</label>
+                                <input type="password" required name="new_password" class="form-control" v-model="passwordForm.new_password">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Confirm New Password</label>
+                                <input type="password" required name="new_password_confirmation" class="form-control" v-model="passwordForm.new_password_confirmation">
+                            </div>
+                            <div class="form-group">
+                                <button type="submit" class="btn pm-btn pm-btn-purple" :disabled="loadingPasswordForm">
+                                    <span v-if="!loadingPasswordForm">Save</span>
+                                    <spinner-icon class="white" :size="'xs'" v-if="loadingPasswordForm"></spinner-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-@endsection
-@section('scriptTags')
-    <script src="{{ secure_url('js/Plugin/material.js') }}"></script>
-    <script src="{{ secure_url('js/Plugin/formatter.js') }}"></script>
-    <script src="{{ secure_url('vendor/formatter/jquery.formatter.js') }}"></script>
-    <script type="text/javascript" src="{{ secure_url('js/Plugin/bootstrap-select.js') }}"></script>
-    <script type="text/javascript" src="{{ secure_url('vendor/bootstrap-select/bootstrap-select.js') }}"></script>
-    <script type="text/javascript" src="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.js') }}"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('.btn-edit-timezone').on('click', function () {
-                var companyId = $(this).data('company');
-                var role = $('#role_' + companyId).val();
-                var timezone = $('#timezone_' + companyId).val();
-
-                $.ajax({
-                    url: '{{ route('profile.update-company-data', ['user' => $user->id]) }}',
-                    method: 'post',
-                    data: {
-                        role: role,
-                        timezone: timezone,
-                        company: companyId
-                    },
-                    success: function () {
-                        swal("All Done", "Company Updated!", "success");
-                    },
-                    error: function (error) {
-                        var errors = error.responseJSON.errors;
-                        var errorMsg = '';
-                        $.each(errors, function (idx1, messages) {
-                            $.each(messages, function (idx2, message) {
-                                errorMsg += message + '\n';
-                            })
-                        });
-                        swal(errorMsg);
-                    }
-                })
-            })
-        });
-    </script>
 @endsection

@@ -1,0 +1,117 @@
+@import './../common/variables';
+//@import './mixins';
+/////////////////////////////
+// Plugin
+// Bootstrap
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+@import "~bootstrap/scss/utilities";
+@import "~bootstrap/scss/root";
+@import "~bootstrap/scss/reboot";
+@import "~bootstrap/scss/type";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/card";
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+@import "./../components/spinner-icon";
+
+body, html {
+    min-height: 100%;
+}
+html {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+body {
+    background-position: 50% 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    padding: 3rem 0;
+}
+.card {
+    width: 400px;
+    border: none;
+    border-radius: 0;
+    color: $brand-black;
+    background-color: #fff;
+    padding: 0.5rem;
+}
+.card-body {
+    padding: 1rem;
+    border: 2px solid $brand-purple;
+}
+.logo {
+    text-align: center;
+    margin-bottom: 1rem;
+    img {
+        height: 50px;
+    }
+}
+.sk-circle {
+    width: 20px;
+    height: 20px;
+    .sk-child:before {
+        background-color: #fff;
+    }
+}
+.text-primary {
+    margin-bottom: 1rem;
+    font-size: 0.7rem;
+    text-align: center;
+    color: $brand-black !important;
+}
+
+label {
+    font-size: 0.75rem;
+}
+.form-control {
+    font-size: 0.7rem;
+    border-radius: 0;
+    padding: 0.5rem;
+    background: #fff;
+    background-image: none !important;
+}
+.sk-circle {
+    width: 20px;
+    height: 20px;
+    .sk-child:before {
+        background-color: #fff;
+    }
+}
+//.btn {
+//    background-color: $brand-purple;
+//    border-color: $brand-purple;
+//    border-radius: 0;
+//    &:hover, &:focus, &:disabled, &:active {
+//        background-color: lighten($brand-purple, 10%);
+//        border-color: $brand-purple;
+//    }
+//}
+
+.vue-form-wizard .wizard-icon-circle {
+    border-color: $brand-purple;
+}
+.vue-form-wizard .wizard-icon-circle .wizard-icon, .vue-form-wizard .stepTitle {
+    color: $brand-purple;
+}
+.vue-form-wizard .navbar .navbar-nav>li>a.wizard-btn, .vue-form-wizard .wizard-btn {
+    border-radius: 0;
+    font-size: 0.9rem;
+    background-color: $brand-purple;
+    color: #fff;
+}
+.text-danger {
+    margin-bottom: 0.5rem;
+    font-size: 0.7rem;
+    text-align: center;
+}
+
+
+[v-cloak] { display: none; }
+[v-cloak]::before { content: "loading..."; }

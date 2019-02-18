@@ -32,6 +32,7 @@ class AdminController extends Controller
 
     public function impersonateUser(Request $request, User $user)
     {
+        session()->forget('activeCompany');
         if ($request->has('company')) {
             session(['activeCompany' => $request->input('company')]);
         }
@@ -47,7 +48,7 @@ class AdminController extends Controller
         }
         session()->forget('activeCompany');
         auth()->user()->leaveImpersonation();
-        return redirect()->route('campaign.index');
+        return redirect()->route('campaigns.index');
     }
 
     public function resendInvitation(ResendInvitationRequest $request)
@@ -67,6 +68,8 @@ class AdminController extends Controller
 
         $this->mail->to($user)->send(new InviteUser($user, $processRegistration));
 
-        return redirect()->back();
+        return response()->json(['message' => 'Invitation sent.']);
+//
+//        return redirect()->back();
     }
 }

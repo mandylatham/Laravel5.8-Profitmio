@@ -53,6 +53,9 @@ class AuthServiceProvider extends ServiceProvider
             }
         });
 
+        Gate::define('only-admin', function ($user, $post) {
+            return $user->id == $post->user_id;
+        });
         Gate::define('company.viewforpreferences', 'App\Policies\CompanyPolicy@viewForPreferences');
         Gate::define('company.view', 'App\Policies\CompanyPolicy@view');
         Gate::define('company.create', 'App\Policies\CompanyPolicy@create');
@@ -75,7 +78,8 @@ class AuthServiceProvider extends ServiceProvider
             }
 
             if ($user->isImpersonated()) {
-                return ImpersonatedUser::findOrCreateImpersonatedUser($user->id, $user->getImpersonatorId());
+                $manager = app('impersonate');
+                return ImpersonatedUser::findOrCreateImpersonatedUser($user->id, $manager->getImpersonatorId());
             } else {
                 return $user;
             }

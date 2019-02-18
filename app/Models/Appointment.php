@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class Appointment extends Model
 {
     protected $table = 'appointments';
 
+    const TYPE_DISCUSSION = 'discussion';
     const TYPE_CALLBACK = 'callback';
     const TYPE_APPOINTMENT = 'appointment';
 
@@ -18,14 +20,41 @@ class Appointment extends Model
      */
     protected $dates = ['created_at', 'updated_at', 'deleted_at', 'appointment_at'];
 
+    protected $appends = ['appointment_at_formatted', 'name'];
+
     /**
      * Fields which can be filled
      * @var array
      */
     protected $fillable = [
-        'campaign_id', 'recipient_id', 'appointment_at', 'first_name', 'last_name', 'phone_number',
-        'alt_phone_number', 'email', 'address', 'city', 'state', 'zip', 'auto_year', 'auto_make',
-        'auto_model', 'auto_trim', 'auto_mileage', 'type', 'called_back'
+        'campaign_id',
+        'recipient_id',
+        'appointment_at',
+        'first_name',
+        'last_name',
+        'phone_number',
+        'alt_phone_number',
+        'email',
+        'address',
+        'city',
+        'state',
+        'zip',
+        'auto_year',
+        'auto_make',
+        'auto_model',
+        'auto_trim',
+        'auto_mileage',
+        'type',
+        'called_back',
+    ];
+
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'called_back' => 'boolean',
     ];
 
     /**
@@ -40,6 +69,10 @@ class Appointment extends Model
             $this->attributes['appointment_at'] = new Carbon($value);
         }
     }
+
+    /**
+     * Accessors
+     */
 
     /**
      * Provide name rollup
@@ -73,12 +106,22 @@ class Appointment extends Model
         return $vehicle;
     }
 
+    public function getAppointmentAtFormattedAttribute()
+    {
+        return isset($this->appointment_at) ? $this->appointment_at->timezone(Auth::user()->timezone)->format("m/d/Y @ g:i A") : '';
+    }
+
     /**
      * The Recipient which has this appointment
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function recipient()
     {
-        return $this->belongsTo(Recipient::class, 'target_id', 'target_id');
+        return $this->belongsTo(Recipient::class, 'recipient_id', 'id');
+    }
+
+    public function campaign()
+    {
+        return $this->belongsTo(Campaign::class);
     }
 }

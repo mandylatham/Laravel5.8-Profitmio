@@ -32,9 +32,6 @@ class ProfileController extends Controller
         if ($request->filled('last_name')) {
             $user->last_name = $request->input('last_name');
         }
-        if ($request->filled('email')) {
-            $user->email = $request->input('email');
-        }
         $user->save();
 
         return redirect()->back();

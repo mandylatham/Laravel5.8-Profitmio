@@ -51,7 +51,6 @@ class CompleteController extends Controller
                 abort(403);
             }
         }
-
         $sufix = $user->isProfileCompleted() ? '-full' : '';
         return view('auth.complete' . $sufix, [
             'user' => $user,
@@ -59,7 +58,8 @@ class CompleteController extends Controller
                 'user' => $user->id,
                 'company' => $company ? $company->id : null
             ]),
-            'company' => $company
+            'company' => $company,
+            'timezone' => $user->isAdmin() ? '' :$user->getTimezone($company)
         ]);
     }
 
@@ -70,7 +70,6 @@ class CompleteController extends Controller
         if ($user->isAdmin() || !$user->isProfileCompleted()) {
             $user->first_name = $request->input('first_name');
             $user->last_name = $request->input('last_name');
-            $user->username = $request->input('username');
             $user->phone_number = $request->input('phone_number');
             $user->password = bcrypt($request->input('password'));
             $user->save();
@@ -88,6 +87,8 @@ class CompleteController extends Controller
             $this->companyUserActivityLog->updatePreferences($user, $request->get('company'), $data);
         }
 
-        return response()->redirectToRoute('login');
+        return response()->json([
+            'redirect_url' => route('login')
+        ]);
     }
 }

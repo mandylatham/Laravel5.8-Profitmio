@@ -1,0 +1,51 @@
+.pm-pagination {
+    width: 50%;
+    margin: 15px auto 0 auto;
+    display: flex;
+    flex-flow: row;
+    align-items: stretch;
+    justify-content: center;
+
+    @include media-breakpoint-down(xs) {
+        width: 100%;
+    }
+
+    .paginator-input {
+        flex-flow: row;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 5px 10px;
+
+        input {
+            width: 80px;
+            margin-right: 5px;
+        }
+    }
+
+    .paginator-left, .paginator-right {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        &:disabled {
+            cursor: not-allowed;
+            background-color: #ddd;
+            opacity: .65;
+        }
+    }
+
+    .paginator-left {
+        border-right: none;
+        border-radius: 5px 0 0 5px;
+    }
+
+    .paginator-right {
+        border-left: none;
+        border-radius: 0 5px 5px 0;
+    }
+}

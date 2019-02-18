@@ -24,6 +24,16 @@ class Drop extends Model
 
     protected $primaryKey = 'id';
 
+    protected $appends = [
+        'sms_phones'
+    ];
+
+    public function getSmsPhonesAttribute()
+    {
+        return $this->campaign->phones()->whereCallSourceName('sms')->count();
+    }
+
+
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
@@ -37,15 +47,6 @@ class Drop extends Model
     public function recipients()
     {
         return $this->belongsToMany(Recipient::class, 'deployment_recipients', 'deployment_id', 'recipient_id');
-    }
-
-    public function getSendAtAttribute($value)
-    {
-        if (\Auth::user() instanceof \App\Models\User) {
-            return \Carbon\Carbon::parse($value)->timezone(\Auth::user()->timezone);
-        }
-
-        return \Carbon\Carbon::parse($value);
     }
 
     public function scopeInGroup($query, $group_id)

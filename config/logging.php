@@ -44,6 +44,13 @@ return [
             'level' => 'debug',
         ],
 
+        'operations' => [
+            'driver' => 'daily',
+            'path'   => storage_path('logs/operations.log'),
+            'level'  => 'debug',
+            'days'   => 7,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

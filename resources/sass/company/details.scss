@@ -1,0 +1,436 @@
+@import './../common/index';
+@import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/input-group";
+@import './../components/date-pick';
+@import './../components/spinner-icon';
+@import './../components/resumable';
+@import './../components/pm-pagination';
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+@import './../components/campaign';
+
+#company-details {
+
+    .campaign-component.active {
+        .campaign-postcard {
+            background-color: $brand-white;
+            border-top-color: #fff;
+            border-bottom-color: #fff;
+        }
+        .campaign-date {
+            background-color: $brand-white;
+            border-right-color: #fff;
+        }
+        .campaign-links {
+            background-color: $brand-white;
+        }
+
+        @include media-breakpoint-up(md) {
+            .campaign-date {
+                border-left-color: #fff;
+            }
+        }
+    }
+
+    .campaign-component.inactive{
+        .campaign-header {
+            background-color: $brand-white;
+            border-bottom: 3px solid #fff;
+        }
+        .campaign-date {
+            background-color: $brand-white;
+            border: none;
+        }
+        .campaign-postcard--image {
+            background-color: $brand-white;
+            border-right: 3px solid #fff;
+        }
+        .campaign-chart {
+            border-top: 3px solid #fff;
+            background-color: $brand-white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        @include media-breakpoint-up(md) {
+            .campaign-header {
+                border: none;
+            }
+            .campaign-postcard--image {
+                border-left: 3px solid #fff;
+            }
+            .campaign-date {
+                border-right: 3px solid #fff;
+            }
+            .campaign-chart {
+                border-top: none;
+            }
+        }
+    }
+
+    .campaign-group-label {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-top: 2rem;
+        text-align: left;
+        margin-bottom: 1rem;
+    }
+
+    .company-image-container {
+        text-align: center;
+    }
+
+    .form-row {
+        margin-bottom: 4px;
+
+        p {
+            margin-bottom: 2px;
+        }
+    }
+
+    .user-row {
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        &--id, &--companies, &--phone-number, &--email, &--options {
+            padding: 0.7rem 1rem;
+            color: $brand-black;
+            background-color: $brand-white;
+            align-items: center;
+            min-height: 52px;
+            display: flex;
+            height: 100%;
+        }
+        &--id, &--companies, &--phone-number, &--email {
+            border-bottom: 3px solid #fff;
+        }
+        &--id {
+            background-color: $brand-purple !important;
+            color: #fff !important;
+        }
+        &--companies {
+        }
+        &--phone-number, &--email {
+        }
+        &--options {
+            flex-flow: column;
+            .pm-btn-link {
+                padding: 0.3rem 0;
+            }
+        }
+
+    }
+
+    p.form-control {
+        background-color: transparent;
+        border: 0;
+        border-bottom: 1px solid #528;
+        height: auto;
+        padding-left: 0;
+        border-radius: 0;
+    }
+
+    .form-controls {
+        text-align: right;
+    }
+
+    .align-items-end {
+        text-align: right;
+    }
+
+    .align-items-center {
+        text-align: center;
+    }
+
+    .editable {
+        padding: 0 8px;
+        margin-top: 0;
+        min-height: 1.5rem;
+
+        h1 {
+            color: $brand-purple;
+            padding-left: 0;
+
+            input {
+                color: $brand-purple;
+                font-size: 2.25rem;
+                font-weight: bold;
+                height: 3.5rem;
+                padding: .5rem;
+            }
+        }
+    }
+
+    .form-label {
+        color: $brand-purple;
+        font-size: .6rem;
+        margin-bottom: -5px;
+    }
+
+    .variable-button {
+        margin: 2px;
+        padding: 1px 6px;
+    }
+
+    .tab-content {
+        background-color: #fff;
+    }
+
+    .company-access-row {
+        background-color: $brand-white;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        margin-bottom: 0.7rem;
+        .access-link {
+            margin-left: auto;
+        }
+    }
+
+    #campaign-access-tab {
+        padding: 2rem;
+        position: relative;
+    }
+
+    .template-field {
+        @include media-breakpoint-up(md) {
+            text-align: right
+        }
+    }
+
+    .template-name {
+        border-left: 3px solid $brand-purple;
+    }
+
+    .card-header {
+        padding: 0;
+        background-color: transparent;
+        border-bottom: 1px solid $brand-purple;
+
+        .nav {
+            margin: 0;
+            background-color: transparent;
+            border: none;
+        }
+    }
+
+    .card {
+        background-color: transparent;
+        border: none;
+
+        &.profile {
+            background-color: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.125);
+        }
+
+        .nav-tabs .nav-link {
+            background-color: $brand-purple;
+            color: #fff;
+            border: none;
+            height: 100%;
+            padding: 0.7rem 2rem;
+            border-radius: 0;
+        }
+
+        .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+            background-color: #fff;
+            color: $brand-purple;
+            border: none;
+            border-top: 1px solid $brand-purple;
+            height: 100%;
+            padding: 0.7rem 2rem;
+            border-radius: 0;
+        }
+    }
+
+    .company-avatar {
+        width: 150px;
+        height: 150px;
+        background-color: $brand-white;
+        background-size: cover;
+        background-position: 50% 50%;
+        border-radius: 50%;
+        margin: 0 auto;
+        display: block;
+        position: relative;
+        &--selector {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: $brand-purple;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            top: 2px;
+            right: 10px;
+            cursor: pointer;
+            border: 2px solid #fff;
+            i {
+                margin: 0 !important;
+            }
+        }
+    }
+
+    .resumable-component {
+        padding: 1rem;
+        height: 150px;
+        width: 150px;
+        border-radius: 50%;
+        display: flex;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: center;
+        .btn {
+            padding-left: 0.5rem;
+            padding-right: 0.5rem;
+        }
+    }
+
+    @include media-breakpoint-up(sm) {
+        padding: 2rem 0;
+    }
+
+    @include media-breakpoint-up(md) {
+        .user-row {
+            &--id {
+                border-right: 3px solid #fff;
+            }
+            &--email {
+                border-bottom: 3px solid #fff;
+                border-right: 3px solid #fff;
+            }
+            &--phone-number {
+                border-bottom: 3px solid #fff;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(lg) {
+        .user-row {
+            &--email {
+                border-bottom: none;
+            }
+            &--phone-number {
+                border-bottom: none;
+                border-right: 3px solid #fff;
+            }
+        }
+    }
+
+    @include media-breakpoint-up(xl) {
+        .user-row {
+            &--id {
+                border-bottom: none;
+            }
+            &--companies {
+                border-bottom: none;
+                border-right: 3px solid #fff;
+            }
+        }
+    }
+}
+
+#configure-access {
+    .pm-pagination {
+        width: 80%;
+    }
+}
+
+.sidebar-wrapper {
+    padding: 2rem;
+    position: relative;
+
+    .avatar {
+        margin-bottom: 1.5rem;
+        position: relative;
+
+        &--image {
+            height: 120px;
+            width: 120px;
+            border-radius: 50%;
+            background-color: #fff;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        &--edit {
+            padding: 0;
+            height: 30px;
+            width: 30px;
+            background-color: #fff;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 2px solid $brand-purple;
+            top: 0;
+            right: 0;
+            color: $brand-black;
+            position: absolute;
+        }
+    }
+
+    .edit-user, .delete-user {
+        margin: 0;
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        line-height: 1em;
+        padding: 0;
+    }
+
+    .edit-user {
+        position: absolute;
+        left: 2rem;
+        top: 1rem;
+    }
+
+    .delete-user {
+        float: right;
+        margin-top: 3rem;
+    }
+
+    .panel-data {
+        background-color: transparent;
+        color: #fff;
+        border: none;
+        border-bottom: 1px solid #fff;
+        border-radius: 0;
+        padding: 0.4rem 1rem;
+        line-height: 1em;
+        height: auto;
+    }
+
+    .form-group {
+        margin-bottom: 0.8rem;
+
+        label {
+            color: $brand-white;
+            font-size: 0.85rem;
+        }
+    }
+
+    .loader-spinner {
+        .sk-circle {
+            margin: 0;
+            width: 15px;
+            height: 15px;
+
+            .sk-child:before {
+                background-color: #fff;
+            }
+        }
+    }
+
+    .vue-dropzone {
+        background-color: #fff;
+        border-radius: 4px;
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+}

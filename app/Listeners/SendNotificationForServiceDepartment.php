@@ -29,10 +29,12 @@ class SendNotificationForServiceDepartment
     public function handle(ServiceDeptLabelAdded $event)
     {
         $recipient = $event->getRecipient();
-        $recipient->campaign->service_dept;
+        if (! $recipient->campaign->service_dept) {
+            return;
+        }
+
         if ($recipient->campaign->service_dept_email) {
-            $serviceDeptEmails = explode(',', $recipient->campaign->service_dept_email);
-            foreach ($serviceDeptEmails as $email) {
+            foreach ($recipient->campaign->service_dept_email as $email) {
                 $email = trim($email);
                 if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                     Mail::to($email)->send(new ServiceDeptNotification($recipient));

@@ -4,30 +4,30 @@
     <prospect>
         <requestdate>{{ date(DATE_ATOM, time()) }}</requestdate>
         <vehicle>
-            <year>{{ $appointment->auto_year }}</year>
-            <make>{{ $appointment->make }}</make>
-            <model>{{ $appointment->model }}</model>
+            <year>{{ $recipient->year }}</year>
+            <make>{{ $recipient->make }}</make>
+            <model>{{ $recipient->model }}</model>
         </vehicle>
         <customer>
             <contact>
-                <name part="first">{{ $appointment->first_name }}</name>
-                <name part="last">{{ $appointment->last_name }}</name>
-                <name part="full">{{ $appointment->first_name }} {{ $appointment->last_name }}</name>
-                <email>{{ $appointment->email }}</email>
-                <phone type="voice">{{ $appointment->phone_number }}</phone>
-                <phone type="voice">{{ $appointment->alt_phone_number }}</phone>
+                <name part="first">{{ $recipient->first_name }}</name>
+                <name part="last">{{ $recipient->last_name }}</name>
+                <email>{{ $recipient->email }}</email>
+                <phone type="voice">{{ $recipient->phone }}</phone>
                 <address type="home">
-                    <street linke="1">{{ $appointment->address }}</street>
-                    <street linke="2" />
-                    <city>{{ $appointment->city }}</city>
-                    <regioncode />
-                    <postalcode>{{ $appointment->zip }}</postalcode>
+                    <street line="1">{{ $recipient->address }}</street>
+                    <apartment/>
+                    <city>{{ $recipient->city }}</city>
+                    <regioncode>{{ $recipient->state }}</regioncode>
+                    <postalcode>{{ $recipient->zip }}</postalcode>
                 </address>
             </contact>
+            <comments>This lead, {{ $recipient->first_name }} {{ $recipient->last_name }} has been manually submitted to your CRM by Profit Miner user, {{ $user->name }}</comments>
         </customer>
         <vendor>
-            <contact>
-                <name part="full">{{ $campaign->agency->organization }}</name>
+            <vendorname>{{ $campaign->agency->name }}</vendorname>
+            <contact primarycontact="1">
+                <name part="full">{{ $campaign->agency->name }}</name>
             </contact>
         </vendor>
         <provider>

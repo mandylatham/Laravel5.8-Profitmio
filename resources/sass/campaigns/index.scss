@@ -1,0 +1,30 @@
+@import './../common/index';
+@import './../components/spinner-icon';
+@import './../components/status';
+@import './../components/campaign';
+@import './../components/pm-pagination';
+
+#campaign-index {
+    padding: 2rem 1rem;
+    .loader-spinner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 100;
+        background-color: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .campaign-group-label {
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+    }
+    .pm-pagination {
+        margin-bottom: 2rem;
+    }
+}

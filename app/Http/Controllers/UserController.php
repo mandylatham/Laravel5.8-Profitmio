@@ -5,13 +5,19 @@ namespace App\Http\Controllers;
 use App\Classes\CompanyUserActivityLog;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateCompanyDataRequest;
+use App\Http\Resources\UserCollection;
 use App\Models\Company;
 use App\Mail\InviteUser;
 use App\Models\User;
+use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Carbon;
+use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
+use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
+use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
+use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 
 class UserController extends Controller
 {
@@ -20,20 +26,38 @@ class UserController extends Controller
     /** @var CompanyUserActivityLog  */
     private $companyUserActivityLog;
 
+    private $storage;
+
     private $user;
 
-    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, User $user)
+    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, FilesystemManager $storage, User $user)
     {
         $this->company = $company;
         $this->companyUserActivityLog = $companyUserActivityLog;
+        $this->storage = $storage;
         $this->user = $user;
     }
 
     public function activate(User $user, Request $request)
     {
         $user->activate($request->input('company'));
+        return response()->json(['message' => 'User activated.']);
+    }
 
-        return redirect()->back();
+    /**
+     * Return all companies for user display
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForUserDisplay(Request $request)
+    {
+        $userQuery = $this->user->searchByRequest($request);
+        $users = $userQuery
+            ->select('users.*')
+            ->orderBy('users.id', 'desc')
+            ->paginate(15);
+
+        return new UserCollection($users);
     }
 
     /**
@@ -44,18 +68,12 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = auth()->user()->getListOfUsers($request->input('company'));
-        return view('users.index', [
-            'users' => $users,
-            'company' => !auth()->user()->isAdmin() ? $this->company->findOrFail(get_active_company()) : null,
-            'companies' => $this->company->orderBy('name', 'asc')->get(),
-            'selectedCompanyId' => $request->has('company') ? $request->input('company') : null
-        ]);
+        return view('user.index', []);
     }
 
     public function create()
     {
-        return view('users.create', [
+        return view('user.create', [
             'companies' => $this->company->all()
         ]);
     }
@@ -63,8 +81,12 @@ class UserController extends Controller
     public function deactivate(User $user, Request $request)
     {
         $user->deactivate($request->input('company'));
+        return response()->json(['message' => 'User deactivated.']);
+    }
 
-        return redirect()->back();
+    public function delete(User $user, Request $request)
+    {
+        $user->delete();
     }
 
     /**
@@ -78,24 +100,23 @@ class UserController extends Controller
             ->first();
 
         if (($request->input('role') == 'site_admin' && !is_null($user)) || ($user && $user->isAdmin())) {
-            return redirect()->back()->withErrors('The email has already been taken.');
+            return response()->json(['error' => 'The email has already been taken.'], 400);
         }
         if (!$user) {
             $user = new $this->user();
             $user->is_admin = $request->input('role') == 'site_admin' ? true : false;
             $user->password = '';
-            $user->username = $request->input('email');
-            $user->first_name = $request->input('first_name');
-            $user->last_name = $request->input('last_name');
+            $user->first_name = '';
+            $user->last_name = '';
             $user->email = $request->input('email');
             $user->save();
         }
+        $urlData = [];
         if ($user->isAdmin()) {
-            $processRegistration = URL::temporarySignedRoute(
-                'registration.complete.show', Carbon::now()->addMinutes(60), [
-                    'id' => $user->getKey()
-                ]
-            );
+            $urlData = [
+                'id' => $user->getKey()
+            ];
+            $company = $this->company->where('type', 'support')->first();
         } else {
             // Attach to company if user is not admin
             if (auth()->user()->isAdmin()) {
@@ -104,23 +125,25 @@ class UserController extends Controller
                 $company = $this->company->findOrFail(get_active_company());
             }
 
-            $user->companies()->attach($company->id, [
-                'role' => $request->input('role')
-            ]);
-
-            $processRegistration = URL::temporarySignedRoute(
-                'registration.complete.show', Carbon::now()->addMinutes(60), [
-                    'id' => $user->getKey(),
-                    'company' => $company->id
-                ]
-            );
+            $urlData = [
+                'id' => $user->getKey(),
+                'company' => $company->id
+            ];
 
             $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
         }
 
+        $user->companies()->attach($company->id, [
+            'role' => $request->input('role', 'user')
+        ]);
+
+        $processRegistration = URL::temporarySignedRoute(
+            'registration.complete.show', Carbon::now()->addMinutes(60), $urlData
+        );
+
         Mail::to($user)->send(new InviteUser($user, $processRegistration));
 
-        return redirect()->route('user.index');
+        return response()->json([], 201);
     }
 
     /**
@@ -133,7 +156,7 @@ class UserController extends Controller
         $viewData = [
             'companies' => Company::all()
         ];
-        return view('users.new', $viewData);
+        return view('user.new', $viewData);
     }
 
     /**
@@ -144,7 +167,7 @@ class UserController extends Controller
      */
     public function selectActiveCompany(Request $request)
     {
-        return view('users.select-company');
+        return view('user.select-company');
     }
 
     /**
@@ -165,7 +188,7 @@ class UserController extends Controller
             $viewData['campaigns'] = $user->campaigns()->get();
         }
 
-        return view('users.details', $viewData);
+        return view('user.details', $viewData);
     }
 
     /**
@@ -176,7 +199,7 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('users.edit', [
+        return view('user.edit', [
             'user' => $user,
             'companies' => $user->companies()->orderBy('name', 'asc')->get()
         ]);
@@ -191,9 +214,11 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
-        $user->update($request->except(['password']));
+        $user->update($request->except(['password', 'email']));
 
-        return response()->redirectToRoute('user.edit', ['user' => $user->id]);
+        return response()->json([]);
+
+//        return response()->redirectToRoute('user.edit', ['user' => $user->id]);
     }
 
     public function updateForm(User $user)
@@ -201,18 +226,21 @@ class UserController extends Controller
         $viewData['user'] = $user;
         $viewData['companies'] = Company::all();
 
-        return view('users.edit', $viewData);
+        return view('user.edit', $viewData);
     }
 
     public function updateCompanyData(User $user, UpdateCompanyDataRequest $request)
     {
         $invitation = $user->invitations()->where('company_id', $request->input('company'))->firstOrFail();
 
-        $config = $invitation->config;
-        $config['timezone'] = $request->input('timezone');
-
-        $invitation->config = $config;
-        $invitation->role = $request->input('role');
+        if ($request->has('timezone')) {
+            $config = $invitation->config;
+            $config['timezone'] = $request->input('timezone');
+            $invitation->config = $config;
+        }
+        if ($request->has('role') && $request->input('role') !== 'site_admin') {
+            $invitation->role = $request->input('role');
+        }
         $invitation->save();
 
         return response()->json('Resource updated.');
@@ -227,5 +255,49 @@ class UserController extends Controller
     public function destroy(User $user)
     {
         //
+    }
+
+    public function updateAvatar(User $user, Request $request, FileReceiver $receiver)
+    {
+        // check if the upload is success, throw exception or return response you need
+        if ($receiver->isUploaded() === false) {
+            throw new UploadMissingFileException();
+        }
+        // receive the file
+        $save = $receiver->receive();
+
+        // check if the upload has finished (in chunk mode it will send smaller files)
+        if ($save->isFinished()) {
+            $image = $user->addMedia($save->getFile())->toMediaCollection('profile-photo', 'public');
+            return response()->json(['location' => $image->getFullUrl()], 201);
+        }
+
+        // we are in chunk mode, lets send the current progress
+        /** @var AbstractHandler $handler */
+        $handler = $save->handler();
+        return response()->json([
+            "done" => $handler->getPercentageDone()
+        ]);
+    }
+
+    public function view(User $user)
+    {
+        $loggedUser = auth()->user();
+        if ($loggedUser->isAdmin()) {
+            $hasCampaigns = $user->getCampaigns()->count() > 0;
+        } else {
+            $company = Company::findOrFail(get_active_company());
+            if ($company->isDealership()) {
+                $field = 'dealership_id';
+            } else {
+                $field = 'agency_id';
+            }
+            $hasCampaigns = $user->getCampaigns()->where($field, get_active_company())->count() > 0;
+        }
+        return view('user.detail', [
+            'user' => $user,
+            'hasCampaigns' => $hasCampaigns,
+            'timezones' => $user->getPossibleTimezonesForUser()
+        ]);
     }
 }

@@ -13,9 +13,9 @@ class RecipientBuilder
      * @var array
      */
     public $listFields = [
-        'address1', 'city', 'state', 'zip', 'year',
-        'phone', 'make', 'model', 'vin', 'is_database'
-    ];
+            'address1', 'city', 'state', 'zip', 'year',
+            'phone', 'make', 'model', 'vin',
+        ];
 
     /**
      * Create new recipients from an uploaded list
@@ -32,11 +32,21 @@ class RecipientBuilder
             return;
         }
 
+        foreach ($list->fieldmap as $key => $value) {
+            if ($value === null) {
+                unset($this->listFields[$key]);
+            }
+        }
+
+        if ($list->type == 'mixed') {
+            array_push($this->listFields, 'is_database');
+        }
+
         $media = $list->getMedia('recipient-lists')->first();
         if (! $media) {
             throw new \Exception("Campaign {$list->campaign_id}: Unable to locate the media object for list {$list->id}");
         }
-        if (! Storage::disk('local')->put($media->file_name, Storage::disk('media')->get($media->getPath()))) {
+        if (! $this->makeMediaCopy($media)) {
             throw new \Exception("Campaign {$list->campaign_id}: Unable to download the media object for list {$list->id}");
         }
         \Log::debug("RecipientBuilder: found uploaded file");
@@ -70,7 +80,7 @@ class RecipientBuilder
                 }
             }
             foreach ($this->listFields as $field) {
-                if (array_key_exists($field, $list->fieldmap)) {
+                if (array_key_exists($field, $list->fieldmap) && $list->fieldmap[$field] !== null) {
                     $staging[$field] = $this->sanitize($row[$list->fieldmap[$field]], true);
                 }
             }
@@ -97,6 +107,20 @@ class RecipientBuilder
         $list->update([
             'recipients_added' => true,
         ]);
+    }
+
+    /**
+     * Handle local files differently due to path issue
+     */
+    protected function makeMediaCopy($media)
+    {
+        if ($media->disk == 'local') {
+            \Log::debug("RecipientBuilder: adding local file to local directory");
+            return Storage::disk('local')->put($media->file_name, Storage::disk('local')->get($media->id . '/' . $media->file_name));
+        }
+
+        \Log::debug("RecipientBuilder: adding {$media->disk} file to local directory");
+        return Storage::disk('local')->put($media->file_name, Storage::disk($media->disk)->get($media->getPath()));
     }
 
     public function sanitize($value, $correctCase = false) {

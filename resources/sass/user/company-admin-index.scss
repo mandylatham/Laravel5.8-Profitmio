@@ -1,0 +1,89 @@
+@import './../common/index';
+@import './../components/pm-responsive-table';
+@import './../components/user-status';
+
+#company-user-index {
+    padding: 2rem 1rem;
+    .loader-spinner {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1000;
+        width: 100%;
+        background-color: rgba(255, 255, 255, 0.3);
+        display: flex;
+        align-items: center;
+        height: 100%;
+        justify-content: center;
+    }
+    .list-container {
+        position: relative;
+    }
+    .user-row {
+        border-radius: 5px;
+        overflow: hidden;
+        margin-bottom: 1.5rem;
+        &--id, &--role, &--phone-number, &--email, &--options {
+            padding: 0.7rem 1rem;
+            color: $brand-black;
+            background-color: #fff;
+            align-items: center;
+            min-height: 52px;
+            display: flex;
+            height: 100%;
+        }
+        &--id, &--role, &--phone-number, &--email {
+            border-bottom: 3px solid $brand-white;
+        }
+        &--id {
+            background-color: $brand-purple !important;
+            color: #fff !important;
+        }
+        &--options {
+            flex-flow: column;
+            .pm-btn-link {
+                padding: 0.3rem 0;
+            }
+        }
+
+    }
+    @include media-breakpoint-up(sm) {
+        padding: 2rem 0;
+    }
+    @include media-breakpoint-up(md) {
+        .user-row {
+            &--id {
+                border-right: 3px solid $brand-white;
+            }
+            &--email {
+                border-bottom: 3px solid $brand-white;
+                border-right: 3px solid $brand-white;
+            }
+            &--phone-number {
+                border-bottom: 3px solid $brand-white;
+            }
+        }
+    }
+    @include media-breakpoint-up(lg) {
+        .user-row {
+            &--email {
+                border-bottom: none;
+            }
+            &--phone-number {
+                border-bottom: none;
+                border-right: 3px solid $brand-white;
+            }
+        }
+    }
+    @include media-breakpoint-up(xl) {
+        .user-row {
+            &--id {
+                border-bottom: none;
+            }
+            &--role {
+                border-bottom: none;
+                border-right: 3px solid $brand-white;
+            }
+        }
+    }
+}

@@ -12,7 +12,7 @@ class CompanyTableSeeder extends Seeder
      */
     public function run()
     {
-        factory(Company::class, 10)->create([
+        factory(Company::class, 1)->create([
             'type' => 'support'
         ]);
         factory(Company::class, 10)->create([

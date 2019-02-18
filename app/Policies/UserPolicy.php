@@ -41,8 +41,18 @@ class UserPolicy
         return $loggedUser->isAdmin() || ($loggedUser->isCompanyAdmin(get_active_company()) && $userToEdit->belongsToCompany($company));
     }
 
+    public function deleteUser(User $loggedUser, User $userToDelete)
+    {
+        return $loggedUser->isAdmin() && !$userToDelete->isAdmin();
+    }
+
     public function impersonate(User $user)
     {
         return auth()->user()->isAdmin();
+    }
+
+    public function siteAdmin(User $user)
+    {
+        return $user->isAdmin();
     }
 }

@@ -2,40 +2,86 @@
 
 namespace App\Models;
 
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Events\CampaignCountsUpdated;
+use App\Events\RecipientLabelAdded;
+use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Sofa\Eloquence\Eloquence;
 
 class Recipient extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, Eloquence;
 
     protected $table = 'recipients';
 
     protected $dates = [
-        'created_at', 'updated_at', 'deleted_at', 'archived_at',
+        'created_at',
+        'updated_at',
+        'deleted_at',
+        'archived_at',
     ];
 
     protected $fillable = [
-        'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state',
-        'zip', 'year', 'make', 'model', 'campaign_id', 'interested', 'not_interested',
-        'service', 'wrong_number', 'car_sold', 'heat', 'appointment', 'notes', 'last_responded_at',
-        'carrier', 'subgroup', 'from_dealer_db', 'callback'
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'address1',
+        'city',
+        'state',
+        'zip',
+        'year',
+        'make',
+        'model',
+        'campaign_id',
+        'interested',
+        'not_interested',
+        'service',
+        'wrong_number',
+        'car_sold',
+        'heat',
+        'appointment',
+        'notes',
+        'last_responded_at',
+        'carrier',
+        'subgroup',
+        'from_dealer_db',
+        'callback',
+        'sent_to_crm',
     ];
+
+    protected $appends = [
+        'name',
+        'vehicle',
+        'location',
+        'labels',
+    ];
+
+    protected $searchable = ['first_name', 'last_name'];
 
     public static $mappable = [
-        'first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip',
-        'make', 'model', 'vin'
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'address1',
+        'city',
+        'state',
+        'zip',
+        'make',
+        'model',
+        'vin',
     ];
 
+    protected $searchableColumns = ['first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip', 'year', 'make', 'model', 'vin'];
 
     public function list()
     {
         return $this->belongsTo(RecipientList::class, 'recipient_list_id');
-    }
-
-    public function getVehicleAttribute()
-    {
-        return $this->year . ' ' . $this->make . ' ' . $this->model;
     }
 
     public function campaign()
@@ -55,7 +101,7 @@ class Recipient extends Model
 
     public function responses()
     {
-        return $this->hasOne(Response::class, 'recipient_id', 'recipient_id');
+        return $this->hasMany(Response::class, 'recipient_id', 'id');
     }
 
     public function suppressions()
@@ -63,39 +109,136 @@ class Recipient extends Model
         return $this->hasMany(SmsSuppression::class, 'phone', 'phone');
     }
 
+    public function getDroppedTime()
+    {
+        $dropped = DeploymentRecipients::join('campaign_schedules', 'deployment_recipients.deployment_id', '=', 'campaign_schedules.id')
+            ->where('campaign_schedules.campaign_id', $this->campaign_id)
+            ->where('deployment_recipients.recipient_id', $this->id)
+            ->whereNotNull('deployment_recipients.sent_at')
+            ->first();
+        return $dropped ? $dropped->sent_at : null;
+    }
+
+    /**
+     * Accessors
+     */
+    public function getVehicleAttribute()
+    {
+        return trim(implode(' ', [$this->year, $this->make, $this->model]));
+    }
+
     public function getNameAttribute()
     {
         return $this->first_name . ' ' . $this->last_name;
+    }
+
+    public function getLocationAttribute()
+    {
+        $location = [];
+        if (!empty($this->city)) {
+            $location[] = $this->city;
+        }
+        if (!empty($this->state)) {
+            $location[] = $this->state;
+        }
+
+        return implode(', ', $location);
+    }
+
+    public function getLabelsAttribute()
+    {
+        $labels = [];
+
+        if ((bool)$this->interested) {
+            $labels['interested'] = 'Interested';
+        }
+
+        if ((bool)$this->not_interested) {
+            $labels['not_interested'] = 'Not Interested';
+        }
+
+        if ((bool)$this->callback) {
+            $labels['callback'] = 'Callback';
+        }
+
+        if ((bool)$this->appointment) {
+            $labels['appointment'] = 'Appointment';
+        }
+
+        if ((bool)$this->service) {
+            $labels['service'] = 'Service Dept';
+        }
+
+        if ((bool)$this->heat) {
+            $labels['heat'] = 'Heat Case';
+        }
+
+        if ((bool)$this->car_sold) {
+            $labels['car_sold'] = 'Car Sold';
+        }
+
+        if ((bool)$this->wrong_number) {
+            $labels['wrong_number'] = 'Wrong Number';
+        }
+
+        return (object)$labels;
+    }
+
+    public function getEmailAttribute()
+    {
+        return strtolower($this->attributes['email']);
+    }
+
+    public static function searchByRequest(Request $request, RecipientList $recipientList)
+    {
+        $query = $recipientList->recipients();
+
+        if ($request->has('q')) {
+            $query->filterByQuery($request->get('q'));
+        }
+
+        return $query;
+    }
+
+    public function scopeFilterByQuery($query, $q)
+    {
+        return $query->search($q);
     }
 
     public function scopeWithResponses($query, $campaignId)
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
+                DB::select("
                     select distinct(recipient_id) from responses where campaign_id = {$campaignId}
                 ")
             )
         );
     }
+
     public function scopeUnread($query, $campaignId)
     {
-        return $query->whereIn('recipients.id',
-            result_array_values(
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->whereIn('responses.id', result_array_values(
                 \DB::select("
-                    select recipient_id from responses where id in (
-                    select max(id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
+                    select distinct(recipient_id) from responses where responses.id in (
+                    select max(responses.id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
                     ) and incoming = 1 and `read` = 0
                 ")
-            )
-        );
+            ));
+    }
+
+    public function scopeCalls($query)
+    {
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'phone');
     }
 
     public function scopeIdle($query, $campaignId)
     {
         return $query->whereIn('recipients.id',
             result_array_values(
-                \DB::select("
+                DB::select("
                     select recipient_id from responses where id in (
                     select max(id) from responses where campaign_id={$campaignId} and `incoming` = 0 group by recipient_id
                     ) and incoming = 0
@@ -104,17 +247,35 @@ class Recipient extends Model
         );
     }
 
+    public function scopeEmail($query)
+    {
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'email');
+    }
+
+    public function scopeSms($query)
+    {
+        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'text');
+    }
+
     public function scopeArchived($query)
     {
         return $query->whereNotNull('archived_at');
     }
 
-    public function scopeLabelled($query, $campaignId, $label)
+    public function scopeLabelled($query, $label, $campaignId)
     {
         if ($label == 'none') {
             return $query->where('recipients.campaign_id', $campaignId)->where([
-                'interested' => 0, 'not_interested' => 0, 'service' => 0, 'heat' => 0,
-                'appointment' => 0, 'car_sold' => 0, 'wrong_number' => 0, 'callback' => 0.
+                'interested'     => 0,
+                'not_interested' => 0,
+                'service'        => 0,
+                'heat'           => 0,
+                'appointment'    => 0,
+                'car_sold'       => 0,
+                'wrong_number'   => 0,
+                'callback'       => 0,
             ]);
         }
 

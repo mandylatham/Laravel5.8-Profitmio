@@ -22,31 +22,30 @@ class PhoneController extends Controller
     public function searchAvailable(PhoneSearchRequest $request)
     {
         $data = $request->only(['areaCode', 'inPostalCode', 'contains', 'country']);
-
         $data['country'] = array_key_exists('country', $data) ? $data['country'] : 'US';
+        try {
+            $twilioNumbers = Twilio::phoneNumberLookup($data);
+            $numbers = [];
+            foreach ($twilioNumbers['numbers'] as $number) {
+                $num['phone'] = $number->friendlyName;
+                $num['phoneNumber'] = $number->phoneNumber;
+                $num['location'] = trim($number->rateCenter . ' ' . $number->region .  ' ' . $number->isoCountry);
+                $num['zip'] = $number->postalCode;
 
-        $twilioNumbers = Twilio::phoneNumberLookup($data);
+                $numbers[] = $num;
+            }
+            $data['numbers'] = $numbers;
 
-        $numbers = [];
-        foreach ($twilioNumbers['numbers'] as $number) {
-            $num['phone'] = $number->friendlyName;
-            $num['phoneNumber'] = $number->phoneNumber;
-            $num['location'] = trim($number->rateCenter . ' ' . $number->region .  ' ' . $number->isoCountry);
-            $num['zip'] = $number->postalCode;
-
-            $numbers[] = $num;
+            return response()->json($data);
+        } catch (\Exception $e) {
+            return response(["error" => "Unable to perform phone number operation"], 503);
         }
-        $data['numbers'] = $numbers;
-
-        return response()->json($data);
     }
 
     public function provision(PhoneProvisionRequest $request)
     {
         try {
-            $data = $request->only(['phone_number', 'client_id']);
-            $phoneNumber = $data['phone_number'];
-            $client_id = $data['client_id'];
+            $phoneNumber = $request->input(['phone_number']);
 
             if (! preg_match('/^[\+]?1[0-9]{10}$/', $phoneNumber)) {
                 throw new \Exception("Invalid phone number");
@@ -74,16 +73,15 @@ class PhoneController extends Controller
             return;
         }
 
-        $record = new PhoneNumber;
-        $record->campaign_id = $request->campaign_id;
-        $record->client_id = $client_id;
-        $record->phone_number = $phoneNumber;
-        $record->call_source_name = $request->call_source_name;
-        $record->forward = $request->forward;
-        $record->sid = $provision->sid;
-        $record->save();
+        $phone = PhoneNumber::create([
+            'campaign_id' => $request->campaign_id,
+            'phone_number' => $phoneNumber,
+            'call_source_name' => $request->call_source_name,
+            'forward' => $request->forward,
+            'sid' => $provision->sid,
+        ]);
 
-        return $record;
+        return $phone;
     }
 
     /**
@@ -94,37 +92,11 @@ class PhoneController extends Controller
      *
      * @return string
      */
-    public function fromCampaign(Request $request, Campaign $campaign)
+    public function forCampaign(Request $request, Campaign $campaign)
     {
         $campaign->load('phones');
-        $valid_filters = ['phone_number', 'forward'];
-        $filters = [];
 
-        foreach ($request->query as $name => $value) {
-            if (! empty($value) && in_array($name, $valid_filters)) {
-                $filter = [$name, '=', $value];
-                array_push($filters, $filter);
-            }
-        }
-
-        $phones = PhoneNumber::where('campaign_id', $campaign->id)
-            ->where($filters);
-
-        if ($request->query->has("sortField") && $request->query->get("sortField") != '') {
-            $phones = $phones->orderBy($request->query->get("sortField"), $request->query->get("sortOrder"));
-        }
-
-        $count = $phones->count();
-
-        if ($request->has("pageIndex") && $request->has("pageSize")) {
-            $toSkip = ($request->query("pageIndex") - 1) * $request->query("pageSize");
-
-            $phones = $phones->skip($toSkip)->take($request->query("pageSize"));
-
-            return json_encode(["itemsCount" => $count, "data" => $phones->get()]);
-        }
-
-        return $phones->get()->toJson();
+        return $campaign->phones;
     }
 
     /**
@@ -138,15 +110,15 @@ class PhoneController extends Controller
         return $campaign->phones->toJson();
     }
 
-    public function edit(Request $request, Campaign $campaign, PhoneNumber $phone)
+    public function store(Request $request, Campaign $campaign, $phone)
     {
-        $csn = Str::lower($request->input('call_source_name'));
-        $csn = in_array($csn, ['mailer', 'email', 'sms']) ? $csn : '';
+        $phone = PhoneNumber::findOrFail($phone);
+        $source = Str::lower($request->input('call_source_name'));
+        $source = in_array($source, array_keys(PhoneNumber::$callSources)) ? $source : '';
         $phone->update([
             'forward' => $request->input('forward'),
-            'call_source_name' => $csn,
+            'call_source_name' => $source,
         ]);
-
         return $phone->fresh();
     }
 

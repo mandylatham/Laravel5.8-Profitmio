@@ -1,0 +1,70 @@
+@import './../../common/index';
+@import './../base';
+@import './../../components/pm-pagination';
+@import './../../components/spinner-icon';
+@import './../../components/drop-status';
+
+#drops-index {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    .loader-spinner {
+    }
+    .drop {
+        border-radius: 3px;
+        overflow: hidden;
+        margin-bottom: 1rem;
+        background-color: #fff;
+        color: $brand-black;
+    }
+    .drop-recipient, .drop-status, .drop-options {
+        padding: 0.3rem 1rem;
+    }
+    .drop-info {
+        display: flex;
+        border-bottom: 3px solid $brand-white;
+        &--type{
+            display: inline-flex;
+            padding: 0.5rem 1rem;
+            background-color: $brand-purple;
+            color: #fff;
+            align-items: center;
+            justify-content: center;
+            align-content: center;
+            line-height: 1em;
+        }
+        &--date {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem;
+            flex-grow: 1;
+            justify-content: center;
+        }
+    }
+    .drop-status {
+        border-bottom: 3px solid $brand-white;
+    }
+    .drop-recipient {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.05rem;
+        border-right: 3px solid $brand-white;
+    }
+    .drop-options {
+        background-color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        & > div {
+            align-items: center;
+            justify-content: center;
+            display: flex;
+        }
+    }
+    @include media-breakpoint-up(md) {
+        .drop-info, .drop-status {
+            border-bottom: none;
+            border-right: 3px solid $brand-white;
+        }
+    }
+}

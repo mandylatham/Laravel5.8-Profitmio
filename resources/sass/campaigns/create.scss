@@ -1,0 +1,144 @@
+@import './../common/index';
+@import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/input-group";
+@import './../components/date-pick';
+@import './../components/spinner-icon';
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+
+#campaign-create {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+
+    .card-body {
+        padding: 0;
+    }
+
+    .feature-input {
+        padding: 1.25rem;
+    }
+
+    .feature-table-col {
+        border-left: 1px solid rgba(0, 0, 0, 0.125);
+    }
+
+    .feature-table {
+        padding: 1.25rem;
+        color: $brand-purple;
+        .table th {
+            border-bottom: none;
+        }
+        a {
+            color: $brand-purple;
+            display: inline-block;
+        }
+    }
+
+    .close-modal-header {
+        cursor: pointer;
+    }
+
+    .wizard-container {
+        background-color: #fff;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        border-radius: 5px;
+        border: 1px solid #fafafa;
+    }
+
+    .pm-btn-submit {
+        span {
+            margin: 0;
+        }
+    }
+
+    .modal-header {
+        align-items: center;
+        h4 {
+            margin: 0;
+        }
+    }
+
+    .loader-spinner {
+        .sk-circle {
+            margin: 0;
+            width: 15px;
+            height: 15px;
+
+            .sk-child:before {
+                background-color: #fff;
+            }
+        }
+    }
+
+    .vue-input-tag-wrapper {
+        padding: 0.4rem 0.2rem 0.2rem 0.6rem;
+        .input-tag {
+            margin: 0 0.4rem 0.2rem 0;
+            font-size: 0.9rem;
+            padding: 0.2rem 0.5rem;
+            line-height: 1em;
+            height: auto;
+            display: inline-flex;
+            align-items: center;
+            color: #fff;
+            background-color: $brand-purple;
+            border: 1px solid $brand-black;
+            .remove {
+                margin-left: 0.5rem;
+                color: $brand-white;
+            }
+        }
+        .new-tag {
+            padding: 0;
+            margin: 0 0 0.2rem 0;
+        }
+    }
+
+    .vdpComponent {
+        display: block;
+    }
+
+    .vdpWithInput.is-invalid {
+        .form-control {
+            border-color: #f84258;
+        }
+
+        & + .invalid-feedback {
+            display: block;
+        }
+    }
+
+    .is-invalid.v-select {
+        .vs__selected-options {
+            border-color: #f84258 !important;
+        }
+
+        & + .invalid-feedback {
+            display: block;
+        }
+    }
+
+    .vue-form-wizard {
+        .wizard-icon-circle, .stepTitle {
+            color: $brand-purple;
+        }
+
+        a.disabled {
+            .wizard-icon-circle {
+                border-color: rgba(0, 0, 0, .2);
+                color: rgba(0, 0, 0, .2);
+            }
+
+            .stepTitle {
+                color: rgba(0, 0, 0, .2);
+            }
+        }
+
+        .wizard-btn {
+            border-radius: 5px;
+            font-size: 0.9rem;
+            background-color: $brand-purple;
+            color: #fff;
+        }
+    }
+}

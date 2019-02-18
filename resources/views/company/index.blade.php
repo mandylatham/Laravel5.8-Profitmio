@@ -1,168 +1,60 @@
-@extends('layouts.remark')
+@extends('layouts.base', [
+    'hasSidebar' => false
+])
 
-@section('header')
-    <link type="text/css" rel="stylesheet" href="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.css') }}">
+@section('head-styles')
+    <link href="{{ asset('css/company-index.css') }}" rel="stylesheet">
 @endsection
 
-@section('manualStyle')
-    .company-image {
-    width: 40px;
-    height: 40px;
-    background-size: cover;
-    background-position: 50% 50%;
-    background-color: #dadada;
-    border-radius: 50%;
-    }
-@endsection
-
-@section('content')
-    <div class="page">
-        <div class="page-header container-fluid">
-            <div class="row-fluid">
-                <div class="col-xxl-8 offset-xxl-2 col-md-12">
-                    <h3 class="page-title text-default">Companies</h3>
-                    <div class="page-header-actions">
-                        <a href="{{ route('company.create') }}"
-                           class="btn btn-sm btn-success waves-effect">
-                            <i class="icon md-plus" aria-hidden="true"></i>
-                            Create New Company
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="page-content container-fluid">
-            <div class="row-fluid" data-plugin="matchHeight" data-by-row="true">
-                <div class="col-xxl-8 offset-xxl-2 col-md-12">
-                    <div class="panel panel-primary">
-                        <div class="panel-body">
-                            @if (count($companies) > 0)
-                                <div class="table-responsive">
-                                    <div class="container mb-20">
-                                        <div class="row">
-                                            <div class="col-md-6 offset-md-6">
-                                                <form action="{{ route('company.index') }}" method="get">
-                                                    {{ csrf_field() }}
-                                                    <div class="input-search">
-                                                        <i class="input-search-icon md-search" aria-hidden="true"></i>
-                                                        <input type="text" class="form-control" name="q" placeholder="Search..." value="{{ request('q') }}">
-                                                        <button type="button"
-                                                                @if (request('q'))
-                                                                onClick="window.location.href = '{{ route('company.index', ['q' => '']) }}'"
-                                                                @endif
-                                                                class="input-search-close icon md-close" aria-label="Close"></button>
-                                                    </div>
-                                                </form>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <table id="companies" class="table table-striped table-hover">
-                                        <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Image</th>
-                                            <th>Name</th>
-                                            <th>Type</th>
-                                            <th>Url</th>
-                                            <th>Phone</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        @foreach($companies as $company)
-                                            <tr class="user-row">
-                                                <td class="id-row v-center"><strong>{{ $company->id }}</strong></td>
-                                                <td width="60px" class="text-center">
-                                                    <div class="company-image" style="background-image: url('{{ $company->image_url }}')"></div>
-                                                </td>
-                                                <td class="v-center">
-                                                    <a href="{{ route('company.campaign.index', ['company' => $company->id]) }}">{{ $company->name }}</a>
-                                                </td>
-                                                <td class="text-capitalize v-center">{{ $company->type }}</td>
-                                                <td class="v-center">{{ $company->url }}</td>
-                                                <td class="v-center">{{ $company->phone }}</td>
-                                                <td>
-                                                    <a class="btn btn-pure btn-warning btn-round"
-                                                       href="{{ route('company.edit', ['company' => $company->id]) }}">
-                                                        <i class="fa fa-pencil"></i>
-                                                        Edit
-                                                    </a>
-                                                    <button class="btn btn-pure btn-danger btn-round delete-button"
-                                                            data-deleteUrl="{{ route('company.delete', ['company' => $company->id]) }}">
-                                                        <i class="fa fa-trash"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
-                                    <div class="links">{{ $companies->links() }}</div>
-                                </div>
-                        </div>
-                        @else
-                            @if (request('q'))
-                                <div class="container mb-20">
-                                    <div class="row">
-                                        <div class="col-md-6 offset-md-6">
-                                            <form action="{{ route('company.index') }}" method="get">
-                                                {{ csrf_field() }}
-                                                <div class="input-search">
-                                                    <i class="input-search-icon md-search" aria-hidden="true"></i>
-                                                    <input type="text" class="form-control" name="q" placeholder="Search..." value="{{ request('q') }}">
-                                                    <button type="button"
-                                                            @if (request('q'))
-                                                            onClick="window.location.href = '{{ route('company', ['q' => '']) }}'"
-                                                            @endif
-                                                            class="input-search-close icon md-close" aria-label="Close"></button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            @endif
-                            <div class="alert alert-info"><p>No companies to show</p></div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-@endsection
-
-@section('scriptTags')
-    <script type="text/javascript" src="{{ secure_url('vendor/bootstrap-sweetalert/sweetalert.min.js') }}"></script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $(".delete-button").click(function() {
-                var url = $(this).data('deleteurl');
-
-                swal({
-                        title: "Are you sure?",
-                        text: "You will not be able to recover this company!",
-                        type: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#DD6B55",
-                        confirmButtonText: "Yes",
-                        cancelButtonText: "No",
-                        showLoaderOnConfirm: true,
-                        closeOnConfirm: false,
-                        customClass: "deleteBox"
-                    },
-                    function(){
-                        $.ajax({
-                            url: url,
-                            type: 'DELETE',
-                            success: function() {
-                                swal("All Done", "Company Deleted!", "success");
-                                location.reload();
-                            },
-                            error: function (error) {
-                                swal(error.responseJSON);
-                            }
-                        });
-                    });
-            });
-        });
+@section('body-script')
+    <script>
+        window.searchFormUrl = "{{ route('company.for-user-display') }}";
+        window.companyEdit = "{{ route('company.details', ['company' => ':companyId']) }}";
+        window.companyDelete = "{{ route('company.delete', ['company' => ':companyId']) }}";
+        window.q = @json($q);
     </script>
+    <script src="{{ asset('js/company-index.js') }}"></script>
+@endsection
+
+@section('main-content')
+    <div class="container" id="company-index" v-cloak>
+        <div class="row align-items-end no-gutters">
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
+                <a href="{{ route('company.create') }}" class="btn pm-btn pm-btn-blue">
+                    <i class="fa fa-plus mr-2"></i>
+                    Add Company
+                </a>
+            </div>
+            <div class="col-none col-sm-2 col-lg-6"></div>
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
+                <input type="text" v-model="searchForm.q" class="form-control filter--search-box" aria-describedby="search"
+                       placeholder="Search" @keyup.enter="fetchData()">
+            </div>
+        </div>
+        <div class="row no-gutters company-component inactive" v-for="(company, index) in companies" :key="company.id">
+            <div class="col-12 col-md-5 company-header">
+                <div class="company-header--title">
+                    <p>Company @{{ company.id }}</p>
+                    <strong>@{{ company.name }}</strong>
+                    <p class="mt-2 mb-0 text-capitalize">@{{ company.type }}</p>
+                </div>
+            </div>
+            <div class="col-4 col-md-2 company-postcard">
+                <company-type no-label :company_type="company.type"></company-type>
+            </div>
+            <div class="col-4 col-md-2 company-date">
+                <span>Created On</span>
+                <span>@{{ company.created_at | amDateFormat('MM.DD.YY') }}</span>
+            </div>
+            <div class="col-4 col-md-3 company-links">
+                <a class="btn pm-btn pm-btn-purple pm-btn-md justify-content-center" :href="generateRoute(companyEdit, {'companyId': company.id})">
+                    <span class="fa fa-edit"></span> Edit
+                </a>
+                <a href="#" @click="deleteCompany(company.id, index)" class="btn pm-btn pm-btn-danger pm-btn-md justify-content-center">
+                    <span class="fa fa-trash"></span> Delete
+                </a>
+            </div>
+        </div>
+        <pm-pagination v-if="companies.length > 0" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
+    </div>
 @endsection

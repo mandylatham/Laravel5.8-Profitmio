@@ -6,6 +6,8 @@ use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\EmailLog;
 use App\Models\Recipient;
+use App\Models\PhoneNumber;
+use App\Models\User;
 use DB;
 use Illuminate\Http\Request;
 use App\Http\Requests\NewCampaignRequest;
@@ -17,40 +19,42 @@ class CampaignController extends Controller
 
     private $campaign;
 
+    private $company;
+
     private $recipient;
 
-    public function __construct(Campaign $campaign, EmailLog $emailLog, Recipient $recipient)
+    public function __construct(Campaign $campaign, Company $company, EmailLog $emailLog, Recipient $recipient)
     {
         $this->campaign = $campaign;
+        $this->company = $company;
         $this->emailLog = $emailLog;
         $this->recipient = $recipient;
     }
 
     public function index(Request $request)
     {
-        $campaigns = Campaign::query()
-            ->withCount(['recipients', 'email_responses', 'phone_responses', 'text_responses'])
-            ->with(['dealership', 'agency'])
-            ->whereNull('deleted_at');
+        return view('campaigns.index', []);
+    }
 
-        if ($request->has('q')) {
-            $likeQ = '%' . $request->get('q') . '%';
-            $campaigns->where('name', 'like', $likeQ)
-                ->orWhere('id', 'like', $likeQ)
-                ->orWhere('starts_at', 'like', $likeQ)
-                ->orWhere('ends_at', 'like', $likeQ)
-                ->orWhere('order_id', 'like', $likeQ);
-        }
-
-        $campaigns = $campaigns->orderBy('campaigns.id', 'desc')
+    /**
+     * Return all campaigns for user display
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForUserDisplay(Request $request)
+    {
+        $campaignQuery = Campaign::searchByRequest($request);
+        $campaigns = $campaignQuery
+            ->orderBy('status', 'asc')
+            ->orderBy('campaigns.id', 'desc')
             ->paginate(15);
 
-        return view('campaigns.index', ['campaigns' => $campaigns]);
+        return $campaigns;
     }
 
     public function getList(Request $request)
     {
-        $campaigns = $this->campaign->with('client')
+        $campaigns = $this->campaign->with(['client', 'mailers'])
             ->selectRaw("
                 (select count(distinct(recipient_id)) from recipients where campaign_id = campaigns.id) as recipientCount),
                 (select count(distinct(recipient_id)) from responses where campaign_id = campaigns.id and type='phone' and recording_sid is not null) as phoneCount,
@@ -61,6 +65,16 @@ class CampaignController extends Controller
             ->get();
 
         return $campaigns->toJson();
+    }
+
+    public function addMailer(Request $request)
+    {
+        $mailer = $this->campaign->mailers()->create([
+            'name' => $request->mailer_name,
+            'in_home_ap' => $request->in_home_date,
+        ]);
+
+        $mailer->addMedia($request->file('mailer_image'));
     }
 
     /**
@@ -87,10 +101,20 @@ class CampaignController extends Controller
         return view('campaigns.dashboard', $viewData);
     }
 
+
+    public function showStats(Campaign $campaign, Request $request)
+    {
+        return view('campaigns.stats', [
+            'campaign' => $campaign
+        ]);
+    }
+
+
     public function details(Campaign $campaign)
     {
+        $campaign->with('phones');
         return view('campaigns.details', [
-            'campaign' => $campaign->load('client', 'agency', 'schedules', 'phone_number')
+            'campaign' => $campaign
         ]);
     }
 
@@ -103,7 +127,7 @@ class CampaignController extends Controller
             'agencies' => $agencies,
         ];
 
-        return view('campaigns.new', $viewData);
+        return view('campaigns.create', $viewData);
     }
 
     public function create(NewCampaignRequest $request)
@@ -122,39 +146,37 @@ class CampaignController extends Controller
         if ($expires_at <= \Carbon\Carbon::now('UTC')) {
             $status = 'Expired';
         }
-        $campaign = new $this->campaign([
+        $campaign = Campaign::create([
             'name' => $request->input('name'),
             'status' => $status,
             'order_id' => $request->input('order'),
-            /**
-             * TODO: Get correct timezone (now user doesn't have a timezone, timezone is stored in company_user table)
-             */
             'starts_at' => $starts_at,
             'ends_at' => $ends_at,
             'agency_id' => $request->input('agency'),
-            'dealership_id' => $request->input('client'),
+            'dealership_id' => $request->input('dealership'),
             'adf_crm_export' => (bool) $request->input('adf_crm_export'),
-            'adf_crm_export_email' => $request->input('adf_crm_export_email'),
-            'lead_alerts' => (bool) $request->input('lead_alerts'),
-            'lead_alert_email' => $request->input('lead_alert_email'),
+            'adf_crm_export_email' => $request->input('adf_crm_export_email', []),
             'client_passthrough' => (bool) $request->input('client_passthrough'),
-            'client_passthrough_email' => $request->input('client_passthrough_email'),
-            'phone_number_id' => $request->input('phone_number_id'),
+            'client_passthrough_email' => $request->input('client_passthrough_email', []),
+            'lead_alerts' => (bool) $request->input('lead_alerts'),
+            'lead_alert_email' => $request->input('lead_alert_emails', []),
+            'service_dept' => (bool) $request->input('service_dept'),
+            'service_dept_email' => $request->input('service_dept_email', []),
+            'sms_on_callback' => (bool) $request->input('service_dept'),
+            'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
         ]);
 
         if (! $campaign->expires_at) {
-            $campaign->expires_at = $campaign->ends_at->addMonth();
+            $campaign->update(['expires_at' => $campaign->ends_at->addMonth()]);
         }
 
-        $campaign->save();
-
-        if ($campaign->phone) {
-            $phone = $campaign->phone;
-            $phone->campaign_id = $campaign->id;
-            $phone->save();
+        if ($request->has('phone_number_ids')) {
+            foreach ((array)$request->input('phone_number_ids') as $phone_number_id) {
+                PhoneNumber::find($phone_number_id)->update(['campaign_id' => $campaign->id]);
+            }
         }
 
-        return redirect()->route('campaign.index');
+        return response()->json(['message' => 'Resource created']);
     }
 
 
@@ -162,7 +184,6 @@ class CampaignController extends Controller
     {
         $dealerships = Company::getDealerships();
         $agencies = Company::getAgencies();
-        $campaign->load("phone");
         $viewData = [
             'campaign' => $campaign,
             'dealerships' => $dealerships,
@@ -196,40 +217,42 @@ class CampaignController extends Controller
         }
 
         $campaign->fill([
-            'name' => $request->name,
+            'name' => $request->input('name'),
             'status' => $status,
-            'order_id' => $request->order,
+            'order_id' => $request->input('order'),
             'starts_at' => $starts_at,
             'ends_at' => $ends_at,
             'expires_at' => $expires_at,
-            'agency_id' => $request->agency,
-            'dealership_id' => $request->client,
-            'adf_crm_export' => (bool) $request->adf_crm_export,
-            'adf_crm_export_email' => $request->adf_crm_export_email,
-            'lead_alerts' => (bool) $request->lead_alerts,
-            'lead_alert_email' => $request->lead_alert_email,
-            'client_passthrough' => (bool) $request->client_passthrough,
-            'client_passthrough_email' => $request->client_passthrough_email,
-            'service_dept' => (bool) $request->service_dept,
-            'service_dept_email' => $request->service_dept_email,
-            'sms_on_callback' => (bool) $request->sms_on_callback,
-            'sms_on_callback_number' => $request->sms_on_callback_number,
-            'phone_number_id' => $request->phone_number_id,
+            'agency_id' => $request->input('agency'),
+            'dealership_id' => $request->input('dealership'),
+            'adf_crm_export' => (bool) $request->input('adf_crm_export'),
+            'adf_crm_export_email' => $request->input('adf_crm_export_email', []),
+            'lead_alerts' => (bool) $request->input('lead_alerts'),
+            'lead_alert_email' => $request->input('lead_alert_email', []),
+            'service_dept' => (bool) $request->input('service_dept'),
+            'service_dept_email' => $request->input('service_dept_email', []),
+            'sms_on_callback' => (bool) $request->input('service_dept'),
+            'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
+            'client_passthrough' => (bool) $request->input('client_passthrough'),
+            'client_passthrough_email' => $request->input('client_passthrough_email', []),
         ]);
-
-        if ($request->has('forward')) {
-            $campaign->phone->forward = $request->forward;
-        }
 
         $campaign->save();
 
-        return redirect()->route('campaign.edit', ['campaign' => $campaign->id]);
+        return response()->json(['message' => 'Resource updated.']);
     }
 
     public function delete(Campaign $campaign)
     {
         $campaign->delete();
 
-        return redirect()->route('campaign.index');
+        return redirect()->route('campaigns.index');
+    }
+
+    public function toggleCampaignUserAccess(Campaign $campaign, User $user)
+    {
+        $campaign->users()->toggle($user->id);
+
+        return response()->json(['message' => 'Resource updated.']);
     }
 }

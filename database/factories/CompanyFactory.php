@@ -17,7 +17,7 @@ use App\Models\Company;
 
 $factory->define(Company::class, function (Faker $faker) {
     return [
-        'name' => $faker->name,
+        'name' => $faker->company,
         'type' => $faker->randomElement(['support', 'agency', 'dealership']),
         'phone' => $faker->phoneNumber,
         'address' => $faker->address,

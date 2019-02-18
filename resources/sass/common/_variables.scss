@@ -1,0 +1,81 @@
+// Alerts
+$alert-padding-y:                   .75rem !default;
+$alert-padding-x:                   1.25rem !default;
+$alert-margin-bottom:               1rem !default;
+$alert-border-radius:               3px !default;
+$alert-link-font-weight:            600 !default;
+$alert-border-width:                1px !default;
+$alert-bg-level:                    -10 !default;
+$alert-border-level:                -9 !default;
+$alert-color-level:                 6 !default;
+
+// Brand colors
+$brand-black: #20004A;
+$brand-purple: #572E8D;
+$brand-blue: rgb(103, 167, 204);
+$brand-gray: #4b525b;
+$brand-white: #edf0f5;
+$brand-yellow: #e7f386;
+
+// Body
+$body-bg: #f8fafc;
+
+// Top Navigation
+$top-navbar-height: 80px;
+$top-navbar-height-mobile: 50px;
+$top-navigation-bar-height: 60px;
+
+// Wrapper
+$wrapper-sidebar-width: 250px;
+
+// Typography
+$font-family-sans-serif: "Nunito", sans-serif;
+$font-size-base: 0.9rem;
+$line-height-base: 1.6;
+$headings-color: $brand-black;
+$headings-font-weight: bold;
+$h2-font-size: 1.3rem;
+
+// Colors
+$blue: #3490dc;
+$indigo: #6574cd;
+$purple: #9561e2;
+$pink: #f66D9b;
+$red: #e3342f;
+$orange: #f6993f;
+$yellow: #ffed4a;
+$green: #38c172;
+$teal: #4dc0b5;
+$cyan: #6cb2eb;
+
+$gray: rgb(76, 83, 91);
+$red: rgb(248, 66, 88);
+$gray-light: rgb(225, 229, 232);
+$wrapper-content-sm: 400px;
+$wrapper-aside-lg: 350px;
+$wrapper-aside-xl: 400px;
+
+$form-control-height: calc(2rem + 2px);
+
+// Sidebar
+$sidebar-width: 300px;
+
+// Spacing
+$spacer: 1rem !default;
+$spacers: (
+        0: 0,
+        1: ($spacer * .25),
+        2: ($spacer * .5),
+        3: $spacer,
+        4: ($spacer * 1.5),
+        5: ($spacer * 3),
+        6: ($spacer * 4),
+        7: ($spacer * 5),
+        8: ($spacer * 6),
+        9: ($spacer * 7),
+        10: ($spacer * 8)
+);
+
+// Pretty vue checkbox
+//$pretty--color-default: $brand-white;
+$pretty--color-primary: $brand-purple;

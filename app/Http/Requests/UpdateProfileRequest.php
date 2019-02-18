@@ -25,10 +25,6 @@ class UpdateProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => [
-                'email',
-                new UniqueEmailInDatabase(auth()->user()->id)
-            ]
         ];
     }
 }

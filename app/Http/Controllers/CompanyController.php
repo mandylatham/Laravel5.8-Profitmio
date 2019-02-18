@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\CompanyCollection;
 use App\Models\Campaign;
 use App\Classes\CampaignUserActivityLog;
 use App\Classes\CompanyUserActivityLog;
@@ -18,6 +19,11 @@ use Illuminate\Filesystem\FilesystemManager;
 use App\Http\Requests\StoreCompanyRequest;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\UpdateUserRequest;
+use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
+use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
+use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
+use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
+use Mockery\ReceivedMethodCalls;
 
 class CompanyController extends Controller
 {
@@ -65,6 +71,34 @@ class CompanyController extends Controller
     }
 
     /**
+     * Returns all companies for dropdown
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForDropdown(Request $request)
+    {
+        return $this->company
+            ->searchByRequest($request)
+            ->orderBy('id', 'desc')
+            ->paginate($request->input('per_page', 15));
+    }
+
+    /**
+     * Return all companies for user display
+     * @param Request $request
+     * @return mixed
+     */
+    public function getForUserDisplay(Request $request)
+    {
+        $companies = $this->company
+            ->searchByRequest($request)
+            ->orderBy('id', 'desc')
+            ->paginate(15);
+
+        return new CompanyCollection($companies);
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @param Request $request
@@ -72,22 +106,18 @@ class CompanyController extends Controller
      */
     public function index(Request $request)
     {
-        $companies = $this->company->orderBy('id', 'desc');
-        if ($request->has('q')) {
-            $companies->search($request->input('q'));
-        }
-
-        return view('company.index', ['companies' => $companies->paginate(15)]);
+        return view('company.index', [ 'q' => '' ]);
     }
 
     /**
      * Check if this model can be deleted
      * @return bool
      */
-    public function canBeDeleted()
+    public function canBeDeleted(Company $company)
     {
         // TODO: Add code to verify if this model can be deleted
-        return false;
+        if ($company->type == 'support') return false;
+        return true;
     }
 
     /**
@@ -102,8 +132,9 @@ class CompanyController extends Controller
 
     public function delete(Company $company)
     {
-        if ($this->canBeDeleted()) {
+        if ($this->canBeDeleted($company)) {
             $company->delete();
+            return response()->json(['company deleted']);
         }
         return response()->json('Imposible delete this company', 403);
     }
@@ -114,9 +145,20 @@ class CompanyController extends Controller
      * @param  \App\Models\Company  $company
      * @return \Illuminate\Http\Response
      */
-    public function edit(Company $company)
+    public function details(Company $company)
     {
-        return view('company.edit', ['company' => $company]);
+        $loggedUser = auth()->user();
+        if ($loggedUser->isAdmin()) {
+            $hasCampaigns = $company->getCampaigns()->count() > 0;
+        } else {
+            $hasCampaigns = $company->getCampaigns()->where('company_id', get_active_company())->count() > 0;
+        }
+
+        return view('company.details', [
+            'users' => $company->users,
+            'hasCampaigns' => $hasCampaigns,
+            'company' => $company,
+        ]);
     }
 
 
@@ -126,7 +168,7 @@ class CompanyController extends Controller
      * @param StoreCompanyRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function store(StoreCompanyRequest $request)
+    public function store(Request $request)
     {
         $company = new $this->company([
             'name' => $request->input('name'),
@@ -143,11 +185,10 @@ class CompanyController extends Controller
             'twitter' => $request->input('twitter'),
         ]);
         if ($request->hasFile('image')) {
-            $company->image_url = $request->file('image')->store('company-image', 's3');
-            $this->storage->disk('s3')->setVisibility($company->image_url, 'public');
+            $company->image_url = $request->file('image')->store('company-image', 'public');
         }
         $company->save();
-        return redirect()->route('company.campaign.index', ['company' => $company->id]);
+        return redirect()->route('company.details', ['company' => $company]);
     }
 
     /**
@@ -157,28 +198,40 @@ class CompanyController extends Controller
      * @param StoreCompanyRequest $request
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function update(Company $company, StoreCompanyRequest $request)
+    public function update(Company $company, Request $request)
     {
-        $company->update([
-            'name' => $request->input('name'),
-            'type' => $request->input('type'),
-            'phone' => $request->input('phone'),
-            'address' => $request->input('address'),
-            'address2' => $request->input('address2'),
-            'city' => $request->input('city'),
-            'state' => $request->input('state'),
-            'zip' => $request->input('zip'),
-            'country' => $request->input('country'),
-            'url' => $request->input('url'),
-            'facebook' => $request->input('facebook'),
-            'twitter' => $request->input('twitter'),
-        ]);
         if ($request->hasFile('image')) {
-            $company->image_url = $request->file('image')->store('company-image', 's3');
-            $this->storage->disk('s3')->setVisibility($company->image_url, 'public');
+            $company->image_url = $request->file('image')->store('company-images');
+        } else {
+            $company->update($request->all());
         }
         $company->save();
-        return response()->redirectToRoute('company.campaign.index', ['company' => $company->id]);
+        return response()->json([
+            'status' => 'ok'
+        ]);
+    }
+
+    public function updateAvatar(Company $company, Request $request, FileReceiver $receiver)
+    {
+        // check if the upload is success, throw exception or return response you need
+        if ($receiver->isUploaded() === false) {
+            throw new UploadMissingFileException();
+        }
+        // receive the file
+        $save = $receiver->receive();
+
+        // check if the upload has finished (in chunk mode it will send smaller files)
+        if ($save->isFinished()) {
+            $image = $company->addMedia($save->getFile())->toMediaCollection('company-photo', 'public');
+            return response()->json(['location' => $image->getFullUrl()], 201);
+        }
+
+        // we are in chunk mode, lets send the current progress
+        /** @var AbstractHandler $handler */
+        $handler = $save->handler();
+        return response()->json([
+            "done" => $handler->getPercentageDone()
+        ]);
     }
 
     //region User Resource
@@ -239,7 +292,6 @@ class CompanyController extends Controller
             $user = new $this->user();
             $user->is_admin = $request->input('role') == 'site_admin' ? true : false;
             $user->password = '';
-            $user->username = $request->input('email');
             $user->first_name = $request->input('first_name');
             $user->last_name = $request->input('last_name');
             $user->email = $request->input('email');

@@ -20,6 +20,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\ServiceDeptLabelAdded' => [
             'App\Listeners\SendNotificationForServiceDepartment',
         ],
+        'App\Events\AppointmentCreated' => [
+            'App\Listeners\SendAppointmentNotifications',
+        ],
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],

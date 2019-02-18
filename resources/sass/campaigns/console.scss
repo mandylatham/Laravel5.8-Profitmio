@@ -1,0 +1,165 @@
+@import './../common/index';
+@import "./communication-side-panel";
+@import './../components/spinner-icon';
+@import './../components/pm-pagination';
+
+.sidebar-toggler {
+    background-color: fff;
+    color: $brand-purple !important;
+    margin-left: -15px;
+}
+
+#sidebar-nav-content {
+    padding: 3rem 2rem;
+
+    ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+
+        li {
+            margin-bottom: 0.3rem;
+        }
+
+        a {
+            display: flex;
+            line-height: 1em;
+            align-items: center;
+            padding: 0.7rem 1rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            text-decoration: none;
+            color: #fff;
+
+            &.active {
+                background-color: rgba(255, 255, 255, 0.1);
+            }
+
+            > i {
+                font-size: 1.3em;
+                width: 2rem;
+            }
+
+            > .counter {
+                width: auto;
+                margin-left: auto;
+                border-radius: 5px;
+                min-width: 2rem;
+                padding: 0.25rem;
+                background-color: #fff;
+                color: $brand-blue;
+                text-align: center;
+                font-weight: bold;
+            }
+        }
+    }
+
+    > h4 {
+        text-transform: uppercase;
+        font-size: 1.1rem;
+        padding-left: 8px;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        color: #ffffff;
+    }
+
+    > hr {
+        background-color: #ffffff;
+        margin-top: 40px;
+    }
+}
+
+#console {
+    padding: 1rem;
+    position: relative;
+
+    .go-back {
+        border: 0;
+        background-color: transparent;
+        color: $brand-purple;
+        padding-bottom: 0;
+    }
+
+    .phone-email {
+        height: 100%;
+        display: flex;
+        flex-flow: column;
+        justify-content: center;
+        align-items: flex-start;
+        > div {
+            margin-bottom: 0.5rem;
+            &:last-child {
+                margin-bottom: 0;
+            }
+        }
+    }
+
+    .recipient-row {
+        cursor: pointer;
+        background-color: #fff;
+        border: none;
+        margin-bottom: 4px;
+        border-radius: 5px;
+        padding: 0.5rem 2rem;
+        display: flex;
+        align-items: center;
+        min-height: 40px;
+
+        & > .row {
+            line-height: 1rem;
+            width: 100%;
+        }
+        .label-wrapper {
+            > span {
+                margin-top: 0.4rem;
+                border: 1px solid #333;
+                color: #808080;
+                display: inline-block;
+                font-size: 10px;
+                padding: 1px 6px;
+                border-radius: 3px;
+                margin-right: 2px;
+
+                &.not_interested,
+                &.heat,
+                &.car_sold,
+                &.wrong_number {
+                    border: 1px solid rgb(172, 29, 19);
+                    color: rgb(172, 29, 19);
+                    // background-color: #f44336;
+                }
+
+                &.appointment,
+                &.callback,
+                &.interested,
+                &.appointment,
+                &.service {
+                    border: 1px solid #5b6;
+                    color: #5b6;
+                    // background-color: #4caf50;
+                }
+            }
+        }
+    }
+
+    .input-group {
+        .input-group-prepend {
+            position: relative;
+            top: 28px;
+            left: 15px;
+            color: #67A6CC;
+            width: 24px;
+            height: 24px;
+        }
+    }
+
+    a.icon {
+        display: inline-block;
+        text-align: center;
+
+        > img {
+            width: 25px;
+            object-fit: contain;
+        }
+    }
+}

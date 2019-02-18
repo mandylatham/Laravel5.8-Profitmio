@@ -60,7 +60,15 @@ return [
             'key' => env('S3_KEY'),
             'secret' => env('S3_SECRET'),
             'region' => env('S3_REGION'),
-            'bucket' => env('S3_MEDIA_BUCKET'),
+            'bucket' => env('PRIVATE_MEDIA_BUCKET'),
+        ],
+
+        'media_public' => [
+            'driver' => 's3',
+            'key' => env('S3_KEY'),
+            'secret' => env('S3_SECRET'),
+            'region' => env('S3_REGION'),
+            'bucket' => env('PUBLIC_MEDIA_BUCKET'),
         ],
 
         's3' => [
