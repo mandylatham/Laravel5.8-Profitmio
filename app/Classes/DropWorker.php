@@ -39,7 +39,7 @@ class DropWorker
         return Drop::emailDueInMinutes($minutes)
             ->whereNull('notified_at')
             ->whereRaw("expires_at >= current_timestamp")
-            ->with(['campaign', 'campaign.client', 'recipients'])
+            ->with(['campaign', 'campaign.dealership', 'recipients'])
             ->orderBy('send_at')
             ->get();
     }
@@ -52,7 +52,7 @@ class DropWorker
     public function getDropsDue()
     {
         return Drop::emailDue()
-            ->with(['campaign', 'campaign.client', 'recipients'])
+            ->with(['campaign', 'campaign.dealership', 'recipients'])
             ->orderBy('send_at')
             ->get();
     }
@@ -75,7 +75,7 @@ class DropWorker
      */
     private function reserveDrop(Drop $drop)
     {
-        $reserved = Drop::where('campaign_schedule_id', $drop->id)
+        $reserved = Drop::where('id', $drop->id)
             ->where('status', 'Pending')
             ->update([
                 'status' => 'Processing',
@@ -89,8 +89,8 @@ class DropWorker
             return $this->processDrop($drop);
         }
 
-        $debugDrop = collect(Drop::where('campaign_schedule_id', 1555)->first())
-            ->only(['campaign_schedule_id', 'status', 'created_at', 'send_at', 'started_at', 'completed_at', 'deleted_at'])
+        $debugDrop = collect(Drop::where('id', 1555)->first())
+            ->only(['id', 'status', 'created_at', 'send_at', 'started_at', 'completed_at', 'deleted_at'])
             ->toJson();
 
         \Log::debug("DropWorker: cannot reserve drop#{$drop->id} (count was {$reserved}), skipping");
@@ -120,7 +120,7 @@ class DropWorker
         # Determine if passthrough is enabled
         $passthrough = null;
         if ($drop->campaign->hasPassthrough) {
-            $passthrough = $drop->campaign->client_passthrough_email;
+            $passthrough = (array)$drop->campaign->client_passthrough_email;
         }
 
         # Iterate through recipients and send emails
