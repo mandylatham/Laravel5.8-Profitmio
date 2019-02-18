@@ -23,7 +23,7 @@
         window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
         window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
-        window.campaignQ = @json($campaignQ);
+        window.campaignQ = @json('');
         window.isAdmin = @json(auth()->user()->isAdmin());
         window.resendInvitationUrl = "{{ route('admin.resend-invitation') }}";
         @if (auth()->user()->isAdmin())
