@@ -8,6 +8,7 @@
 
 @section('body-script')
     <script>
+        window.baseUrl = @json(route("campaign.response-console.index", ['campaign' => $campaign->id]).'/');
         window.counters = @json($counters);
         window.campaign = @json($campaign);
         window.user = @json(auth()->user());
@@ -132,7 +133,7 @@
 @endsection
 
 @section('main-content')
-    <div id="console" class="container-fluid list-campaign-container" v-cloak>
+    <div id="console" class="container list-campaign-container" v-cloak>
         <div class="row">
             <div class="col-12 col-sm-5 col-lg-3 mb-3">
                 <a class="btn pm-btn go-back" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">

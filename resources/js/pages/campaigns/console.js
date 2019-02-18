@@ -159,6 +159,11 @@ window['sidebar'] = new Vue({
         activeLabelSection: 'none',
         counters: {},
         campaign: {},
+        labelsList: [
+            'none', 'interested', 'appointment', 'callback', 'service', 
+            'not_interested', 'wrong_number', 'car_sold', 'heat',
+        ],
+        baseUrl: window.baseUrl
     },
     mounted: function () {
         each(window.counters, (value, key) => {
@@ -179,6 +184,13 @@ window['sidebar'] = new Vue({
             } else if (filter === 'label') {
                 this.activeLabelSection = value;
             }
+
+            let newUrl = JSON.parse(JSON.stringify(this.baseUrl));
+            if (this.labelsList.indexOf(value) === 0) {
+                newUrl += "labelled/";
+            }
+            newUrl += value;
+            window.history.pushState("", "", newUrl);
 
             window.Event.fire('filters.filter-changed', {
                 filter: filter,
