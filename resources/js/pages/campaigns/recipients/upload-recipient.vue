@@ -48,79 +48,79 @@
                     <tr>
                         <td>First Name</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.first_name" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.first_name" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Last Name</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.last_name" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.last_name" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Email</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.email" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.email" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Phone</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.phone" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.phone" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Address</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.address1" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.address1" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>City</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.city" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.city" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>State</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.state" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.state" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Zip</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.zip" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.zip" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Auto Year</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.year" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.year" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Auto Make</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.make" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.make" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Auto Model</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.model" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.model" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr>
                         <td>Auto VIN</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.vin" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.vin" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     <tr v-if="fileForm.pm_list_type === 'use_recipient_field'">
                         <td>Is From Database</td>
                         <td>
-                            <v-select :options="this.fileForm.uploaded_file_headers" v-model="fileForm.uploaded_file_fieldmap.is_database" class="filter--v-select"></v-select>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.is_database" class="filter--v-select"></v-select>
                         </td>
                     </tr>
                     </tbody>
@@ -139,6 +139,7 @@
     import Vue from 'vue';
     import Form from './../../../common/form';
     import VueFormWizard from 'vue-form-wizard';
+    import {each} from 'lodash';
 
     Vue.use(VueFormWizard);
 
@@ -147,6 +148,25 @@
             'resumable': require('./../../../components/resumable/resumable'),
             'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
             'input-errors': require('./../../../components/input-errors/input-errors'),
+        },
+        computed: {
+            fileHeaders() {
+                const headers = [];
+                console.log('===this.fileForm.uploaded_file_headers===', this.fileForm.uploaded_file_headers);
+                console.log('===this.fileForm.uploaded_file_fieldmap===', this.fileForm.uploaded_file_fieldmap);
+                this.fileForm.uploaded_file_headers.forEach(header => {
+                    let find = false;
+                    each(this.fileForm.uploaded_file_fieldmap, val => {
+                        if (val === header) {
+                            find = true;
+                        }
+                    });
+                    if (!find) {
+                        headers.push(header);
+                    }
+                });
+                return headers;
+            }
         },
         data() {
             return {

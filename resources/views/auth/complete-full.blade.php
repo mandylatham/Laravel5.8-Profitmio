@@ -28,14 +28,18 @@
             </div>
             <div class="form-group">
                 <label for="timezone">Timezone</label>
-                <select name="timezone" class="form-control" v-model="userForm.timezone">
+                <select :class="{'is-invalid': userForm.errors.has('timezone')}" @change="clearError('timezone')" name="timezone" class="form-control" v-model="userForm.timezone">
                     <option disabled>Choose
                         Timezone...
                     </option>
                     @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
                         <option value="{{ $timezone }}">{{ $timezone }}</option>
                     @endforeach
-                </select></div>
+                </select>
+                <div class="invalid-feedback" v-if="userForm.errors.has('timezone')">
+                    <div v-for="msg in userForm.errors.get('timezone')">@{{ msg }}</div>
+                </div>
+            </div>
             <button type="submit" class="btn btn-primary btn-block waves-effect" :disabled="loading">
                 <span v-if="!loading">Join</span>
                 <spinner-icon v-if="loading"></spinner-icon>
