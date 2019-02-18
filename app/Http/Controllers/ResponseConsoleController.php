@@ -351,7 +351,7 @@ class ResponseConsoleController extends Controller
             abort(406);
         }
 
-        $existing = EmailLog::where('message_id', $messageId)->where('campaign_id', '!=', 0)->orderBy('email_log_id',
+        $existing = EmailLog::where('message_id', $messageId)->where('campaign_id', '!=', 0)->orderBy('id',
             'ASC')->first();
 
         if ($existing) {
