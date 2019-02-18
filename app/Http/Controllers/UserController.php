@@ -188,9 +188,9 @@ class UserController extends Controller
             $viewData['campaigns'] = $user->campaigns()->get();
         }
 
-        $viewData['campaignCompanySelected'] = null,
-        $viewData['campaignQ'] => '',
-        $viewData['companyQ'] => '',
+        $viewData['campaignCompanySelected'] = null;
+        $viewData['campaignQ'] => '';
+        $viewData['companyQ'] => '';
 
         return view('user.details', $viewData);
     }
