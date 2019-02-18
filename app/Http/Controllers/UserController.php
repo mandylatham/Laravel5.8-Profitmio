@@ -297,10 +297,7 @@ class UserController extends Controller
         return view('user.detail', [
             'user' => $user,
             'hasCampaigns' => $hasCampaigns,
-            'timezones' => $user->getPossibleTimezonesForUser(),
-            'campaignCompanySelected' => $this->company->find(session('filters.user.view.campaign-company-selected')),
-            'campaignQ' => session('filters.user.view.campaign-q'),
-            'companyQ' => session('filters.user.view.company-q'),
+            'timezones' => $user->getPossibleTimezonesForUser()
         ]);
     }
 }

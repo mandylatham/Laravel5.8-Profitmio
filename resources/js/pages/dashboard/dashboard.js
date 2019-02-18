@@ -45,7 +45,7 @@ window['app'] = new Vue({
         searchFormUrl: null,
         searchForm: new Form({
             company: null,
-            q: null,
+            q: localStorage.getItem('dashboardIndexQ'),
             page: 1,
             per_page: 15,
         }),
@@ -88,6 +88,11 @@ window['app'] = new Vue({
         },
         fetchData() {
             this.isLoading = true;
+            if (this.searchForm.q) {
+                localStorage.setItem('dashboardIndexQ', this.searchForm.q);
+            } else {
+                localStorage.removeItem('dashboardIndexQ');
+            }
             this.searchForm.get(this.searchFormUrl)
                 .then(response => {
                     this.campaigns = response.data;

@@ -41,9 +41,7 @@ class HomeController extends Controller
             return redirect()->route('campaigns.index');
         }
 
-        return view('dashboard.index', [
-            'q' => session('filters.dashboard.q')
-        ]);
+        return view('dashboard.index', []);
     }
 
     protected function getStats($ids)
