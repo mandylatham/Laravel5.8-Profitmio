@@ -189,8 +189,8 @@ class UserController extends Controller
         }
 
         $viewData['campaignCompanySelected'] = null;
-        $viewData['campaignQ'] => '';
-        $viewData['companyQ'] => '';
+        $viewData['campaignQ'] = '';
+        $viewData['companyQ'] = '';
 
         return view('user.details', $viewData);
     }
