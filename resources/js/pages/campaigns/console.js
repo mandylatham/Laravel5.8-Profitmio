@@ -157,9 +157,7 @@ window['sidebar'] = new Vue({
         activeFilterSection: 'all',
         activeFilterMedia: null,
         activeLabelSection: 'none',
-        counters: {
-            labelCounts: {}
-        },
+        counters: {},
         campaign: {},
     },
     mounted: function () {
