@@ -179,8 +179,8 @@
                             </div>
                         </div>
                     </div>
-                    <form @submit.prevent="sendText">
-                        <div id="sms-form" style="margin-top: 20px;" v-if="!campaign.is_expired">
+                    <form @submit.prevent="sendText" v-if="!campaign.is_expired && (isAdmin || (!isAdmin && activeCompany.type === 'dealership'))">
+                        <div id="sms-form" style="margin-top: 20px;">
                             <div class="input-group">
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="textMessage">
@@ -229,7 +229,7 @@
                     </div>
 
 
-                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired">
+                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired && (isAdmin || (!isAdmin && activeCompany.type === 'dealership'))">
                         <div id="email-form">
                             <div class="input-group">
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
@@ -288,7 +288,9 @@
                     textDrop: {},
                     emailDrop: {}
                 },
+                activeCompany: {},
                 appointments: [],
+                isAdmin: false,
                 rest: [],
                 loading: false,
                 notes: '',
@@ -561,6 +563,8 @@
             }
         },
         mounted() {
+            this.activeCompany = window.activeCompany;
+            this.isAdmin = window.isAdmin;
             pusherService = new PusherService();
             this.getResponses();
         },
