@@ -176,10 +176,10 @@
                                     <!-- COPY -->
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
-                                            <td align="center" style="font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333; padding-top: 30px;" class="padding-copy">Hi, {{$user->name}}</td>
+                                            <td align="center" style="font-size: 25px; font-family: Helvetica, Arial, sans-serif; color: #333333; padding-top: 30px;" class="padding-copy">You've been invited</td>
                                         </tr>
                                         <tr>
-                                            <td align="center" style="padding: 20px 0 0 0; font-size: 16px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;" class="padding-copy">Please click here to process with your registration:</td>
+                                            <td align="center" style="padding: 20px 0 0 0; font-size: 18px; line-height: 25px; font-family: Helvetica, Arial, sans-serif; color: #666666;" class="padding-copy">{{$company->name}} has invited you to join their Profit Miner account, click the button below to accept.</td>
                                         </tr>
                                     </table>
                                 </td>
