@@ -4,7 +4,7 @@
 @import './../components/pm-pagination';
 
 .sidebar-toggler {
-    background-color: fff;
+    background-color: #fff;
     color: $brand-purple !important;
     margin-left: -15px;
 }
@@ -38,6 +38,37 @@
             > i {
                 font-size: 1.3em;
                 width: 2rem;
+            }
+
+            .label {
+                position: relative;
+                padding-left: 18px;
+                &:before {
+                    position: absolute;
+                    content: '';
+                    left: 0;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 50%;
+                }
+                &.not-interested,
+                &.heat-case,
+                &.car-sold,
+                &.wrong-number {
+                    &:before {
+                        background-color: rgb(172, 29, 19);
+                    }
+                }
+
+                &.appointment,
+                &.callback,
+                &.interested,
+                &.appointment,
+                &.service-dept {
+                    &:before {
+                        background-color: #5b6;
+                    }
+                }
             }
 
             > .counter {
