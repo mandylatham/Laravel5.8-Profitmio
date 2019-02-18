@@ -13,6 +13,9 @@
         window.counters = @json($counters);
         window.campaign = @json($campaign);
         window.user = @json(auth()->user());
+        @if (!auth()->user()->isAdmin())
+            window.activeCompany = {{ \App\Models\Company::findOrFail(get_active_company()) }};
+        @endif
         window.pusherKey = "{{env('PUSHER_APP_KEY')}}";
         window.pusherCluster = "{{env('PUSHER_APP_CLUSTER')}}";
         window.pusherAuthEndpoint = "{{ url('/broadcasting/auth') }}";
