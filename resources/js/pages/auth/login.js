@@ -26,10 +26,10 @@ window['app'] = new Vue({
                 .then(response => {
                     window.location.replace(response.redirect_url);
                 }, error => {
-                    if (error && error.errors) {
+                    if (error && error.response && error.response.data && error.response.data.errors) {
                         let errs = [];
-                        for (const key of Object.keys(error.errors)) {
-                            error.errors[key].forEach(msg => {
+                        for (const key of Object.keys(error.response.data.errors)) {
+                            error.response.data.errors[key].forEach(msg => {
                                 errs.push(msg);
                             });
                         }
