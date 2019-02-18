@@ -225,7 +225,8 @@ class Recipient extends Model
                     select max(responses.id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
                     ) and incoming = 1 and `read` = 0
                 ")
-            ));
+            ))
+            ->groupBy('recipients.id');
     }
 
     public function scopeCalls($query)
