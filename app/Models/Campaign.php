@@ -226,13 +226,22 @@ class Campaign extends Model
             ->whereNull('deleted_at');
 
         if (!$loggedUser->isAdmin()) {
-            $campaignsId = \DB::table('campaign_user')
-                ->whereUserId($loggedUser->id)
-                ->select('campaign_id')
-                ->get()
-                ->pluck('campaign_id')
-                ->toArray();
-            $query->whereIn('id', $campaignsId);
+	    $company = Company::findOrFail(get_active_company());
+            if ($loggedUser->isCompanyUser($company->id)) {
+                $campaignsId = \DB::table('campaign_user')
+                    ->whereUserId($loggedUser->id)
+                    ->select('campaign_id')
+                    ->get()
+                    ->pluck('campaign_id')
+                    ->toArray();
+                $query->whereIn('id', $campaignsId);
+            }
+
+            if ($company->isDealership()) {
+                $query->where('dealership_id', $company->id);
+            } else if ($company->isAgency()) {
+                $query->where('agency_id', $company->id);
+            }
         } else if ($loggedUser->isAdmin() && $request->has('user')) {
             $campaignsId = \DB::table('campaign_user')
                 ->whereUserId($request->input('user'))
