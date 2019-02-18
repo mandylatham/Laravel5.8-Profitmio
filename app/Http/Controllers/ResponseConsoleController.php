@@ -59,7 +59,7 @@ class ResponseConsoleController extends Controller
         }
         if ($filter == 'labelled') {
             $recipients = Recipient::withResponses($campaign->id)
-                ->labelled($campaign->id, $label);
+                ->labelled($label, $campaign->id);
         }
         if ($filter == 'email') {
             $recipients = Recipient::withResponses($campaign->id)->whereIn(
