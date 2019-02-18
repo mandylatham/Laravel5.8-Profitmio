@@ -11,7 +11,7 @@
         window.getCompanyUrl = @json(route('company.for-dropdown'));
         window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
         window.searchCompaniesFormUrl = "{{ route('company.for-user-display') }}";
-        window.campaignCompanySelected = @json($campaignCompanySelected);
+        window.campaignCompanySelected = @json('');
         window.updateUserUrl = "{{ route('user.update', ['user' => ':userId']) }}";
         window.timezones = @json($timezones);
         window.updateCompanyDataUrl = "{{ route('user.update-company-data', ['user' => ':userId']) }}";
@@ -23,7 +23,7 @@
         window.campaignDropIndex = "{{ route('campaigns.drops.index', ['campaign' => ':campaignId']) }}";
         window.campaignRecipientIndex = "{{ route('campaigns.recipient-lists.index', ['campaign' => ':campaignId']) }}";
         window.campaignResponseConsoleIndex = "{{ route('campaign.response-console.index', ['campaign' => ':campaignId']) }}";
-        window.campaignQ = @json($campaignQ);
+        window.campaignQ = @json('');
         window.isAdmin = @json(auth()->user()->isAdmin());
         window.resendInvitationUrl = "{{ route('admin.resend-invitation') }}";
         @if (auth()->user()->isAdmin())

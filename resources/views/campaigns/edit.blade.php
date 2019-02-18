@@ -184,7 +184,7 @@
                                                             </a>
                                                         </td>
                                                     </tr>
-                                                    <tr v-if="campaignForm.adf_crm_export_email.length === 0">
+                                                    <tr v-if="campaignForm.adf_crm_export_email.length == 0">
                                                         <td colspan="2" class="text-center">No items.</td>
                                                     </tr>
                                                     </tbody>

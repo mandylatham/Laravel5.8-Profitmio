@@ -66,7 +66,10 @@ class TemplateController extends Controller
 
     public function index()
     {
-        return view('template.index', []);
+        return view('template.index', [
+            'companySelected' => null,
+            'q' => '',
+        ]);
     }
 
     public function getForUserDisplay(Request $request)

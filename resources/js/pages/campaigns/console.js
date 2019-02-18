@@ -144,7 +144,7 @@ window['app'] = new Vue({
         this.pusherCluster = window.pusherCluster;
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
-        this.fetchRecipients();
+        // this.fetchRecipients();
         
         this.registerGlobalEventListeners();
     }
@@ -159,6 +159,12 @@ window['sidebar'] = new Vue({
         activeLabelSection: 'none',
         counters: {},
         campaign: {},
+        labelsList: [
+            'none', 'interested', 'appointment', 'callback', 'service', 
+            'not_interested', 'wrong_number', 'car_sold', 'heat',
+        ],
+        baseUrl: window.baseUrl,
+        activeFilter: window.activeFilter
     },
     mounted: function () {
         each(window.counters, (value, key) => {
@@ -169,16 +175,23 @@ window['sidebar'] = new Vue({
         pusherService = new PusherService();
 
         this.registerPusherListeners();
+
+        this.activeFilterSection = JSON.parse(JSON.stringify(this.activeFilter));
+        window.Event.fire('filters.filter-changed', {
+            filter: 'filter',
+            value: this.activeFilter
+        });
     },
     methods: {
         changeFilter: function (filter, value) {
-            if (filter === 'media' ) {
-                this.activeFilterMedia = value;
-            } else if (filter === 'filter') {
-                this.activeFilterSection = value;
-            } else if (filter === 'label') {
-                this.activeLabelSection = value;
+            let newUrl = JSON.parse(JSON.stringify(this.baseUrl));
+            if (this.labelsList.indexOf(value) >= 0) {
+                newUrl += "labelled/";
             }
+            newUrl += value;
+            window.history.pushState("", "", newUrl);
+            this.activeFilter = value;
+            this.activeFilterSection = value;
 
             window.Event.fire('filters.filter-changed', {
                 filter: filter,
