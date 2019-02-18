@@ -2,6 +2,7 @@
 
 namespace App\Mail;
 
+use App\Models\Company;
 use App\Models\Drop;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
@@ -15,18 +16,23 @@ class InviteUser extends Mailable
 
     /** @var  User */
     public $user;
+
     /** @var  string */
     public $processLink;
+
+    /** @var  string */
+    public $company;
 
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct(User $user, string $processLink)
+    public function __construct(User $user, Company $company, string $processLink)
     {
         $this->user = $user;
         $this->processLink = $processLink;
+        $this->company = $company;
     }
 
     /**
