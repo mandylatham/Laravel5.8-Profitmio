@@ -170,6 +170,8 @@ window['sidebar'] = new Vue({
 
         if (window.filterApplied) {
             this.changeFilter('filter', window.filterApplied);
+        } else {
+            this.changeFilter('filter', this.activeFilterSection);
         }
 
         this.registerPusherListeners();
