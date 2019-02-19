@@ -53,7 +53,7 @@ class Response extends Model
      */
     public function getRecordingUrlAttribute()
     {
-        $url = $this->attributes['recording_uri'];
+        $url = $this->recording_uri;
         if ($this->type === 'phone' && !filter_var($url, FILTER_VALIDATE_URL)) {
             $url = 'https://api.twilio.com/' . $url;
         }
