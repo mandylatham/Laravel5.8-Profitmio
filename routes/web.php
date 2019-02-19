@@ -132,6 +132,9 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/campaigns/new', 'CampaignController@createNew')->name('campaigns.create')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns')->name('campaigns.store');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['can:view,campaign']], function () {
+        Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
+        Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->name('campaign.recipient.email-response');
+        Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
         Route::group(['middleware' => ['can:site-admin,App\Models\User']], function () {
             Route::post('/user-access/{user}', 'CampaignController@toggleCampaignUserAccess')->name('campaigns.toggle-user-access');
             Route::get('/stats', 'CampaignController@showStats')->name('campaigns.stats');
@@ -185,15 +188,12 @@ Route::group(['middleware' => 'auth'], function () {
             Route::any('/responses/{recipient}/get-text-hash', 'ResponseController@getTextHash');
             // TODO: remove me from this routes group
             // Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
-            Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
             Route::any('/responses/{recipient}/get-email-hash', 'ResponseController@getEmailHash');
             Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
             Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
             Route::any('/get-response-list', 'ResponseController@getResponseList');
             // TODO: remove me from this routes group
             // Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
-            Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
-            Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->name('campaign.recipient.email-response');
         });
 
         Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
