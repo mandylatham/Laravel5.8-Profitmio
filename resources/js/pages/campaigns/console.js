@@ -158,10 +158,6 @@ window['sidebar'] = new Vue({
         activeFilterSection: 'all',
         counters: {},
         campaign: {},
-        labelsList: [
-            'none', 'interested', 'appointment', 'callback', 'service', 
-            'not_interested', 'wrong_number', 'car_sold', 'heat',
-        ],
         baseUrl: window.baseUrl
     },
     mounted: function () {
