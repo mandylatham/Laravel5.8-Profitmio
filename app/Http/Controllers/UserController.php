@@ -99,7 +99,7 @@ class UserController extends Controller
             ->where('email', $request->input('email'))
             ->first();
 
-        if (($request->input('role') == 'site_admin' && !is_null($user)) || ($user && $user->isAdmin())) {
+        if ($request->input('role') == 'site_admin' && $user && $user->isAdmin()) {
             return response()->json(['error' => 'The email has already been taken.'], 400);
         }
         if (!$user) {
