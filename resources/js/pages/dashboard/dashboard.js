@@ -2,8 +2,6 @@ import Vue from 'vue';
 import './../../common';
 import moment from 'moment';
 import Form from './../../common/form';
-import './../../filters/m-utc-parse.filter';
-import './../../filters/m-format-localized.filter';
 // Chart Library
 import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
