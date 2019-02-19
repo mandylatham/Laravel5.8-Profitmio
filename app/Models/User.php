@@ -306,7 +306,7 @@ class User extends Authenticatable implements HasMedia
 
     public function getNameAttribute()
     {
-        return ucwords(implode(' ', [Str::lower($this->first_name), Str::lower($this->last_name)]));
+        return $this->first_name || $this->last_name ? ucwords(implode(' ', [Str::lower($this->first_name), Str::lower($this->last_name)])) : '';
     }
 
     static function getPossibleTimezonesForUser()
