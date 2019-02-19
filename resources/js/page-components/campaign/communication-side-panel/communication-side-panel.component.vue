@@ -132,9 +132,9 @@
                         Called at {{ call.created_at }}
 
                         <div v-if="currentUser.is_admin === 1">
-                            <div class="audio-player" v-if="call.recording_uri">
+                            <div class="audio-player" v-if="call.recording_url">
                                 <audio controls preload="none" style="width:100%;">
-                                    <source :src="call.recording_uri" type="audio/mpeg">
+                                    <source :src="call.recording_url" type="audio/mpeg">
                                 </audio>
                             </div>
                             <div v-else>

@@ -26,7 +26,7 @@ class Response extends Model
         'recording_uri',
     ];
 
-    protected $appends = ['message_formatted', 'reply_user'];
+    protected $appends = ['message_formatted', 'reply_user', 'recording_url'];
 
     public function campaign()
     {
