@@ -24,6 +24,7 @@ class Response extends Model
         'incoming',
         'call_sid',
         'recording_uri',
+        'user_id',
     ];
 
     protected $appends = ['message_formatted', 'reply_user', 'recording_url'];
