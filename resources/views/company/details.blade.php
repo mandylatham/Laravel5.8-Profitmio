@@ -325,7 +325,7 @@
                 </b-card>
             </div>
         </div>
-        <b-modal ref="configureAccessModal" id="configure-access" hide-footer>
+        <b-modal ref="configureAccessModal" size="lg" id="configure-access" hide-footer>
             <template slot="modal-header">
                 <h4>Campaign Access</h4>
                 <span class="close-modal-header float-right" @click="closeModal">
@@ -347,6 +347,7 @@
                         <thead>
                         <th></th>
                         <th>User</th>
+                        <th class="text-center">Status</th>
                         </thead>
                         <tbody>
                         <tr v-for="user in usersForCampaignAccess">
@@ -355,8 +356,14 @@
                                          @change="toggleCampaignAccess(user)">&nbsp;
                                 </p-check>
                             </td>
-                            <td class="align-middle">
-                                @{{ user.first_name }} @{{ user.last_name }}
+                            <td class="align-middle user-row">
+                                <div v-if="user.first_name || user.last_name">@{{ user.first_name }} @{{ user.last_name }}</div>
+                                <div v-else>No Name <span class="badge badge-warning" v-if="user.has_pending_invitations">Pending Invitation</span></div>
+                                <small>@{{ user.email }}</small>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge badge-warning" v-if="user.has_pending_invitations">Has Pending Invitations</span>
+                                <user-status :is-active="user.is_active" v-else></user-status>
                             </td>
                         </tr>
                         </tbody>
