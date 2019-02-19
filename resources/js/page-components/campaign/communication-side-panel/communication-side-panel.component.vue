@@ -255,6 +255,8 @@
     import DatePicker from 'vue2-datepicker';
     import {pickBy} from 'lodash';
     import PusherService from './../../../common/pusher-service';
+    import './../../../filters/m-utc-parse.filter';
+    import './../../../filters/m-format-localized.filter';
     import './../../../filters/m-duration-for-humans.filter';
 
     let pusherService = null;
