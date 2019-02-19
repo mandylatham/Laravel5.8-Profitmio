@@ -218,8 +218,7 @@ class Recipient extends Model
 
     public function scopeUnread($query, $campaignId)
     {
-        return $query->join('responses', 'responses.recipient_id', '=', 'recipients.id')
-            ->whereIn('recipients.id', result_array_values(
+        return $query->whereIn('recipients.id', result_array_values(
                 \DB::select("
                     select distinct(recipient_id) from responses where responses.id in (
                     select max(responses.id) from responses where campaign_id={$campaignId} and `read` = 0 and type <> 'phone' group by recipient_id
