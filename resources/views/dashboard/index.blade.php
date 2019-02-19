@@ -43,7 +43,7 @@
             <div class="event-list">
                 <div class="event appointment" v-if="filter === 'appointment'" v-for="e in calendarEvents">
                     <div class="title">Campaign @{{ e.campaign_id }}</div>
-                    <div class="info">@{{ e.first_name }} @{{ e.last_name }} @ @{{ e.appointment_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('DD/MM/YYYY hh:mm A') }}</div>
+                    <div class="info">@{{ e.first_name }} @{{ e.last_name }} @ @{{ e.appointment_at | mUtcParse('YYYY-MM-DD HH:mm:ss') }}</div>
                 </div>
                 <div class="event drop" v-if="filter === 'drop'" v-for="e in calendarEvents">
                     <div class="title">Campaign @{{ e.campaign_id }}</div>
