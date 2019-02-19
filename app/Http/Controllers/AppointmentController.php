@@ -163,8 +163,7 @@ class AppointmentController extends Controller
 
         $appointment_at = null;
         if (strlen($request->json()->get('appointment_at'))) {
-            $appointment_at = $this->carbon->createFromFormat('Y-m-d G:i:s', $request->json()->get('appointment_at'),
-                $campaign->client->timezone);
+            $appointment_at = $this->carbon->createFromFormat('Y-m-d G:i:s', $request->json()->get('appointment_at'), 'UTC');
         }
 
         $appointment = new $this->appointment([
@@ -269,7 +268,7 @@ class AppointmentController extends Controller
     {
         if ($request->has('appointment_date_time')) {
             $dateTime = explode(' ', $request->input('appointment_date_time'));
-            $appointment_at = new Carbon($dateTime[0] . ' ' . $dateTime[1], Auth::user()->timezone);
+            $appointment_at = new Carbon($dateTime[0] . ' ' . $dateTime[1], 'UTC');
         } else {
             $appointment_at = new Carbon($request->input('appointment_date') . ' ' . $request->input('appointment_time'),
                 Auth::user()->timezone);
