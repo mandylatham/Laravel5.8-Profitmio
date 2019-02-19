@@ -231,7 +231,7 @@ class CampaignController extends Controller
             'lead_alert_email' => $request->input('lead_alert_email', []),
             'service_dept' => (bool) $request->input('service_dept'),
             'service_dept_email' => $request->input('service_dept_email', []),
-            'sms_on_callback' => (bool) $request->input('service_dept'),
+            'sms_on_callback' => (bool) $request->input('sms_on_callback'),
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'client_passthrough' => (bool) $request->input('client_passthrough'),
             'client_passthrough_email' => $request->input('client_passthrough_email', []),

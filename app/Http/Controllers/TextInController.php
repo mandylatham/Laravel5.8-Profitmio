@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\CampaignCountsUpdated;
 use App\Models\Appointment;
 use App\Models\PhoneNumber;
 use App\Models\Recipient;
@@ -25,9 +26,7 @@ class TextInController extends Controller
 			$phoneNumber = PhoneNumber::where('phone_number', 'like', '%'.$to)->firstOrFail();
 			$campaign = $phoneNumber->campaign;
 			$recipient = $campaign->recipients()
-				->whereRaw(
-					"phone like '%?'", 
-					[str_replace('+1', '', $from)])
+				->whereRaw("replace(phone, '+1', '') = replace(?, '+1', '')", [$from])
 				->first();
 			if (! $recipient) {
 				$sender = (object)Twilio::getNameFromPhoneNumber($from);
@@ -61,23 +60,25 @@ class TextInController extends Controller
 				'response_source' => $from,
 				'response_destination' => $to,
 			]);
+			event(new CampaignCountsUpdated($campaign));
+
 			if ($campaign->sms_on_callback == 1) {
-				try {
-					$phone = $campaign->phones()->whereCallSourceName('sms')->orderBy('phone_number_id', 'desc')->firstOrFail();
-					$notify_from = $phone->phone_number;
-					$message = $this->getCallbackMessage($callback);
-			    $notify_to_numbers = collect((array)$campaign->sms_on_callback_number);
+			try {
+				$phone = $campaign->phones()->whereCallSourceName('sms')->orderBy('id', 'desc')->firstOrFail();
+				$notify_from = $phone->phone_number;
+				$message = $this->getCallbackMessage($callback);
+			    $notify_to_numbers = (array)$campaign->sms_on_callback_number;
 			    foreach ($notify_to_numbers as $notify_to) {
 				Twilio::sendSms($notify_from, $notify_to, $message);
+				\Log::debug("Callback notifications sent for text-in message for callback #{$callback->id} to $notify_to");
 			    }
-					\Log::debug("Callback notifications sent for text-in message for callback #{$callback->id}");
 				} catch (\Exception $e) {
 					\Log::error("Unable to send callback SMS: " . $e->getMessage());
 				}
 			}
 		} catch (\Exception $e) {
 			\Log::error("Unable to register callback from text-in: (from:$from,to:$to) " . $e->getMessage());
-			abort('Unable to complete your request');
+			abort(500, 'Unable to complete your request');
 		}
 	}
     private function getCallbackMessage(Appointment $appointment): string
