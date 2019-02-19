@@ -9,12 +9,14 @@
 @section('body-script')
     <script>
         window.baseUrl = @json(route("campaign.response-console.index", ['campaign' => $campaign->id]).'/');
-        window.activeFilter = @json($activeFilter);
         window.counters = @json($counters);
         window.campaign = @json($campaign);
         window.user = @json(auth()->user());
         @if (!auth()->user()->isAdmin())
             window.activeCompany = {{ \App\Models\Company::findOrFail(get_active_company()) }};
+        @endif
+        @if (isset($filterApplied))
+        window.filterApplied = @json($filterApplied);
         @endif
         window.pusherKey = "{{env('PUSHER_APP_KEY')}}";
         window.pusherCluster = "{{env('PUSHER_APP_CLUSTER')}}";

@@ -156,16 +156,9 @@ window['sidebar'] = new Vue({
     el: '#sidebar-nav-content',
     data: {
         activeFilterSection: 'all',
-        activeFilterMedia: null,
-        activeLabelSection: 'none',
         counters: {},
         campaign: {},
-        labelsList: [
-            'none', 'interested', 'appointment', 'callback', 'service', 
-            'not_interested', 'wrong_number', 'car_sold', 'heat',
-        ],
-        baseUrl: window.baseUrl,
-        activeFilter: window.activeFilter
+        baseUrl: window.baseUrl
     },
     mounted: function () {
         each(window.counters, (value, key) => {
@@ -175,23 +168,21 @@ window['sidebar'] = new Vue({
 
         pusherService = new PusherService();
 
-        this.registerPusherListeners();
+        if (window.filterApplied) {
+            this.changeFilter('filter', window.filterApplied);
+        } else {
+            this.changeFilter('filter', this.activeFilterSection);
+        }
 
-        this.activeFilterSection = JSON.parse(JSON.stringify(this.activeFilter));
-        window.Event.fire('filters.filter-changed', {
-            filter: 'filter',
-            value: this.activeFilter
-        });
+        this.registerPusherListeners();
     },
     methods: {
         changeFilter: function (filter, value) {
             let newUrl = JSON.parse(JSON.stringify(this.baseUrl));
-            if (this.labelsList.indexOf(value) >= 0) {
-                newUrl += "labelled/";
-            }
             newUrl += value;
-            window.history.pushState("", "", newUrl);
-            this.activeFilter = value;
+            if (newUrl !== window.location.href) {
+                window.history.pushState("", "", newUrl);
+            }
             this.activeFilterSection = value;
 
             window.Event.fire('filters.filter-changed', {
