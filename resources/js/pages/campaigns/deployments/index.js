@@ -3,7 +3,6 @@ import './../../../common';
 import Form from "../../../common/form";
 import axios from "axios";
 import {generateRoute} from '../../../common/helpers';
-import moment from "moment-timezone";
 
 window['app'] = new Vue({
     el: '#drops-index',
@@ -34,14 +33,6 @@ window['app'] = new Vue({
         total: 0
     },
     methods: {
-        canStartDrop(drop) {
-            if (drop.send_at) {
-                const current = moment.utc().tz(window.timezone);
-                const sendAt = moment.utc(drop.send_at, 'YYYY-MM-DD HH:mm:ss').tz(window.timezone);
-                return current.isSameOrAfter(sendAt);
-            }
-            return false
-        },
         deleteDrop(drop) {
             this.$swal({
                 title: "Are you sure?",
