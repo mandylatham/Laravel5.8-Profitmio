@@ -13,7 +13,7 @@
         window.campaign = @json($campaign);
         window.user = @json(auth()->user());
         @if (!auth()->user()->isAdmin())
-            window.activeCompany = {{ \App\Models\Company::findOrFail(get_active_company()) }};
+            window.activeCompany = @json(\App\Models\Company::findOrFail(get_active_company()));
         @endif
         @if (isset($filterApplied))
         window.filterApplied = @json($filterApplied);
