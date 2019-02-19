@@ -15,7 +15,7 @@ class User extends JsonResource
      */
     public function toArray($request)
     {
-        return [
+        $data = [
             'id' => $this->id,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
@@ -43,5 +43,11 @@ class User extends JsonResource
             'has_active_companies' => $this->hasActiveCompanies(),
             'has_pending_invitations' => $this->hasPendingInvitations()
         ];
+        if (!auth()->user()->isAdmin()) {
+            $data['is_active'] = (bool) $this->resource->isActive(get_active_company());
+        } else if (auth()->user()->isAdmin() && $request->filled('company')) {
+            $data['is_active'] = (bool) $this->resource->isActive($request->input('company'));
+        }
+        return $data;
     }
 }

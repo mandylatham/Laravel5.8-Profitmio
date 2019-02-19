@@ -5,6 +5,7 @@
 @import './../components/spinner-icon';
 @import './../components/resumable';
 @import './../components/pm-pagination';
+@import './../components/user-status';
 @import "~vue-form-wizard/dist/vue-form-wizard.min.css";
 @import './../components/campaign';
 
@@ -334,6 +335,9 @@
 }
 
 #configure-access {
+    .user-row {
+        line-height: 1rem;
+    }
     .pm-pagination {
         width: 80%;
     }
