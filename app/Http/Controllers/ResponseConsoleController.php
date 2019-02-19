@@ -177,7 +177,7 @@ class ResponseConsoleController extends Controller
      * @param Campaign $campaign
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function show(Request $request, Campaign $campaign)
+    public function show(Request $request, Campaign $campaign, $filter = null)
     {
         $counters = [];
         $counters['total'] = Recipient::withResponses($campaign->id)->count();
@@ -209,11 +209,15 @@ class ResponseConsoleController extends Controller
                 ->count();
         }
 
-        return view('campaigns.console', [
+        $data = [
             'counters' => $counters,
-            'campaign' => $campaign,
-            'activeFilter' => 'all',
-        ]);
+            'campaign' => $campaign
+        ];
+
+        if ($filter) {
+            $data['filterApplied'] = $filter;
+        }
+        return view('campaigns.console', $data);
     }
 
     /**
