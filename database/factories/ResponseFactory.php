@@ -9,7 +9,7 @@ $factory->define(\App\Models\Response::class, function (Faker $faker) {
         'message' => $faker->realText,
         'call_sid' => $faker->word,
         'recording_sid' => $faker->word,
-        'recording_url' => $faker->word,
+        'recording_uri' => $faker->word,
         'duration' => 0
     ];
 });
