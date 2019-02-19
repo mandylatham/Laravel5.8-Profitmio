@@ -178,7 +178,7 @@ window['sidebar'] = new Vue({
     },
     methods: {
         changeFilter: function (filter, value) {
-            let newUrl = JSON.parse(JSON.stringify(this.baseUrl));
+            let newUrl = window.baseUrl;
             newUrl += value;
             if (newUrl !== window.location.href) {
                 window.history.pushState("", "", newUrl);
