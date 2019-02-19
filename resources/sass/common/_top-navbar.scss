@@ -14,6 +14,11 @@
 .top-navbar {
     height: $top-navbar-height-mobile;
 
+    .user-name {
+        line-height: 1em;
+        text-align: left;
+    }
+
     @include media-breakpoint-up(sm) {
         height: $top-navbar-height;
     }
@@ -178,6 +183,10 @@
                 width: 100px;
                 text-align: left;
                 display: inline-block;
+            }
+
+            &:hover, &:focus {
+                color: $brand-black;
             }
 
             @include media-breakpoint-up(sm) {

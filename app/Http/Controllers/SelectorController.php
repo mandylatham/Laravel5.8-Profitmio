@@ -15,7 +15,9 @@ class SelectorController extends Controller
      */
     public function show(Request $request)
     {
-        return view('selector.select-company');
+        return view('selector.select-company', [
+            'activeCompanyId' => get_active_company()
+        ]);
     }
 
     public function updateActiveCompany(UpdateActiveCompanyRequest $request)
