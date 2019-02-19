@@ -66,7 +66,7 @@ class AdminController extends Controller
             ]
         );
 
-        $this->mail->to($user)->send(new InviteUser($user, $processRegistration));
+        $this->mail->to($user)->send(new InviteUser($user, $company, $processRegistration));
 
         return response()->json(['message' => 'Invitation sent.']);
 //

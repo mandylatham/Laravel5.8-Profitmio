@@ -67,8 +67,16 @@
                         <div class="avatar-placeholder" v-if="!loggedUser.image_Url">
                             <i class="fas fa-user"></i>
                         </div>
-                        <span>@{{ loggedUser.name }}</span>
+                        <div class="user-name">
+                            <div>@{{ loggedUser.name || loggedUser.email }}</div>
+                            @if (!auth()->user()->isAdmin())
+                            <small>{{ get_active_company_model()->name }}</small>
+                            @endif
+                        </div>
                     </template>
+                    @if (!auth()->user()->isAdmin())
+                        <b-dropdown-item href="{{ route('selector.select-active-company') }}">Switch Company</b-dropdown-item>
+                    @endif
                     <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>
                     <b-dropdown-item @click="signout('{{ route('logout') }}')">Signout</b-dropdown-item>
                 </b-nav-item-dropdown>

@@ -29,6 +29,7 @@ window['app'] = new Vue({
     components: {
         'campaign': require('./../../components/campaign/campaign'),
         'user-status': require('./../../components/user-status/user-status'),
+        'user-role': require('./../../components/user-role/user-role'),
         'resumable': require('./../../components/resumable/resumable'),
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),

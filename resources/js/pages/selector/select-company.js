@@ -11,7 +11,7 @@ window['app'] = new Vue({
         errorMessage: '',
         loading: false,
         companyForm: new Form({
-            company: null
+            company: window.activeCompanyId
         }),
     },
     methods: {

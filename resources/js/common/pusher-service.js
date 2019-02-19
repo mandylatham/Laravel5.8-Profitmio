@@ -1,7 +1,7 @@
 import Pusher from 'pusher-js';
 
-const PUSHER_KEY = 'b926f342d692e99ff8b8';
-const PUSHER_CLUSTER = 'mt1';
+const PUSHER_KEY = window.pusherKey;
+const PUSHER_CLUSTER = window.pusherCluster;
 const PUSHER_AUTH_ENDPOINT = window.pusherAuthEndpoint;
 
 export default class PusherService {
