@@ -46,9 +46,9 @@ class InviteUser extends Mailable
             ->subject('Profit Miner Invitation')
             ->view('emails.inviteuser')
             ->with([
-                'user' => $this->user;
-                'processLink' => $this->processLink;
-                'company' => $this->company;
+                'user' => $this->user,
+                'processLink' => $this->processLink,
+                'company' => $this->company,
             ]);
     }
 }
