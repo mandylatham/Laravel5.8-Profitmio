@@ -6,8 +6,6 @@ import {SearchIcon} from 'vue-feather-icons';
 import VueSlideoutPanel from 'vue2-slideout-panel';
 import {each} from 'lodash';
 import PusherService from "../../common/pusher-service";
-import './../../filters/m-utc-parse.filter';
-import './../../filters/m-format-localized.filter';
 import './../../filters/m-duration-for-humans.filter';
 
 toastr.options.positionClass = "toast-bottom-left"; 

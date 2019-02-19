@@ -50,7 +50,7 @@
                                 <span class="pm-font-templates-icon" v-else></span>
                             </div>
                             <div class="drop-info--date">
-                                <span class="pm-font-date-icon mr-3"></span>@{{ (drop.status === 'Completed' ? drop.completed_at : drop.send_at) | amDateTimeFormat('MM/DD/YYYY | H:mm A') }}
+                                <span class="pm-font-date-icon mr-3"></span>@{{ (drop.status === 'Completed' ? drop.completed_at : drop.send_at) | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY | h:mm A') }}
                             </div>
                         </div>
                         <div class="col-12 col-md-3 drop-status text-center">
@@ -60,12 +60,12 @@
                             <i class="pm-font-recipients-icon mr-3"></i> @{{ drop.recipients }} Recipients
                         </div>
                         <div class="col-6 col-md-2 drop-options">
-                            <p v-if="drop.status === 'Completed' || drop.status === 'Cancelled' || drop.status === 'Processing' || drop.status === 'Deleted'" class="drop-options--no-actions">No Actions Available</p>
+                            <p v-if="drop.status === 'Completed' || drop.status === 'Cancelled' || drop.status === 'Processing' || drop.status === 'Deleted'" class="drop-options--no-actions mb-0">No Actions Available</p>
                             <div v-else>
                                 <a v-if="drop.type === 'sms' && drop.status !== 'Pending'" :href="generateRoute(dropRunSmsUrl, {'dropId': drop.id})" class="btn pm-btn pm-btn-green mr-2">
                                     RUN
                                 </a>
-                                <button type="button" v-if="drop.type === 'sms' && drop.status === 'Pending'" class="btn pm-btn pm-btn-green mr-2" @click="startDrop(drop)">
+                                <button type="button" v-if="drop.type === 'sms' && drop.status === 'Pending' && canStartDrop(drop)" class="btn pm-btn pm-btn-green mr-2" @click="startDrop(drop)">
                                     START
                                 </button>
                                 <a :href="generateRoute(dropEditUrl, {'dropId': drop.id})" class="btn btn-link pm-btn-link pm-btn-link-primary">
