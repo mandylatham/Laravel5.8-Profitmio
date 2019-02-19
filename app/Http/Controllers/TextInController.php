@@ -18,6 +18,7 @@ class TextInController extends Controller
 		if (! $request->has('From') || ! $request->has('To')) {
 			return response()->json(['error' => 'missing parameters'], 422);
 		}
+
 		try {
 			$from = $request->input('From');
 			$to   = $request->input('To');
@@ -63,11 +64,11 @@ class TextInController extends Controller
 				try {
 					$phone = $campaign->phones()->whereCallSourceName('sms')->orderBy('phone_number_id', 'desc')->firstOrFail();
 					$notify_from = $phone->phone_number;
-                    $notify_to_numbers = collect((array)$campaign->sms_on_callback_number);
 					$message = $this->getCallbackMessage($callback);
-                    foreach ($notify_to_numbers as $notify_to) {
-                        Twilio::sendSms($notify_from, $notify_to, $message);
-                    }
+			    $notify_to_numbers = collect((array)$campaign->sms_on_callback_number);
+			    foreach ($notify_to_numbers as $notify_to) {
+				Twilio::sendSms($notify_from, $notify_to, $message);
+			    }
 					\Log::debug("Callback notifications sent for text-in message for callback #{$callback->id}");
 				} catch (\Exception $e) {
 					\Log::error("Unable to send callback SMS: " . $e->getMessage());
