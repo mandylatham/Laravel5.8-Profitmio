@@ -35,11 +35,12 @@ class TextInController extends Controller
 					'first_name'  => $sender->first_name ?: 'Unknown',
 					'last_name'   => $sender->last_name ?: 'Name',
 					'phone'       => $from,
+					'email'       => '',
 					'campaign_id' => $phoneNumber->campaign_id,
 				]);
 			}
 			$callback = Appointment::create([
-				'target_id' => $recipient->id,
+				'recipient_id' => $recipient->id,
 				'campaign_id'  => $phoneNumber->campaign_id,
 				'first_name'   => $recipient->first_name,
 				'last_name'    => $recipient->last_name,
@@ -52,7 +53,7 @@ class TextInController extends Controller
 			]);
 			$recipient->update(['callback' => 1]);
 			$response = Response::create([
-				'target_id' => $recipient->id,
+				'recipient_id' => $recipient->id,
 				'campaign_id'  => $recipient->campaign_id,
 				'incoming'     => 1,
 				'type'         => 'phone',
@@ -76,7 +77,7 @@ class TextInController extends Controller
 			}
 		} catch (\Exception $e) {
 			\Log::error("Unable to register callback from text-in: (from:$from,to:$to) " . $e->getMessage());
-			abort('Unable to complete your request');
+			abort(500, 'Unable to complete your request');
 		}
 	}
     private function getCallbackMessage(Appointment $appointment): string
