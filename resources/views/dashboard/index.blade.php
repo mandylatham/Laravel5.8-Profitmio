@@ -43,11 +43,11 @@
             <div class="event-list">
                 <div class="event appointment" v-if="filter === 'appointment'" v-for="e in calendarEvents">
                     <div class="title">Campaign @{{ e.campaign_id }}</div>
-                    <div class="info">@{{ e.first_name }} @{{ e.last_name }} @ @{{ e.appointment_at | mUtcParse('YYYY-MM-DD HH:mm:ss') }}</div>
+                    <div class="info">@{{ e.first_name }} @{{ e.last_name }} @ @{{ e.appointment_at | mUtcParse('YYYY-MM-DD HH:mm') }}</div>
                 </div>
                 <div class="event drop" v-if="filter === 'drop'" v-for="e in calendarEvents">
                     <div class="title">Campaign @{{ e.campaign_id }}</div>
-                    <div class="info">Drop @{{ e.id }} @ @{{ e.send_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('DD/MM/YYYY hh:mm A') }}</div>
+                    <div class="info">Drop @{{ e.id }} @ @{{ e.send_at | mUtcParse('YYYY-MM-DD HH:mm') }}</div>
                 </div>
                 <div class="no-events" v-if="calendarEvents.length === 0">No Events.</div>
             </div>
