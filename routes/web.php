@@ -5,6 +5,7 @@ Route::impersonate();
 use Illuminate\Support\Facades\Route;
 
 //region OUTSIDE API CALLS
+Route::any('/text-in/', 'TextInController@createFromSms')->name('pub-api.text-in')->middleware(null);
 Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->name('pub-api.text-response-inbound')->middleware(null);
 Route::any('/email-responses/inbound', 'ResponseConsoleController@inboundEmail')->name('pub-api.email-response-inbound')->middleware(null);
 Route::any('/email-responses/log', 'ResponseConsoleController@logEmail')->name('pub-api.email-response-log')->middleware(null);
