@@ -352,42 +352,65 @@ class ResponseConsoleController extends Controller
     {
         //find out if we can grab the campaign details from the messageId
         $log = new EmailLog();
+		$messageId = null;
+			//somtimes message ID is a different variable.
+		if ($request->has('Message-Id')) {
+			$messageId = str_replace(['<', '>'], '', $request->input('Message-Id'));
+		}
 
-        //somtimes message ID is a different variable.
-        if ($request->has('Message-Id')) {
-            $messageId = str_replace(['<', '>'], '', $request->get('Message-Id'));
-            $log->message_id = $messageId;
-        } elseif ($request->has('message-id')) {
-            $messageId = $request->get('message-id');
-            $log->message_id = $request->get('message-id');
-        } else {
-            Log::error('Received bad request from Mailgun: ' . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+		if ($request->has('message-id')) {
+			$messageId = $request->input('message-id');
+		} 
 
-            abort(406);
-        }
+		if (!$messageId) {
+			Log::error('Received bad request from Mailgun: (cannot find message-id) ' . json_encode($request->all()), JSON_UNESCAPED_SLASHES);
+			abort(406);
+		}
 
-        $existing = EmailLog::where('message_id', $messageId)->where('campaign_id', '!=', 0)->orderBy('id',
-            'ASC')->first();
+		$log->message_id = $messageId;
+
+		$existing = EmailLog::where('message_id', $messageId)
+			->where('campaign_id', '!=', 0)
+			->orderBy('id', 'ASC')
+			->first();
 
         if ($existing) {
             $log->campaign_id = $existing->campaign_id;
             $log->recipient_id = $existing->recipient_id;
         } else {
-            $from = $this->parseMailgunFromField($request->get('from'));
-            $log->campaign_id = $from->campaign_id;
-            $log->recipient_id = $from->recipient_id;
-            if (!$from->campaign_id || !$from->recipient_id) {
-                Log::error('Received bad request from Mailgun ' . json_encode($request->all, JSON_UNESCAPED_SLASHES));
+			$campaign = null;
+			$recipient = null;
+			if ($request->has('tag') && $request->has('recipient') && $campaign = $this->getCampaignFromEmailTag($request)) {
+				$recipient = $campaign->recipients()->whereEmail($request->input('recipient'))->first();
+			}
+			if (! $recipient) {
+				$from = $this->parseMailgunFromField($request->input('from'));
+				$log->campaign_id = $from->campaign_id;
+				$log->recipient_id = $from->recipient_id;
+				if (!$from->campaign_id || !$from->recipient_id) {
+					Log::error('Received bad request from Mailgun (cannot find campaign) ' . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
 
-                abort(406);
-            }
+					abort(406);
+				}
+			} else {
+				$log->campaign_id = $campaign->id;
+				$log->recipient_id = $recipient->id;
+			}
         }
 
-        $log->code = $request->get('code') ?: '000';
-        $log->event = $request->get('event');
-        $log->recipient = $request->get('recipient');
+        $log->code = $request->input('code') ?: '000';
+        $log->event = $request->input('event');
+        $log->recipient = $request->input('recipient');
         $log->save();
     }
+
+	private function getCampaignFromEmailTag($request)
+	{
+		$tag = $request->input('tag');
+		if (!is_array($tag)) return null;
+		$id = str_replace('profitminer_campaign_', '', $tag[0]);
+		return Campaign::find($id);
+	}
 
     /**
      * Process inbound email
