@@ -54,7 +54,7 @@ class CompleteController extends Controller
         $sufix = $user->isProfileCompleted() ? '-full' : '';
         return view('auth.complete' . $sufix, [
             'user' => $user,
-            'completeRegistrationSignedUrl' => $this->url->temporarySignedRoute('registration.complete.store', $this->carbon::now()->addMinutes(5), [
+            'completeRegistrationSignedUrl' => $this->url->temporarySignedRoute('registration.complete.store', $this->carbon::now()->addMinutes(240), [
                 'user' => $user->id,
                 'company' => $company ? $company->id : null
             ]),

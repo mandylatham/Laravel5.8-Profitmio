@@ -95,7 +95,7 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-	    \Log::debug(json_encode($request));
+	    \Log::debug(json_encode($request->all()));
         $user = $this->user
             ->where('email', $request->input('email'))
             ->first();
