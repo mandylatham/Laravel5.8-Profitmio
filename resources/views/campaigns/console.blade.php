@@ -155,7 +155,7 @@
                     <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
                 </a>
             </div>
-            <div class="col-none col-sm-2 col-lg-6"></div>
+            <div class="col-none col-sm-2 col-lg-6" style="text-align:center"><h3>{{ $campaign->name }}</div>
             <div class="col-12 col-sm-5 col-lg-3 mb-3">
                 <input type="text" v-model="searchForm.search" class="form-control filter--search-box"
                            aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
