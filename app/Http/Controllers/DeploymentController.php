@@ -248,7 +248,7 @@ class DeploymentController extends Controller
     public function saveGroups(Campaign $campaign, Request $request)
     {
         $info = [
-            'contact_filter' => $request->contact_filter,
+            'contact_filter' => $request->contact,
             'group_using' => $request->group_using,
             'max' => $request->max,
             'total' => $request->total,
