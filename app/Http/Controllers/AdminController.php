@@ -60,7 +60,7 @@ class AdminController extends Controller
         }
 
         $processRegistration = $this->url->temporarySignedRoute(
-            'registration.complete.show', Carbon::now()->addMinutes(60), [
+            'registration.complete.show', Carbon::now()->addMinutes(1440), [
                 'id' => $user->id,
                 'company' => $request->input('company')
             ]
