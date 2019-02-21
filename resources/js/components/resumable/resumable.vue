@@ -2,11 +2,11 @@
     <div class="resumable-component" v-if="!resetDomElements">
         <div class="resumable-drop" v-if="!fileSelected"></div>
         <button class="btn pm-btn pm-btn-purple pm-btn-md resumable-browse" v-if="!fileSelected">
-            Browse for the file
+            <slot name="message">Browse for the file</slot>
         </button>
         <div class="resumable-file" v-if="fileSelected">
-            <span v-if="uploadingProgress < 1">{{ fileSelected.fileName }} (<span class="mr-2" v-if="uploadingFile">Loading</span>{{ uploadingProgress * 100 }}%)</span>
-            <span v-if="uploadingProgress >= 1">{{ fileSelected.fileName }} (<span class="mr-2" v-if="uploadingFile">Loaded</span> 100%)</span>
+            <span v-if="uploadingProgress < 1">{{ fileSelected.fileName }} <span v-if="!hideProgress">(<span class="mr-2" v-if="uploadingFile">Loading</span>{{ uploadingProgress * 100 }}%)</span></span>
+            <span v-if="uploadingProgress >= 1">{{ fileSelected.fileName }} <span v-if="!hideProgress">(<span class="mr-2" v-if="uploadingFile">Loaded</span> 100%)</span></span>
         </div>
         <div class="resumable-loader" :style="{'width': uploadingProgress * 100 }" v-if="uploadingFile"></div>
     </div>
@@ -29,6 +29,11 @@
             targetUrl: {
                 required: true,
                 type: String
+            },
+            hideProgress: {
+                type: Boolean,
+                required: false,
+                default: false
             }
         },
         mounted() {
