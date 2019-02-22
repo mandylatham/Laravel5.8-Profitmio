@@ -407,8 +407,11 @@ class ResponseConsoleController extends Controller
 	private function getCampaignFromEmailTag($request)
 	{
 		$tag = $request->input('tag');
-		if (!is_array($tag)) return null;
-		$id = str_replace('profitminer_campaign_', '', $tag[0]);
+		if (is_array($tag)) {
+			$id = str_replace('profitminer_campaign_', '', $tag[0]);
+		} else {
+			$id = str_replace('profitminer_campaign_', '', $tag);
+		}
 		return Campaign::find($id);
 	}
 
@@ -625,15 +628,15 @@ class ResponseConsoleController extends Controller
      */
     public function inboundPhoneStatus(Request $request)
     {
-        $recording = (new TwilioClient)->getRecordingFromSid($request->get('CallSid'));
+        $recording = (new TwilioClient)->getRecordingFromSid($request->input('CallSid'));
         if (empty($recording)) {
             return response('<Response>No recordings found, none processed</Response>')
                 ->header('Content-Type', 'text/xml');
         }
 
-        $response = Response::where('call_sid', $request->get('CallSid'))->firstOrFail();
+        $response = Response::where('call_sid', $request->input('CallSid'))->firstOrFail();
 
-        $response->duration = $request->get('CallDuration');
+        $response->duration = $request->input('CallDuration');
         $response->recording_uri = $recording->uri;
         $response->recording_sid = $recording->sid;
 
@@ -690,7 +693,7 @@ class ResponseConsoleController extends Controller
             // ubsubscribe happens at twilio level
             if ($this->isUnsubscribeMessage($message)) {
                 Log::debug('unsubscribing recipient #' . $recipient->id);
-                $suppress = new \App\SmsSuppression([
+                $suppress = new \App\Models\SmsSuppression([
                     'phone'         => substr($recipient->phone, -10, 10),
                     'suppressed_at' => \Carbon\Carbon::now('UTC'),
                 ]);

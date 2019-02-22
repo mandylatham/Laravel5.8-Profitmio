@@ -66,6 +66,8 @@ class AdminController extends Controller
             ]
         );
 
+		\Log::debug("Resending Invite for user (id:{$user->id}) with url: {$processRegistration}");
+
         $this->mail->to($user)->send(new InviteUser($user, $company, $processRegistration));
 
         return response()->json(['message' => 'Invitation sent.']);
