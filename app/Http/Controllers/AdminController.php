@@ -60,11 +60,13 @@ class AdminController extends Controller
         }
 
         $processRegistration = $this->url->temporarySignedRoute(
-            'registration.complete.show', Carbon::now()->addMinutes(60), [
+            'registration.complete.show', Carbon::now()->addMinutes(1440), [
                 'id' => $user->id,
                 'company' => $request->input('company')
             ]
         );
+
+		\Log::debug("Resending Invite for user (id:{$user->id}) with url: {$processRegistration}");
 
         $this->mail->to($user)->send(new InviteUser($user, $company, $processRegistration));
 

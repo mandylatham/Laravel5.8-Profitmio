@@ -228,7 +228,7 @@ class CampaignController extends Controller
             'adf_crm_export' => (bool) $request->input('adf_crm_export'),
             'adf_crm_export_email' => $request->input('adf_crm_export_email', []),
             'lead_alerts' => (bool) $request->input('lead_alerts'),
-            'lead_alert_email' => $request->input('lead_alert_email', []),
+            'lead_alert_email' => $request->input('lead_alert_emails', []),
             'service_dept' => (bool) $request->input('service_dept'),
             'service_dept_email' => $request->input('service_dept_email', []),
             'sms_on_callback' => (bool) $request->input('sms_on_callback'),

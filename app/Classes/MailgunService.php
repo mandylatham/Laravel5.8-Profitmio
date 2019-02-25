@@ -68,7 +68,7 @@ class MailgunService
             echo "sending email to " . $recipient->email . "\n";
 
             return $this->mailgun->messages()->send($this->domain, [
-                'from'    => $this->getFromLine($campaign, $recipient, $campaign->client),
+                'from'    => $this->getFromLine($campaign, $recipient, $campaign->dealership),
                 'to'      => $recipient->email,
                 'subject' => $subject,
                 'html'    => $html,
@@ -133,7 +133,7 @@ class MailgunService
     {
         // TODO: check if user is passed to method `getFromLine` properly; before it was `$campaign->client`
         $response = $this->mailgun->messages()->send('mg.automotive-alerts.com', [
-            'from'    => $this->getFromLine($campaign, $recipient, $campaign->users()->first()),
+            'from'    => $this->getFromLine($campaign, $recipient, $campaign->dealership),
             'to'      => $recipient->email,
             'subject' => $subject,
             'html'    => $html,
@@ -200,7 +200,7 @@ class MailgunService
      * @param User      $client
      * @return string
      */
-    public function getFromLine(Campaign $campaign, Recipient $recipient, Company $dealsership)
+    public function getFromLine(Campaign $campaign, Recipient $recipient, Company $dealership)
     {
         $from = $dealership->name;
 

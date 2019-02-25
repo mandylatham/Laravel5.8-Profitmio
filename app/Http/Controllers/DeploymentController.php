@@ -286,9 +286,10 @@ class DeploymentController extends Controller
         $time = new Carbon($request->send_at_time);
         $send_at = (new Carbon($date->toDateString() . ' ' . $time->format('H:i:s'), \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
 
-        $request->request->set('send_at', $send_at);
+		$requestDrop = $request->all();
+		$requestDrop['send_at'] = $send_at;
 
-        $drop->fill($request->all());
+        $drop->fill($requestDrop);
 
         $drop->save();
 
