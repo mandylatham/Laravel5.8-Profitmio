@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Notifications\ResetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\CanResetPassword;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Auth\Passwords\CanResetPassword as CanResetPasswordTrait;
 use Illuminate\Support\Str;
 use Sofa\Eloquence\Eloquence;
 use Lab404\Impersonate\Models\Impersonate;
@@ -12,9 +15,9 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class User extends Authenticatable implements HasMedia
+class User extends Authenticatable implements HasMedia, CanResetPassword
 {
-    use Notifiable, Impersonate, LogsActivity, Eloquence, HasMediaTrait;
+    use Notifiable, Impersonate, LogsActivity, Eloquence, HasMediaTrait, CanResetPasswordTrait;
 
     protected $searchableColumns = ['id', 'first_name', 'last_name', 'email', 'phone_number'];
 
@@ -203,6 +206,12 @@ class User extends Authenticatable implements HasMedia
     public function replies()
     {
         return $this->hasMany(Response::class);
+    }
+
+    public function sendPasswordResetNotification($token)
+    {
+        // Your your own implementation.
+        $this->notify(new ResetPassword($token, $this));
     }
 
     public function invitations()
