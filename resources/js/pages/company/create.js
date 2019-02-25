@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
-import {generateRoute} from './../../common/helpers'
+import {generateRoute} from './../../common/helpers';
 // Wizard
 import VueFormWizard from 'vue-form-wizard';
 Vue.use(VueFormWizard);
@@ -16,6 +16,8 @@ window['app'] = new Vue({
     el: '#app',
     components: {
         'input-errors': require('./../../components/input-errors/input-errors'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'resumable': require('./../../components/resumable/resumable'),
     },
     data: {
         companyIndex: '',
@@ -35,15 +37,26 @@ window['app'] = new Vue({
             twitter: '',
             image: '',
         }),
+        imagePreviewUrl: null,
+        isLoading: false,
     },
     mounted() {
         this.createFormUrl = window.createUrl;
         this.companyIndex = window.indexUrl;
     },
     methods: {
-        addImageFile() {
-            this.createForm.image = this.$refs.image.files[0];
-            console.log(this.$refs.image.files[0]);
+        onFileAdded({file: resumableFile}) {
+            const fileReader = new FileReader();
+            // Generate preview
+            this.createForm.image = resumableFile.file;
+            fileReader.readAsDataURL(resumableFile.file);
+            fileReader.onload = event => {
+                this.imagePreviewUrl = event.target.result;
+            };
+        },
+        removeSelectedImage() {
+            this.createForm.image = null;
+            this.imagePreviewUrl = null;
         },
         validateBasicTab() {
             let valid = true;
@@ -60,7 +73,6 @@ window['app'] = new Vue({
             ['country','phone', 'address', 'address2', 'city', 'state', 'zip'].forEach(field => {
                 this.$v.createForm[field].$touch();
                 if (this.$v.createForm[field].$error) {
-                    console.log(field, this.$v.createForm[field]);
                     valid = false;
                 }
             });
@@ -72,12 +84,16 @@ window['app'] = new Vue({
         saveCompany() {
             this.isLoading = true;
             this.createForm.post(this.createFormUrl)
-                .then(response => {
+                .then(() => {
                     this.isLoading = false;
-                    this.$toastr.success("Company Added");
-                    window.location.replace(this.companyIndex);
-                })
-                .catch(error => {
+                    this.$swal({
+                        title: 'Company Added!',
+                        type: 'success'
+                    }).then(() => {
+                        window.location.replace(this.companyIndex);
+                    });
+                }, error => {
+                    this.isLoading = false;
                     this.createForm.errors = error.errors;
                     this.$toastr.error("Unable to create company");
                 });

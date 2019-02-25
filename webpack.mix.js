@@ -71,4 +71,7 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .js('resources/js/pages/selector/select-company.js', 'public/js/select-company.js')
     .sass('resources/sass/selector/select-company.scss', 'public/css/select-company.css')
     .copyDirectory('resources/fonts', 'public/fonts/')
-    .copyDirectory('resources/img', 'public/img');
+    .copyDirectory('resources/img', 'public/img')
+    .options({
+        processCssUrls: false
+    });
