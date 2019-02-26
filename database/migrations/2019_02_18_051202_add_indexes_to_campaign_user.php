@@ -27,8 +27,8 @@ class AddIndexesToCampaignUser extends Migration
     public function down()
     {
         Schema::table('campaign_user', function (Blueprint $table) {
-            $table->index('campaign_id_idx');
-            $table->index('user_id_idx');
+            $table->dropIndex('campaign_id_idx');
+            $table->dropIndex('user_id_idx');
         });
     }
 }

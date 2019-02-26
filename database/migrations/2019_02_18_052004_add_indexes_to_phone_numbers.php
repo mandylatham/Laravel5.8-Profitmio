@@ -26,7 +26,7 @@ class AddIndexesToPhoneNumbers extends Migration
     public function down()
     {
         Schema::table('phone_numbers', function (Blueprint $table) {
-            $table->index('phone_number_idx');
+            $table->dropIndex('phone_number_idx');
         });
     }
 }

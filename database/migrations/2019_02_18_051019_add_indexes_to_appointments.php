@@ -27,8 +27,8 @@ class AddIndexesToAppointments extends Migration
     public function down()
     {
         Schema::table('appointments', function (Blueprint $table) {
-            $table->index('campaign_id_idx');
-            $table->index('recipient_id_idx');
+            $table->dropIndex('campaign_id_idx');
+            $table->dropIndex('recipient_id_idx');
         });
     }
 }

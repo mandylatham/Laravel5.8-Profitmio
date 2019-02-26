@@ -27,8 +27,8 @@ class AddIndexesToCampaigns extends Migration
     public function down()
     {
         Schema::table('campaigns', function (Blueprint $table) {
-            $table->index('dealership_id_idx');
-            $table->index('agency_id_idx');
+            $table->dropIndex('dealership_id_idx');
+            $table->dropIndex('agency_id_idx');
         });
     }
 }
