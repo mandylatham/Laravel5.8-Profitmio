@@ -18,11 +18,19 @@
         align-items: center;
         justify-content: center;
     }
+
+    .campaign-title {
+        font-size: 1.8rem;
+    }
+
     .campaign-group-label {
         font-size: 1.4rem;
         font-weight: bold;
         margin-top: 2rem;
         margin-bottom: 1rem;
+        &:first-child {
+            margin-top: 1rem;
+        }
     }
     .pm-pagination {
         margin-bottom: 2rem;

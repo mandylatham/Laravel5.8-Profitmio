@@ -47,6 +47,7 @@
                 <div class="loader-spinner" v-if="isLoading">
                     <spinner-icon></spinner-icon>
                 </div>
+                <h1 class="campaign-title">Campaigns</h1>
                 <div class="campaign-group-label" v-if="countActiveCampaigns > 0">ACTIVE</div>
                 <campaign v-for="campaign in campaigns" v-if="campaign.status === 'Active'" :key="campaign.id" :campaign="campaign"></campaign>
                 <div class="campaign-group-label" v-if="countInactiveCampaigns > 0">INACTIVE</div>
