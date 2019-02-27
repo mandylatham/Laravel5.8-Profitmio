@@ -32,7 +32,7 @@ class AllowAsyncPhoneNumbers extends Migration
             $table->integer('campaign_id')->change();
             $table->string('forward', 50)->change();
 
-            $table->dropUnique(['campaign_id', 'call_source_name'], 'phone_numbers_unique_source');
+            $table->dropUnique('phone_numbers_unique_source');
         });
     }
 }
