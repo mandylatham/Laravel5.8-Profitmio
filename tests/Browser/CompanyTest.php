@@ -43,6 +43,7 @@ class CompanyTest extends DuskTestCase
         $this->browse(function (Browser $browser) {
             $browser->loginAs(User::where('is_admin', 1)->first())
                 ->visitRoute('company.create')
+                ->attach('input[type="file"]', resource_path('img/logo.png'))
                 ->type('name', 'Dealership Company')
                 ->select('type', 'dealership')
                 ->click('.wizard-footer-right .wizard-btn')
@@ -65,6 +66,7 @@ class CompanyTest extends DuskTestCase
             $browser->loginAs(User::where('is_admin', 1)->first())
                 ->visitRoute('company.create')
                 ->type('name', 'Dealership Company')
+                ->attach('input[type="file"]', resource_path('img/logo.png'))
                 ->select('type', 'dealership')
                 ->click('.wizard-footer-right .wizard-btn')
                 ->select('country', 'us')
