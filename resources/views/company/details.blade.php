@@ -58,7 +58,7 @@
                             </div>
                             <div class="col-md pl-3">
                                 <div class="d-flex justify-content-end">
-                                    <button class="btn pm-btn pm-btn-outline-purple mb-3"
+                                    <button dusk="edit-button" class="btn pm-btn pm-btn-outline-purple mb-3"
                                             @click="showCompanyFormControls = true" v-if="!showCompanyFormControls">
                                         <i class="fas fa-pencil-alt mr-2"></i>
                                         Edit
@@ -163,7 +163,7 @@
                         <div class="row no-gutters">
                             <div class="col-12 form-controls">
                                 <div class="form-group" v-if="showCompanyFormControls">
-                                    <button class="btn btn-sm btn-outline-primary mr-1" type="button"
+                                    <button dusk="save-company-button" class="btn btn-sm btn-outline-primary mr-1" type="button"
                                             @click="saveCompanyForm()">
                                         Save
                                     </button>

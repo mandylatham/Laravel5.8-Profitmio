@@ -2,8 +2,6 @@
 
 namespace Tests\Browser;
 
-use App\Models\Company;
-use App\Models\User;
 use Tests\DuskTestCase;
 use Laravel\Dusk\Browser;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
@@ -16,25 +14,7 @@ class LoginTest extends DuskTestCase
     {
         parent::setUp();
 
-        $company = factory(Company::class, 1)->create([
-            'type' => 'support'
-        ])->first();
-
-        $user = new User();
-        $user->first_name = 'Cool';
-        $user->last_name = 'Developer';
-        $user->email = 'admin@example.com';
-        $user->is_admin = true;
-        $user->password = bcrypt('password');
-        $user->save();
-
-        $company->users()->save($user, [
-            'completed_at' => \Carbon\Carbon::now()->toDateTimeString(),
-            'config' => json_encode([
-                'timezone' => 'US/Alaska'
-            ]),
-            'role' => 'admin'
-        ]);
+        $this->createCompanyAndSiteAdminUser();
     }
 
     public function testRedirectToLoginPage()
