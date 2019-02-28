@@ -114,9 +114,6 @@ class CompanyTest extends DuskTestCase
         });
     }
 
-    /**
-     * @group test
-     */
     public function testCreateCompanyAdminForDealershipCompanyFromCompanyDetailsPage() {
         $company = factory(Company::class)->create([
             'type' => 'dealership'
@@ -129,6 +126,72 @@ class CompanyTest extends DuskTestCase
                 ->waitForRoute('user.create')
                 ->vueSelect('@role-select', 0)
                 ->type('email', 'ca@dealership.com')
+                ->vueSelect('@company-select', 0)
+                ->click('@save-user-button')
+                ->waitFor('.swal2-container', 10)
+                ->assertSee('Invitation Sent')
+                ->click('button.swal2-confirm')
+                ->visitRoute('user.index')
+                ->assertSee('Users');
+        });
+    }
+
+    public function testCreateCompanyUserForDealershipCompanyFromCompanyDetailsPage() {
+        $company = factory(Company::class)->create([
+            'type' => 'dealership'
+        ])->first();
+        $this->browse(function (Browser $browser) use ($company) {
+            $browser->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('company.details', ['company' => $company->id])
+                ->click('.card-header-tabs .nav-item:nth-child(2)')
+                ->click('@add-user-button')
+                ->waitForRoute('user.create')
+                ->vueSelect('@role-select', 1)
+                ->type('email', 'cu@dealership.com')
+                ->vueSelect('@company-select', 0)
+                ->click('@save-user-button')
+                ->waitFor('.swal2-container', 10)
+                ->assertSee('Invitation Sent')
+                ->click('button.swal2-confirm')
+                ->visitRoute('user.index')
+                ->assertSee('Users');
+        });
+    }
+
+    public function testCreateCompanyAdminForAgencyCompanyFromCompanyDetailsPage() {
+        $company = factory(Company::class)->create([
+            'type' => 'agency'
+        ])->first();
+        $this->browse(function (Browser $browser) use ($company) {
+            $browser->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('company.details', ['company' => $company->id])
+                ->click('.card-header-tabs .nav-item:nth-child(2)')
+                ->click('@add-user-button')
+                ->waitForRoute('user.create')
+                ->vueSelect('@role-select', 0)
+                ->type('email', 'ca@dealership.com')
+                ->vueSelect('@company-select', 0)
+                ->click('@save-user-button')
+                ->waitFor('.swal2-container', 10)
+                ->assertSee('Invitation Sent')
+                ->click('button.swal2-confirm')
+                ->visitRoute('user.index')
+                ->assertSee('Users');
+        });
+    }
+
+    public function testCreateCompanyUserForAgencyCompanyFromCompanyDetailsPage() {
+        $company = factory(Company::class)->create([
+            'type' => 'agency'
+        ])->first();
+        $this->browse(function (Browser $browser) use ($company) {
+            $browser->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('company.details', ['company' => $company->id])
+                ->click('.card-header-tabs .nav-item:nth-child(2)')
+                ->click('@add-user-button')
+                ->waitForRoute('user.create')
+                ->vueSelect('@role-select', 1)
+                ->type('email', 'cu@dealership.com')
                 ->vueSelect('@company-select', 0)
                 ->click('@save-user-button')
                 ->waitFor('.swal2-container', 10)
