@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use App\Models\Company;
+use App\Models\User;
 use Laravel\Dusk\TestCase as BaseTestCase;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
@@ -40,5 +42,28 @@ abstract class DuskTestCase extends BaseTestCase
                 ChromeOptions::CAPABILITY, $options
             )
         );
+    }
+
+    protected function createCompanyAndSiteAdminUser()
+    {
+        $company = factory(Company::class, 1)->create([
+            'type' => 'support'
+        ])->first();
+
+        $user = new User();
+        $user->first_name = 'Cool';
+        $user->last_name = 'Developer';
+        $user->email = 'admin@example.com';
+        $user->is_admin = true;
+        $user->password = bcrypt('password');
+        $user->save();
+
+        $company->users()->save($user, [
+            'completed_at' => \Carbon\Carbon::now()->toDateTimeString(),
+            'config' => json_encode([
+                'timezone' => 'US/Alaska'
+            ]),
+            'role' => 'admin'
+        ]);
     }
 }
