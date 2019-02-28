@@ -28,7 +28,7 @@
                         <form action="" @submit.prevent="saveCompany">
                             <div class="form-group">
                                 <label for="role">Role</label>
-                                <v-select :options="roles" v-model="userForm.role" class="filter--v-select">
+                                <v-select dusk="role-select" name="role" :options="roles" v-model="userForm.role" class="filter--v-select">
                                     <template slot="selected-option" slot-scope="option">
                                         @{{ option.label | userRole }}
                                     </template>
@@ -39,14 +39,14 @@
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="text" class="form-control" required v-model="userForm.email">
+                                <input type="text" name="email" class="form-control" required v-model="userForm.email">
                             </div>
                             <div class="form-group" v-if="isAdmin && userForm.role !== 'site_admin'">
                                 <label for="email">Company</label>
-                                <v-select :options="companies" label="name" v-model="companySelected" class="filter--v-select">
+                                <v-select dusk="company-select" name="company" :options="companies" label="name" v-model="companySelected" class="filter--v-select">
                                 </v-select>
                             </div>
-                            <button type="submit" :disabled="loading" class="btn pm-btn-submit pm-btn pm-btn-purple pm-btn-md mt-4">
+                            <button dusk="save-user-button" type="submit" :disabled="loading" class="btn pm-btn-submit pm-btn pm-btn-purple pm-btn-md mt-4">
                                 <span v-if="!loading"><i class="fas fa-plus mr-2"></i>Add User</span>
                                 <div class="loader-spinner" v-if="loading">
                                     <spinner-icon></spinner-icon>
