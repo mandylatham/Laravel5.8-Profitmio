@@ -610,7 +610,7 @@ class ResponseConsoleController extends Controller
 
             return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
                 '<Response>' . "\n" .
-                '<Say voice="alice">This call may be recorded for quality assurance purposes</Say>' . "\n" .
+                '<Say voice="Polly.Joanna">This call may be recorded for quality assurance purposes</Say>' . "\n" .
                 '<Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial>' . "\n" .
                 '</Response>', 200)
                 ->header('Content-Type', 'text/xml');
