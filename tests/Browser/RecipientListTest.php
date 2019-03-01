@@ -48,9 +48,6 @@ class RecipientListTest extends DuskTestCase
         });
     }
 
-    /**
-     * @group test
-     */
     public function testUserCanGoToRecipientListPageFromCampaignIndexPage()
     {
         $this->browse(function (Browser $browser) {

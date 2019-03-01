@@ -22,7 +22,7 @@
         <div class="row align-items-end no-gutters">
             <div class="col-12 col-sm-5 col-lg-4 mb-3">
                 @if (auth()->user()->isAdmin())
-                <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id]) }}">
+                <a dusk="new-drop-button" class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id]) }}">
                     <i class="fas fa-plus mr-2"></i> NEW
                 </a>
                 @endif
