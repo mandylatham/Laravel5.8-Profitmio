@@ -51,6 +51,18 @@ class RecipientListTest extends DuskTestCase
     /**
      * @group test
      */
+    public function testUserCanGoToRecipientListPageFromCampaignIndexPage()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaigns.index', ['campaign' => $this->campaign->id])
+                ->waitUntilMissing('.loader-spinner')
+                ->click('#campaign-component-' . $this->campaign->id . ' .recipient-list-link')
+                ->waitForRoute('campaigns.recipient-lists.index', ['campaign' => $this->campaign->id])
+                ->assertRouteIs('campaigns.recipient-lists.index', ['campaign' => $this->campaign->id]);
+        });
+    }
+
     public function testSuccessfulCreateRecipientList()
     {
         $listName = 'Recipient List Test';

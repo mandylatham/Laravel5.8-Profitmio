@@ -1,5 +1,5 @@
 <template>
-    <div class="row no-gutters campaign-component active" :class="{'closed': campaignClosed}" v-if="campaignActive">
+    <div class="row no-gutters campaign-component active" :id="'campaign-component-' + campaign.id" :class="{'closed': campaignClosed}" v-if="campaignActive">
         <div class="col-12 col-md-5">
             <div class="campaign-header" @click="toggleCampaign">
                 <div class="campaign-header--status">
@@ -44,7 +44,7 @@
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
             <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
             <a :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
-            <a :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
+            <a class="recipient-list-link" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
             <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})"><span class="fas fa-edit"></span> Edit</a>
         </div>
