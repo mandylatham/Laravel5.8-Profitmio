@@ -24,7 +24,7 @@
     <div class="container" id="campaign-index" v-cloak>
         <div class="row">
             <div class="col">
-                <a href="{{ route('campaigns.create') }}" class="btn pm-btn pm-btn-blue mb-3">
+                <a dusk="create-campaign-button" href="{{ route('campaigns.create') }}" class="btn pm-btn pm-btn-blue mb-3">
                     <i class="fas fa-plus mr-3"></i>New Campaign
                 </a>
             </div>

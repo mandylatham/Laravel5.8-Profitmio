@@ -29,9 +29,17 @@ class CampaignTest extends DuskTestCase
         });
     }
 
-    /**
-     * @group test
-     */
+    public function testUserCanGoToCreateCampaignFromCampaignIndexPage()
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaigns.index')
+                ->click('@create-campaign-button')
+                ->waitForRoute('campaigns.create')
+                ->assertRouteIs('campaigns.create');
+        });
+    }
+
     public function testSuccessfulCreateCampaign()
     {
         factory(Company::class)->create([

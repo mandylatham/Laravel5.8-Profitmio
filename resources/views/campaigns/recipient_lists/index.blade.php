@@ -29,9 +29,9 @@
             <div class="col-none col-sm-2 col-lg-4"></div>
             <div class="col-12 col-sm-5 col-lg-4">
                 @if (auth()->user()->isAdmin())
-                <a class="btn pm-btn pm-btn-blue float-right" v-b-modal.upload-recipient-modal href="javascript:;">
+                <button dusk="add-recipient-list-button" class="btn pm-btn pm-btn-blue float-right" v-b-modal.upload-recipient-modal>
                     <i class="fas fa-plus mr-2"></i> UPLOAD NEW LIST
-                </a>
+                </button>
                 @endif
             </div>
         </div>
