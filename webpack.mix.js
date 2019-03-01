@@ -76,7 +76,7 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .js('resources/js/pages/auth/reset-password.js', 'public/js/reset-password.js')
     .sass('resources/sass/auth/reset-password.scss', 'public/css/reset-password.css')
     .copyDirectory('resources/fonts', 'public/fonts/')
-    .copyDirectory('resources/img', 'public/img')
-    .options({
-        processCssUrls: false
-    });
+    .copyDirectory('resources/img', 'public/img');
+    // .options({
+    //     processCssUrls: false
+    // });
