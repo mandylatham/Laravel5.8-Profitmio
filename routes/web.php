@@ -270,25 +270,6 @@ Route::group(['middleware' => 'auth'], function () {
         });
     });
     //endregion
-
-    Route::get('/new-dashboard', function () {
-        return view('dashboard.index');
-    });
-    Route::get('/company-dashboard', function () {
-        return view('company.index');
-    });
-    Route::get('/campaign-dashboard', function () {
-        return view('campaign.index');
-    });
-    Route::get('/campaign-view', function () {
-        return view('campaign.view');
-    });
-    Route::get('/user-dashboard', function () {
-        return view('user.index');
-    });
-    Route::get('/user-view', function () {
-        return view('user.view');
-    });
 });
 //endregion
 
