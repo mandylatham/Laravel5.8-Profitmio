@@ -25,7 +25,7 @@ class Drop extends Model
     protected $primaryKey = 'id';
 
     protected $appends = [
-        'sms_phones'
+        'sms_phones', 'send_at_formatted'
     ];
 
     public function getSmsPhonesAttribute()
@@ -33,6 +33,10 @@ class Drop extends Model
         return $this->campaign->phones()->whereCallSourceName('sms')->count();
     }
 
+    public function getSendAtFormattedAttribute()
+    {
+        return isset($this->send_at) ? $this->send_at->timezone(auth()->user()->timezone)->format("m/d/Y @ g:i A") : '';
+    }
 
     public function campaign()
     {
