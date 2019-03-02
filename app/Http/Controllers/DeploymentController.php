@@ -33,19 +33,12 @@ class DeploymentController extends Controller
         if ($campaign->isExpired) {
             return response()->json(['error' => ['error' => 'Illegal Request. This abuse of the system has been logged.']], 403);
         }
-        if ($drop->system_id == 2) {
-            $unsent = \DB::table('deployment_recipients')
-                    ->where('deployment_id', $drop->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->whereNotNull('sent_at')
-                    ->get();
-        } else {
-            $unsent = \DB::table('campaign_schedule_lists')
-                    ->where('campaign_schedule_id', $drop->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->whereNotNull('sent_at')
-                    ->get();
-        }
+
+        $unsent = \DB::table('deployment_recipients')
+                ->where('deployment_id', $drop->id)
+                ->where('recipient_id', $recipient->id)
+                ->whereNotNull('sent_at')
+                ->get();
 
         if ($unsent->count() > 0) {
             return ['success' => 1, 'message' => 'This recipient has already been sent an sms message'];
@@ -124,6 +117,7 @@ class DeploymentController extends Controller
             $percent = $stats->pending / ($stats->pending + $stats->sent);
             $filler = [
                 'status' => $stats->pending == 0 ? 'Completed' : 'Processing',
+                'completed_at' => \Carbon\Carbon::now('UTC'),
                 'percentage_complete' => $percent * 100,
             ];
 
@@ -366,12 +360,12 @@ class DeploymentController extends Controller
     }
 
 
-    public function start(Campaign $campaign, Drop $drop)
+    public function start(Campaign $campaign, Drop $deployment)
     {
         try {
-            $drop->status = "Processing";
-            $drop->started_at = Carbon::now()->toDateTimeString();
-            $drop->save();
+            $deployment->status = "Processing";
+            $deployment->started_at = Carbon::now('UTC');
+            $deployment->save();
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
