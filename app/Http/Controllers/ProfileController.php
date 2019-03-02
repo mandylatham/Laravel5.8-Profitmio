@@ -40,12 +40,12 @@ class ProfileController extends Controller
     public function updatePassword(UpdatePasswordRequest $request)
     {
         $user = auth()->user();
-        if ($this->hash->check($request->input('password'), $user->password)) {
+        if ($this->hash->check($request->input('current_password'), $user->password)) {
             $user->password = bcrypt($request->input('new_password'));
             $user->save();
-            return redirect()->back()->with(['success_message' => 'Password updated!']);
+            return response()->json(['success_message' => 'Password updated!']);
         } else {
-            return redirect()->back()->withErrors(['password' => 'Current password doesn\'t match password stored in database.']);
+            return response()->json(['password' => 'Current password doesn\'t match password stored in database.'], 422);
         }
     }
 
