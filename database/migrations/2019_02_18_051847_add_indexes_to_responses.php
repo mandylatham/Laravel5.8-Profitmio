@@ -28,9 +28,9 @@ class AddIndexesToResponses extends Migration
     public function down()
     {
         Schema::table('responses', function (Blueprint $table) {
-            $table->index('campaign_id_idx');
-            $table->index('recipient_id_idx');
-            $table->index('type_idx');
+            $table->dropIndex('campaign_id_idx');
+            $table->dropIndex('recipient_id_idx');
+            $table->dropIndex('type_idx');
         });
     }
 }

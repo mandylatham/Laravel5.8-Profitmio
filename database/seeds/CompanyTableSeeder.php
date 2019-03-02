@@ -15,10 +15,10 @@ class CompanyTableSeeder extends Seeder
         factory(Company::class, 1)->create([
             'type' => 'support'
         ]);
-        factory(Company::class, 10)->create([
+        factory(Company::class, 5)->create([
             'type' => 'agency'
         ]);
-        factory(Company::class, 10)->create([
+        factory(Company::class, 5)->create([
             'type' => 'dealership'
         ]);
     }

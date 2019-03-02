@@ -18,9 +18,10 @@ use App\Models\Campaign;
 
 $factory->define(RecipientList::class, function (Faker $faker) {
     return [
-        'uploaded_by' => User::inRandomOrder()->first()->id,
+        'uploaded_by' => User::where('is_admin', 1)->first()->id,
         'name' => $faker->name,
-        'recipients_added' => true,
+        'recipients_added' => false,
         'fieldmap' => '',
+        'type' => $faker->randomElement(['database','conquest','mixed'])
     ];
 });

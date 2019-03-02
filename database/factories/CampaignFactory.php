@@ -33,8 +33,9 @@ $factory->define(Campaign::class, function (Faker $faker) {
         'lead_alert_email' => [$faker->email],
         'client_passthrough' => $faker->randomElement([true, false]),
         'client_passthrough_email' => [$faker->email],
-        'starts_at' => Carbon::now()->toDateTimeString(),
-        'ends_at' => Carbon::now()->toDateTimeString(),
+        'starts_at' => Carbon::now()->subDays(5)->toDateTimeString(),
+        'ends_at' => Carbon::now()->addDays(10)->toDateTimeString(),
+        'expires_at' => Carbon::now()->addDays(20)->toDateTimeString(),
         'status' => $faker->randomElement(['Active', 'Archived', 'Completed', 'Expired', 'Upcoming'])
     ];
 });

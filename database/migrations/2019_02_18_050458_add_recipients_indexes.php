@@ -28,9 +28,9 @@ class AddRecipientsIndexes extends Migration
     public function down()
     {
         Schema::table('recipients', function (Blueprint $table) {
-            $table->index('recipient_list_id_idx');
-            $table->index('phone_idx');
-            $table->index('campaign_id_idx');
+            $table->dropIndex('recipient_list_id_idx');
+            $table->dropIndex('phone_idx');
+            $table->dropIndex('campaign_id_idx');
         });
     }
 }
