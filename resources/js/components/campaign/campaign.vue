@@ -38,7 +38,7 @@
             </p>
             <div class="campaign-date--left">
                 <small>Days Left:</small>
-                <strong>{{ daysLeft }}</strong>
+                <strong>{{ daysLeft | zeroIfNegative }}</strong>
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
@@ -138,13 +138,18 @@
         },
         computed: {
             daysLeft: function () {
-                return moment(this.campaign.ends_at, 'YYYY-MM-DD').diff(moment(this.campaign.starts_at, 'YYYY-MM-DD'), 'days');
+                return moment(this.campaign.ends_at, 'YYYY-MM-DD').add(1, 'd').diff(moment.utc(), 'days');
             },
             campaignActive: function () {
                 return this.campaign.status === 'Active';
             },
             pieChartDataSet: function () {
                 return [['sms', this.campaign.text_responses_count], ['call', this.campaign.phone_responses_count], ['email', this.campaign.email_responses_count]];
+            }
+        },
+        filters: {
+            zeroIfNegative: function (value) {
+                return value < 0 ? 0 : value;
             }
         },
         methods: {
