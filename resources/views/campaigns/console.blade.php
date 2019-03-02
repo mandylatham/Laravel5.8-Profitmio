@@ -170,7 +170,7 @@
         <div class="recipient-row" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
             <div class="row no-gutters">
                 <div class="col-12 col-sm-2 text-center d-flex flex-column justify-content-center">
-                    @{{ recipient.last_responded_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A') }}
+                    @{{ recipient.last_responded_at | mUtcParse('YYYY-MM-DD HH:mm') | mDurationForHumans('MM/DD/YYYY hh:mm') }}
                 </div>
                 <div class="col-12 col-sm-7 d-flex flex-column justify-content-center">
                     <div class="name-wrapper">

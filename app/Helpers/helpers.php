@@ -83,6 +83,11 @@ function get_active_company()
     return session()->get('activeCompany');
 }
 
+function get_active_company_model()
+{
+    return \App\Models\Company::findOrFail(session()->get('activeCompany'));
+}
+
 function get_times($default = '19:00', $interval = '+30 minutes', $firstElement = '')
 {
     $output = '';

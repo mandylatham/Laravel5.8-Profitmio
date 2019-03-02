@@ -184,11 +184,15 @@ class CompanyController extends Controller
             'facebook' => $request->input('facebook'),
             'twitter' => $request->input('twitter'),
         ]);
-        if ($request->hasFile('image')) {
-            $company->image_url = $request->file('image')->store('company-image', 'public');
-        }
         $company->save();
-        return redirect()->route('company.details', ['company' => $company]);
+
+        if ($request->hasFile('image')) {
+            $company->addMediaFromRequest('image')->toMediaCollection('company-image', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
+        }
+
+        return response()->json([
+            'message' => 'Resource created.'
+        ]);
     }
 
     /**
@@ -222,7 +226,7 @@ class CompanyController extends Controller
 
         // check if the upload has finished (in chunk mode it will send smaller files)
         if ($save->isFinished()) {
-            $image = $company->addMedia($save->getFile())->toMediaCollection('company-photo', 'public');
+            $image = $company->addMedia($save->getFile())->toMediaCollection('company-photo', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
             return response()->json(['location' => $image->getFullUrl()], 201);
         }
 

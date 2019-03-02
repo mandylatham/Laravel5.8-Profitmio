@@ -70,6 +70,11 @@ class LoginController extends Controller
         ], 403);
     }
 
+    public function showForgetPasswordForm(Request $request)
+    {
+        return view('auth.passwords.forget');
+    }
+
     /**
      * Log the user out of the application.
      *

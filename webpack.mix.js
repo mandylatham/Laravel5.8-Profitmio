@@ -70,5 +70,13 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     //Selector
     .js('resources/js/pages/selector/select-company.js', 'public/js/select-company.js')
     .sass('resources/sass/selector/select-company.scss', 'public/css/select-company.css')
+    //Auth
+    .js('resources/js/pages/auth/forget-password.js', 'public/js/forget-password.js')
+    .sass('resources/sass/auth/forget-password.scss', 'public/css/forget-password.css')
+    .js('resources/js/pages/auth/reset-password.js', 'public/js/reset-password.js')
+    .sass('resources/sass/auth/reset-password.scss', 'public/css/reset-password.css')
     .copyDirectory('resources/fonts', 'public/fonts/')
-    .copyDirectory('resources/img', 'public/img');
+    .copyDirectory('resources/img', 'public/img')
+    .options({
+        processCssUrls: false
+    });

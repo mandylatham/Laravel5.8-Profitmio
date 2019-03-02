@@ -10,6 +10,9 @@
     <link href="{{ asset('css/select-company.css') }}" rel="stylesheet">
     <script>
         window.selectCompanyUrl = "{{ route('selector.update-active-company') }}";
+        @if ($activeCompanyId)
+            window.activeCompanyId = @json($activeCompanyId);
+        @endif
     </script>
 </head>
 <body style="background-image: url('/img/background-{{ rand(1,6)  }}.jpg')">

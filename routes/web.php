@@ -22,6 +22,7 @@ Route::get('login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('login', 'Auth\LoginController@login')->name('auth.authenticate');
 Route::get('logout', 'Auth\LoginController@logout')->name('logout');
 Route::post('logout', 'Auth\LoginController@logout')->name('logout');
+// Password Reset Routes...
 Route::get('password/reset', 'Auth\ForgotPasswordController@showLinkRequestForm')->name('password.request');
 Route::post('password/email', 'Auth\ForgotPasswordController@sendResetLinkEmail')->name('password.email');
 Route::get('password/reset/{token}', 'Auth\ResetPasswordController@showResetForm')->name('password.reset');
@@ -201,13 +202,6 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/recipients/for-user-display', 'RecipientController@getRecipients')->name('campaign.recipient.for-user-display');
         Route::get('/response-console/{field?}', 'ResponseConsoleController@show')->name('campaign.response-console.index');
-//        Route::get('/response-console/unread', 'ResponseConsoleController@showUnread')->name('campaign.response-console.index.unread');
-//        Route::get('/response-console/idle', 'ResponseConsoleController@showIdle')->name('campaign.response-console.index.idle');
-//        Route::get('/response-console/archived', 'ResponseConsoleController@showArchived')->name('campaign.response-console.index.archived');
-//        Route::get('/response-console/labelled/{label}', 'ResponseConsoleController@showLabelled')->name('campaign.response-console.index.labelled');
-//        Route::get('/response-console/calls', 'ResponseConsoleController@showCalls')->name('campaign.response-console.index.call');
-//        Route::get('/response-console/sms', 'ResponseConsoleController@showTexts')->name('campaign.response-console.index.sms');
-//        Route::get('/response-console/email', 'ResponseConsoleController@showEmails')->name('campaign.response-console.index.email');
     });
     //endregion
 

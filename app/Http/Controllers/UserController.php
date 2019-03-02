@@ -273,7 +273,7 @@ class UserController extends Controller
 
         // check if the upload has finished (in chunk mode it will send smaller files)
         if ($save->isFinished()) {
-            $image = $user->addMedia($save->getFile())->toMediaCollection('profile-photo', 'public');
+            $image = $user->addMedia($save->getFile())->toMediaCollection('profile-photo', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
             return response()->json(['location' => $image->getFullUrl()], 201);
         }
 

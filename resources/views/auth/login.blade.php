@@ -30,9 +30,18 @@
                     <input type="password" class="form-control" id="password" placeholder="Password" name="password" v-model="userForm.password">
                 </div>
                 <div class="form-group clearfix">
-                    <div class="checkbox-custom checkbox-inline checkbox-primary float-left">
-                        <input type="checkbox" id="inputCheckbox" name="remember">
-                        <label for="inputCheckbox">Remember me</label>
+                    <div class="row">
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="checkbox-custom remember-me-fg checkbox-inline checkbox-primary float-left">
+                                <input type="checkbox" id="inputCheckbox" name="remember">
+                                <label for="inputCheckbox">Remember me</label>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-6">
+                            <div class="form-group clearfix forget-password-fg">
+                                <a href="{{ route('password.request') }}">Forgot password?</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary btn-block waves-effect" :disabled="loading">

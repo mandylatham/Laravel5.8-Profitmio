@@ -1,76 +1,66 @@
-@extends('layouts.app')
-
-@section('content')
-<div class="container">
-    <div class="row">
-        <div class="col-md-8 col-md-offset-2">
-            <div class="panel panel-default">
-                <div class="panel-heading">Reset Password</div>
-
-                <div class="panel-body">
-                    @if (session('status'))
-                        <div class="alert alert-success">
-                            {{ session('status') }}
-                        </div>
-                    @endif
-
-                    <form class="form-horizontal" role="form" method="POST" action="{{ route('password.request') }}">
-                        {{ csrf_field() }}
-
-                        <input type="hidden" name="token" value="{{ $token }}">
-
-                        <div class="form-group{{ $errors->has('email') ? ' has-error' : '' }}">
-                            <label for="email" class="col-md-4 control-label">E-Mail Address</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control" name="email" value="{{ $email or old('email') }}" required autofocus>
-
-                                @if ($errors->has('email'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('email') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
-                            <label for="password" class="col-md-4 control-label">Password</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control" name="password" required>
-
-                                @if ($errors->has('password'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('password') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group{{ $errors->has('password_confirmation') ? ' has-error' : '' }}">
-                            <label for="password-confirm" class="col-md-4 control-label">Confirm Password</label>
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
-
-                                @if ($errors->has('password_confirmation'))
-                                    <span class="help-block">
-                                        <strong>{{ $errors->first('password_confirmation') }}</strong>
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-md-6 col-md-offset-4">
-                                <button type="submit" class="btn btn-primary">
-                                    Reset Password
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>Profit Miner</title>
+    <link href="{{ asset('css/reset-password.css') }}" rel="stylesheet">
+    <script>
+        window.updatePasswordUrl = "{{ route('password.restore') }}";
+        window.loginUrl = "{{ route('login') }}";
+        window.token = @json($token);
+    </script>
+</head>
+<body style="background-image: url('/img/background-{{ rand(1,6)  }}.jpg')">
+<div class="card" id="reset-password" v-cloak>
+    <div class="card-body">
+        <div class="logo">
+            <img class="brand-img" src="/img/logo-large.png" alt="...">
+        </div>
+        <p class="text-primary">Reset Password</p>
+        <p class="text-danger" v-for="error in errors">@{{ error }}</p>
+        <p class="text-danger" v-if="errorMessage">@{{ errorMessage }}</p>
+        <form method="post" @submit.prevent="reset()">
+            {{ csrf_field() }}
+            <input type="hidden" name="token" value="{{ $token }}">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control empty" name="email" autocomplete="off"
+                       :class="{'is-invalid': userForm.errors.has('email')}" v-model="userForm.email"
+                       @change="clearError('email')">
+                <div class="invalid-feedback" v-if="userForm.errors.has('email')">
+                    <div v-for="msg in userForm.errors.get('email')">@{{ msg }}</div>
                 </div>
             </div>
-        </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control empty" name="password" autocomplete="off"
+                       :class="{'is-invalid': userForm.errors.has('password')}" v-model="userForm.password"
+                       @change="clearError('password')">
+                <div class="invalid-feedback" v-if="userForm.errors.has('password')">
+                    <div v-for="msg in userForm.errors.get('password')">@{{ msg }}</div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="password">Confirm Password</label>
+                <input type="password" class="form-control empty" name="password_confirmation" autocomplete="off"
+                       :class="{'is-invalid': userForm.errors.has('password_confirmation')}" v-model="userForm.password_confirmation"
+                       @change="clearError('password_confirmation')">
+                <div class="invalid-feedback" v-if="userForm.errors.has('password_confirmation')">
+                    <div v-for="msg in userForm.errors.get('password_confirmation')">@{{ msg }}</div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block waves-effect btn-submit" :disabled="loading">
+                <span v-if="!loading">Reset Password</span>
+                <spinner-icon v-if="loading"></spinner-icon>
+            </button>
+            <a href="{{ route('login') }}" class="go-back">Go Back</a>
+        </form>
     </div>
 </div>
-@endsection
+<script src="{{ asset('js/reset-password.js') }}"></script>
+</body>
+</html>
