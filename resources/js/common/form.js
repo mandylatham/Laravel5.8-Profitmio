@@ -87,7 +87,6 @@ export default class Form {
                   .then(response => {
                       resolve(response.data);
                   }, error => {
-                      console.log('error', error);
                       reject(error);
                   });
 
@@ -96,7 +95,6 @@ export default class Form {
                   .then(response => {
                       resolve(response.data);
                   }, error => {
-                      console.log('error', error);
                       reject(error);
                   });
             }

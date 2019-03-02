@@ -18,10 +18,16 @@ use App\Models\Campaign;
 
 $factory->define(Recipient::class, function (Faker $faker) {
     return [
-//        'campaign_id' => Campaign::inRandomOrder()->first()->id,
-//        'recipient_list_id' => RecipientList::inRandomOrder()->first()->id,
         'first_name' => $faker->name,
         'last_name' => $faker->lastName,
-        'email' => $faker->email
+        'last_responded_at' => \Carbon\Carbon::now('UTC'),
+        'email' => $faker->email,
+        'phone' => $faker->phoneNumber,
+        'address1' => $faker->streetAddress,
+        'address2' => $faker->streetAddress,
+        'city' => $faker->city,
+        'state' => $faker->state,
+        'email_valid' => true,
+        'phone_valid' => true,
     ];
 });

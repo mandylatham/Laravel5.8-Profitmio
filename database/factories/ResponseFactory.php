@@ -4,12 +4,10 @@ use Faker\Generator as Faker;
 
 $factory->define(\App\Models\Response::class, function (Faker $faker) {
     return [
-        'recipient_id' => \App\Models\Recipient::inRandomOrder()->first()->id,
         'type' => $faker->randomElement(['text', 'phone', 'email']),
         'message' => $faker->realText,
-        'call_sid' => $faker->word,
-        'recording_sid' => $faker->word,
-        'recording_uri' => $faker->word,
-        'duration' => 0
+        'call_sid' => $faker->randomNumber,
+        'recording_sid' => $faker->randomNumber,
+        'incoming' => $faker->randomElement([true, false])
     ];
 });
