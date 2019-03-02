@@ -127,6 +127,11 @@ window['sidebar'] = new Vue({
         filter: 'appointment',
         selectedDate: moment().format('YYYY-MM-DD'),
     },
+    filters: {
+        prettyDate: function (value) {
+            return moment(value, 'YYYY-MM-DD HH:mm').format('MM-DD-YYYY HH:mm');
+        }
+    },
     methods: {
         parseDate: function (date, format) {
             return moment(date, format).toDate();
