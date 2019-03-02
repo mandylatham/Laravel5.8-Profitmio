@@ -51,7 +51,7 @@
         <div class="col-6 col-md-3 campaign-links" v-else>
             <div class="campaign-apointment-totals">
                 <i class="far fa-calendar-check"></i>
-                <span class="total">{{ campaign.appointment_counts }}</span>
+                <div class="total"><div class="m-0 p-0">{{ campaign.appointment_counts }}</div><div class="label">Appointments</div></div>
             </div>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})" class="btn btn-console-outline pm-btn-outline-purple">
                 <span class="fa fa-terminal"></span> Console
