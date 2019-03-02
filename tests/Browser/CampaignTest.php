@@ -2,6 +2,7 @@
 
 namespace Tests\Browser;
 
+use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\User;
 use Tests\DuskTestCase;
@@ -82,6 +83,72 @@ class CampaignTest extends DuskTestCase
                 ->waitForRoute('campaigns.index')
                 ->waitFor('.campaign-group-label')
                 ->assertSee($campaignName);
+        });
+    }
+
+    public function testSetOnAllAdditionalFeaturesOnEditCampaignPage()
+    {
+        // Create Campaign
+        $agency = factory(Company::class)->create([
+            'type' => 'agency'
+        ])->first();
+        $dealership = factory(Company::class)->create([
+            'type' => 'dealership'
+        ])->first();
+        $campaign = factory(Campaign::class)->create([
+            'agency_id' => $agency->id,
+            'dealership_id' => $dealership->id,
+            'status' => 'Active',
+            'starts_at' => Carbon::now()->startOfMonth()->toDateString(),
+            'ends_at' => Carbon::now()->addMonth(1)->toDateString(),
+            'expires_at' => Carbon::now()->addMonth(2)->toDateString()
+        ])->first();
+        $this->browse(function (Browser $browser) use ($campaign) {
+            $browser
+                ->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaigns.edit', ['campaign' => $campaign->id])
+                ->click('.card-header-tabs .nav-item:last-child');
+            foreach (['adf_crm_export', 'lead_alerts', 'service_dept', 'client_passthrough'] as $field) {
+                $browser->with('.' . $field . '-container', function ($container) use ($field) {
+                    $container
+                        ->check('input[type="checkbox"]')
+                        ->type('.form-control', $field.'1@pf.com')
+                        ->click('.btn')
+                        ->type('.form-control', $field.'2@pf.com')
+                        ->click('.btn')
+                        ->pause(200)
+                        ->assertSee($field.'1@pf.com')
+                        ->assertSee($field.'2@pf.com');
+                });
+            }
+            $browser->with('.sms_on_callback-container', function ($container) {
+                $phone1 = '202-555-0154';
+                $phone2 = '202-555-0155';
+                $container
+                    ->check('input[type="checkbox"]')
+                    ->type('.form-control', $phone1)
+                    ->click('.btn')
+                    ->type('.form-control', $phone2)
+                    ->click('.btn')
+                    ->pause(200)
+                    ->assertSee($phone1)
+                    ->assertSee($phone2);
+            });
+            // Save campaign and assert if fields were saved correctly
+            $browser
+                ->click('@save-additional-features-button')
+                ->waitFor('.swal2-container', 10)
+                ->assertSee('Campaign Updated!')
+                ->refresh()
+                ->click('.card-header-tabs .nav-item:last-child');
+
+            foreach (['adf_crm_export', 'lead_alerts', 'service_dept', 'client_passthrough'] as $field) {
+                $browser->assertSee($field.'1@pf.com')
+                    ->assertSee($field.'2@pf.com');
+            }
+
+            $browser->assertSee('202-555-0154')
+                ->assertSee('202-555-0155');
         });
     }
 }

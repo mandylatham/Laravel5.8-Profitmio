@@ -111,9 +111,6 @@ class DropTest extends DuskTestCase
         });
     }
 
-    /**
-     * @group test
-     */
     public function testSuccessfulCreateEmailDropAllEmailAbleWithoutTemplateFromConquests()
     {
         $this->browse(function (Browser $browser) {
