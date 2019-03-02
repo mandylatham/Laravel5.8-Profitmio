@@ -138,7 +138,7 @@
         },
         computed: {
             daysLeft: function () {
-                return moment(this.campaign.ends_at, 'YYYY-MM-DD').diff(moment(this.campaign.starts_at, 'YYYY-MM-DD'), 'days');
+                return moment(this.campaign.ends_at, 'YYYY-MM-DD').add(1, 'd').diff(moment.utc(), 'days');
             },
             campaignActive: function () {
                 return this.campaign.status === 'Active';
