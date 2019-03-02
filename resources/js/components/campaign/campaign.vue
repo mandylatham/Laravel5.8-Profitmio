@@ -38,7 +38,7 @@
             </p>
             <div class="campaign-date--left">
                 <small>Days Left:</small>
-                <strong>{{ daysLeft }}</strong>
+                <strong>{{ daysLeft | zeroIfNegative }}</strong>
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
@@ -145,6 +145,11 @@
             },
             pieChartDataSet: function () {
                 return [['sms', this.campaign.text_responses_count], ['call', this.campaign.phone_responses_count], ['email', this.campaign.email_responses_count]];
+            }
+        },
+        filters: {
+            zeroIfNegative: function (value) {
+                return value < 0 ? 0 : value;
             }
         },
         methods: {
