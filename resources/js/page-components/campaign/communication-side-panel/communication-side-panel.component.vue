@@ -160,11 +160,20 @@
                     <div class="sms-message-container">
                         <div v-for="msg in threads.text">
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
-                                <div class="message-user">{{ msg.reply_user }}</div>
+                                <div class="message-user">
+                                    <template v-if="msg.impersonation">
+                                        {{ msg.impersonation.impersonator.name }} {{ msg.reply_user }}
+                                    </template>
+                                    <template v-else>
+                                        {{ msg.reply_user }}
+                                    </template>
+                                </div>
+
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
                                 </div>
+
                                 <div class="message-time"  :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}" v-else><span
                                     class="text-danger">UNKNOWN RECEIVE DATE</span></div>
 
@@ -207,7 +216,15 @@
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
-                                <div class="message-user">{{ msg.reply_user }}</div>
+                                <div class="message-user">
+                                    <template v-if="msg.impersonation">
+                                        {{ msg.impersonation.impersonator.name }} (id: {{ msg.impersonation.impersonator.id}})
+                                        <p><small>on behalf of <strong>{{ msg.reply_user }}</strong></small></p>
+                                    </template>
+                                    <template v-else>
+                                        {{ msg.reply_user }}
+                                    </template>
+                                </div>
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
