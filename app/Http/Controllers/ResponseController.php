@@ -191,8 +191,6 @@ class ResponseController extends Controller
     }
 
     /**
-     * TODO: Heavy refactoring IS A MUST
-     *
      * @param Campaign  $campaign
      * @param Recipient $recipient
      * @return array
@@ -200,20 +198,17 @@ class ResponseController extends Controller
     public function getResponse(Campaign $campaign, Recipient $recipient)
     {
         $appointments = Appointment::where('recipient_id', $recipient->id)->get();
-        $responses = Response::with('impersonation.impersonator')
-            ->where('campaign_id', $campaign->id)
+        $responses = Response::where('campaign_id', $campaign->id)
             ->where('recipient_id', $recipient->id)
             ->orderBy('created_at', 'asc')
             ->get();
 
         $threads = collect([
-            'email'     => Response::with('impersonation.impersonator')
-                ->where('campaign_id', $campaign->id)
+            'email'     => Response::where('campaign_id', $campaign->id)
                 ->where('recipient_id', $recipient->id)
                 ->where('type', 'email')
                 ->get(),
-            'text'      => Response::with('impersonation.impersonator')
-                ->where('campaign_id', $campaign->id)
+            'text'      => Response::where('campaign_id', $campaign->id)
                 ->where('recipient_id', $recipient->id)
                 ->where('type', 'text')
                 ->get(),

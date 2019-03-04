@@ -160,20 +160,11 @@
                     <div class="sms-message-container">
                         <div v-for="msg in threads.text">
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
-                                <div class="message-user">
-                                    <template v-if="msg.impersonation">
-                                        {{ msg.impersonation.impersonator.name }} {{ msg.reply_user }}
-                                    </template>
-                                    <template v-else>
-                                        {{ msg.reply_user }}
-                                    </template>
-                                </div>
-
+                                <div class="message-user">{{ msg.reply_user }}</div>
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
                                 </div>
-
                                 <div class="message-time"  :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}" v-else><span
                                     class="text-danger">UNKNOWN RECEIVE DATE</span></div>
 
@@ -188,7 +179,7 @@
                             </div>
                         </div>
                     </div>
-                    <form @submit.prevent="sendText" v-if="!campaign.is_expired && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
+                    <form @submit.prevent="sendText" v-if="!campaign.is_expired && (isAdmin || (!isAdmin && activeCompany.type === 'dealership'))">
                         <div id="sms-form" style="margin-top: 20px;">
                             <div class="input-group">
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
@@ -216,15 +207,7 @@
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
-                                <div class="message-user">
-                                    <template v-if="msg.impersonation">
-                                        {{ msg.impersonation.impersonator.name }} (id: {{ msg.impersonation.impersonator.id}})
-                                        <p><small>on behalf of <strong>{{ msg.reply_user }}</strong></small></p>
-                                    </template>
-                                    <template v-else>
-                                        {{ msg.reply_user }}
-                                    </template>
-                                </div>
+                                <div class="message-user">{{ msg.reply_user }}</div>
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
@@ -246,7 +229,7 @@
                     </div>
 
 
-                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
+                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired && (isAdmin || (!isAdmin && activeCompany.type === 'dealership'))">
                         <div id="email-form">
                             <div class="input-group">
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
@@ -582,7 +565,6 @@
         mounted() {
             this.activeCompany = window.activeCompany;
             this.isAdmin = window.isAdmin;
-            this.isImpersonated = window.isImpersonated;
             pusherService = new PusherService();
             this.getResponses();
         },

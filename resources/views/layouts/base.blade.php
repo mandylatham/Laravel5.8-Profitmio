@@ -12,7 +12,6 @@
     <script>
         window.loggedUser = @json(auth()->user());
         window.isAdmin = @json(auth()->user()->isAdmin());
-        window.isImpersonated = @json(auth()->user()->isImpersonated());
         window.timezone = @json(auth()->user()->getTimezone(\App\Models\Company::findOrFail(get_active_company())));
     </script>
     @yield('head-script')
