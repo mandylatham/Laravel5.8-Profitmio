@@ -21,6 +21,25 @@ class CampaignTest extends DuskTestCase
         $this->createCompanyAndSiteAdminUser();
     }
 
+    public function createCampaign()
+    {
+        $agency = factory(Company::class)->create([
+            'type' => 'agency'
+        ])->first();
+        $dealership = factory(Company::class)->create([
+            'type' => 'dealership'
+        ])->first();
+        $campaign = factory(Campaign::class)->create([
+            'agency_id' => $agency->id,
+            'dealership_id' => $dealership->id,
+            'status' => 'Active',
+            'starts_at' => Carbon::now()->startOfMonth()->toDateString(),
+            'ends_at' => Carbon::now()->addMonth(1)->toDateString(),
+            'expires_at' => Carbon::now()->addMonth(2)->toDateString()
+        ])->first();
+        return $campaign;
+    }
+
     public function testLoadingCampaignIndexPage()
     {
         $this->browse(function (Browser $browser) {
@@ -88,21 +107,8 @@ class CampaignTest extends DuskTestCase
 
     public function testSetOnAllAdditionalFeaturesOnEditCampaignPage()
     {
-        // Create Campaign
-        $agency = factory(Company::class)->create([
-            'type' => 'agency'
-        ])->first();
-        $dealership = factory(Company::class)->create([
-            'type' => 'dealership'
-        ])->first();
-        $campaign = factory(Campaign::class)->create([
-            'agency_id' => $agency->id,
-            'dealership_id' => $dealership->id,
-            'status' => 'Active',
-            'starts_at' => Carbon::now()->startOfMonth()->toDateString(),
-            'ends_at' => Carbon::now()->addMonth(1)->toDateString(),
-            'expires_at' => Carbon::now()->addMonth(2)->toDateString()
-        ])->first();
+        $campaign = $this->createCampaign();
+
         $this->browse(function (Browser $browser) use ($campaign) {
             $browser
                 ->loginAs(User::where('is_admin', 1)->first())
@@ -149,6 +155,334 @@ class CampaignTest extends DuskTestCase
 
             $browser->assertSee('202-555-0154')
                 ->assertSee('202-555-0155');
+        });
+    }
+
+    public function testSeeAllResponsesOnConsolePage()
+    {
+        $campaign = $this->createCampaign();
+
+        // Create recipient lists
+        factory(\App\Models\RecipientList::class)
+            ->create([
+                'campaign_id' => $campaign->id
+            ])
+            ->each(function ($recipientList) use ($campaign) {
+                // Attach recipients to recipient list
+                factory(\App\Models\Recipient::class, 20)
+                    ->create([
+                        'campaign_id' => $campaign->id,
+                        'recipient_list_id' => $recipientList->id
+                    ])
+                    ->each(function ($recipient) use ($campaign) {
+                        //  Attach emails
+                        factory(\App\Models\Response::class, 10)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'email'
+                            ]);
+                        //  Attach text
+                        factory(\App\Models\Response::class, 10)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'text'
+                            ]);
+                        //  Attach phone
+                        factory(\App\Models\Response::class, 10)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'phone'
+                            ]);
+                    });
+            });
+
+        $this->browse(function (Browser $browser) use ($campaign) {
+            $browser
+                ->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaign.response-console.index', ['campaign' => $campaign->id])
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertElementsCounts('.recipient-row', 20)
+                ->assertSeeIn('.all-filter', 20);
+        });
+    }
+
+    public function testClickUnreadFilterShouldFilterResults()
+    {
+        $campaign = $this->createCampaign();
+
+        // Create recipient lists
+        factory(\App\Models\RecipientList::class)
+            ->create([
+                'campaign_id' => $campaign->id
+            ])
+            ->each(function ($recipientList) use ($campaign) {
+                // Attach recipients to recipient list
+                factory(\App\Models\Recipient::class, 20)
+                    ->create([
+                        'campaign_id' => $campaign->id,
+                        'recipient_list_id' => $recipientList->id
+                    ])
+                    ->each(function ($recipient) use ($campaign) {
+                        //  Attach emails
+                        factory(\App\Models\Response::class, 1)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'email',
+                                'read' => 0,
+                                'incoming' => 1
+                            ]);
+                        //  Attach text
+                        factory(\App\Models\Response::class, 1)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'text',
+                                'read' => 0,
+                                'incoming' => 1
+                            ]);
+                    });
+            });
+
+        $this->browse(function (Browser $browser) use ($campaign) {
+            $browser
+                ->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaign.response-console.index', ['campaign' => $campaign->id])
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertSeeIn('.unread-filter', 20)
+                ->click('.unread-filter')
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertElementsCounts('.recipient-row', 20);
+        });
+    }
+
+    public function testClickIdleFilterShouldFilterResults()
+    {
+        $campaign = $this->createCampaign();
+
+        // Create recipient lists
+        factory(\App\Models\RecipientList::class)
+            ->create([
+                'campaign_id' => $campaign->id
+            ])
+            ->each(function ($recipientList) use ($campaign) {
+                // Attach recipients to recipient list
+                factory(\App\Models\Recipient::class, 20)
+                    ->create([
+                        'campaign_id' => $campaign->id,
+                        'recipient_list_id' => $recipientList->id
+                    ])
+                    ->each(function ($recipient) use ($campaign) {
+                        //  Attach emails
+                        factory(\App\Models\Response::class, 10)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'email'
+                            ]);
+                        //  Attach text
+                        factory(\App\Models\Response::class, 10)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'text'
+                            ]);
+                        //  Attach phone
+                        factory(\App\Models\Response::class, 10)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'phone'
+                            ]);
+                    });
+            });
+
+        $this->browse(function (Browser $browser) use ($campaign) {
+            $browser
+                ->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaign.response-console.index', ['campaign' => $campaign->id])
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertSeeIn('.idle-filter', 20)
+                ->click('.idle-filter')
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertElementsCounts('.recipient-row', 20);
+        });
+    }
+
+    public function testClickCallFilterShouldFilterResults()
+    {
+        $campaign = $this->createCampaign();
+
+        // Create recipient lists
+        factory(\App\Models\RecipientList::class)
+            ->create([
+                'campaign_id' => $campaign->id
+            ])
+            ->each(function ($recipientList) use ($campaign) {
+                // Attach recipients to recipient list
+                factory(\App\Models\Recipient::class, 20)
+                    ->create([
+                        'campaign_id' => $campaign->id,
+                        'recipient_list_id' => $recipientList->id
+                    ])
+                    ->each(function ($recipient) use ($campaign) {
+                        //  Attach phone
+                        factory(\App\Models\Response::class, 1)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'phone'
+                            ]);
+                    });
+            });
+
+        $this->browse(function (Browser $browser) use ($campaign) {
+            $browser
+                ->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaign.response-console.index', ['campaign' => $campaign->id])
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertSeeIn('.call-filter', 20)
+                ->click('.call-filter')
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertElementsCounts('.recipient-row', 20);
+        });
+    }
+
+    public function testClickEmailFilterShouldFilterResults()
+    {
+        $campaign = $this->createCampaign();
+
+        // Create recipient lists
+        factory(\App\Models\RecipientList::class)
+            ->create([
+                'campaign_id' => $campaign->id
+            ])
+            ->each(function ($recipientList) use ($campaign) {
+                // Attach recipients to recipient list
+                factory(\App\Models\Recipient::class, 20)
+                    ->create([
+                        'campaign_id' => $campaign->id,
+                        'recipient_list_id' => $recipientList->id
+                    ])
+                    ->each(function ($recipient) use ($campaign) {
+                        //  Attach phone
+                        factory(\App\Models\Response::class, 1)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'email'
+                            ]);
+                    });
+            });
+
+        $this->browse(function (Browser $browser) use ($campaign) {
+            $browser
+                ->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaign.response-console.index', ['campaign' => $campaign->id])
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertSeeIn('.email-filter', 20)
+                ->click('.email-filter')
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertElementsCounts('.recipient-row', 20);
+        });
+    }
+
+    public function testClickSmsFilterShouldFilterResults()
+    {
+        $campaign = $this->createCampaign();
+
+        // Create recipient lists
+        factory(\App\Models\RecipientList::class)
+            ->create([
+                'campaign_id' => $campaign->id
+            ])
+            ->each(function ($recipientList) use ($campaign) {
+                // Attach recipients to recipient list
+                factory(\App\Models\Recipient::class, 20)
+                    ->create([
+                        'campaign_id' => $campaign->id,
+                        'recipient_list_id' => $recipientList->id
+                    ])
+                    ->each(function ($recipient) use ($campaign) {
+                        //  Attach phone
+                        factory(\App\Models\Response::class, 1)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'text'
+                            ]);
+                    });
+            });
+
+        $this->browse(function (Browser $browser) use ($campaign) {
+            $browser
+                ->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaign.response-console.index', ['campaign' => $campaign->id])
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertSeeIn('.sms-filter', 20)
+                ->click('.sms-filter')
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertElementsCounts('.recipient-row', 20);
+        });
+    }
+
+    /**
+     * @group test
+     */
+    public function testClickLabelFiltersShouldFilterResults()
+    {
+        $campaign = $this->createCampaign();
+
+        // Create recipient lists
+        factory(\App\Models\RecipientList::class)
+            ->create([
+                'campaign_id' => $campaign->id
+            ])
+            ->each(function ($recipientList) use ($campaign) {
+                // Attach recipients to recipient list
+                factory(\App\Models\Recipient::class, 20)
+                    ->create([
+                        'campaign_id' => $campaign->id,
+                        'recipient_list_id' => $recipientList->id,
+                        'interested' => 1,
+                        'not_interested' => 1,
+                        'service' => 1,
+                        'heat' => 1,
+                        'appointment' => 1,
+                        'car_sold' => 1,
+                        'wrong_number' => 1,
+                        'callback' => 1
+                    ])
+                    ->each(function ($recipient) use ($campaign) {
+                        //  Attach response
+                        factory(\App\Models\Response::class, 1)
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'text'
+                            ]);
+                    });
+            });
+
+        $this->browse(function (Browser $browser) use ($campaign) {
+            $browser
+                ->loginAs(User::where('is_admin', 1)->first())
+                ->visitRoute('campaign.response-console.index', ['campaign' => $campaign->id])
+                ->waitUntilMissing('.table-loader-spinner');
+            $browser->assertSeeIn('.none-filter', 0)
+                ->click('.none-filter')
+                ->waitUntilMissing('.table-loader-spinner')
+                ->assertElementsCounts('.recipient-row', 0);
+            $labels = ['interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
+            foreach ($labels as $label) {
+                $browser->assertSeeIn('.' . $label . '-filter', 20)
+                    ->click('.' . $label . '-filter')
+                    ->waitUntilMissing('.table-loader-spinner')
+                    ->assertElementsCounts('.recipient-row', 20);
+            }
         });
     }
 }
