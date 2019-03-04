@@ -21,7 +21,7 @@ class CampaignTest extends DuskTestCase
         $this->createCompanyAndSiteAdminUser();
     }
 
-    public function createCampaign()
+    private function createCampaign()
     {
         $agency = factory(Company::class)->create([
             'type' => 'agency'
@@ -429,9 +429,6 @@ class CampaignTest extends DuskTestCase
         });
     }
 
-    /**
-     * @group test
-     */
     public function testClickLabelFiltersShouldFilterResults()
     {
         $campaign = $this->createCampaign();
