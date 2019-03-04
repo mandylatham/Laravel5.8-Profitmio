@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Models\Imersonation\Traits\CanImpersonate;
+
 class Response extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, CanImpersonate;
 
     protected $fillable = [
         'read',
