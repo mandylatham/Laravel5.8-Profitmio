@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\Imersonation\Traits;
+namespace App\Models\Impersonation\Traits;
 
 use App\Models\Impersonation\ImpersonatedAction;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Relations\MorphOne;
  * This trait can be added to any model
  * that may be used by an impersonated user
  *
- * @package App\Models\Imersonation\Traits
+ * @package App\Models\Impersonation\Traits
  */
-trait CanImpersonate
+trait MayBeImpersonated
 {
     public function impersonation(): MorphOne
     {

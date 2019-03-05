@@ -510,6 +510,7 @@ class ResponseConsoleController extends Controller
             'user_id'       => $request->user()->id,
         ]);
         $response->save();
+        $response->load('impersonation.impersonator');
 
         # Log the transaction
         $log = new EmailLog([
@@ -559,6 +560,7 @@ class ResponseConsoleController extends Controller
             'user_id'       => $request->user()->id,
             'recording_sid' => 0,
         ]);
+        $response->load('impersonation.impersonator');
 
         return response()->json(['response' => $response]);
     }

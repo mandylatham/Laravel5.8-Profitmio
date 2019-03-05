@@ -5,11 +5,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-use App\Models\Imersonation\Traits\CanImpersonate;
+use App\Models\Impersonation\Traits\MayBeImpersonated;
 
 class Response extends Model
 {
-    use SoftDeletes, CanImpersonate;
+    use SoftDeletes, MayBeImpersonated;
 
     protected $fillable = [
         'read',
