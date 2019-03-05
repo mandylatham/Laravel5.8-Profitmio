@@ -162,7 +162,8 @@
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
                                 <div class="message-user">
                                     <template v-if="msg.impersonation">
-                                        {{ msg.impersonation.impersonator.name }} {{ msg.reply_user }}
+                                        {{ msg.impersonation.impersonator.name }} (id: {{ msg.impersonation.impersonator.id}})
+                                        <p><small>on behalf of <strong>{{ msg.reply_user }}</strong></small></p>
                                     </template>
                                     <template v-else>
                                         {{ msg.reply_user }}
