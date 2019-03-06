@@ -74,7 +74,7 @@
                             @endif
                         </div>
                     </template>
-                    @if (!auth()->user()->isAdmin())
+                    @if (!auth()->user()->isAdmin() && auth()->user()->companies()->count() > 1)
                         <b-dropdown-item href="{{ route('selector.select-active-company') }}">Switch Company</b-dropdown-item>
                     @endif
                     <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>

@@ -4,14 +4,23 @@
     margin-bottom: 1rem;
 
     .campaign-apointment-totals {
-        font-size: 4.5rem;
         color: $brand-purple;
-        text-align: center;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+
         .far {
-            margin-right: 0.5rem;
+            font-size: 4.5rem;
+            margin-right: 1rem;
         }
         .total {
-            margin-left: 0.5rem;
+            font-size: 3.5rem;
+            line-height: 3.5rem;
+            text-align: center;
+        }
+        .label {
+            font-size: 0.8rem;
+            line-height: 1rem;
         }
     }
 

@@ -45,8 +45,14 @@
                     <div class="row no-gutters">
                         <div class="col-12 col-md-4 drop-info">
                             <div class="drop-info--type">
-                                <span class="pm-font-mail-icon" v-if="drop.type === 'email'"></span>
-                                <span class="fa fa-comment" v-else-if="drop.type === 'sms'"></span>
+                                <span v-if="drop.type === 'email'">
+                                    <i class="fa fa-envelope mr-2"></i>
+                                    @{{ drop.id }}
+                                </span>
+                                <span v-else-if="drop.type === 'sms'">
+                                    <i class="fa fa-comment mr-2"></i>
+                                    @{{ drop.id }}
+                                </span>
                                 <span class="pm-font-templates-icon" v-else></span>
                             </div>
                             <div class="drop-info--date">
@@ -60,9 +66,9 @@
                             <i class="pm-font-recipients-icon mr-3"></i> @{{ drop.recipients }} Recipients
                         </div>
                         <div class="col-6 col-md-2 drop-options">
-                            <p v-if="drop.status === 'Completed' || drop.status === 'Cancelled' || drop.status === 'Processing' || drop.status === 'Deleted'" class="drop-options--no-actions">No Actions Available</p>
+                            <p v-if="drop.status === 'Deleted'" class="drop-options--no-actions">No Actions Available</p>
                             <div v-else>
-                                <a v-if="drop.type === 'sms' && drop.status !== 'Pending'" :href="generateRoute(dropRunSmsUrl, {'dropId': drop.id})" class="btn pm-btn pm-btn-green mr-2">
+                                <a v-if="drop.type === 'sms' && drop.status === 'Processing'" :href="generateRoute(dropRunSmsUrl, {'dropId': drop.id})" class="btn pm-btn pm-btn-green mr-2">
                                     RUN
                                 </a>
                                 <button type="button" v-if="drop.type === 'sms' && drop.status === 'Pending'" class="btn pm-btn pm-btn-green mr-2" @click="startDrop(drop)">
@@ -71,7 +77,7 @@
                                 <a :href="generateRoute(dropEditUrl, {'dropId': drop.id})" class="btn btn-link pm-btn-link pm-btn-link-primary">
                                     <i class="pm-font-edit-icon"></i>
                                 </a>
-                                <a href="javascript:;" @click.prevent="deleteDrop(drop)" class="btn btn-link pm-btn-link pm-btn-link-warning">
+                                <a href="javascript:;" v-if="drop.status !== 'Completed'" @click.prevent="deleteDrop(drop)" class="btn btn-link pm-btn-link pm-btn-link-warning">
                                     <i class="far fa-trash-alt"></i>
                                 </a>
                             </div>
