@@ -90,7 +90,7 @@ class SendAppointmentNotifications
                 TwilioClient::sendSms($from, $to, $message);
                 $this->log->channel('operations')->info('SendAppointmentNotifications: callback (id:'.$appointment->id.') sent to callback sms notification number (phone:'.$to.')');
             } catch (\Exception $e) {
-                Log::error("Unable to send callback SMS: " . $e->getMessage());
+                $this->log->error("Unable to send callback SMS: " . $e->getMessage());
             }
         }
     }
