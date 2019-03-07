@@ -5,7 +5,7 @@ namespace App\Providers;
 use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\Recipient;
-use App\Models\ImpersonatedUser;
+use App\Models\Impersonation\ImpersonatedUser;
 use App\Policies\CampaignPolicy;
 use App\Policies\CompanyPolicy;
 use App\Models\CampaignScheduleTemplate;
