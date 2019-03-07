@@ -114,11 +114,11 @@ class DeploymentController extends Controller
                 $stats = \DB::table('campaign_schedule_lists')->where('campaign_schedule_id', $drop->id)->selectRaw("sum(case when sent_at is null and failed_at is null then 1 else 0 end) as pending, sum(case when sent_at is not null or failed_at is not null then 1 else 0 end) as sent")->first();
             }
 
-            $percent = $stats->pending / ($stats->pending + $stats->sent);
+            $percent = floor(($stats->pending / ($stats->pending + $stats->sent)) * 100);
             $filler = [
                 'status' => $stats->pending == 0 ? 'Completed' : 'Processing',
                 'completed_at' => \Carbon\Carbon::now('UTC'),
-                'percentage_complete' => $percent * 100,
+                'percentage_complete' => $percent,
             ];
 
             $drop->fill($filler)->save();
@@ -228,7 +228,7 @@ class DeploymentController extends Controller
 
     public function getForUserDisplay(Campaign $campaign, Request $request)
     {
-        $drops = CampaignSchedule::searchByRequest($request, $campaign)
+        $drops = Drop::searchByRequest($request, $campaign)
             ->orderBy('campaign_schedules.id', 'desc')
             ->paginate(15);
 
