@@ -56,7 +56,7 @@
                                 <span class="pm-font-templates-icon" v-else></span>
                             </div>
                             <div class="drop-info--date">
-                                <span class="pm-font-date-icon mr-3"></span>@{{ (drop.status === 'Completed' ? drop.completed_at : drop.send_at) | amDateTimeFormat('MM/DD/YYYY | H:mm A') }}
+                                <span class="pm-font-date-icon mr-3"></span>@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : drop.send_at | amDateTimeFormat('MM/DD/YYYY @ H:mm A')) }}
                             </div>
                         </div>
                         <div class="col-12 col-md-3 drop-status text-center">
