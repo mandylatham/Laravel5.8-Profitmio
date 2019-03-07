@@ -24,7 +24,7 @@
     <div class="container" id="campaign-index" v-cloak>
         <div class="row">
             <div class="col">
-                <a href="{{ route('campaigns.create') }}" class="btn pm-btn pm-btn-blue mb-3">
+                <a dusk="create-campaign-button" href="{{ route('campaigns.create') }}" class="btn pm-btn pm-btn-blue mb-3">
                     <i class="fas fa-plus mr-3"></i>New Campaign
                 </a>
             </div>
@@ -47,6 +47,7 @@
                 <div class="loader-spinner" v-if="isLoading">
                     <spinner-icon></spinner-icon>
                 </div>
+                <h1 class="page-title">Campaigns</h1>
                 <div class="campaign-group-label" v-if="countActiveCampaigns > 0">ACTIVE</div>
                 <campaign v-for="campaign in campaigns" v-if="campaign.status === 'Active'" :key="campaign.id" :campaign="campaign"></campaign>
                 <div class="campaign-group-label" v-if="countInactiveCampaigns > 0">INACTIVE</div>

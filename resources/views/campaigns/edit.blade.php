@@ -150,7 +150,7 @@
                         </b-tab>
                         <b-tab title="CONTACT">
                             <h4 class="mb-3">Additional Features</h4>
-                            <div class="card mb-3 card-feature">
+                            <div class="card mb-3 card-feature adf_crm_export-container">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -194,7 +194,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3 card-feature">
+                            <div class="card mb-3 card-feature lead_alerts-container">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -238,7 +238,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3 card-feature">
+                            <div class="card mb-3 card-feature service_dept-container">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -282,7 +282,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3 card-feature">
+                            <div class="card mb-3 card-feature client_passthrough-container">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -326,7 +326,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="card mb-3 card-feature">
+                            <div class="card mb-3 card-feature sms_on_callback-container">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
@@ -370,7 +370,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <button type="button" class="btn pm-btn pm-btn-purple mt-3" @click="saveCampaign">
+                            <button dusk="save-additional-features-button" type="button" class="btn pm-btn pm-btn-purple mt-3" @click="saveCampaign">
                                 <span v-if="!loading">Save</span>
                                 <spinner-icon class="white" :size="'xs'" v-if="loading"></spinner-icon>
                             </button>

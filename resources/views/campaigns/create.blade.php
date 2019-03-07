@@ -46,19 +46,19 @@
                         <div class="form-row">
                             <div class="form-group col-6">
                                 <label for="start">Starts on</label>
-                                <date-pick :display-format="'MM/DD/YYYY'" v-model="campaignForm.start" :has-input-element="true" :input-attributes="datePickInputClasses" @input="clearError(campaignForm, 'start')" :class="{'is-invalid': campaignForm.errors.has('start')}"></date-pick>
+                                <date-pick dusk="starts-on-field" :display-format="'MM/DD/YYYY'" v-model="campaignForm.start" :has-input-element="true" :input-attributes="datePickInputClasses" @input="clearError(campaignForm, 'start')" :class="{'is-invalid': campaignForm.errors.has('start')}"></date-pick>
                                 <input-errors :error-bag="campaignForm.errors" :field="'start'"></input-errors>
                             </div>
                             <div class="form-group col-6">
                                 <label for="end">Ends on</label>
-                                <date-pick name="end" :display-format="'MM/DD/YYYY'" v-model="campaignForm.end" :has-input-element="true" :input-attributes="datePickInputClasses" @input="clearError(campaignForm, 'end')" :class="{'is-invalid': campaignForm.errors.has('end')}"></date-pick>
+                                <date-pick dusk="ends-on-field" name="end" :display-format="'MM/DD/YYYY'" v-model="campaignForm.end" :has-input-element="true" :input-attributes="datePickInputClasses" @input="clearError(campaignForm, 'end')" :class="{'is-invalid': campaignForm.errors.has('end')}"></date-pick>
                                 <input-errors :error-bag="campaignForm.errors" :field="'end'"></input-errors>
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group col-6">
                                 <label for="expires">Expires on</label>
-                                <date-pick name="expires" :display-format="'MM/DD/YYYY'" v-model="campaignForm.expires" :has-input-element="true" :input-attributes="datePickInputClasses" @input="clearError(campaignForm, 'expires')" :class="{'is-invalid': campaignForm.errors.has('expires')}"></date-pick>
+                                <date-pick dusk="expires-on-field" name="expires" :display-format="'MM/DD/YYYY'" v-model="campaignForm.expires" :has-input-element="true" :input-attributes="datePickInputClasses" @input="clearError(campaignForm, 'expires')" :class="{'is-invalid': campaignForm.errors.has('expires')}"></date-pick>
                                 <input-errors :error-bag="campaignForm.errors" :field="'expires'"></input-errors>
                             </div>
                         </div>
@@ -68,7 +68,7 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="agency">Agency</label>
-                                    <v-select :options="agencies" label="name" v-model="agencySelected" class="filter--v-select" @input="clearError(campaignForm, 'agency')" :class="{'is-invalid': campaignForm.errors.has('agency')}"></v-select>
+                                    <v-select dusk="agency-select" :options="agencies" label="name" v-model="agencySelected" class="filter--v-select" @input="clearError(campaignForm, 'agency')" :class="{'is-invalid': campaignForm.errors.has('agency')}"></v-select>
                                     <input-errors :error-bag="campaignForm.errors" :field="'agency'"></input-errors>
                                 </div>
                             </div>
@@ -77,7 +77,7 @@
                             <div class="col-6">
                                 <div class="form-group">
                                     <label for="Dealership">Dealership</label>
-                                    <v-select :options="dealerships" label="name" v-model="dealershipSelected" class="filter--v-select" @input="clearError(campaignForm, 'dealership')" :class="{'is-invalid': campaignForm.errors.has('dealership')}"></v-select>
+                                    <v-select dusk="dealership-select" :options="dealerships" label="name" v-model="dealershipSelected" class="filter--v-select" @input="clearError(campaignForm, 'dealership')" :class="{'is-invalid': campaignForm.errors.has('dealership')}"></v-select>
                                     <input-errors :error-bag="campaignForm.errors" :field="'dealership'"></input-errors>
                                 </div>
                             </div>
@@ -116,7 +116,7 @@
                     </tab-content>
                     <tab-content title="Contact" icon="fas fa-cog">
                         <h4 class="mb-3">Additional Features</h4>
-                        <div class="card mb-3">
+                        <div class="card mb-3 adf_crm_export-container">
                             <div class="card-body">
                                 <div class="row no-gutters">
                                     <div class="col-12 col-md-6">
