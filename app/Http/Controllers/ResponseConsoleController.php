@@ -611,7 +611,10 @@ class ResponseConsoleController extends Controller
             event(new CampaignCountsUpdated($campaign));
 
             return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
+                '<Response>' . "\n" .
+                '<Say voice="Polly.Joanna">This call may be recorded for quality assurance purposes</Say>' . "\n" .
+                '<Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial>' . "\n" .
+                '</Response>', 200)
                 ->header('Content-Type', 'text/xml');
         } catch (\Exception $e) {
             Log::error("inboundPhone(): {$e->getMessage()}");

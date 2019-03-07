@@ -16,7 +16,14 @@
     <div class="container" id="recipients-detail" v-cloak>
         <div class="row">
             <div class="col mb-3">
-                <h2>List {{ $list->name }} Recipients</h2>
+                <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.recipient-lists.index', ['campaign' => $campaign->id]) }}">
+                    <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col mb-3">
+                <h2 class="m-0">List {{ $list->name }} Recipients</h2>
             </div>
         </div>
         <div class="row align-items-end mb-3">
