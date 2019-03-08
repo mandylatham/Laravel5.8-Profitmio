@@ -109,7 +109,7 @@ window['app'] = new Vue({
         },
         registerGlobalEventListeners() {
             // Events
-            window.Event.listen('removed.recipient.label', (data) => {
+            window.PmEvent.listen('removed.recipient.label', (data) => {
                 this.recipients.forEach((recipient, index) => {
                     if (recipient.id === data.recipientId) {
                         this.$delete(this.recipients[index].labels, data.label);
@@ -117,7 +117,7 @@ window['app'] = new Vue({
                 });
             });
 
-            window.Event.listen('added.recipient.label', (data) => {
+            window.PmEvent.listen('added.recipient.label', (data) => {
                 this.recipients.forEach((recipient, index) => {
                     if (recipient.id === data.recipientId) {
                         this.$set(this.recipients[index].labels, data.label, data.labelText);
@@ -125,7 +125,7 @@ window['app'] = new Vue({
                 });
             });
 
-            window.Event.listen('filters.filter-changed', (data) => {
+            window.PmEvent.listen('filters.filter-changed', (data) => {
                 if (data.filter === 'media') {
                     this.searchForm.media = data.value;
                 } else if (data.filter === 'filter') {
@@ -185,7 +185,7 @@ window['sidebar'] = new Vue({
             }
             this.activeFilterSection = value;
 
-            window.Event.fire('filters.filter-changed', {
+            window.PmEvent.fire('filters.filter-changed', {
                 filter: filter,
                 value: value
             });
