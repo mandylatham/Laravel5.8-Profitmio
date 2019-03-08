@@ -23,8 +23,8 @@
 
     export default {
         components: {
-            'spinner-icon':  require('./../spinner-icon/spinner-icon'),
-            'pm-pagination':  require('./../pm-pagination/pm-pagination')
+            'spinner-icon':  require('./../spinner-icon/spinner-icon').default,
+            'pm-pagination':  require('./../pm-pagination/pm-pagination').default
         },
         props: {
             isLoading: {

@@ -11,11 +11,11 @@ import moment from 'moment';
 window['app'] = new Vue({
     el: '#deployments-create',
     components: {
-        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
-        'input-errors': require('./../../../components/input-errors/input-errors'),
-        'date-pick': require('./../../../components/date-pick/date-pick'),
+        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
+        'input-errors': require('./../../../components/input-errors/input-errors').default,
+        'date-pick': require('./../../../components/date-pick/date-pick').default,
         DatePicker,
-        'editor': require('vue2-ace-editor'),
+        'editor': require('vue2-ace-editor').default,
     },
     data: {
         datePickInputClasses: {
@@ -123,8 +123,8 @@ window['app'] = new Vue({
             }
         },
         initEditor: function (editor) {
-            require('brace/mode/html');
-            require('brace/theme/chrome');
+            require('brace/mode/html').default;
+            require('brace/theme/chrome').default;
         },
         save() {
             this.showGlobalLoader = true;

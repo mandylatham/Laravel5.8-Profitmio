@@ -5,7 +5,7 @@ import forEach from 'lodash';
 window['app'] = new Vue({
     el: '#login',
     components: {
-        'spinner-icon':  require('./../../components/spinner-icon/spinner-icon'),
+        'spinner-icon':  require('./../../components/spinner-icon/spinner-icon').default,
     },
     data: {
         errors: [],

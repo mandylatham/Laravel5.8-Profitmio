@@ -10,9 +10,9 @@ Vue.use(VueFormWizard);
 window['app'] = new Vue({
     el: '#campaign-create',
     components: {
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'input-errors': require('./../../components/input-errors/input-errors'),
-        'date-pick': require('./../../components/date-pick/date-pick')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'input-errors': require('./../../components/input-errors/input-errors').default,
+        'date-pick': require('./../../components/date-pick/date-pick').default
     },
     data: {
         addCrmExportEmail: '',

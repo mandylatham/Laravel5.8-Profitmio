@@ -27,12 +27,12 @@ import axios from 'axios';
 window['app'] = new Vue({
     el: '#company-details',
     components: {
-        'campaign': require('./../../components/campaign/campaign'),
-        'user-status': require('./../../components/user-status/user-status'),
-        'user-role': require('./../../components/user-role/user-role'),
-        'resumable': require('./../../components/resumable/resumable'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
+        'campaign': require('./../../components/campaign/campaign').default,
+        'user-status': require('./../../components/user-status/user-status').default,
+        'user-role': require('./../../components/user-role/user-role').default,
+        'resumable': require('./../../components/resumable/resumable').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
     },
     computed: {
         campaignAccessUsersPagination: function () {

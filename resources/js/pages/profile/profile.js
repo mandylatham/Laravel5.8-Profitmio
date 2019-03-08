@@ -5,7 +5,7 @@ import Form from './../../common/form';
 window['app'] = new Vue({
     el: '#profile',
     components: {
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
     },
     computed: {
     },

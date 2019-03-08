@@ -6,7 +6,7 @@ import axios from 'axios';
 
 // Toastr Library
 import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr');
+window.toastr = require('toastr').default;
 Vue.use(VueToastr2);
 
 // Bootstrap Vue
@@ -25,7 +25,7 @@ Vue.use(Vue2AceEditor);
 window['app'] = new Vue({
     el: '#template-create',
     components: {
-        editor: require('vue2-ace-editor'),
+        editor: require('vue2-ace-editor').default,
     },
     computed: {
         readyToSubmitForm: function () {
@@ -109,8 +109,8 @@ window['app'] = new Vue({
             this.renderedTemplate.email_html = this.htmlify(this.oldTemplate.email_html);
         },
         initEditor: function (editor) {
-            require('brace/mode/html');
-            require('brace/theme/chrome');
+            require('brace/mode/html').default;
+            require('brace/theme/chrome').default;
         },
         htmlify: function (value) {
             if (value === undefined || value === null || value.length === 0) return;

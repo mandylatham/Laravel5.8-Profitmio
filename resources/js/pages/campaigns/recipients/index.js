@@ -18,9 +18,9 @@ window['app'] = new Vue({
         }
     },
     components: {
-        'pm-pagination': require('./../../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
-        'upload-recipient': require('./upload-recipient')
+        'pm-pagination': require('./../../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
+        'upload-recipient': require('./upload-recipient').default
     },
     data: {
         recipientList: [],
