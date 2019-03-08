@@ -10,17 +10,14 @@ import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
 import {filter} from 'lodash';
 
-window.toastr = require('toastr');
-Vue.use(VueToastr2);
-
 Vue.use(VueChartkick, {adapter: Chart});
 
 window['app'] = new Vue({
     el: '#campaign-index',
     components: {
-        'campaign': require('./../../components/campaign/campaign'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'campaign': require('./../../components/campaign/campaign').default,
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
     },
     computed: {
         countActiveCampaigns: function () {

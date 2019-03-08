@@ -15,9 +15,9 @@ import { isNorthAmericanPhoneNumber, isCanadianPostalCode, isUnitedStatesPostalC
 window['app'] = new Vue({
     el: '#app',
     components: {
-        'input-errors': require('./../../components/input-errors/input-errors'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'resumable': require('./../../components/resumable/resumable'),
+        'input-errors': require('./../../components/input-errors/input-errors').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'resumable': require('./../../components/resumable/resumable').default,
     },
     data: {
         companyIndex: '',

@@ -8,7 +8,7 @@ import moment from 'moment';
 window['app'] = new Vue({
     el: '#deployments-details',
     components: {
-        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
+        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
     },
     computed: {
         pendingSmsCounter: function () {

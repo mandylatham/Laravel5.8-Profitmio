@@ -275,7 +275,7 @@
             pusherService.disconnect();
         },
         components: {
-            'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
+            'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
             DatePicker
         },
         computed: {
@@ -509,7 +509,7 @@
             },
             addLabel: function (label, labelText) {
                 this.$set(this.labels, label, labelText);
-                window.Event.fire('added.recipient.label', {
+                window.PmEvent.fire('added.recipient.label', {
                     recipientId: this.recipientId,
                     label,
                     labelText
@@ -518,7 +518,7 @@
                     .then((response) => {
                     }, () => {
                         this.$delete(this.labels, label);
-                        window.Event.fire('added.recipient.label', {
+                        window.PmEvent.fire('added.recipient.label', {
                             recipientId: this.recipientId,
                             label,
                             labelText
@@ -528,7 +528,7 @@
             },
             removeLabel: function (label, key) {
                 this.$delete(this.labels, key);
-                window.Event.fire('removed.recipient.label', {
+                window.PmEvent.fire('removed.recipient.label', {
                     recipientId: this.recipientId,
                     label: key,
                     labelText: label
@@ -541,7 +541,7 @@
                     }, () => {
                         this.$set(this.labels, key, label);
                         this.$toastr.error('Failed to remove label.');
-                        window.Event.fire('removed.recipient.label', {
+                        window.PmEvent.fire('removed.recipient.label', {
                             recipientId: this.recipientId,
                             label: key,
                             labelText: label

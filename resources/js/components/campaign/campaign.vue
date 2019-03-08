@@ -114,7 +114,7 @@
 
     export default {
         components: {
-            'status': require('./../status/status'),
+            'status': require('./../status/status').default,
         },
         props: {
             campaign: {

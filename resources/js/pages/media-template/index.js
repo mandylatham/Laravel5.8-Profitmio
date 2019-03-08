@@ -11,9 +11,9 @@ Vue.use(Modal);
 window['app'] = new Vue({
     el: '#template-index',
     components: {
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'media-type': require('./../../components/media-type/media-type'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'media-type': require('./../../components/media-type/media-type').default,
     },
     computed: {
         pagination: function () {

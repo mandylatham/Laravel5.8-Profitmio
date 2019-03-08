@@ -7,12 +7,12 @@ import {generateRoute} from './../../common/helpers'
 window['app'] = new Vue({
     el: '#user-index',
     components: {
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'user-role': require('./../../components/user-role/user-role')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'user-role': require('./../../components/user-role/user-role').default
     },
     filters: {
-        'userRole': require('./../../filters/user-role.filter')
+        'userRole': require('./../../filters/user-role.filter').default
     },
     computed: {
         pagination: function () {
