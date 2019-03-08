@@ -14,7 +14,7 @@ import PrettyCheckbox from 'pretty-checkbox-vue';
 Vue.use(PrettyCheckbox);
 // Toastr Library
 import VueToastr2 from 'vue-toastr-2';
-window.toastr = require('toastr').default;
+window.toastr = require('toastr');
 Vue.use(VueToastr2);
 // Sweet alert
 import VueSweetalert2 from 'vue-sweetalert2';

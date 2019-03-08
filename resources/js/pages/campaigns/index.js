@@ -10,9 +10,6 @@ import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
 import {filter} from 'lodash';
 
-window.toastr = require('toastr').default;
-Vue.use(VueToastr2);
-
 Vue.use(VueChartkick, {adapter: Chart});
 
 window['app'] = new Vue({
