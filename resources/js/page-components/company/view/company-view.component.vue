@@ -72,7 +72,7 @@
     </div>
 </template>
 <script>
-    require("./company-view.scss");
+    require("./company-view.scss").default;
     export default {
         data() {
             return {

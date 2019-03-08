@@ -7,9 +7,9 @@ import {generateRoute} from './../../common/helpers'
 window['app'] = new Vue({
     el: '#company-index',
     components: {
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'company-type': require('./../../components/company-type/company-type'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'company-type': require('./../../components/company-type/company-type').default,
     },
     computed: {
         pagination: function () {

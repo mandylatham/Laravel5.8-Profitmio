@@ -23,8 +23,8 @@ window['app'] = new Vue({
     el: '#console',
     components: {
         SearchIcon,
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
     },
     computed: {
         pagination: function () {
@@ -202,4 +202,4 @@ window['sidebar'] = new Vue({
     }
 });
 
-Vue.component('communication-side-panel', require('./../../page-components/campaign/communication-side-panel/communication-side-panel.component'));
+Vue.component('communication-side-panel', require('./../../page-components/campaign/communication-side-panel/communication-side-panel.component').default);

@@ -16,9 +16,9 @@ window['app'] = new Vue({
         }
     },
     components: {
-        'pm-pagination': require('./../../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
-        'drop-status': require('./../../../components/drop-status/drop-status'),
+        'pm-pagination': require('./../../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
+        'drop-status': require('./../../../components/drop-status/drop-status').default,
     },
     data: {
         drops: [],

@@ -275,7 +275,7 @@
             pusherService.disconnect();
         },
         components: {
-            'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
+            'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
             DatePicker
         },
         computed: {

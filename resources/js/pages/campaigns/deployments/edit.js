@@ -11,9 +11,9 @@ import moment from 'moment';
 window['app'] = new Vue({
     el: '#deployments-edit',
     components: {
-        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
+        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
         DatePicker,
-        'editor': require('vue2-ace-editor'),
+        'editor': require('vue2-ace-editor').default,
     },
     data: {
         loading: false,
@@ -29,8 +29,8 @@ window['app'] = new Vue({
     },
     methods: {
         initEditor: function (editor) {
-            require('brace/mode/html');
-            require('brace/theme/chrome');
+            require('brace/mode/html').default;
+            require('brace/theme/chrome').default;
         },
         save() {
             this.loading = true;

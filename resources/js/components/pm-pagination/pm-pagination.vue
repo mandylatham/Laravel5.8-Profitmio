@@ -13,7 +13,7 @@
     </div>
 </template>
 <script>
-    const VueScrollTo = require('vue-scrollto');
+    const VueScrollTo = require('vue-scrollto').default;
 
     export default {
         props: {

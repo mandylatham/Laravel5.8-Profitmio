@@ -7,7 +7,7 @@ import axios from 'axios';
 window['app'] = new Vue({
     el: '#user-create',
     components: {
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
     },
     data: {
         companies: [],

@@ -48,7 +48,7 @@
     </div>
 </template>
 <script>
-    require("./company-index.scss");
+    require("./company-index.scss").default;
     export default {
         data() {
             return {

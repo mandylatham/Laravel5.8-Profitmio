@@ -15,11 +15,11 @@ Vue.use(VueChartkick, {adapter: Chart});
 window['app'] = new Vue({
     el: '#user-view',
     components: {
-        'campaign': require('./../../components/campaign/campaign'),
-        'resumable': require('./../../components/resumable/resumable'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'user-role': require('./../../components/user-role/user-role')
+        'campaign': require('./../../components/campaign/campaign').default,
+        'resumable': require('./../../components/resumable/resumable').default,
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'user-role': require('./../../components/user-role/user-role').default
     },
     computed: {
         countCompanies: function () {
