@@ -163,11 +163,11 @@ return [
         App\Providers\RouteServiceProvider::class,
         App\Providers\DuskServiceProvider::class,
         App\Providers\TwilioClientProvider::class,
+        App\Providers\ImpersonateServiceProvider::class,
         Bogardo\Mailgun\MailgunServiceProvider::class,
         App\Providers\BladeServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
         Intervention\Image\ImageServiceProvider::class,
-        Lab404\Impersonate\ImpersonateServiceProvider::class,
         Spatie\Activitylog\ActivitylogServiceProvider::class,
         Pion\Laravel\ChunkUpload\Providers\ChunkUploadServiceProvider::class,
 
