@@ -97,7 +97,7 @@ window['app'] = new Vue({
                     this.isLoading = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get templates");
+                    window.PmEvent.fire('errors.api', "Unable to get templates");
                 });
         },
         deleteTemplate: function (id, index) {
@@ -121,7 +121,7 @@ window['app'] = new Vue({
                     this.templates.splice(index, 1);
                 }
             }, error => {
-                this.$toastr.error("Unable to delete user");
+                window.PmEvent.fire('errors.api', "Unable to delete user");
             });
         },
         onPageChanged: function (event) {

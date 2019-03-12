@@ -80,7 +80,7 @@ window['app'] = new Vue({
                     });
                 }
             }, error => {
-                this.$toastr.error('Unable to process your request');
+                window.PmEvent.fire('errors.api', 'Unable to process your request');
             });
         },
         activateUser: function (user) {
@@ -108,7 +108,7 @@ window['app'] = new Vue({
                     });
                 }
             }, error => {
-                this.$toastr.error('Unable to process your request');
+                window.PmEvent.fire('errors.api', 'Unable to process your request');
             });
         },
         fetchData() {
@@ -123,7 +123,7 @@ window['app'] = new Vue({
                     this.isLoading = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get users");
+                    window.PmEvent.fire('errors.api', "Unable to get users");
                 });
         },
         onPageChanged(event) {

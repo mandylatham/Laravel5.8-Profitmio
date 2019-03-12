@@ -146,7 +146,7 @@ window['app'] = new Vue({
                     this.htmlifyFields();
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to update");
+                    window.PmEvent.fire('errors.api', "Unable to update");
                 });
         }
     }

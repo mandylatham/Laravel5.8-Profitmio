@@ -81,7 +81,7 @@ window['app'] = new Vue({
                 })
                 .catch(error => {
                     console.log(error);
-                    this.$toastr.error("Unable to get companies");
+                    window.PmEvent.fire('errors.api', "Unable to get companies");
                 });
         },
         deleteCompany: function (id, index) {
@@ -106,7 +106,7 @@ window['app'] = new Vue({
                     this.companies.splice(index, 1);
                 }
             }, error => {
-                this.$toastr.error("Unable to delete company");
+                window.PmEvent.fire('errors.api', "Unable to delete company");
             });
         },
         onPageChanged(event) {

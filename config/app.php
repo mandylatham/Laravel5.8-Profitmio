@@ -227,4 +227,7 @@ return [
 
     ],
 
+    'emails' => [
+        'support' => 'support@profitminer.atlassian.net',
+    ],
 ];

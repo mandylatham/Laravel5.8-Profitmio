@@ -384,7 +384,7 @@
                     })
                     .catch((response) => {
                         this.setLoading(false);
-                        this.$toastr.error("Couldn't fetch responses.");
+                        window.PmEvent.fire('errors.api', "Couldn't fetch responses.");
                     });
             },
             pad2: function (number) {
@@ -403,7 +403,7 @@
                         this.$toastr.success('Note added.');
                     })
                     .catch((response) => {
-                        this.$toastr.error('Failed to add note.');
+                        window.PmEvent.fire('errors.api', 'Failed to add note.');
                     });
             },
             needsAppointment: function () {
@@ -419,7 +419,7 @@
                         this.$toastr.success('Called status updated.');
                     })
                     .catch((response) => {
-                        this.$toastr.error('Failed to update called status.');
+                        window.PmEvent.fire('errors.api', 'Failed to update called status.');
                     });
             },
             addAppointment: function (campaignId, recipientId) {
@@ -434,7 +434,7 @@
                         this.$toastr.success('Appointment added.');
                     })
                     .catch((response) => {
-                        this.$toastr.error('Failed to add an appointment.');
+                        window.PmEvent.fire('errors.api', 'Failed to add an appointment.');
                     });
             },
             messageUpdateReadStatus: function (event, textId) {
@@ -446,7 +446,7 @@
                         this.$toastr.success('Read status updated.');
                     })
                     .catch((response) => {
-                        this.$toastr.error('Failed to update message read status.');
+                        window.PmEvent.fire('errors.api', 'Failed to update message read status.');
                     });
             },
             sendToCrm: function () {
@@ -457,7 +457,7 @@
                     })
                     .catch(error => {
                         console.log(error);
-                        this.$toastr.error("Unable to send recipient to CRM at this time");
+                        window.PmEvent.fire('errors.api', "Unable to send recipient to CRM at this time");
                     });
             },
             sendText: function () {
@@ -485,7 +485,7 @@
                             this.textMessage = textMessage;
                         }
                         this.threads.text.splice(indexOfMessage, 1);
-                        this.$toastr.error('Failed to send text.');
+                        window.PmEvent.fire('errors.api', 'Failed to send text.');
                     });
             },
             sendEmail: function () {
@@ -512,7 +512,7 @@
                             this.emailMessage = emailMessage;
                         }
                         this.threads.email.splice(indexOfMessage, 1);
-                        this.$toastr.error('Failed to send email.');
+                        window.PmEvent.fire('errors.api', 'Failed to send email.');
                     });
             },
             addLabel: function (label, labelText) {
@@ -531,7 +531,7 @@
                             label,
                             labelText
                         });
-                        this.$toastr.error('Failed to add label.');
+                        window.PmEvent.fire('errors.api', 'Failed to add label.');
                     });
             },
             removeLabel: function (label, key) {
@@ -548,7 +548,7 @@
                     .then(() => {
                     }, () => {
                         this.$set(this.labels, key, label);
-                        this.$toastr.error('Failed to remove label.');
+                        window.PmEvent.fire('errors.api', 'Failed to remove label.');
                         window.PmEvent.fire('removed.recipient.label', {
                             recipientId: this.recipientId,
                             label: key,

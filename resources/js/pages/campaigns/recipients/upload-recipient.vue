@@ -231,7 +231,7 @@
                             window.location.replace(window.recipientsIndexUrl);
                         });
                     }, e => {
-                        this.$toastr.error("Unable to process your request");
+                        window.PmEvent.fire('errors.api', "Unable to process your request");
                         this.loading = false;
                     });
             },

@@ -152,7 +152,7 @@ window['app'] = new Vue({
                     this.loadingCampaigns = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get campaigns");
+                    window.PmEvent.fire('errors.api', "Unable to get campaigns");
                 });
         },
         fetchUsers() {
@@ -168,7 +168,7 @@ window['app'] = new Vue({
                     this.loadingUsers = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get users");
+                    window.PmEvent.fire('errors.api', "Unable to get users");
                 });
         },
         fetchUsersForCampaignAccess(campaign) {
@@ -185,7 +185,7 @@ window['app'] = new Vue({
                     this.loadingCampaignAccessUsers = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get users");
+                    window.PmEvent.fire('errors.api', "Unable to get users");
                 });
         },
         resendInvitation(user) {
@@ -202,7 +202,7 @@ window['app'] = new Vue({
                     this.$toastr.success('Invitation Sent!');
                 }, () => {
                     this.loadingInvitation = false;
-                    this.$toastr.error('Unable to process your request.');
+                    window.PmEvent.fire('errors.api', 'Unable to process your request.');
                 })
         },
         updateFields: function () {
@@ -232,7 +232,7 @@ window['app'] = new Vue({
             })).then(() => {
                 this.$toastr.success("Access updated.");
             }, () => {
-                this.$toastr.error("Unable to process your request");
+                window.PmEvent.fire('errors.api', "Unable to process your request");
                 user.has_access = !user.has_access;
             })
         },
@@ -272,7 +272,7 @@ window['app'] = new Vue({
                     this.$toastr.success("Update successful");
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to update");
+                    window.PmEvent.fire('errors.api', "Unable to update");
                 });
         },
         generateRoute

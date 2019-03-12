@@ -100,7 +100,7 @@ window['app'] = new Vue({
                     this.isLoading = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get users");
+                    window.PmEvent.fire('errors.api', "Unable to get users");
                 });
         },
         onPageChanged(event) {

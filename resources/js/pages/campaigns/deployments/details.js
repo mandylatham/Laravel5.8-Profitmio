@@ -53,7 +53,7 @@ window['app'] = new Vue({
                     this.loading = false;
                     this.currentRecipient.pivot.sent_at = moment().format('YYYY-MM-DD HH:mm:ss');
                 }, error => {
-                    this.$toastr.error('Error sending message to ' + this.currentRecipient.first_name + ' '  + this.currentRecipient.last_name);
+                    window.PmEvent.fire('errors.api', 'Error sending message to ' + this.currentRecipient.first_name + ' '  + this.currentRecipient.last_name);
                     this.currentRecipient.pivot.failed_at = moment().format('YYYY-MM-DD HH:mm:ss');
                     this.loading = false;
                 });

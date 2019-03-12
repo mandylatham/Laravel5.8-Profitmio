@@ -95,7 +95,7 @@ window['app'] = new Vue({
                 }, error => {
                     this.isLoading = false;
                     this.createForm.errors = error.errors;
-                    this.$toastr.error("Unable to create company");
+                    window.PmEvent.fire('errors.api', "Unable to create company");
                 });
         },
     },

@@ -62,11 +62,11 @@ window['app'] = new Vue({
                 .catch(e => {
                     this.loading = false;
                     if (e.error !== undefined){
-                        this.$toastr.error("Unable to process invitation: " + e.error);
+                        window.PmEvent.fire('errors.api', "Unable to process invitation: " + e.error);
                         return;
                     }
 
-                    this.$toastr.error("Unable to process the invitation");
+                    window.PmEvent.fire('errors.api', "Unable to process the invitation");
                 });
         }
     }

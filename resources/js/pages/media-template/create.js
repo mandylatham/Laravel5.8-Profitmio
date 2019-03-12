@@ -172,7 +172,7 @@ window['app'] = new Vue({
                     }
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to save");
+                    window.PmEvent.fire('errors.api', "Unable to save");
                 });
         }
     }

@@ -135,7 +135,7 @@ window['app'] = new Vue({
                 })
                 .catch((error) => {
                     this.loadingPurchaseNumber = false;
-                    this.$toastr.error('Unable to process your request.');
+                    window.PmEvent.fire('errors.api', 'Unable to process your request.');
                 });
         },
         removeAdditionalFeature: function (index, list) {
@@ -167,7 +167,7 @@ window['app'] = new Vue({
                     });
                 })
                 .catch(e => {
-                    this.$toastr.error("Unable to process your request");
+                    window.PmEvent.fire('errors.api', "Unable to process your request");
                     this.loading = false;
                 });
         },
@@ -184,7 +184,7 @@ window['app'] = new Vue({
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 }, () => {
-                    this.$toastr.error('Unable to get phone numbers.');
+                    window.PmEvent.fire('errors.api', 'Unable to get phone numbers.');
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 });

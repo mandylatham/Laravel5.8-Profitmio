@@ -79,7 +79,7 @@ window['app'] = new Vue({
                 })
                 .catch(error => {
                     this.loading = false;
-                    this.$toastr.error('Unable to get recipient');
+                    window.PmEvent.fire('errors.api', 'Unable to get recipient');
                 });
         },
         showPanel: function (recipient, key) {

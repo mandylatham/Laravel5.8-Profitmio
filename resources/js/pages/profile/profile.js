@@ -30,7 +30,7 @@ window['app'] = new Vue({
                 })
                 .catch(error => {
                     this.loadingUserForm = false;
-                    this.$toastr.error("Unable to update");
+                    window.PmEvent.fire('errors.api', "Unable to update");
                 });
         },
         resetPassword() {
@@ -48,7 +48,7 @@ window['app'] = new Vue({
                 })
                 .catch(error => {
                     this.loadingPasswordForm = false;
-                    this.$toastr.error("Unable to update");
+                    window.PmEvent.fire('errors.api', "Unable to update");
                 });
         }
     }

@@ -105,7 +105,7 @@ window['app'] = new Vue({
                     this.loadingCampaigns = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get campaigns");
+                    window.PmEvent.fire('errors.api', "Unable to get campaigns");
                 });
         },
         onCampaignPageChanged(event) {
