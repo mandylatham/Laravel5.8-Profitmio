@@ -69,11 +69,9 @@
             </div>
         </div>
         <div class="col-6 col-md-2 campaign-links" v-if="!isAdmin">
-            <div class="row no-gutters">
-                <div class="col-12 col-sm-6">
-                    <i class="fa fa-calendar appointments-logo"></i>
-                    <p>{{ campaign.appointment_count }} Appointments</p>
-                </div>
+            <div class="campaign-apointment-totals-inactive">
+                <i class="far fa-calendar-check"></i>
+                <div class="total"><div class="m-0 p-0">{{ campaign.appointment_counts }}</div><div class="label">Appointments</div></div>
             </div>
         </div>
         <div class="col-6 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
