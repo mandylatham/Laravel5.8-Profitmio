@@ -36,7 +36,7 @@ exe 'Install chrome dependencies for chromium and laravel dusk' \
     sudo apt-get -y install libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4
 
 exe 'Install chromium' \
-    sudo apt-get install chromium-browser
+    sudo apt-get -y install chromium-browser
 
 exe 'Install XVFB for chromium and laravel dusk' \
     sudo apt-get -y install xvfb gtk2-engines-pixbuf
