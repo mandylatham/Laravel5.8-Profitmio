@@ -13,9 +13,9 @@ Vue.use(VueFormWizard);
 window['app'] = new Vue({
     el: '#campaigns-edit',
     components: {
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'input-errors': require('./../../components/input-errors/input-errors'),
-        'date-pick': require('./../../components/date-pick/date-pick')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'input-errors': require('./../../components/input-errors/input-errors').default,
+        'date-pick': require('./../../components/date-pick/date-pick').default
     },
     data: {
         addCrmExportEmail: '',
@@ -126,7 +126,7 @@ window['app'] = new Vue({
                     this.$toastr.success("Phone Updated");
                 })
                 .catch((error) => {
-                    this.$toastr.error("Unable to update phone number");
+                    window.PmEvent.fire('errors.api', "Unable to update phone number");
                 });
         },
         cancelPhoneNumber: function (phone) {
@@ -189,7 +189,7 @@ window['app'] = new Vue({
                     this.setupPhoneNumberForms();
                 })
                 .catch((error) => {
-                    this.$toastr.error("Unable to fetch campaign phones: " + error);
+                    window.PmEvent.fire('errors.api', "Unable to fetch campaign phones: " + error);
                 });
         },
         purchasePhoneNumber: function () {
@@ -207,7 +207,7 @@ window['app'] = new Vue({
                     this.closeModal('addPhoneModalRef');
                 }, (error) => {
                     this.loadingPurchaseNumber = false;
-                    this.$toastr.error('Unable to process your request: ' + error);
+                    window.PmEvent.fire('errors.api', 'Unable to process your request: ' + error);
                 })
         },
         removeAdditionalFeature: function (index, list) {
@@ -232,7 +232,7 @@ window['app'] = new Vue({
                     });
                 })
                 .catch(e => {
-                    this.$toastr.error("Unable to process your request");
+                    window.PmEvent.fire('errors.api', "Unable to process your request");
                     this.loading = false;
                 });
         },
@@ -256,7 +256,7 @@ window['app'] = new Vue({
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 }, (error) => {
-                    this.$toastr.error('Unable to get phone numbers.');
+                    window.PmEvent.fire('errors.api', 'Unable to get phone numbers.');
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 });

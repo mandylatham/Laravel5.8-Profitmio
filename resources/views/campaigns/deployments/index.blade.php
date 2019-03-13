@@ -22,7 +22,7 @@
         <div class="row align-items-end no-gutters">
             <div class="col-12 col-sm-5 col-lg-4 mb-3">
                 @if (auth()->user()->isAdmin())
-                <a class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id]) }}">
+                <a dusk="new-drop-button" class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id]) }}">
                     <i class="fas fa-plus mr-2"></i> NEW
                 </a>
                 @endif
@@ -45,12 +45,18 @@
                     <div class="row no-gutters">
                         <div class="col-12 col-md-4 drop-info">
                             <div class="drop-info--type">
-                                <span class="pm-font-mail-icon" v-if="drop.type === 'email'"></span>
-                                <span class="fa fa-comment" v-else-if="drop.type === 'sms'"></span>
+                                <span v-if="drop.type === 'email'">
+                                    <i class="fa fa-envelope mr-2"></i>
+                                    @{{ drop.id }}
+                                </span>
+                                <span v-else-if="drop.type === 'sms'">
+                                    <i class="fa fa-comment mr-2"></i>
+                                    @{{ drop.id }}
+                                </span>
                                 <span class="pm-font-templates-icon" v-else></span>
                             </div>
                             <div class="drop-info--date">
-                                <span class="pm-font-date-icon mr-3"></span>@{{ (drop.status === 'Completed' ? drop.completed_at : drop.send_at) | amDateTimeFormat('MM/DD/YYYY | H:mm A') }}
+                                <span class="pm-font-date-icon mr-3"></span>@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : drop.send_at | amDateTimeFormat('MM/DD/YYYY @ H:mm A')) }}
                             </div>
                         </div>
                         <div class="col-12 col-md-3 drop-status text-center">
@@ -60,9 +66,9 @@
                             <i class="pm-font-recipients-icon mr-3"></i> @{{ drop.recipients }} Recipients
                         </div>
                         <div class="col-6 col-md-2 drop-options">
-                            <p v-if="drop.status === 'Completed' || drop.status === 'Cancelled' || drop.status === 'Processing' || drop.status === 'Deleted'" class="drop-options--no-actions">No Actions Available</p>
+                            <p v-if="drop.status === 'Deleted'" class="drop-options--no-actions">No Actions Available</p>
                             <div v-else>
-                                <a v-if="drop.type === 'sms' && drop.status !== 'Pending'" :href="generateRoute(dropRunSmsUrl, {'dropId': drop.id})" class="btn pm-btn pm-btn-green mr-2">
+                                <a v-if="drop.type === 'sms' && drop.status === 'Processing'" :href="generateRoute(dropRunSmsUrl, {'dropId': drop.id})" class="btn pm-btn pm-btn-green mr-2">
                                     RUN
                                 </a>
                                 <button type="button" v-if="drop.type === 'sms' && drop.status === 'Pending'" class="btn pm-btn pm-btn-green mr-2" @click="startDrop(drop)">
@@ -71,7 +77,7 @@
                                 <a :href="generateRoute(dropEditUrl, {'dropId': drop.id})" class="btn btn-link pm-btn-link pm-btn-link-primary">
                                     <i class="pm-font-edit-icon"></i>
                                 </a>
-                                <a href="javascript:;" @click.prevent="deleteDrop(drop)" class="btn btn-link pm-btn-link pm-btn-link-warning">
+                                <a href="javascript:;" v-if="drop.status !== 'Completed'" @click.prevent="deleteDrop(drop)" class="btn btn-link pm-btn-link pm-btn-link-warning">
                                     <i class="far fa-trash-alt"></i>
                                 </a>
                             </div>

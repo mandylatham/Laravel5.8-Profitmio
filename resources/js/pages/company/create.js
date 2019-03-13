@@ -15,9 +15,9 @@ import { isNorthAmericanPhoneNumber, isCanadianPostalCode, isUnitedStatesPostalC
 window['app'] = new Vue({
     el: '#app',
     components: {
-        'input-errors': require('./../../components/input-errors/input-errors'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'resumable': require('./../../components/resumable/resumable'),
+        'input-errors': require('./../../components/input-errors/input-errors').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'resumable': require('./../../components/resumable/resumable').default,
     },
     data: {
         companyIndex: '',
@@ -95,7 +95,7 @@ window['app'] = new Vue({
                 }, error => {
                     this.isLoading = false;
                     this.createForm.errors = error.errors;
-                    this.$toastr.error("Unable to create company");
+                    window.PmEvent.fire('errors.api', "Unable to create company");
                 });
         },
     },

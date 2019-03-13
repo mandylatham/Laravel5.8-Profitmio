@@ -42,18 +42,18 @@
                         <div class="col-12 col-lg-4">
                             <div class="form-group">
                                 <label for="contact_method">Contact Method</label>
-                                <v-select name="contact_method" :options="contactMethods" class="filter--v-select" v-model="searchFilters.contact_method" @input="fetchRecipientsGroup"></v-select>
+                                <v-select dusk="contact-method-select" name="contact_method" :options="contactMethods" class="filter--v-select" v-model="searchFilters.contact_method" @input="fetchRecipientsGroup"></v-select>
                             </div>
                             <div class="form-group">
                                 <label for="data_source_conquest">Data Source</label>
-                                <p-check color="primary" class="p-default d-block mb-3" name="data_source_conquest" v-model="searchFilters.data_source_conquest" @change="fetchRecipientsGroup">Conquest</p-check>
-                                <p-check color="primary" class="p-default d-block mb-3" name="data_source_database" v-model="searchFilters.data_source_database" @change="fetchRecipientsGroup">Database</p-check>
+                                <p-check dusk="data-source-conquest-check" color="primary" class="p-default d-block mb-3" name="data_source_conquest" v-model="searchFilters.data_source_conquest" @change="fetchRecipientsGroup">Conquest</p-check>
+                                <p-check dusk="data-source-database-check" color="primary" class="p-default d-block mb-3" name="data_source_database" v-model="searchFilters.data_source_database" @change="fetchRecipientsGroup">Database</p-check>
                             </div>
                         </div>
                         <div class="col-12 col-lg-4">
                             <div class="form-group">
                                 <label for="recipients">Recipient List</label>
-                                <select class="form-control" name="recipients" id="recipients" multiple v-model="searchFilters.recipients" @change="fetchRecipientsGroup">
+                                <select dusk="recipient-list-select" class="form-control" name="recipients" id="recipients" multiple v-model="searchFilters.recipients" @change="fetchRecipientsGroup">
                                     <option value="all">All</option>
                                     @foreach ($recipientLists as $list)
                                         <option value="{{ $list->id }}">{{ $list->name }}</option>
@@ -63,8 +63,8 @@
                         </div>
                         <div class="col-12 col-lg-4">
                             <div class="form-group">
-                                <label for="max">Max Per Group</label>
-                                <input type="number" min="0" class="form-control" name="max" required placeholder="Max per Groups" v-model="searchFilters.max" @input="fetchRecipientsGroup">
+                                <label for="max" >Max Per Group</label>
+                                <input dusk="max-per-group-field" type="number" min="0" class="form-control" name="max" required placeholder="Max per Groups" v-model="searchFilters.max" @input="fetchRecipientsGroup">
                             </div>
                         </div>
                     </div>
@@ -96,7 +96,7 @@
                             </div>
                             <div class="form-group">
                                 <label for="typ">Drop Type</label>
-                                <select id="type" name="type" class="form-control" required v-model="templateData.type">
+                                <select dusk="drop-type-select" id="type" name="type" class="form-control" required v-model="templateData.type">
                                     <option value="email">Email</option>
                                     <option value="sms">SMS</option>
                                     <option disabled><s>Voice</s></option>
@@ -105,24 +105,24 @@
                             <div class="email-fields" v-if="templateData.type == 'email'">
                                 <div class="form-group">
                                     <label for="email_subject">Email Subject</label>
-                                    <input id="email_subject" type="text" class="form-control" name="email_subject"
+                                    <input dusk="drop-email-subject-input" id="email_subject" type="text" class="form-control" name="email_subject"
                                            placeholder="Email Subject" v-model="templateData.email_subject"
                                            autocomplete="off">
                                 </div>
                                 <div class="form-group">
                                     <label for="email_text">Email Text</label>
-                                    <textarea id="email_text" class="form-control" name="email_text" v-model="templateData.email_text"
+                                    <textarea dusk="drop-email-text-input" id="email_text" class="form-control" name="email_text" v-model="templateData.email_text"
                                               placeholder="Email Plain Text" autocomplete="off"></textarea>
                                 </div>
                                 <div class="form-group">
                                     <label for="email_html">Email HTML</label>
-                                    <editor v-model="templateData.email_html" lang="html" height="800" @init="initEditor"></editor>
+                                    <editor class="drop-email-html" v-model="templateData.email_html" lang="html" height="800" @init="initEditor"></editor>
                                 </div>
                             </div>
                             <div id="sms-fields" v-if="templateData.type == 'sms'">
                                 <div class="form-group">
                                     <label for="text_message">Text Message</label>
-                                    <textarea class="form-control" name="text_message" placeholder="Text Message"
+                                    <textarea dusk="drop-text-message-input" class="form-control" name="text_message" placeholder="Text Message"
                                               autocomplete="off" v-model="templateData.text_message"></textarea>
                                 </div>
                                 <div class="form-group" v-if="templateData.send_vehicle_image">
@@ -134,7 +134,7 @@
                     </div>
                 </tab-content>
                 <tab-content title="Schedule" icon="far fa-calendar-alt">
-                    <table class="table table-bordered table-sm">
+                    <table class="table table-bordered table-sm schedule-time-table">
                         <thead>
                             <tr>
                                 <th>Group</th>
@@ -143,11 +143,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="group in groups">
+                            <tr class="time-row" v-for="(group, index) in groups">
                                 <td class="align-middle">@{{ group.name }}</td>
                                 <td class="align-middle">@{{ group.count }}</td>
                                 <td class="align-middle">
-                                    <date-picker v-model="group.datetime" lang="en" type="datetime" format="MM/DD/YYYY [at] HH:mm"></date-picker>
+                                    <date-picker :dusk="'group-datetime-' + index" v-model="group.datetime" lang="en" type="datetime" format="MM/DD/YYYY [at] HH:mm"></date-picker>
                                 </td>
                             </tr>
                         </tbody>

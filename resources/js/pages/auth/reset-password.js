@@ -9,7 +9,7 @@ Vue.use(VueSweetalert2);
 window['app'] = new Vue({
     el: '#reset-password',
     components: {
-        'spinner-icon':  require('./../../components/spinner-icon/spinner-icon'),
+        'spinner-icon':  require('./../../components/spinner-icon/spinner-icon').default,
     },
     data: {
         errors: [],

@@ -1,6 +1,6 @@
 import Vue from 'vue';
 
-window.Event = new class {
+window.PmEvent = new class {
     constructor() {
         this.vue = new Vue();
     }

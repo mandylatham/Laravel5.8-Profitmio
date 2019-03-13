@@ -24,6 +24,27 @@
         }
     }
 
+    .campaign-apointment-totals-inactive {
+        color: $brand-purple;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0.8rem;
+
+        .far {
+            font-size: 2.5rem;
+            margin-right: 0.8rem;
+        }
+        .total {
+            font-size: 2rem;
+            line-height: 2rem;
+            text-align: center;
+        }
+        .label {
+            font-size: 0.5rem;
+            line-height: .5rem;
+        }
+    }
+
     .btn-console-outline {
         padding-top: 0.75rem;
         padding-bottom: 0.75rem;

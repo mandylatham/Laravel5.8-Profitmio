@@ -20,7 +20,7 @@
     <div class="container" id="company-index" v-cloak>
         <div class="row align-items-end no-gutters">
             <div class="col-12 col-sm-5 col-lg-3 mb-3">
-                <a href="{{ route('company.create') }}" class="btn pm-btn pm-btn-blue">
+                <a dusk="create-company-button" href="{{ route('company.create') }}" class="btn pm-btn pm-btn-blue">
                     <i class="fa fa-plus mr-2"></i>
                     Add Company
                 </a>
@@ -31,6 +31,7 @@
                        placeholder="Search" @keyup.enter="fetchData()">
             </div>
         </div>
+        <h1 class="page-title">Companies</h1>
         <div class="row no-gutters company-component inactive" v-for="(company, index) in companies" :key="company.id">
             <div class="col-12 col-md-5 company-header">
                 <div class="company-header--title">

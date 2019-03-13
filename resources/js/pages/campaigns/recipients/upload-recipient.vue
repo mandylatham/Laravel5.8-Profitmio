@@ -145,9 +145,9 @@
 
     export default {
         components: {
-            'resumable': require('./../../../components/resumable/resumable'),
-            'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
-            'input-errors': require('./../../../components/input-errors/input-errors'),
+            'resumable': require('./../../../components/resumable/resumable').default,
+            'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
+            'input-errors': require('./../../../components/input-errors/input-errors').default,
         },
         computed: {
             fileHeaders() {
@@ -231,7 +231,7 @@
                             window.location.replace(window.recipientsIndexUrl);
                         });
                     }, e => {
-                        this.$toastr.error("Unable to process your request");
+                        window.PmEvent.fire('errors.api', "Unable to process your request");
                         this.loading = false;
                     });
             },

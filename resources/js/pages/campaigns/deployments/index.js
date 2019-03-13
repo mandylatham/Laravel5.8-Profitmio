@@ -16,9 +16,9 @@ window['app'] = new Vue({
         }
     },
     components: {
-        'pm-pagination': require('./../../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
-        'drop-status': require('./../../../components/drop-status/drop-status'),
+        'pm-pagination': require('./../../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
+        'drop-status': require('./../../../components/drop-status/drop-status').default,
     },
     data: {
         drops: [],
@@ -58,7 +58,7 @@ window['app'] = new Vue({
                     });
                 }
             }, error => {
-                this.$toastr.error('Unable to process your request');
+                window.PmEvent.fire('errors.api', 'Unable to process your request');
             });
         },
         fetchData() {
@@ -73,7 +73,7 @@ window['app'] = new Vue({
                     this.loading = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get drops");
+                    window.PmEvent.fire('errors.api', "Unable to get drops");
                 });
         },
         generateRoute,
@@ -112,7 +112,7 @@ window['app'] = new Vue({
                         window.location.href = generateRoute(this.dropRunSmsUrl, {'dropId': drop.id});
                     }
                 }, error => {
-                    this.$toastr.error('Unable to process your request');
+                    window.PmEvent.fire('errors.api', 'Unable to process your request');
                 });
             }
         }

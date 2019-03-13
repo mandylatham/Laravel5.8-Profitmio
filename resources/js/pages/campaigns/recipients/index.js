@@ -18,9 +18,9 @@ window['app'] = new Vue({
         }
     },
     components: {
-        'pm-pagination': require('./../../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
-        'upload-recipient': require('./upload-recipient')
+        'pm-pagination': require('./../../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
+        'upload-recipient': require('./upload-recipient').default
     },
     data: {
         recipientList: [],
@@ -64,7 +64,7 @@ window['app'] = new Vue({
                     });
                 }
             }, error => {
-                this.$toastr.error('Unable to process your request');
+                window.PmEvent.fire('errors.api', 'Unable to process your request');
             });
         },
         fetchData() {
@@ -80,7 +80,7 @@ window['app'] = new Vue({
                     this.loading = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get recipient lists");
+                    window.PmEvent.fire('errors.api', "Unable to get recipient lists");
                 });
         },
         generateRoute,
@@ -125,7 +125,7 @@ window['app'] = new Vue({
                             });
                         }
                     }, error => {
-                        this.$toastr.error('Unable to process your request');
+                        window.PmEvent.fire('errors.api', 'Unable to process your request');
                     });
                 });
         }

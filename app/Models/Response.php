@@ -6,9 +6,11 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
+use App\Models\Impersonation\Traits\MayBeImpersonated;
+
 class Response extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, MayBeImpersonated;
 
     protected $fillable = [
         'read',

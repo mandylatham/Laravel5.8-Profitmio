@@ -15,9 +15,9 @@ Vue.use(VueChartkick, {adapter: Chart});
 window['app'] = new Vue({
     el: '#dashboard',
     components: {
-        'campaign': require('./../../components/campaign/campaign'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'campaign': require('./../../components/campaign/campaign').default,
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
     },
     computed: {
         countActiveCampaigns: function () {
@@ -102,7 +102,7 @@ window['app'] = new Vue({
                     this.isLoading = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get campaigns");
+                    window.PmEvent.fire('errors.api', "Unable to get campaigns");
                 });
         },
         onPageChanged(event) {
@@ -115,8 +115,8 @@ window['app'] = new Vue({
 window['sidebar'] = new Vue({
     el: '#sidebar--container',
     components: {
-        'date-pick': require('./../../components/date-pick/date-pick'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon')
+        'date-pick': require('./../../components/date-pick/date-pick').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default
     },
     data: {
         loading: true,
@@ -126,6 +126,11 @@ window['sidebar'] = new Vue({
         dropsSelected: true,
         filter: 'appointment',
         selectedDate: moment().format('YYYY-MM-DD'),
+    },
+    filters: {
+        prettyDate: function (value) {
+            return moment(value, 'YYYY-MM-DD HH:mm').format('MM-DD-YYYY HH:mm');
+        }
     },
     methods: {
         parseDate: function (date, format) {

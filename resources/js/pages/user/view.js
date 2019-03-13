@@ -10,7 +10,7 @@ import VueChartkick from 'vue-chartkick'
 import Chart from 'chart.js'
 import {filter} from 'lodash';
 
-window.toastr = require('toastr');
+window.toastr = require('toastr').default;
 Vue.use(VueToastr2);
 
 Vue.use(VueChartkick, {adapter: Chart});
@@ -18,9 +18,9 @@ Vue.use(VueChartkick, {adapter: Chart});
 window['app'] = new Vue({
     el: '#user-view',
     components: {
-        'campaign': require('./../../components/campaign/campaign'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
+        'campaign': require('./../../components/campaign/campaign').default,
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
     },
     computed: {
         countActiveCampaigns: function () {
@@ -105,7 +105,7 @@ window['app'] = new Vue({
                     this.loadingCampaigns = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get campaigns");
+                    window.PmEvent.fire('errors.api', "Unable to get campaigns");
                 });
         },
         onCampaignPageChanged(event) {

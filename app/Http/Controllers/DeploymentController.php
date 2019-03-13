@@ -33,19 +33,12 @@ class DeploymentController extends Controller
         if ($campaign->isExpired) {
             return response()->json(['error' => ['error' => 'Illegal Request. This abuse of the system has been logged.']], 403);
         }
-        if ($drop->system_id == 2) {
-            $unsent = \DB::table('deployment_recipients')
-                    ->where('deployment_id', $drop->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->whereNotNull('sent_at')
-                    ->get();
-        } else {
-            $unsent = \DB::table('campaign_schedule_lists')
-                    ->where('campaign_schedule_id', $drop->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->whereNotNull('sent_at')
-                    ->get();
-        }
+
+        $unsent = \DB::table('deployment_recipients')
+                ->where('deployment_id', $drop->id)
+                ->where('recipient_id', $recipient->id)
+                ->whereNotNull('sent_at')
+                ->get();
 
         if ($unsent->count() > 0) {
             return ['success' => 1, 'message' => 'This recipient has already been sent an sms message'];
@@ -121,10 +114,11 @@ class DeploymentController extends Controller
                 $stats = \DB::table('campaign_schedule_lists')->where('campaign_schedule_id', $drop->id)->selectRaw("sum(case when sent_at is null and failed_at is null then 1 else 0 end) as pending, sum(case when sent_at is not null or failed_at is not null then 1 else 0 end) as sent")->first();
             }
 
-            $percent = $stats->pending / ($stats->pending + $stats->sent);
+            $percent = floor(($stats->pending / ($stats->pending + $stats->sent)) * 100);
             $filler = [
                 'status' => $stats->pending == 0 ? 'Completed' : 'Processing',
-                'percentage_complete' => $percent * 100,
+                'completed_at' => \Carbon\Carbon::now('UTC'),
+                'percentage_complete' => $percent,
             ];
 
             $drop->fill($filler)->save();
@@ -234,7 +228,7 @@ class DeploymentController extends Controller
 
     public function getForUserDisplay(Campaign $campaign, Request $request)
     {
-        $drops = CampaignSchedule::searchByRequest($request, $campaign)
+        $drops = Drop::searchByRequest($request, $campaign)
             ->orderBy('campaign_schedules.id', 'desc')
             ->paginate(15);
 
@@ -366,12 +360,12 @@ class DeploymentController extends Controller
     }
 
 
-    public function start(Campaign $campaign, Drop $drop)
+    public function start(Campaign $campaign, Drop $deployment)
     {
         try {
-            $drop->status = "Processing";
-            $drop->started_at = Carbon::now()->toDateTimeString();
-            $drop->save();
+            $deployment->status = "Processing";
+            $deployment->started_at = Carbon::now('UTC');
+            $deployment->save();
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',

@@ -160,7 +160,16 @@
                     <div class="sms-message-container">
                         <div v-for="msg in threads.text">
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
-                                <div class="message-user">{{ msg.reply_user }}</div>
+                                <div class="message-user">
+                                    <template v-if="msg.impersonation">
+                                        {{ msg.impersonation.impersonator.name }} (id: {{ msg.impersonation.impersonator.id}})
+                                        <p><small>on behalf of <strong>{{ msg.reply_user }}</strong></small></p>
+                                    </template>
+                                    <template v-else>
+                                        {{ msg.reply_user }}
+                                    </template>
+                                </div>
+
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
@@ -179,7 +188,7 @@
                             </div>
                         </div>
                     </div>
-                    <form @submit.prevent="sendText" v-if="!campaign.is_expired && (isAdmin || (!isAdmin && activeCompany.type === 'dealership'))">
+                    <form @submit.prevent="sendText" v-if="!campaign.is_expired && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="sms-form" style="margin-top: 20px;">
                             <div class="input-group">
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
@@ -207,7 +216,15 @@
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
-                                <div class="message-user">{{ msg.reply_user }}</div>
+                                <div class="message-user">
+                                    <template v-if="msg.impersonation">
+                                        {{ msg.impersonation.impersonator.name }} (id: {{ msg.impersonation.impersonator.id}})
+                                        <p><small>on behalf of <strong>{{ msg.reply_user }}</strong></small></p>
+                                    </template>
+                                    <template v-else>
+                                        {{ msg.reply_user }}
+                                    </template>
+                                </div>
                                 <div class="message-time" v-if="msg.created_at">{{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
                                     msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
@@ -229,7 +246,7 @@
                     </div>
 
 
-                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired && (isAdmin || (!isAdmin && activeCompany.type === 'dealership'))">
+                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="email-form">
                             <div class="input-group">
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
@@ -266,7 +283,7 @@
             pusherService.disconnect();
         },
         components: {
-            'spinner-icon': require('./../../../components/spinner-icon/spinner-icon'),
+            'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
             DatePicker
         },
         computed: {
@@ -367,7 +384,7 @@
                     })
                     .catch((response) => {
                         this.setLoading(false);
-                        this.$toastr.error("Couldn't fetch responses.");
+                        window.PmEvent.fire('errors.api', "Couldn't fetch responses.");
                     });
             },
             pad2: function (number) {
@@ -386,7 +403,7 @@
                         this.$toastr.success('Note added.');
                     })
                     .catch((response) => {
-                        this.$toastr.error('Failed to add note.');
+                        window.PmEvent.fire('errors.api', 'Failed to add note.');
                     });
             },
             needsAppointment: function () {
@@ -402,7 +419,7 @@
                         this.$toastr.success('Called status updated.');
                     })
                     .catch((response) => {
-                        this.$toastr.error('Failed to update called status.');
+                        window.PmEvent.fire('errors.api', 'Failed to update called status.');
                     });
             },
             addAppointment: function (campaignId, recipientId) {
@@ -417,7 +434,7 @@
                         this.$toastr.success('Appointment added.');
                     })
                     .catch((response) => {
-                        this.$toastr.error('Failed to add an appointment.');
+                        window.PmEvent.fire('errors.api', 'Failed to add an appointment.');
                     });
             },
             messageUpdateReadStatus: function (event, textId) {
@@ -429,7 +446,7 @@
                         this.$toastr.success('Read status updated.');
                     })
                     .catch((response) => {
-                        this.$toastr.error('Failed to update message read status.');
+                        window.PmEvent.fire('errors.api', 'Failed to update message read status.');
                     });
             },
             sendToCrm: function () {
@@ -440,7 +457,7 @@
                     })
                     .catch(error => {
                         console.log(error);
-                        this.$toastr.error("Unable to send recipient to CRM at this time");
+                        window.PmEvent.fire('errors.api', "Unable to send recipient to CRM at this time");
                     });
             },
             sendText: function () {
@@ -468,7 +485,7 @@
                             this.textMessage = textMessage;
                         }
                         this.threads.text.splice(indexOfMessage, 1);
-                        this.$toastr.error('Failed to send text.');
+                        window.PmEvent.fire('errors.api', 'Failed to send text.');
                     });
             },
             sendEmail: function () {
@@ -495,12 +512,12 @@
                             this.emailMessage = emailMessage;
                         }
                         this.threads.email.splice(indexOfMessage, 1);
-                        this.$toastr.error('Failed to send email.');
+                        window.PmEvent.fire('errors.api', 'Failed to send email.');
                     });
             },
             addLabel: function (label, labelText) {
                 this.$set(this.labels, label, labelText);
-                window.Event.fire('added.recipient.label', {
+                window.PmEvent.fire('added.recipient.label', {
                     recipientId: this.recipientId,
                     label,
                     labelText
@@ -509,17 +526,17 @@
                     .then((response) => {
                     }, () => {
                         this.$delete(this.labels, label);
-                        window.Event.fire('added.recipient.label', {
+                        window.PmEvent.fire('added.recipient.label', {
                             recipientId: this.recipientId,
                             label,
                             labelText
                         });
-                        this.$toastr.error('Failed to add label.');
+                        window.PmEvent.fire('errors.api', 'Failed to add label.');
                     });
             },
             removeLabel: function (label, key) {
                 this.$delete(this.labels, key);
-                window.Event.fire('removed.recipient.label', {
+                window.PmEvent.fire('removed.recipient.label', {
                     recipientId: this.recipientId,
                     label: key,
                     labelText: label
@@ -531,8 +548,8 @@
                     .then(() => {
                     }, () => {
                         this.$set(this.labels, key, label);
-                        this.$toastr.error('Failed to remove label.');
-                        window.Event.fire('removed.recipient.label', {
+                        window.PmEvent.fire('errors.api', 'Failed to remove label.');
+                        window.PmEvent.fire('removed.recipient.label', {
                             recipientId: this.recipientId,
                             label: key,
                             labelText: label
@@ -565,6 +582,7 @@
         mounted() {
             this.activeCompany = window.activeCompany;
             this.isAdmin = window.isAdmin;
+            this.isImpersonated = window.isImpersonated;
             pusherService = new PusherService();
             this.getResponses();
         },

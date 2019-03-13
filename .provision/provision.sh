@@ -32,6 +32,21 @@ exe 'Update apt indexes' \
 exe 'Install additional php packages' \
     sudo DEBIAN_FRONTEND=noninteractive apt -o Dpkg::Options::="--force-confnew" install -y --force-yes php7.1-gd php7.1-json php7.1-xml php7.1-zip php-imagick php7.1-mcrypt
 
+exe 'Install chrome dependencies for chromium and laravel dusk' \
+    sudo apt-get -y install libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4
+
+exe 'Install chromium' \
+    sudo apt-get -y install chromium-browser
+
+exe 'Install XVFB for chromium and laravel dusk' \
+    sudo apt-get -y install xvfb gtk2-engines-pixbuf
+
+exe 'Install chrome fonts' \
+    sudo apt-get -y install xfonts-cyrillic xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable
+
+exe 'Support for screen capturing' \
+    sudo apt-get -y install imagemagick x11-apps
+
 exe 'Install ghostscript' \
     sudo apt install -y ghostscript
 
@@ -54,4 +69,7 @@ exe 'Creating symlink to sites-enabled' \
 
 exe 'Restarting nginx' \
     sudo service nginx restart
+
+exe 'Fire up xvfb' \
+    Xvfb -ac :0 -screen 0 1280x1024x16 &
 

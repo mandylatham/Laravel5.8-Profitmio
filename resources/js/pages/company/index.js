@@ -7,9 +7,9 @@ import {generateRoute} from './../../common/helpers'
 window['app'] = new Vue({
     el: '#company-index',
     components: {
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'company-type': require('./../../components/company-type/company-type'),
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'company-type': require('./../../components/company-type/company-type').default,
     },
     computed: {
         pagination: function () {
@@ -81,7 +81,7 @@ window['app'] = new Vue({
                 })
                 .catch(error => {
                     console.log(error);
-                    this.$toastr.error("Unable to get companies");
+                    window.PmEvent.fire('errors.api', "Unable to get companies");
                 });
         },
         deleteCompany: function (id, index) {
@@ -106,7 +106,7 @@ window['app'] = new Vue({
                     this.companies.splice(index, 1);
                 }
             }, error => {
-                this.$toastr.error("Unable to delete company");
+                window.PmEvent.fire('errors.api', "Unable to delete company");
             });
         },
         onPageChanged(event) {

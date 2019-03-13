@@ -15,11 +15,11 @@ Vue.use(VueChartkick, {adapter: Chart});
 window['app'] = new Vue({
     el: '#user-view',
     components: {
-        'campaign': require('./../../components/campaign/campaign'),
-        'resumable': require('./../../components/resumable/resumable'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'user-role': require('./../../components/user-role/user-role')
+        'campaign': require('./../../components/campaign/campaign').default,
+        'resumable': require('./../../components/resumable/resumable').default,
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'user-role': require('./../../components/user-role/user-role').default
     },
     computed: {
         countCompanies: function () {
@@ -148,7 +148,7 @@ window['app'] = new Vue({
                     this.loadingCampaigns = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get campaigns");
+                    window.PmEvent.fire('errors.api', "Unable to get campaigns");
                 });
         },
         fetchCompanies() {
@@ -169,7 +169,7 @@ window['app'] = new Vue({
                     this.loadingCompanies = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get campaigns");
+                    window.PmEvent.fire('errors.api', "Unable to get campaigns");
                 });
         },
         onCampaignPageChanged(event) {
@@ -202,7 +202,7 @@ window['app'] = new Vue({
                     this.$toastr.success('Invitation Sent!');
                 }, () => {
                     this.loadingInvitation = false;
-                    this.$toastr.error('Unable to process your request.');
+                    window.PmEvent.fire('errors.api', 'Unable to process your request.');
                 })
         },
         updateCompanyData(company) {
@@ -219,7 +219,7 @@ window['app'] = new Vue({
                 .post(generateRoute(window.updateCompanyDataUrl, {'userId': window.user.id}), data)
                 .then(response => {
                 }, () => {
-                    this.$toastr.error('Unable to process your request');
+                    window.PmEvent.fire('errors.api', 'Unable to process your request');
                 });
         },
         cancelUser: function () {
@@ -237,7 +237,7 @@ window['app'] = new Vue({
                     this.originalUser = this.user.data();
                 })
                 .catch(e => {
-                    this.$toastr.error("Unable to process your request");
+                    window.PmEvent.fire('errors.api', "Unable to process your request");
                     this.loading = false;
                 });
         }

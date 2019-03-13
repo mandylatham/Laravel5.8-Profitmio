@@ -19,8 +19,8 @@
                 <img class="brand-img" src="/img/logo-large.png" alt="...">
             </div>
             <p class="text-primary">Sign into your account</p>
-            <p class="text-danger" v-for="error in errors">@{{ error }}</p>
-            <p class="text-danger" v-if="errorMessage">@{{ errorMessage }}</p>
+            <p dusk="error-message-1" class="text-danger" v-for="error in errors">@{{ error }}</p>
+            <p dusk="error-message-2" class="text-danger" v-if="errorMessage">@{{ errorMessage }}</p>
             <form method="post" @submit.prevent="login()">
                 {{ csrf_field() }}
                 <div class="form-group">
@@ -44,7 +44,7 @@
                         </div>
                     </div>
                 </div>
-                <button type="submit" class="btn btn-primary btn-block waves-effect" :disabled="loading">
+                <button type="submit" dusk="login-button" class="btn btn-primary btn-block waves-effect" :disabled="loading">
                     <span v-if="!loading">Sign in</span>
                     <spinner-icon v-if="loading"></spinner-icon>
                 </button>

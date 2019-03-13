@@ -7,13 +7,13 @@ import axios from "axios";
 window['app'] = new Vue({
     el: '#company-user-index',
     components: {
-        'spinner-icon': require('./../../components/spinner-icon/spinner-icon'),
-        'pm-pagination': require('./../../components/pm-pagination/pm-pagination'),
-        'user-role': require('./../../components/user-role/user-role'),
-        'user-status': require('./../../components/user-status/user-status')
+        'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
+        'user-role': require('./../../components/user-role/user-role').default,
+        'user-status': require('./../../components/user-status/user-status').default
     },
     filters: {
-        'userRole': require('./../../filters/user-role.filter')
+        'userRole': require('./../../filters/user-role.filter').default
     },
     computed: {
         pagination: function () {
@@ -80,7 +80,7 @@ window['app'] = new Vue({
                     });
                 }
             }, error => {
-                this.$toastr.error('Unable to process your request');
+                window.PmEvent.fire('errors.api', 'Unable to process your request');
             });
         },
         activateUser: function (user) {
@@ -108,7 +108,7 @@ window['app'] = new Vue({
                     });
                 }
             }, error => {
-                this.$toastr.error('Unable to process your request');
+                window.PmEvent.fire('errors.api', 'Unable to process your request');
             });
         },
         fetchData() {
@@ -123,7 +123,7 @@ window['app'] = new Vue({
                     this.isLoading = false;
                 })
                 .catch(error => {
-                    this.$toastr.error("Unable to get users");
+                    window.PmEvent.fire('errors.api', "Unable to get users");
                 });
         },
         onPageChanged(event) {

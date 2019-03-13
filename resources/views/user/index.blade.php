@@ -49,6 +49,7 @@
                            placeholder="Search" @keyup.enter="fetchData()">
                 </div>
             </div>
+            <h1 class="page-title">Users</h1>
             <div class="list-container">
                 <div class="loader-spinner" v-if="isLoading">
                     <spinner-icon></spinner-icon>

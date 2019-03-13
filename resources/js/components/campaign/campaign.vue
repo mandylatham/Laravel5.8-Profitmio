@@ -1,5 +1,5 @@
 <template>
-    <div class="row no-gutters campaign-component active" :class="{'closed': campaignClosed}" v-if="campaignActive">
+    <div class="row no-gutters campaign-component active" :id="'campaign-component-' + campaign.id" :class="{'closed': campaignClosed}" v-if="campaignActive">
         <div class="col-12 col-md-5">
             <div class="campaign-header" @click="toggleCampaign">
                 <div class="campaign-header--status">
@@ -43,8 +43,8 @@
         </div>
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
             <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
-            <a :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
-            <a :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
+            <a class="drop-link" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
+            <a class="recipient-list-link" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
             <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})"><span class="fas fa-edit"></span> Edit</a>
         </div>
@@ -69,11 +69,9 @@
             </div>
         </div>
         <div class="col-6 col-md-2 campaign-links" v-if="!isAdmin">
-            <div class="row no-gutters">
-                <div class="col-12 col-sm-6">
-                    <i class="fa fa-calendar appointments-logo"></i>
-                    <p>{{ campaign.appointment_count }} Appointments</p>
-                </div>
+            <div class="campaign-apointment-totals-inactive">
+                <i class="far fa-calendar-check"></i>
+                <div class="total"><div class="m-0 p-0">{{ campaign.appointment_counts }}</div><div class="label">Appointments</div></div>
             </div>
         </div>
         <div class="col-6 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
@@ -114,7 +112,7 @@
 
     export default {
         components: {
-            'status': require('./../status/status'),
+            'status': require('./../status/status').default,
         },
         props: {
             campaign: {

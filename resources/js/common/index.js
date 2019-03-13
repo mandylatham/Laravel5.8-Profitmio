@@ -29,3 +29,5 @@ Vue.use(Navbar);
 import './pm-icons';
 // Filters
 import './../filters/global-filters';
+
+import './error-handlers';
