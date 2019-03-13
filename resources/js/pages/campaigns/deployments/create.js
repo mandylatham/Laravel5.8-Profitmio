@@ -15,7 +15,7 @@ window['app'] = new Vue({
         'input-errors': require('./../../../components/input-errors/input-errors').default,
         'date-pick': require('./../../../components/date-pick/date-pick').default,
         DatePicker,
-        'editor': require('vue2-ace-editor').default,
+        'editor': require('vue2-ace-editor'),
     },
     data: {
         datePickInputClasses: {

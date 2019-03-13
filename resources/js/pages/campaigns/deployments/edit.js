@@ -13,7 +13,7 @@ window['app'] = new Vue({
     components: {
         'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
         DatePicker,
-        'editor': require('vue2-ace-editor').default,
+        'editor': require('vue2-ace-editor'),
     },
     data: {
         loading: false,
