@@ -15,6 +15,7 @@
         window.isImpersonated = @json(auth()->user()->isImpersonated());
         window.timezone = @json(auth()->user()->getTimezone(\App\Models\Company::findOrFail(get_active_company())));
         window.emails = @json(config('app.emails'));
+        window.sessionLifetime = @json(config('session.lifetime'));
     </script>
     @yield('head-script')
 </head>
