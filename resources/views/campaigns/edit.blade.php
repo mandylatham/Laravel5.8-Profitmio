@@ -148,7 +148,7 @@
                                 </tbody>
                             </table>
                         </b-tab>
-                        <b-tab title="CONTACT">
+                        <b-tab title="FEATURES">
                             <h4 class="mb-3">Additional Features</h4>
                             <div class="card mb-3 card-feature adf_crm_export-container">
                                 <div class="card-body">

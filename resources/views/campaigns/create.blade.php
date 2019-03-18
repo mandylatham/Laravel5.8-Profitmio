@@ -114,7 +114,7 @@
                             </tbody>
                         </table>
                     </tab-content>
-                    <tab-content title="Contact" icon="fas fa-cog">
+                    <tab-content title="Features" icon="fas fa-cog">
                         <h4 class="mb-3">Additional Features</h4>
                         <div class="card mb-3 adf_crm_export-container">
                             <div class="card-body">
