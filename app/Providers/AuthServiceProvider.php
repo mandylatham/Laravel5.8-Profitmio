@@ -6,11 +6,13 @@ use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\Recipient;
 use App\Models\Impersonation\ImpersonatedUser;
+use App\Models\Response;
 use App\Policies\CampaignPolicy;
 use App\Policies\CompanyPolicy;
 use App\Models\CampaignScheduleTemplate;
 use App\Policies\CampaignScheduleTemplatePolicy;
 use App\Policies\RecipientPolicy;
+use App\Policies\ResponsePolicy;
 use App\Policies\UserPolicy;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +31,8 @@ class AuthServiceProvider extends ServiceProvider
         Campaign::class => CampaignPolicy::class,
         Recipient::class => RecipientPolicy::class,
         CampaignScheduleTemplate::class => CampaignScheduleTemplatePolicy::class,
-        User::class => UserPolicy::class
+        User::class => UserPolicy::class,
+        Response::class => ResponsePolicy::class,
     ];
 
     /**
