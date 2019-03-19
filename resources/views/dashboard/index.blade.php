@@ -49,7 +49,7 @@
                 <div class="event drop" v-if="filter === 'drop'" v-for="e in calendarEvents">
                     <div class="title">Campaign @{{ e.campaign_id }}</div>
                     <div class="info">@{{ e.type }} Drop</div>
-                    <div>@{{ e.send_at_formatted }}</div>
+                    <div>@{{ e.send_at | amDateTimeFormat('YYYY-MM-DD h:mm A') }}</div>
                 </div>
                 <div class="no-events" v-if="calendarEvents.length === 0">No Events.</div>
             </div>

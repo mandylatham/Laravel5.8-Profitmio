@@ -42,7 +42,6 @@
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
-            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="fa fa-search"></span> Stats</a>
             <a class="drop-link" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
             <a class="recipient-list-link" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
@@ -68,18 +67,15 @@
                 <p>{{ campaign.name }}</p>
             </div>
         </div>
-        <div class="col-6 col-md-2 campaign-links" v-if="!isAdmin">
+        <div class="col-6 col-md-2 campaign-links">
             <div class="campaign-apointment-totals-inactive">
                 <i class="far fa-calendar-check"></i>
                 <div class="total"><div class="m-0 p-0">{{ campaign.appointment_counts }}</div><div class="label">Appointments</div></div>
             </div>
         </div>
-        <div class="col-6 col-md-2 campaign-postcard--image campaign-links" v-if="isAdmin">
+        <div class="col-6 col-md-2 campaign-postcard--image campaign-links">
+            <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})" v-if="isAdmin"><span class="fas fa-edit"></span> Edit</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
-        </div>
-        <div class="col-6 col-md-2 campaign-date">
-            <span class="label">End Date:</span>
-            <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>
         </div>
         <div class="col-12 col-md-3 campaign-chart">
             <div class="row no-gutters" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">

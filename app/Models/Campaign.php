@@ -322,6 +322,11 @@ class Campaign extends Model
         return $this->expires_at && !$this->isExpired;
     }
 
+    public function getSmsPhoneAttribute()
+    {
+        return $this->hasMany(PhoneNumber::class)->whereCallSourceName('sms')->first();
+    }
+
     /**
      * Get the 
      */

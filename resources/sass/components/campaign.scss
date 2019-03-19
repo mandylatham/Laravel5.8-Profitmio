@@ -295,9 +295,12 @@
             }
         }
 
-        .campaign-links {
+        .campaign-links,
+        .campaign-chart {
             border-left: 3px solid #edf0f5;
         }
+        
+
 
         @include media-breakpoint-down(sm) {
             .campaign-date {

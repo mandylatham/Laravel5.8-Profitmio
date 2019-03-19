@@ -31,7 +31,7 @@
                 </div>
                 <div class="col-4">
                     <b-dropdown right text="Add Label" :disabled="Object.keys(labelDropdownOptions).length === 0"
-                                class="float-right">
+                                class="float-right" v-if="campaign.status == 'Active'">
                         <b-dropdown-item v-for="(label, index) in labelDropdownOptions" :key="index" :value="index"
                                          @click="addLabel(index, label)">{{ label }}
                         </b-dropdown-item>
@@ -53,7 +53,7 @@
                     <textarea class="form-control" placeholder="Notes..." name="notes" rows="4"
                               v-model="notes">{{ this.recipient.notes }}</textarea>
                 </div>
-                <div class="form-group">
+                <div class="form-group" v-if="campaign.status == 'Active'">
                     <button type="button" class="btn btn-primary" @click="addNotes(recipientId)">Save note</button>
                 </div>
             </div>
@@ -89,9 +89,9 @@
                     </li>
                 </ul>
             </div>
-            <div id="new-appointment" class="mail-attachments mb-3" v-if="needsAppointment()">
+            <div id="new-appointment" class="mail-attachments mt-2 mb-3" v-if="needsAppointment()">
                 <div class="alert alert-info" role="alert">
-                    <button class="btn pm-btn btn-primary mr-2" @click="showNewApptForm = !showNewApptForm">
+                    <button class="btn pm-btn btn-primary mr-2" @click="showNewApptForm = !showNewApptForm" v-if="campaign.status == 'Active'">
                         Add Appointment
                     </button>
                     {{ recipient.name }} has no appointments.
@@ -188,7 +188,7 @@
                             </div>
                         </div>
                     </div>
-                    <form @submit.prevent="sendText" v-if="!campaign.is_expired && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
+                    <form @submit.prevent="sendText" v-if="campaign.status == 'Active' && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="sms-form" style="margin-top: 20px;">
                             <div class="input-group">
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
@@ -246,7 +246,7 @@
                     </div>
 
 
-                    <form class="mt-3" @submit.prevent="sendEmail" v-if="!campaign.is_expired && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
+                    <form class="mt-3" @submit.prevent="sendEmail" v-if="campaign.status == 'Active' && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="email-form">
                             <div class="input-group">
                                 <input type="text" id="email-message" class="form-control message-field" name="message"

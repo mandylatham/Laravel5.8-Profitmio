@@ -31,3 +31,4 @@ import './pm-icons';
 import './../filters/global-filters';
 
 import './error-handlers';
+import './session';

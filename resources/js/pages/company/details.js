@@ -242,7 +242,7 @@ window['app'] = new Vue({
         },
         onCampaignAccessUserPageChanged(event) {
             this.searchCampaignAccessUser.page = event.page;
-            return this.fetchUsersForCampaignAccess();
+            return this.fetchUsersForCampaignAccess(this.campaignSelected);
         },
         onFileAdded() {
             this.$refs.resumable.startUpload();

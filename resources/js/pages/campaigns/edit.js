@@ -4,11 +4,20 @@ import Form from './../../common/form';
 import VueFormWizard from 'vue-form-wizard';
 import {filter} from 'lodash';
 import moment from 'moment';
+import Alert from 'bootstrap-vue';
 import Modal from 'bootstrap-vue';
+import Progress from 'bootstrap-vue';
 import { PackageIcon } from 'vue-feather-icons';
 import {generateRoute} from '../../common/helpers';
+// custom validation
+import Vuelidate from 'vuelidate';
+import { helpers, required, minLength, between } from 'vuelidate/lib/validators';
+import { isNorthAmericanPhoneNumber } from './../../common/validators';
+Vue.use(Alert);
 Vue.use(Modal);
+Vue.use(Progress);
 Vue.use(VueFormWizard);
+Vue.use(Vuelidate);
 
 window['app'] = new Vue({
     el: '#campaigns-edit',
@@ -67,6 +76,11 @@ window['app'] = new Vue({
         loadingPhoneModal: false,
         loadingPurchaseNumber: false,
         phoneNumbers: [],
+        phoneVerificationCode: '',
+        phoneVerificationForm: new Form({
+            phone: '',
+            code: '',
+        }),
         provisionPhoneUrl: window.provisionPhoneUrl,
         purchasePhoneNumberForm: new Form({
             call_source_name: '',
@@ -87,7 +101,14 @@ window['app'] = new Vue({
         validation: [{
             classes: 'asdf',
             rule: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
-        }]
+        }],
+        verificationStarted: false,
+        verificationStartedMessage: '',
+        verificationStartedVariant: '',
+
+        dismissSeconds: 10,
+        dismissCountDown: 0,
+        showDismissibleAlert: false
     },
     mounted() {
         this.agencies = window.agencies;
@@ -95,6 +116,9 @@ window['app'] = new Vue({
         this.getCampaignPhones();
     },
     methods: {
+        countDownChanged: function(dismissCountDown) {
+            this.dismissCountDown = dismissCountDown
+        },
         availableCallSourcesWithCurrent: function (call_source_name) {
             if (call_source_name === undefined) return;
             let phoneSource = _.filter(this.callSources, {name: call_source_name});
@@ -173,7 +197,75 @@ window['app'] = new Vue({
             if (!this[field]) return;
             list.push(this[field]);
             this[field] = null;
+        },
+        showVerificationStartedAlert: function(variant, message) {
+            this.verificationStartedVariant = variant;
+            this.verificationStartedMessage = message;
+            this.dismissCountDown = this.dismissSeconds;
+        },
+        startPhoneNumberVerification: function (number) {
+            this.$set(this.phoneVerificationForm, 'phone', this.smsOnCallbackNumber);
 
+            let valid = true;
+            this.$v.phoneVerificationForm.phone.$touch();
+            if (this.$v.phoneVerificationForm.phone.$error) {
+                this.$set(this.phoneVerificationForm, 'phone', '');
+                return;
+            } else {
+                this.$v.$reset();
+            }
+
+            this.phoneVerificationForm.post(window.sendPhoneVerificationUrl)
+                .then((response) => {
+                    if (response.status === 'started') {
+                        this.$toastr.success("Verification Code Sent!");
+                        this.verificationStarted = true;
+                        this.showVerificationStartedAlert("success", response.message);
+                    } else if (response.status === 'already-started') {
+                        this.verificationStarted = true;
+                        this.showVerificationStartedAlert("success", response.message);
+                    } else if (response.status === 'already-verified') {
+                        this.campaignForm.sms_on_callback_number.push(this.smsOnCallbackNumber);
+                        this.smsOnCallbackNumber = '';
+                        this.verificationStarted = false;
+                        this.phoneVerificationForm.reset();
+                        this.$toastr.success("Phone Number was already verified in our system!");
+                    } else {
+                        window.PmEvent.fire('errors.api', "Unable to obtain verification code");
+                    }
+                })
+                .catch((error) => {
+                    window.PmEvent.fire('errors.api', "Unable to send verification code. Check the number and try again.");
+                });
+        },
+        finishPhoneNumberVerification: function (number, code) {
+            this.$set(this.phoneVerificationForm, 'code', this.phoneVerificationCode);
+            this.phoneVerificationForm.post(window.phoneVerificationUrl)
+                .then((response) => {
+                    if (response.status === 'verified') {
+                        this.campaignForm.sms_on_callback_number.push(this.smsOnCallbackNumber);
+                        this.smsOnCallbackNumber = '';
+                        this.verificationStarted = false;
+                        this.phoneVerificationForm.reset();
+                        this.$toastr.success("Phone Number successfully verified!");
+                        this.showVerificationStartedAlert("success", "Phone number successfully verified!");
+                    } else if (response.status === 'failed') {
+                        this.phoneVerificationCode = '';
+                        this.$toastr.warning("Incorrect Verification Code");
+                        this.showVerificationStartedAlert("warning", "Incorrect code entered");
+                    } else if (response.status === 'delayed') {
+                        this.phoneVerificationCode = '';
+                        this.$toastr.error("Verification locked for this number");
+                        this.showVerificationStartedAlert("danger", response.message);
+                    } else if (response.status === 'blocked') {
+                        this.phoneVerificationCode = '';
+                        this.$toastr.error("Verification permanently blocked for this number");
+                        this.showVerificationStartedAlert("danger", response.message);
+                    }
+                })
+                .catch((error) => {
+                    window.PmEvent.fire('errors.api', "Unable to confirm verification code: " + error);
+                });
         },
         clearError: function (form, field) {
             form.errors.clear(field);
@@ -296,5 +388,13 @@ window['app'] = new Vue({
             });
             return valid;
         },
+    },
+    validations() {
+        return {
+            phoneVerificationForm: {
+                phone: { required, isNorthAmericanPhoneNumber },
+                code: { between: between(100000,999999) }
+            }
+        };
     }
 });

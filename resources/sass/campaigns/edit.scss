@@ -1,6 +1,8 @@
 @import './../common/index';
 @import './../campaigns/base';
 @import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/alert";
+@import "~bootstrap/scss/progress";
 @import "~bootstrap/scss/input-group";
 @import './../components/date-pick';
 @import './../components/spinner-icon';
@@ -8,6 +10,9 @@
 
 #campaigns-edit {
     padding: 2rem 1rem;
+    .invalid-feedback {
+        display: block;
+    }
 
     .feature-input {
         padding: 1.25rem;

@@ -77,6 +77,13 @@ Route::group(['middleware' => 'auth'], function () {
     });
     //endregion
 
+    //region PHONEVALIDATION
+    Route::group(['prefix' => 'phone-verification'], function () {
+        Route::any('send-code', 'PhoneVerificationController@sendVerificationCode')->middleware('can:change-campaigns')->name('phone-verification.send-code');
+        Route::any('verify-code', 'PhoneVerificationController@verify')->middleware('can:change-campaigns')->name('phone-verification.verify-code');
+    });
+    //endregion
+
     //region USER
     Route::group(['prefix' => 'user'], function () {
         Route::get('', 'UserController@index')->name('user.index')->middleware([ 'can:list,App\Models\User']);
@@ -169,7 +176,7 @@ Route::group(['middleware' => 'auth'], function () {
             // End of Recipient list pages
             Route::get('phones', 'PhoneController@forCampaign')->middleware('can:modify-campaigns')->name('phone.list');
             Route::get('phone-list-json', 'PhoneController@fromCampaignAsJson')->middleware('can:view-campaigns');
-            Route::patch('phone/{phone}', 'PhoneController@store')->middleware('can:change-campaigns')->name('phone.store');
+            Route::post('phone/{phone}', 'PhoneController@store')->middleware('can:change-campaigns')->name('phone.store');
             Route::post('phone/{phone}/release', 'PhoneController@release')->middleware('can:change-campaigns')->name('phone-number.release');
             // Drops
             Route::get('/drops', 'DeploymentController@forCampaign')->name('campaigns.drops.index');
