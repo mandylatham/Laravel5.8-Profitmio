@@ -14,6 +14,8 @@
         window.saveCampaignUrl = @json(route('campaigns.update', ['campaign' => $campaign->id]));
         window.campaignStatsUrl = @json(route('campaigns.stats', ['campaign' => $campaign->id]));
         window.searchPhoneUrl = @json(route('phone.search'));
+        window.sendPhoneVerificationUrl = @json(route('phone-verification.send-code'));
+        window.phoneVerificationUrl = @json(route('phone-verification.verify-code'));
         window.provisionPhoneUrl = @json(route('phone.provision'));
         window.getCampaignPhonesUrl = @json(route('phone.list', ['campaign' => $campaign->id]));
         window.savePhoneNumberUrl = @json(route('phone.store', ['campaign' => $campaign->id, 'phone' => ':phone_number_id']));
@@ -332,11 +334,46 @@
                                         <div class="col-12 col-md-6">
                                             <div class="feature-input">
                                                 <p-check color="primary" class="p-default" name="sms_on_callback" v-model="campaignForm.sms_on_callback">SMS On Callback</p-check>
-                                                <form @submit.prevent="addFieldToAdditionalFeature('smsOnCallbackNumber', campaignForm.sms_on_callback_number)">
+                                                <form v-if="! verificationStarted">
+                                                    <div class="alert alert-info mt-2" v-if="campaignForm.sms_on_callback">
+                                                        <i class="fa fa-info-circle mr-2"></i>
+                                                        A code will be sent via SMS to verify the phone number
+                                                    </div>
+                                                    <b-alert 
+                                                        :show="dismissCountDown"
+                                                        :variant="verificationStartedVariant"
+                                                        class="mt-2 mb-0"
+                                                        @dismissed="dismissCountDown=0"
+                                                        @dismiss-count-down="countDownChanged">
+                                                        <p>@{{ verificationStartedMessage }}</p>
+                                                        <b-progress :variant="verificationStartedVariant" :max="dismissSeconds" :value="dismissCountDown" height="4px" />
+                                                    </b-alert>
                                                     <div class="input-group mt-3 mb-0" v-if="campaignForm.sms_on_callback">
-                                                        <input type="tel" class="form-control" required v-model="smsOnCallbackNumber">
+                                                        <input type="tel" name="callback_phone" class="form-control" required v-model="smsOnCallbackNumber">
                                                         <div class="input-group-append">
-                                                            <button class="btn pm-btn pm-btn-purple" type="submit">Add</button>
+                                                            <button class="btn pm-btn pm-btn-purple" @click.prevent="startPhoneNumberVerification">Add</button>
+                                                        </div>
+                                                    </div>
+                                                    <div class="text-sm mt-2 ml-2 invalid-feedback" v-if="$v.phoneVerificationForm.phone.$error">
+                                                        <div v-if="$v.phoneVerificationForm.phone.required">Phone is required</div>
+                                                        <div v-if="$v.phoneVerificationForm.phone.isNorthAmericanPhoneNumber">Phone Number must be a valid North American number</div>
+                                                    </div>
+                                                </form>
+                                                <form @submit.prevent="finishPhoneNumberVerification" v-if="verificationStarted">
+                                                    <b-alert 
+                                                        :show="dismissCountDown"
+                                                        :variant="verificationStartedVariant"
+                                                        class="mt-2 mb-0"
+                                                        @dismissed="dismissCountDown=0"
+                                                        @dismiss-count-down="countDownChanged">
+                                                        <p>@{{ verificationStartedMessage }}</p>
+                                                        <b-progress :variant="verificationStartedVariant" :max="dismissSeconds" :value="dismissCountDown" height="4px" />
+                                                    </b-alert>
+                                                    <label for="verification-code" class="mt-2 mb-0">Enter the verification code</label>
+                                                    <div class="input-group mb-0">
+                                                        <input name="verification-code" type="text" class="form-control" required v-model="phoneVerificationCode">
+                                                        <div class="input-group-append">
+                                                            <button class="btn pm-btn pm-btn-purple" type="submit">Verify</button>
                                                         </div>
                                                     </div>
                                                 </form>

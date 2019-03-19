@@ -164,6 +164,7 @@ return [
         App\Providers\DuskServiceProvider::class,
         App\Providers\TwilioClientProvider::class,
         App\Providers\ImpersonateServiceProvider::class,
+        App\Providers\PhoneVerificationServiceProvider::class,
         Bogardo\Mailgun\MailgunServiceProvider::class,
         App\Providers\BladeServiceProvider::class,
         Barryvdh\Debugbar\ServiceProvider::class,
