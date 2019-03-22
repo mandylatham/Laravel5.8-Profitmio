@@ -112,11 +112,9 @@ class UserController extends Controller
             $user->email = $request->input('email');
             $user->save();
         }
+
         $urlData = [];
         if ($user->isAdmin()) {
-            $urlData = [
-                'id' => $user->getKey()
-            ];
             $company = $this->company->where('type', 'support')->first();
         } else {
             // Attach to company if user is not admin
@@ -125,14 +123,14 @@ class UserController extends Controller
             } else {
                 $company = $this->company->findOrFail(get_active_company());
             }
-
-            $urlData = [
-                'id' => $user->getKey(),
-                'company' => $company->id
-            ];
-
-            $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
         }
+
+        $urlData = [
+            'id' => $user->getKey(),
+            'company' => $company->id
+        ];
+
+        $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
 
         $user->companies()->attach($company->id, [
             'role' => $request->input('role', 'user')
