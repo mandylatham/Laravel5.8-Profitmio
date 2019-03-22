@@ -470,9 +470,7 @@ class ResponseConsoleController extends Controller
      */
     public function emailReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        if ($campaign->isExpired()) {
-            abort(403, 'Illegal Request. This abuse of the system has been logged.');
-        }
+        $this->authorize('create', [Response::class, $campaign]);
 
         $request->request->set('message', nl2br($request->get('message')));
 
@@ -537,9 +535,7 @@ class ResponseConsoleController extends Controller
      */
     public function smsReply(Campaign $campaign, Recipient $recipient, Request $request)
     {
-        if ($campaign->isExpired()) {
-            abort(403, 'Illegal Request. This abuse of the system has been logged.');
-        }
+        $this->authorize('create', [Response::class, $campaign]);
 
         $sms_phone_number = $campaign->phones()->whereCallSourceName('sms')->firstOrFail();
         $reply = \Twilio::sendSms($sms_phone_number->phone_number, $recipient->phone, $request->input('message'));
