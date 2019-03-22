@@ -5,6 +5,10 @@ vendor/
 !public/.htaccess
 !public/robots.txt
 !public/web.config
+!public/apple-touch-icon.png
+!public/favicon-16x16.png
+!public/favicon-32x32.png
+!public/favicon.ico
 public/
 .idea/
 .env.backup
