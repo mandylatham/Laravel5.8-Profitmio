@@ -141,7 +141,7 @@ window['app'] = new Vue({
                     max: this.searchFilters.max,
                     total: this.totalRecipients,
                     group_count: this.groups.length,
-                    lists: this.recipients,
+                    lists: this.searchFilters.recipients,
                     sources: dataSources
                 })
                 .then(response => {
