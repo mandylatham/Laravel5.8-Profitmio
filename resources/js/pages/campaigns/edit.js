@@ -273,6 +273,9 @@ window['app'] = new Vue({
         closeModal: function (modalRef) {
             this.$refs[modalRef].hide();
         },
+        formatDate: function (date) {
+            return date.toISOString();
+        },
         getCampaignPhones: function () {
             this.getCampaignPhonesForm.get(window.getCampaignPhonesUrl)
                 .then((response) => {

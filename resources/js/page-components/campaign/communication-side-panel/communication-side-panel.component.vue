@@ -103,6 +103,7 @@
                             <date-picker id="appointment_date" class="form-control"
                                          v-model="appointmentSelectedDateUnformatted"
                                          type="datetime" format="YYYY-MM-DD hh:mm" :lang="timePickerLang"
+                                         :time-picker-options="{ start: '07:00', step: '00:15', end: '20:00' }"
                                          :minute-step="5" confirm></date-picker>
                         </div>
                         <button class="btn btn-primary" role="button"
