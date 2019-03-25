@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import './../../common';
+import inputErrors from './../../components/input-errors/input-errors';
 import Form from './../../common/form';
 import axios from 'axios';
 // Chart Library
@@ -9,6 +10,8 @@ import {filter} from 'lodash';
 import './../../filters/user-role.filter';
 import {generateRoute} from './../../common/helpers';
 import vue2Dropzone from 'vue2-dropzone';
+import Modal from 'bootstrap-vue';
+Vue.use(Modal);
 
 Vue.use(VueChartkick, {adapter: Chart});
 
@@ -19,7 +22,8 @@ window['app'] = new Vue({
         'resumable': require('./../../components/resumable/resumable').default,
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
-        'user-role': require('./../../components/user-role/user-role').default
+        'user-role': require('./../../components/user-role/user-role').default,
+        'input-errors': inputErrors,
     },
     computed: {
         countCompanies: function () {
@@ -71,6 +75,7 @@ window['app'] = new Vue({
         loadingCampaigns: true,
         loadingInvitation: false,
         originalUser: {},
+        loggedInUser: window.loggedUser,
         total: null,
         totalCompanies: null,
         campaigns: [],
@@ -86,6 +91,11 @@ window['app'] = new Vue({
         timezones: [],
         formUrl: '',
         loggedUserRole: '',
+        updatePasswordForm: new Form({
+            old_password: '',
+            password: '',
+            password_confirmation: ''
+        }),
         user: new Form({
             id: window.user.id,
             first_name: window.user.first_name,
@@ -120,8 +130,11 @@ window['app'] = new Vue({
         this.fetchCompanies();
     },
     methods: {
-        canEditCompanyData(company) {
+        canEditCompanyRole(company) {
             return window.userRole === 'site_admin' || window.userRole === 'admin';
+        },
+        canEditCompanyTz(company) {
+            return window.userRole === 'site_admin' || window.userRole === 'admin' || window.loggedUser.id === window.user.id;
         },
         onCampaignCompanySelected() {
             this.searchCampaignForm.page = 1;
@@ -222,9 +235,37 @@ window['app'] = new Vue({
                     window.PmEvent.fire('errors.api', 'Unable to process your request');
                 });
         },
+        updatePassword: function () {
+            this.updatePasswordForm
+                .post(window.updatePasswordUrl)
+                .then((response) => {
+                    this.updatePasswordForm.reset()
+                    this.$refs.passwordModalRef.hide();
+                    this.$swal({
+                        title: 'Password Updated!',
+                        text: 'The password has been successfully changed.',
+                        type: 'success',
+                        allowOutsideClick: false
+                    });
+                })
+                .catch(error => {
+                    if (error.response.data.errors !== undefined) {
+                        this.updatePasswordForm.errors.record(error.response.data.errors);
+                    } else {
+                        this.updatePasswordForm.reset()
+                        this.$refs.passwordModalRef.hide();
+                        window.PmEvent.fire('errors.api', 'Unable to update the password');
+                    }
+                });
+        },
+        closeModal: function (modalRef) {
+            this.updatePasswordForm.reset()
+            this.$refs[modalRef].hide();
+        },
         cancelUser: function () {
             this.showUserFormControls = false;
             this.user = new Form({...this.originalUser});
+            this.editImage = false;
         },
         saveUser: function () {
             this.loading = true;

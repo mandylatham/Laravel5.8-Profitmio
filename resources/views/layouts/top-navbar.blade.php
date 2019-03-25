@@ -64,7 +64,7 @@
                 <b-nav-item-dropdown class="profile" right variant="link" size="lg" no-caret>
                     <template slot="button-content">
                         <img :src="loggedUser.image_url" alt="Avatar" v-if="loggedUser.image_url">
-                        <div class="avatar-placeholder" v-if="!loggedUser.image_Url">
+                        <div class="avatar-placeholder" v-if="!loggedUser.image_url">
                             <i class="fas fa-user"></i>
                         </div>
                         <div class="user-name">

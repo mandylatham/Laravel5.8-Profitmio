@@ -38,7 +38,9 @@ class UserPolicy
     public function editUser(User $loggedUser, User $userToEdit)
     {
         $company = Company::find(get_active_company());
-        return $loggedUser->isAdmin() || ($loggedUser->isCompanyAdmin(get_active_company()) && $userToEdit->belongsToCompany($company));
+        return $loggedUser->isAdmin() || (
+            $loggedUser->isCompanyAdmin(get_active_company()) && $userToEdit->belongsToCompany($company)
+            ) || $loggedUser->id == $userToEdit->id;
     }
 
     public function deleteUser(User $loggedUser, User $userToDelete)

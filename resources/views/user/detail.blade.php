@@ -12,6 +12,7 @@
         window.searchCampaignFormUrl = "{{ route('campaign.for-user-display') }}";
         window.searchCompaniesFormUrl = "{{ route('company.for-user-display') }}";
         window.updateUserUrl = "{{ route('user.update', ['user' => ':userId']) }}";
+        window.updatePasswordUrl = @json(route('user.update-password', ['user' => $user->id]));
         window.timezones = @json($timezones);
         window.updateCompanyDataUrl = "{{ route('user.update-company-data', ['user' => ':userId']) }}";
         window.user = @json($user);
@@ -27,16 +28,16 @@
         @if (auth()->user()->isAdmin())
             window.userRole = 'site_admin';
         @else
-            window.userRole = @json(auth()->user()->getRole(App\Models\Company::findOrFail(get_active_company())));
+            window.userRole = @json($userRole);
         @endif
-            window.userIndexUrl = "{{ route('user.index') }}";
+        window.userIndexUrl = "{{ route('user.index') }}";
     </script>
     <script src="{{ asset('js/user-detail.js') }}"></script>
 @endsection
 
 @section('main-content')
     <div class="container" id="user-view" v-cloak>
-        <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ route('user.index') }}">
+        <a class="btn pm-btn pm-btn-blue go-back mb-3" href="{{ $userRole == 'user' ? route('dashboard') : route('user.index') }}">
             <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
         </a>
         <div class="card profile mb-5">
@@ -45,7 +46,7 @@
                     <div class="col-12 col-md-4 col-lg-3 col-xl-2 company-image-container">
                         <div class="user-avatar" v-if="!editImage"
                              :style="{backgroundImage: 'url(' + originalUser.image_url + ')'}">
-                            <span class="user-avatar--selector" @click="editImage = !editImage">
+                            <span class="user-avatar--selector" v-if="showUserFormControls" @click="editImage = !editImage">
                                 <i class="fas fa-pencil-alt mr-2"></i>
                             </span>
                         </div>
@@ -53,8 +54,12 @@
                                    @file-success="onFileSuccess"></resumable>
                     </div>
                     <div class="col-12 col-md-8 col-lg-9 col-xl-10">
-                        <div class="d-flex justify-content-end">
-                            <button class="btn pm-btn pm-btn-outline-purple mb-3" @click="showUserFormControls = true"
+                        <div class="d-flex justify-content-end mb-3">
+                            <button class="btn pm-btn pm-btn-outline-purple mr-2" type="button" v-b-modal.passwordModal>
+                                <i class="fas fa-key mr-2"></i>
+                                Change Password
+                            </button>
+                            <button class="btn pm-btn pm-btn-outline-purple" @click="showUserFormControls = true"
                                     v-if="!showUserFormControls">
                                 <i class="fas fa-pencil-alt mr-2"></i>
                                 Edit
@@ -110,6 +115,51 @@
                                 </div>
                             </div>
                         </form>
+                        <b-modal ref="passwordModalRef" title="Change Password" id="passwordmodal" size="sm">
+                            <template slot="modal-header">
+                                <h4>Change Your Password</h4>
+                                <span class="close-modal-header float-right" @click="closeModal('passwordModalRef')">
+                                    <i class="fas fa-times float-right"></i>
+                                </span>
+                            </template>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-12">
+                                            <form action="" method="" autocomplete="off">
+                                                <div class="form-group">
+                                                    <label for="old_password" class="form-label">Current Password</label>
+                                                    <input type="password" name="old_password" class="form-control" 
+                                                        autocomplete="false" v-model="updatePasswordForm.old_password">
+                                                    <div v-if="updatePasswordForm.errors.has('old_password')">
+                                                        <p class="text-danger">@{{ updatePasswordForm.errors.get('old_password')[0] }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="password" class="form-label">New Password</label>
+                                                    <input type="password" name="password" class="form-control" 
+                                                        autocomplete="false" v-model="updatePasswordForm.password">
+                                                    <div v-if="updatePasswordForm.errors.has('password')">
+                                                        <p class="text-danger">@{{ updatePasswordForm.errors.get('password')[0] }}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="password_confirmation" class="form-label">Confirm New Password</label>
+                                                    <input type="password" name="password_confirmation" class="form-control" 
+                                                        autocomplete="false" v-model="updatePasswordForm.password_confirmation">
+                                                    <div v-if="updatePasswordForm.errors.has('password_confirmation')">
+                                                        <p class="text-danger">@{{ updatePasswordForm.errors.get('password_confirmation')[0] }}</p>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <template slot="modal-footer">
+                                <button class="btn pm-btn pm-btn-purple" @click="updatePassword">Update</button>
+                            </template>
+                        </b-modal>
                     </div>
                 </div>
                 <div class="row">
@@ -189,7 +239,7 @@
                                     </div>
                                     <div class="col-4 col-md-3 company-role">
                                         @if (!$user->isAdmin())
-                                            <v-select :options="roles" :disabled="!canEditCompanyData(company)"
+                                            <v-select :options="roles" :disabled="!canEditCompanyRole(company)"
                                                       v-model="company.role" class="filter--v-select"
                                                       @input="updateCompanyData(company)" :clearable="false">
                                                 <template slot="selected-option" slot-scope="option">
@@ -204,7 +254,7 @@
                                         @endif
                                     </div>
                                     <div class="col-4 col-md-3 company-timezone">
-                                        <v-select :options="timezones" :disabled="!canEditCompanyData(company)"
+                                        <v-select :options="timezones" :disabled="!canEditCompanyTz(company)"
                                                   v-model="company.timezone" class="filter--v-select"
                                                   @input="updateCompanyData(company)" :clearable="false">
                                             <template slot="selected-option" slot-scope="option">
