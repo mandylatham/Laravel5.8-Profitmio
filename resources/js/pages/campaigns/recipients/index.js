@@ -53,7 +53,7 @@ window['app'] = new Vue({
                 preConfirm: () => {
                     return axios.delete(generateRoute(window.deleteDropUrl, {'dropId': drop.id}));
                 }
-            }).then(result => {
+            }).then((result) => {
                 if (result.value) {
                     this.$swal({
                         title: 'Drop Deleted',
@@ -82,6 +82,16 @@ window['app'] = new Vue({
                 .catch(error => {
                     window.PmEvent.fire('errors.api', "Unable to get recipient lists");
                 });
+        },
+        onRecipientListUploaded: function () {
+            this.closeModal('addPhoneModalRef');
+            this.$swal({
+                title: 'Recipient List Uploaded',
+                type: 'success',
+                allowOutsideClick: false
+            }).then(() => {
+                window.location.replace(window.recipientsIndexUrl);
+            });
         },
         generateRoute,
         onPageChanged(event) {

@@ -890,7 +890,7 @@ class RecipientController extends Controller
             ->pluck('recipient_id')
             ->toArray();
 
-        $list->recipients()->whereNotIn('recipient_id', $donotdelete)->delete();
+        $list->recipients()->whereNotIn('id', $donotdelete)->delete();
 
         $list = $list->fresh();
 

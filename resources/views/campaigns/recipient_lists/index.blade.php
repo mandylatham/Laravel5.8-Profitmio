@@ -85,7 +85,7 @@
                     </div>
                     <div class="col-12 col-sm-6 col-lg-2 recipient-options">
                         <a class="btn btn-action" :href="generateRoute(showRecipientListUrl, {listId: row.id})">
-                            MODIFY MEMBER
+                            MODIFY MEMBERS
                         </a>
                         <div class="options-group">
                             <a class="btn pm-btn btn-transparent" :href="generateRoute(downloadRecipientListUrl, {listId: row.id})" download>
@@ -108,7 +108,7 @@
                     <i class="fas fa-times float-right"></i>
                 </span>
             </template>
-            <upload-recipient :target-url="uploadRecipientsUrl"></upload-recipient>
+            <upload-recipient :target-url="uploadRecipientsUrl" @recipient-list-uploaded="onRecipientListUploaded"></upload-recipient>
         </b-modal>
     </div>
 @endsection
