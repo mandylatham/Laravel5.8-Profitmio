@@ -435,6 +435,7 @@ class DeploymentController extends Controller
     protected function getBulkRecipients(Campaign $campaign, $request)
     {
         $info = $request->session()->get($campaign->id . '_recipient_info');
+        $lists = $info['lists'];
         $contact = $info['contact_filter'];
         Log::debug('bulk recipient filters: ' . json_encode($info));
 
@@ -451,28 +452,37 @@ class DeploymentController extends Controller
                 ->where('email_valid', 1);
         }
         if ($contact == 'sms-only') {
-            $recipients->where('email', '=', '')
-                ->where('phone', '<>', '+1')
+            $recipients->where('email', '=', '')->where(function ($q) {
+                $q->orWhere('phone', '<>', '+1')
+                    ->orWhere('phone', '<>', '');
+                })
                 ->whereRaw("length(phone) > 9");
         }
         if ($contact == 'email-only') {
             $recipients->where('email', '<>', '')
-                ->where('phone', '=', '+1')
+                ->where(function($q) {
+                    $q->orWhere('phone', '=', '+1')
+                      ->orWhere('phone', '=', '');
+                })
                 ->where('email_valid', 1);
         }
         if ($contact == 'no-resp-email') {
             $recipients->whereNotIn('id',
-                \DB::table('responses')->where('campaign_id', $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
+                \DB::table('responses')->where('campaign_id', 
+                    $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
                 ->where('email_valid', 1);
         }
         if ($contact == 'no-resp-sms') {
             $recipients->whereNotIn('id',
-                \DB::table('responses')->where('campaign_id', $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
+                \DB::table('responses')->where('campaign_id', 
+                    $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
                 ->whereRaw("length(phone) > 9");
         }
 
-        if ($info['lists']) {
-            $recipients->whereIn('recipient_list_id', $info['lists']);
+        if (is_array($lists) && !empty($lists) && $lists[0] != null) {
+            if (!in_array('all', $lists)) {
+                $recipients->whereIn('recipient_list_id', (array)$lists);
+            }
         }
 
         if (count($info['sources']) == 1) {
@@ -497,7 +507,7 @@ class DeploymentController extends Controller
      */
     protected function assembleRecipientBatches($info, $recipients, $deployments)
     {
-        $i = 0;
+        $i = 1;
         $batch = 0;
         $batches = [];
         \Log::debug("assemble recipient batches (info): " . json_encode($info));

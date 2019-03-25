@@ -20,7 +20,7 @@
                         <label>Type</label>
                         <div>
                             <p-radio color="primary" class="p-default display-block" name="pm_list_type" value="all_conquest" v-model="fileForm.pm_list_type">All
-                                Coquest
+                                Conquest
                             </p-radio>
                         </div>
                         <div>
@@ -128,7 +128,7 @@
             </tab-content>
             <template slot="finish">
                 <button type="button" class="wizard-btn" :disabled="loading">
-                    <span v-if="!loading">Finish</span>
+                    <span v-if="!loading" @click.once="loading = true">Finish</span>
                     <spinner-icon :size="'sm'" class="white" v-if="loading"></spinner-icon>
                 </button>
             </template>
@@ -222,14 +222,7 @@
                 this.fileForm
                     .post(window.saveRecipientsUrl)
                     .then(() => {
-                        this.loading = false;
-                        this.$swal({
-                            title: 'Recipients Uploaded!',
-                            type: 'success',
-                            allowOutsideClick: false
-                        }).then(() => {
-                            window.location.replace(window.recipientsIndexUrl);
-                        });
+                        this.$emit('recipient-list-uploaded');
                     }, e => {
                         window.PmEvent.fire('errors.api', "Unable to process your request");
                         this.loading = false;

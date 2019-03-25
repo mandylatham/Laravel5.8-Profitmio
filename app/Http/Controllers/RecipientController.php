@@ -209,7 +209,7 @@ class RecipientController extends Controller
      */
     public function addLabel(Recipient $recipient, Request $request)
     {
-        $sendNotifications = false;
+        $sendNotifications = !! $recipient->campaign->service_dept;
 
         if ($request->label && in_array($request->label, [
                 'interested',
@@ -227,7 +227,7 @@ class RecipientController extends Controller
 
             $recipient->save();
 
-            if ($sendNotifications) {
+            if ($request->input('label') == 'service' && !! $recipient->campaign->service_dept) {
                 event(new ServiceDeptLabelAdded($recipient));
             }
 
@@ -890,7 +890,7 @@ class RecipientController extends Controller
             ->pluck('recipient_id')
             ->toArray();
 
-        $list->recipients()->whereNotIn('recipient_id', $donotdelete)->delete();
+        $list->recipients()->whereNotIn('id', $donotdelete)->delete();
 
         $list = $list->fresh();
 
