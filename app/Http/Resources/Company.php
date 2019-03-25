@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use App\Models\User as UserModel;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class Company extends JsonResource
@@ -30,7 +31,7 @@ class Company extends JsonResource
             }),
         ];
         // Verify if role field should be added
-        if ((auth()->user()->isAdmin() || auth()->user()->isCompanyAdmin($this->id)) && $request->has('user')) {
+        if ($this->userCanSeeRolesAndTimezone($request)) {
             $userModel = UserModel::findOrFail($request->input('user'));
             $data['role'] = $userModel->getRole($this->resource);
             $data['timezone'] = $userModel->getTimezone($this->resource);
@@ -41,5 +42,20 @@ class Company extends JsonResource
             $data['role'] = $this->pivot->role;
         });
         return $data;
+    }
+
+    private function userCanSeeRolesAndTimezone(Request $request)
+    {
+        $user_id = $request->input('user');
+        return $user_id && (
+            // Is the operator a Site Admin?
+            auth()->user()->isAdmin() || 
+
+            // Is the operator a Company Admin for the company?
+            auth()->user()->isCompanyAdmin($this->id) || 
+
+            // Is the operator looking at their own Profile?
+            auth()->user()->id === (int)$user_id
+        );
     }
 }
