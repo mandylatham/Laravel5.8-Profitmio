@@ -99,7 +99,7 @@ class DropTest extends DuskTestCase
                 ->click('.wizard-footer-right .wizard-btn')
                 ->assertElementsCounts('.schedule-time-table tbody tr.time-row', 5);
             for ($i = 0, $date = Carbon::now(); $i < 5; $i++, $date->addDays(5)) {
-                $browser->selectDateTime('@group-datetime-'.$i, $date, '.time-row td:first-child');
+                $browser->pause(300)->selectDateTime('@group-datetime-'.$i, $date, '.time-row td:first-child');
             }
             $browser->click('.wizard-footer-right .wizard-btn')
                 ->waitFor('.swal2-container', 10)

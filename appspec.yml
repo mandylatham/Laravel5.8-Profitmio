@@ -1,0 +1,12 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /var/www/pm
+  - source: /deploy/staging/.env.staging
+    destination: /var/www/pm/.env
+hooks:
+  BeforeInstall:
+    - location: deploy/staging/PreDeploy.sh
+  AfterInstall:
+    - location: deploy/staging/PostDeploy.sh

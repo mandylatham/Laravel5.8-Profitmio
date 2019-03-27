@@ -53,7 +53,7 @@ class DuskServiceProvider extends ServiceProvider
         // Macro to select a date and time using date-picker plugin
         Browser::macro('selectDateTime', function ($element, $date, $outsideElement) {
             $date = new Carbon($date);
-            $diffInMonths = $date->diffInMonths(Carbon::now(), true);
+            $diffInMonths = Carbon::createFromFormat('mY', $date->format('mY'))->diffInMonths(Carbon::createFromFormat('mY', Carbon::now()->format('mY')), true);
             $this->click($element)
                 ->waitFor('.mx-calendar.mx-calendar-panel-date');
             if ($diffInMonths > 0) {

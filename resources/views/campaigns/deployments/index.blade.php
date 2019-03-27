@@ -47,11 +47,11 @@
                             <div class="drop-info--type">
                                 <span v-if="drop.type === 'email'">
                                     <i class="fa fa-envelope mr-2"></i>
-                                    @{{ drop.id }}
+                                    ID: @{{ drop.id }}
                                 </span>
                                 <span v-else-if="drop.type === 'sms'">
                                     <i class="fa fa-comment mr-2"></i>
-                                    @{{ drop.id }}
+                                    ID: @{{ drop.id }}
                                 </span>
                                 <span class="pm-font-templates-icon" v-else></span>
                             </div>

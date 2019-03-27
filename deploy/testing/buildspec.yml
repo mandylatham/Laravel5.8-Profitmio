@@ -1,0 +1,54 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - export DEBIAN_FRONTEND=noninteractive
+      #Install php7.2
+      - apt-get update
+      - apt-get install -y software-properties-common
+      - LC_ALL=C.UTF-8 add-apt-repository -y ppa:ondrej/php
+      - apt-get update
+      # Install google chrome
+      - wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add -
+      - echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee /etc/apt/sources.list.d/google-chrome.list
+      - apt-get update
+      - apt-get -y install google-chrome-stable
+      # Install PHP
+      - apt-get install -y php7.2-cli php7.2-mysql php7.2-zip php7.2-mbstring php7.2-curl php7.2-json php7.2-cgi php7.2-xsl
+      #Enable xdebug - phpunit uses this for code coverage
+#      - phpenmod xdebug
+      #Install composer
+      - curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+      # Install nodejs and npm
+      - curl -sL https://deb.nodesource.com/setup_8.x | sudo bash -
+      - apt-get install nodejs -y
+      - node --version
+      - # Start Mysql
+      - apt-get -q -y install mysql-server-5.6
+      - su mysql -s /bin/bash -c "/usr/sbin/mysqld" &
+      - mysql --version
+      # Install chromium and dependencies for laravel dusk
+      - apt-get -y install libxpm4 libxrender1 libgtk2.0-0 libnss3 libgconf-2-4
+      - apt-get install -y chromium-browser
+      - apt-get -y install xvfb gtk2-engines-pixbuf
+      - apt-get -y install xfonts-cyrillic xfonts-100dpi xfonts-75dpi xfonts-base xfonts-scalable
+      - apt-get -y install imagemagick x11-apps
+      - Xvfb -ac :0 -screen 0 1280x1024x16 &
+  pre_build:
+    commands:
+      - cp ./deploy/testing/.env.testing ./.env
+      - composer install
+      - npm install
+      - /usr/bin/mysql -u root -e "GRANT ALL ON *.* TO 'test'@'localhost' IDENTIFIED BY '' WITH GRANT OPTION"
+      - mysqladmin -u root create test
+      - php artisan serve &
+  build:
+    commands:
+      - npm run dev
+  post_build:
+    commands:
+      - php artisan dusk
+artifacts:
+  files:
+    - '**/*'

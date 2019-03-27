@@ -62,3 +62,7 @@ body {
 
 [v-cloak] { display: none; }
 [v-cloak]::before { content: "loading..."; }
+
+.swal2-container {
+    z-index: 2001 !important;
+}
