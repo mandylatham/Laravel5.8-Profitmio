@@ -111,6 +111,9 @@ window['app'] = new Vue({
         closeModal: function (modalRef) {
             this.$refs[modalRef].hide();
         },
+        formatDate: function (date) {
+            return date.toISOString();
+        },
         purchasePhoneNumber: function () {
             let invalid = false;
             this.purchasePhoneNumberForm.errors.clear();

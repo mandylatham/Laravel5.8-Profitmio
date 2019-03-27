@@ -155,9 +155,11 @@ class Company extends Model implements HasMedia
                 })
                 ->get()
                 ->toArray();
-            $campaignsCompanyIds = array_where(array_unique(array_flatten($campaignsCompanyIds)), function ($id) {
-                return $id !== get_active_company();
-            });
+                if ($request->has('user') && $loggedUser->id !== $request->input('user')->id) {
+                    $campaignsCompanyIds = array_where(array_unique(array_flatten($campaignsCompanyIds)), function ($id) {
+                        return $id !== get_active_company();
+                    });
+                }
             $query->whereIn('id', $campaignsCompanyIds);
         }
 

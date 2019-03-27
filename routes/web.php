@@ -33,7 +33,6 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset')->name('passw
 Route::group(['middleware' => 'auth'], function () {
 
     Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
-    Route::get('/dashboard', 'HomeController@index')->middleware('check.active.company')->name('dashboard');
     Route::get('/', function () {
         return redirect()->route('dashboard');
     });
@@ -43,10 +42,7 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region PROFILE
     Route::group(['prefix' => 'profile'], function () {
-        Route::get('', 'ProfileController@index')->name('profile.index');
-        Route::post('', 'ProfileController@update')->name('profile.update');
-        Route::post('password', 'ProfileController@updatePassword')->name('profile.update-password');
-        Route::post('/company-data', 'ProfileController@updateCompanyData')->name('profile.update-company-data');
+        Route::get('', 'UserController@view')->name('profile.index');
     });
     //endregion
 
@@ -94,9 +90,10 @@ Route::group(['middleware' => 'auth'], function () {
         Route::get('/{user}/activate', 'UserController@activate')->name('user.activate')->middleware([ 'can:edit-user,user']);
         Route::get('/{user}/deactivate', 'UserController@deactivate')->name('user.deactivate')->middleware([ 'can:edit-user,user']);
         Route::post('', 'UserController@store')->name('user.store')->middleware([ 'can:create-user,App\Models\User']);
-        Route::post('{user}', 'UserController@update')->name('user.update')->middleware([ 'can:create-user,App\Models\User']);
-        Route::post('{user}/avatar', 'UserController@updateAvatar')->name('user.update-avatar')->middleware([ 'can:create-user,App\Models\User']);
-        Route::post('{user}/company-data', 'UserController@updateCompanyData')->name('user.update-company-data')->middleware([ 'can:create-user,App\Models\User']);
+        Route::post('{user}', 'UserController@update')->name('user.update')->middleware([ 'can:edit-user,user']);
+        Route::post('{user}/avatar', 'UserController@updateAvatar')->name('user.update-avatar')->middleware([ 'can:edit-user,user']);
+        Route::post('{user}/update-password', 'UserController@updatePassword')->name('user.update-password')->middleware([ 'can:edit-user,user']);
+        Route::post('{user}/company-data', 'UserController@updateCompanyData')->name('user.update-company-data')->middleware([ 'can:edit-user,user']);
         Route::delete('/{user}', 'UserController@delete')->name('user.delete')->middleware([ 'can:delete-user,App\Models\User']);
     });
     //endregion

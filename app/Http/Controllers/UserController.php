@@ -11,6 +11,8 @@ use App\Mail\InviteUser;
 use App\Models\User;
 use Illuminate\Filesystem\FilesystemManager;
 use Illuminate\Http\Request;
+use Illuminate\Hashing\BcryptHasher;
+use Illuminate\Support\MessageBag;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Carbon;
@@ -22,19 +24,18 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 class UserController extends Controller
 {
     private $company;
-
     /** @var CompanyUserActivityLog  */
     private $companyUserActivityLog;
-
     private $storage;
-
+    private $hasher;
     private $user;
 
-    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, FilesystemManager $storage, User $user)
+    public function __construct(Company $company, CompanyUserActivityLog $companyUserActivityLog, FilesystemManager $storage, BcryptHasher $hasher, User $user)
     {
         $this->company = $company;
         $this->companyUserActivityLog = $companyUserActivityLog;
         $this->storage = $storage;
+        $this->hasher = $hasher;
         $this->user = $user;
     }
 
@@ -112,11 +113,9 @@ class UserController extends Controller
             $user->email = $request->input('email');
             $user->save();
         }
+
         $urlData = [];
         if ($user->isAdmin()) {
-            $urlData = [
-                'id' => $user->getKey()
-            ];
             $company = $this->company->where('type', 'support')->first();
         } else {
             // Attach to company if user is not admin
@@ -125,14 +124,14 @@ class UserController extends Controller
             } else {
                 $company = $this->company->findOrFail(get_active_company());
             }
-
-            $urlData = [
-                'id' => $user->getKey(),
-                'company' => $company->id
-            ];
-
-            $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
         }
+
+        $urlData = [
+            'id' => $user->getKey(),
+            'company' => $company->id
+        ];
+
+        $this->companyUserActivityLog->attach($user, $company->id, $request->input('role'));
 
         $user->companies()->attach($company->id, [
             'role' => $request->input('role', 'user')
@@ -177,8 +176,9 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show(User $user = null)
     {
+        if (! $user) $user = auth()->user();
         $viewData['user'] = $user;
         $viewData['campaigns'] = collect([]);
 
@@ -224,6 +224,28 @@ class UserController extends Controller
         return response()->json([]);
 
 //        return response()->redirectToRoute('user.edit', ['user' => $user->id]);
+    }
+
+    /**
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Models\User  $user
+     * @return \Illuminate\Http\Response
+     */
+    public function updatePassword(Request $request, User $user)
+    {
+        $validator = $request->validate([
+            'old_password' => 'required',
+            'password' => 'required|min:6|confirmed',
+        ]);
+
+        if (! $this->hasher->check($request->input('old_password'), $user->password)) {
+            $errors = new MessageBag(['errors' => ['old_password' => ['Invalid current password']]]);
+            return response()->json($errors, 422);
+        }
+
+        $user->update(['password' => bcrypt($request->input('password'))]);;
+
+        return response()->json([], 200);
     }
 
     public function updateForm(User $user)
@@ -285,9 +307,12 @@ class UserController extends Controller
         ]);
     }
 
-    public function view(User $user)
+    public function view(User $user = null)
     {
         $loggedUser = auth()->user();
+        if (! $user) {
+            $user = $loggedUser;
+        }
         if ($loggedUser->isAdmin()) {
             $hasCampaigns = $user->getCampaigns()->count() > 0;
         } else {
@@ -301,8 +326,10 @@ class UserController extends Controller
         }
         return view('user.detail', [
             'user' => $user,
+            'isProfile' => $user->id === auth()->user()->id,
             'hasCampaigns' => $hasCampaigns,
-            'timezones' => $user->getPossibleTimezonesForUser()
+            'timezones' => $user->getPossibleTimezonesForUser(),
+            'userRole' => auth()->user()->getRole(Company::findOrFail(get_active_company())),
         ]);
     }
 }

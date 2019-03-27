@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Storage;
 use App\Notifications\ResetPassword;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
@@ -118,7 +119,8 @@ class User extends Authenticatable implements HasMedia, CanResetPassword
     {
         $image = $this->getMedia('profile-photo')->last();
         if ($image) {
-            return $image->getFullUrl();
+            return Storage::disk(env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'))
+                ->url($image);
         }
         return '';
     }
@@ -361,14 +363,5 @@ class User extends Authenticatable implements HasMedia, CanResetPassword
     public function scopeFilterByQuery($query, $q)
     {
         return $query->search($q);
-    }
-
-    public function registerMediaCollections()
-    {
-        $disk = env('APP_ENV') == 'local' ? 'public' : 'media_public';
-
-        $this
-            ->addMediaCollection('profile-image')
-            ->useDisk($disk);
     }
 }

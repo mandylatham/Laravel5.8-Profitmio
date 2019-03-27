@@ -45,12 +45,12 @@ class CompleteController extends Controller
         if ($user->isAdmin() && $user->isProfileCompleted()) {
             abort(403);
         }
-        if (!$user->isAdmin()) {
-            $company = $user->companies()->where('companies.id', $request->get('company'))->first();
-            if ($user->isCompanyProfileReady($company)) {
-                abort(403);
-            }
+
+        $company = $user->companies()->where('companies.id', $request->get('company'))->first();
+        if ($user->isCompanyProfileReady($company)) {
+            abort(403);
         }
+
         $sufix = $user->isProfileCompleted() ? '-full' : '';
         return view('auth.complete' . $sufix, [
             'user' => $user,
@@ -75,17 +75,16 @@ class CompleteController extends Controller
             $user->save();
         }
 
-        if (!$user->isAdmin()) {
-            $data = [
-                'config' => [
-                    'timezone' => $request->input('timezone')
-                ],
-                'completed_at' => $this->carbon->now()->toDateTimeString()
-            ];
+        $data = [
+            'config' => [
+                'timezone' => $request->input('timezone')
+            ],
+            'completed_at' => $this->carbon->now()->toDateTimeString()
+        ];
 
-            $user->companies()->updateExistingPivot($request->input('company'), $data);
-            $this->companyUserActivityLog->updatePreferences($user, $request->get('company'), $data);
-        }
+        \Log::debug('complete registration for company id ' . $request->input('company'));
+        $user->companies()->updateExistingPivot($request->input('company'), $data);
+        $this->companyUserActivityLog->updatePreferences($user, $request->input('company'), $data);
 
         return response()->json([
             'redirect_url' => route('login')

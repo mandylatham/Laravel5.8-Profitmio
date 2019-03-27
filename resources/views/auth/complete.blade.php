@@ -55,20 +55,18 @@
                     <input type="text" class="form-control" name="phone_number"
                            v-model="userForm.phone_number">
                 </div>
-                @if(!$user->isAdmin())
-                    <div class="form-group">
-                        <label for="timezone">Timezone</label>
-                        <select name="timezone" class="form-control" v-model="userForm.timezone" :class="{'is-invalid': userForm.errors.has('timezone')}" @change="clearError('timezone')">
-                            <option disabled>Choose Timezone...</option>
-                            @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
-                                <option value="{{ $timezone }}">{{ $timezone }}</option>
-                            @endforeach
-                        </select>
-                        <div class="invalid-feedback" v-if="userForm.errors.has('timezone')">
-                            <div v-for="msg in userForm.errors.get('timezone')">@{{ msg }}</div>
-                        </div>
+                <div class="form-group">
+                    <label for="timezone">Timezone</label>
+                    <select name="timezone" class="form-control" v-model="userForm.timezone" :class="{'is-invalid': userForm.errors.has('timezone')}" @change="clearError('timezone')">
+                        <option disabled>Choose Timezone...</option>
+                        @foreach (App\Models\User::getPossibleTimezonesForUser() as $timezone)
+                            <option value="{{ $timezone }}">{{ $timezone }}</option>
+                        @endforeach
+                    </select>
+                    <div class="invalid-feedback" v-if="userForm.errors.has('timezone')">
+                        <div v-for="msg in userForm.errors.get('timezone')">@{{ msg }}</div>
                     </div>
-                @endif
+                </div>
             </tab-content>
             <tab-content title="Auth" :before-change="validateAuthTab">
                 <div class="form-group">
