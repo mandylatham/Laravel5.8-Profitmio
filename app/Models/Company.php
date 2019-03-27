@@ -47,7 +47,7 @@ class Company extends Model implements HasMedia
 
     public function getImageAttribute()
     {
-        $image = $this->getMedia('company-image')->last();
+        $image = $this->getMedia('company-photo')->last();
         if ($image) {
             return $image->getFullUrl();
         }

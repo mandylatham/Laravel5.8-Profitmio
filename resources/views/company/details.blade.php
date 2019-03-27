@@ -77,7 +77,7 @@
                                         <div class="form-group">
                                             <label class="form-label">Country</label>
                                             <p v-if="!showCompanyFormControls"
-                                               class="editable company-address form-control">@{{ company.country }}</p>
+                                               class="editable company-address form-control">@{{ company.country === 'us' ? 'United States' : 'Canada' }}</p>
                                             <select name="country" class="form-control"
                                                     v-model="modifiedCompany.country" aria-label="Company Country"
                                                     v-if="showCompanyFormControls">
@@ -260,7 +260,7 @@
                                             <div class="col-12 col-md-6 col-lg-4 col-xl-2">
                                                 <div
                                                     class="user-row--phone-number justify-content-center justify-content-xl-start">
-                                                    <span class="pm-font-phone-icon mr-2"></span>@{{ user.phone_number
+                                                    <span class="pm-font-phone-icon mr-2"></span>@{{ user.phone
                                                     || '--' }}
                                                 </div>
                                             </div>
