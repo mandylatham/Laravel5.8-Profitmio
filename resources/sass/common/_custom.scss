@@ -60,6 +60,15 @@ body {
     justify-content: center;
 }
 
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.collapsed > .opened,
+:not(.collapsed) > .closed {
+    display: none;
+}
+
 [v-cloak] { display: none; }
 [v-cloak]::before { content: "loading..."; }
 
