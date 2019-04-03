@@ -17,6 +17,10 @@ class RecipientList extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
+            'error' => !$this->failed_at ? null : [
+                'message' => $this->failed_reason,
+                'time' => $this->failed_at->getTimestamp(),
+            ],
             'recipient_count' => $this->recipients()->count(),
             'with_email' => $this->withEmails(),
             'with_phone' => $this->withPhones(),

@@ -108,6 +108,7 @@
 
     export default {
         components: {
+            'b-popover': require('bootstrap-vue/src/components/popover/popover').default,
             'status': require('./../status/status').default,
         },
         props: {

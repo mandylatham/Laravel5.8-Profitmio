@@ -24,6 +24,8 @@ class RecipientList extends Model implements HasMedia
         'fieldmap' => 'array',
     ];
 
+    protected $dates = ['failed_at'];
+
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id', 'id');

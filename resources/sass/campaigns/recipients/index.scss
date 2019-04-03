@@ -28,6 +28,18 @@
         &--id {
             margin-top: 12px;
         }
+        .status-text {
+            color: $white;
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+        &.error {
+            background-color: $error;
+
+            .status-text {
+                text-decoration: underline;
+            }
+        }
     }
     .recipient-stats{
         display: flex;

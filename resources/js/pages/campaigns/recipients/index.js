@@ -29,6 +29,13 @@ window['app'] = new Vue({
             page: 1,
             per_page: 15
         }),
+        listError: {
+            name: null,
+            error: {
+                time: null,
+                message: null
+            },
+        },
         loading: false,
         loadingStats: false,
         total: 0,
@@ -36,6 +43,10 @@ window['app'] = new Vue({
         uploadRecipientsUrl: ''
     },
     methods: {
+        showListErrorModal: function (list) {
+            this.listError = list;
+            this.$refs['listErrorsModalRef'].show();
+        },
         closeModal: function (modalRef) {
             this.$refs[modalRef].hide();
         },
