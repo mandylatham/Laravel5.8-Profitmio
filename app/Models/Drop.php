@@ -93,6 +93,10 @@ class Drop extends Model
             $query->filterByQuery($request->input('q'));
         }
 
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
         return $query;
     }
 

@@ -27,7 +27,15 @@
                 </a>
                 @endif
             </div>
-            <div class="col-none col-sm-2 col-lg-4"></div>
+        </div>
+        <div class="row align-items-end no-gutters">
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
+                <div class="form-group filter--form-group">
+                    <label>Filter By Type</label>
+                    <v-select :options="types" v-model="typeSelected" class="filter--v-select" @input="fetchData"></v-select>
+                </div>
+            </div>
+            <div class="col-none col-sm-2 col-lg-5"></div>
             <div class="col-12 col-sm-5 col-lg-4 mb-3">
                 <input type="text" v-model="searchDropForm.q" class="form-control filter--search-box" aria-describedby="search"
                        placeholder="Search" @keyup.enter="fetchData">
