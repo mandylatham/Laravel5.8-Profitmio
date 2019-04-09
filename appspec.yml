@@ -2,11 +2,9 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /var/www/pm
-  - source: /deploy/staging/.env.staging
-    destination: /var/www/pm/.env
+    destination: /home/forge/migration-test.profitminer.io/
 hooks:
   BeforeInstall:
-    - location: deploy/staging/PreDeploy.sh
+    - location: .aws/codedeploy/scripts/beforeInstall.sh
   AfterInstall:
-    - location: deploy/staging/PostDeploy.sh
+    - location: .aws/codedeploy/scripts/afterInstall.sh

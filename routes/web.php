@@ -4,6 +4,10 @@ Route::impersonate();
 
 use Illuminate\Support\Facades\Route;
 
+// AWS heartbeat
+Route::get('/heartbeat', function () {
+    return response()->json('ok', 200);
+});
 //region OUTSIDE API CALLS
 Route::any('/text-in/', 'TextInController@createFromSms')->name('pub-api.text-in')->middleware(null);
 Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->name('pub-api.text-response-inbound')->middleware(null);
