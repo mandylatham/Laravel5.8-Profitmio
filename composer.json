@@ -59,6 +59,7 @@
     "extra": {
         "laravel": {
             "dont-discover": [
+                "Laravel\\Dusk\\DuskServiceProvider"
             ]
         }
     },

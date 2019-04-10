@@ -3,6 +3,14 @@
 namespace App\Providers;
 
 use Laravel\Dusk\Browser;
+use Laravel\Dusk\Console\InstallCommand;
+use Laravel\Dusk\Console\DuskCommand;
+use Laravel\Dusk\Console\DuskFailsCommand;
+use Laravel\Dusk\Console\MakeCommand;
+use Laravel\Dusk\Console\PageCommand;
+use Laravel\Dusk\Console\ComponentCommand;
+use Exception;
+use Illuminate\Support\Facades\Route;
 use PHPUnit\Framework\Assert as PHPUnit;
 use Illuminate\Support\ServiceProvider;
 use Carbon\Carbon;
@@ -10,12 +18,30 @@ use Carbon\Carbon;
 class DuskServiceProvider extends ServiceProvider
 {
     /**
-     * Register services.
-     *
-     * @return void
+     * @throws Exception
      */
     public function register()
     {
+
+        if ($this->app->environment('production')) {
+            throw new Exception('It is unsafe to run Dusk in production.');
+        }
+
+        if (!file_exists(base_path('.env.dusk'))) {
+            throw new Exception('.env.dusk file does\'t exists, it\'s unsafe to run Dusk.');
+        }
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                InstallCommand::class,
+                DuskCommand::class,
+                DuskFailsCommand::class,
+                MakeCommand::class,
+                PageCommand::class,
+                ComponentCommand::class,
+            ]);
+        }
+
         // Macro to select an item in vue-select
         Browser::macro('vueSelect', function ($element, $itemIndexToSelect) {
             $this->click($element)
@@ -88,6 +114,20 @@ class DuskServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        //
+
+        Route::get('/_dusk/login/{userId}/{guard?}', [
+            'middleware' => 'web',
+            'uses' => 'Laravel\Dusk\Http\Controllers\UserController@login',
+        ]);
+
+        Route::get('/_dusk/logout/{guard?}', [
+            'middleware' => 'web',
+            'uses' => 'Laravel\Dusk\Http\Controllers\UserController@logout',
+        ]);
+
+        Route::get('/_dusk/user/{guard?}', [
+            'middleware' => 'web',
+            'uses' => 'Laravel\Dusk\Http\Controllers\UserController@user',
+        ]);
     }
 }
