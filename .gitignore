@@ -16,3 +16,5 @@ yarn-error.log
 .env.dusk
 .env
 .phpunit.result.cache
+public/storage
+public/mix-manifest.json

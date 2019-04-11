@@ -18,6 +18,7 @@
             <div class="logo">
                 <img class="brand-img" src="/img/logo-large.png" alt="...">
             </div>
+            <h1>Test CD</h1>
             <p class="text-primary">Sign into your account</p>
             <p dusk="error-message-1" class="text-danger" v-for="error in errors">@{{ error }}</p>
             <p dusk="error-message-2" class="text-danger" v-if="errorMessage">@{{ errorMessage }}</p>

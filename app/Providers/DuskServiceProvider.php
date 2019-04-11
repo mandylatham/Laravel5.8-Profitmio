@@ -28,7 +28,7 @@ class DuskServiceProvider extends ServiceProvider
         }
 
         if (!file_exists(base_path('.env.dusk'))) {
-            throw new Exception('.env.dusk file does\'t exists, it\'s unsafe to run Dusk.');
+            throw new Exception('.env.dusk file does\'t exists, it\'s unsafe to run Dusk, please copy .env.dusk.example to .env.dusk to solve this issue.');
         }
 
         if ($this->app->runningInConsole()) {
