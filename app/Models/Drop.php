@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
+use Storage;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class Drop extends Model
+class Drop extends Model implements HasMedia
 {
-    use SoftDeletes;
+    use SoftDeletes, HasMediaTrait;
 
     protected $table = 'campaign_schedules';
 
@@ -28,7 +31,7 @@ class Drop extends Model
     protected $primaryKey = 'id';
 
     protected $appends = [
-        'sms_phones', 'send_at_formatted', 'completed_at_formatted',
+        'image_url', 'sms_phones', 'send_at_formatted', 'completed_at_formatted',
     ];
 
     public function getSmsPhonesAttribute()
@@ -113,6 +116,15 @@ class Drop extends Model
     public function getCompletedAtFormattedAttribute()
     {
         return isset($this->completed_at) ? $this->completed_at->timezone($this->getUserTimezone())->format("m/d/Y @ g:i A") : '';
+    }
+
+    public function getImageUrlAttribute()
+    {
+        if ($this->type === 'mailer' && $image = $this->getMedia('image')->last()) {
+            return Storage::disk($image->disk)->url($image->id.'/'.$image->file_name);
+        } else {
+            return '';
+        }
     }
 
     private function getUserTimezone()

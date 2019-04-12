@@ -64,6 +64,8 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/campaigns/deployments/create.scss', 'public/css/deployments-create.css')
     .js('resources/js/pages/campaigns/deployments/edit.js', 'public/js/deployments-edit.js')
     .sass('resources/sass/campaigns/deployments/edit.scss', 'public/css/deployments-edit.css')
+    .js('resources/js/pages/campaigns/deployments/mailer-create.js', 'public/js/mailer-create.js')
+    .sass('resources/sass/campaigns/deployments/mailer-create.scss', 'public/css/mailer-create.css')
     //Profile
     .js('resources/js/pages/profile/profile.js', 'public/js/profile.js')
     .sass('resources/sass/profile/profile.scss', 'public/css/profile.css')

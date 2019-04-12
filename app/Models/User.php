@@ -119,8 +119,7 @@ class User extends Authenticatable implements HasMedia, CanResetPassword
     {
         $image = $this->getMedia('profile-photo')->last();
         if ($image) {
-            return Storage::disk(env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'))
-                ->url($image->getPath());
+            return Storage::disk($image->disk)->url($image->id.'/'.$image->file_name);
         }
         return '';
     }

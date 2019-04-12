@@ -1,0 +1,27 @@
+@import './../../common/index';
+@import './../base';
+@import "~bootstrap/scss/tables";
+@import './../../components/date-pick';
+@import './../../components/resumable';
+@import './../../components/spinner-icon';
+@import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+
+#mailer-create {
+    .mx-datepicker {
+        width: 100%;
+        &.is-invalid {
+            .mx-input {
+                border-color: $red;
+            }
+            & + .invalid-feedback {
+                display: block;
+            }
+        }
+    }
+    .resumable-component.is-invalid {
+        border-color: $red;
+        & + .invalid-feedback {
+            display: block;
+        }
+    }
+}

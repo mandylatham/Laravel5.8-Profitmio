@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\CampaignScheduleTemplate;
 use App\Models\Drop;
 use App\Http\Requests\DeploymentRequest;
+use App\Http\Requests\StoreMailerRequest;
 use App\Http\Requests\BulkDeploymentRequest;
 use App\Models\Recipient;
 use App\Models\RecipientList;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
-use App\Models\CampaignSchedule;
 use Illuminate\Support\Facades\Log;
 
 class DeploymentController extends Controller
@@ -161,6 +161,17 @@ class DeploymentController extends Controller
         return view('campaigns.deployments.create', $viewData);
     }
 
+    public function createNewMailer(Campaign $campaign, Request $request)
+    {
+        if ($campaign->isExpired()) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
+        $viewData['campaign'] = $campaign;
+
+        return view('campaigns.deployments.create-mailer', $viewData);
+    }
+
     public function createNewEmailDrop(Campaign $campaign, Request $request)
     {
         if ($campaign->isExpired) {
@@ -185,19 +196,6 @@ class DeploymentController extends Controller
         $viewData['templates'] = CampaignScheduleTemplate::all();
 
         return view('campaigns.deployments.new-sms-drop', $viewData);
-    }
-
-    public function createNewMailerDrop(Campaign $campaign, Request $request)
-    {
-        if ($campaign->isExpired) {
-            abort(403, 'Illegal Request. This abuse of the system has been logged.');
-        }
-
-        $viewData['recipient_info'] = [];
-        $viewData['campaign'] = $campaign;
-        $viewData['templates'] = CampaignScheduleTemplate::all();
-
-        return view('campaigns.deployments.new-mailer-drop', $viewData);
     }
 
     public function create(Campaign $campaign, BulkDeploymentRequest $request)
@@ -274,12 +272,33 @@ class DeploymentController extends Controller
         ]);
     }
 
-    public function update(Campaign $campaign, CampaignSchedule $drop, DeploymentRequest $request)
+    public function storeMailer(Campaign $campaign, StoreMailerRequest $request)
+    {
+        if ($campaign->isExpired()) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
+        $drop = new Drop();
+        $drop->campaign_id = $campaign->id;
+        $drop->type = 'mailer';
+        $drop->send_at = (new Carbon($request->input('send_at')))->toDateTimeString();
+        $drop->save();
+
+        $drop->addMedia($request->file('image'))->toMediaCollection('image', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
+
+
+        return response()->json(['message' => 'Resource created.']);
+    }
+
+    public function update(Campaign $campaign, Drop $drop, DeploymentRequest $request)
     {
         $date = new Carbon($request->send_at_date);
-        $time = new Carbon($request->send_at_time);
-        $send_at = (new Carbon($date->toDateString() . ' ' . $time->format('H:i:s'), \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
-
+        if ($campaign->type === 'mailer') {
+            $send_at = $date->toDateTimeString();
+        } else {
+            $time = new Carbon($request->send_at_time);
+            $send_at = (new Carbon($date->toDateString() . ' ' . $time->format('H:i:s'), \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+        }
 		$requestDrop = $request->all();
 		$requestDrop['send_at'] = $send_at;
 
@@ -287,12 +306,16 @@ class DeploymentController extends Controller
 
         $drop->save();
 
+        if ($drop->type === 'mailer' && $request->hasFile('image')) {
+            $drop->addMedia($request->file('image'))->toMediaCollection('image', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
+        }
+
         return response()->json(['message' => 'Resource Updated.']);
 
 //        return redirect()->route('campaigns.drop.index', ['campaign' => $campaign->id]);
     }
 
-    public function updateForm(Campaign $campaign, CampaignSchedule $drop)
+    public function updateForm(Campaign $campaign, Drop $drop)
     {
         if ($campaign->isExpired) {
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
@@ -323,7 +346,7 @@ class DeploymentController extends Controller
         ]);
     }
 
-    public function resume(CampaignSchedule $deployment)
+    public function resume(Drop $deployment)
     {
         try {
             $deployment->status = "Pending";
@@ -341,7 +364,7 @@ class DeploymentController extends Controller
         ]);
     }
 
-    public function pause(CampaignSchedule $deployment)
+    public function pause(Drop $deployment)
     {
         try {
             $deployment->status = "Paused";
@@ -411,7 +434,7 @@ class DeploymentController extends Controller
 
             $deployment['send_at'] = (new Carbon($request->get('Group' . $i . '_date') . ' ' . $request->get('Group' . $i . '_time'), \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
 
-            $deployment = new CampaignSchedule($deployment);
+            $deployment = new Drop($deployment);
 
             $deployment->save();
 

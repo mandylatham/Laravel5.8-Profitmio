@@ -23,16 +23,24 @@ class DeploymentRequest extends FormRequest
      */
     public function rules()
     {
-        return [
-            'type' => 'required',
-            'email_subject' => 'required_without:text_message',
-            'email_text' => 'required_with:email_subject',
-            'email_html' => 'required_with:email_subject',
-            'text_message' => 'required_without:email_subject',
-            'text_vehicle_image' => 'nullable',
-            'send_vehicle_image' => 'nullable',
-            'send_at_date' => 'required',
-            'send_at_time' => 'required'
-        ];
+        if ($this->get('type') === 'mailer') {
+            return [
+                'send_at_date' => 'required',
+                'send_at_time' => 'required',
+                'type' => 'required',
+            ];
+        } else {
+            return [
+                'type' => 'required',
+                'email_subject' => 'required_without:text_message',
+                'email_text' => 'required_with:email_subject',
+                'email_html' => 'required_with:email_subject',
+                'text_message' => 'required_without:email_subject',
+                'text_vehicle_image' => 'nullable',
+                'send_vehicle_image' => 'nullable',
+                'send_at_date' => 'required',
+                'send_at_time' => 'required'
+            ];
+        }
     }
 }

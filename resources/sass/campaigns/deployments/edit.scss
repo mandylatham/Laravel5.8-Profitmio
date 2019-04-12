@@ -4,8 +4,21 @@
 @import './../../components/date-pick';
 @import './../../components/spinner-icon';
 @import "~vue-form-wizard/dist/vue-form-wizard.min.css";
+@import './../../components/resumable';
 
 #deployments-edit {
+
+    .image-preview {
+        background-color: #fafafa;
+        border-radius: 5px;
+        background-position: 50% 50%;
+        background-repeat: no-repeat;
+        background-size: cover;
+        height: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 
     .mx-datepicker {
         width: 100%;
