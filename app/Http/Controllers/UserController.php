@@ -138,7 +138,7 @@ class UserController extends Controller
         ]);
 
         $processRegistration = URL::temporarySignedRoute(
-            'registration.complete.show', Carbon::now()->addMinutes(60), $urlData
+            'registration.complete.show', Carbon::now()->addHours(48), $urlData
         );
 
         Mail::to($user)->send(new InviteUser($user, $company, $processRegistration));
