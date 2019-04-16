@@ -24,8 +24,7 @@ class StoreMailerRequest extends FormRequest
     public function rules()
     {
         return [
-            'send_at' => "required|date_format:Y-m-d",
-            'image' => 'required|image',
+            'send_at' => "required|date_format:Y-m-d"
         ];
     }
 }

@@ -9,15 +9,35 @@
 #deployments-edit {
 
     .image-preview {
+        overflow: hidden;
+        padding: 15px;
+        position: relative;
+        height: 100%;
         background-color: #fafafa;
         border-radius: 5px;
-        background-position: 50% 50%;
-        background-repeat: no-repeat;
-        background-size: cover;
-        height: 140px;
         display: flex;
         align-items: center;
         justify-content: center;
+        border: 2px solid #ddd;
+        img {
+            max-width: 100%;
+        }
+        button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        &--loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     }
 
     .mx-datepicker {

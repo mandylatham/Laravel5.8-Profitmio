@@ -6,6 +6,7 @@ import VueFormWizard from 'vue-form-wizard';
 Vue.use(VueFormWizard);
 import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
+import {generateRoute} from "../../../common/helpers";
 
 
 window['app'] = new Vue({
@@ -20,10 +21,10 @@ window['app'] = new Vue({
     data: {
         loading: false,
         dropForm: new Form({
-            send_at: null,
-            image: ''
+            send_at: null
         }),
         fileTypes: ['jpeg', 'jpg', 'png', 'bmp', 'gif', 'svg'],
+        image: null,
         sendAtDateTransformers: {
             value2date: (value) =>{
                 return moment(value, 'YYYY-MM-DD').toDate();
@@ -31,22 +32,34 @@ window['app'] = new Vue({
             date2value: (date) =>{
                 return moment(date).format('YYYY-MM-DD');
             }
-        }
-    },
-    mounted() {
+        },
+        uploadImageUrl: window.saveMailerDropUrl
     },
     methods: {
         clearError: function (field) {
             this.dropForm.errors.clear(field);
         },
-        onImageSelected(file) {
+        onFileError() {
+            this.loading = false;
+            window.PmEvent.fire('errors.api', "Unable to process your request");
+        },
+        onFileSuccess() {
+            this.$swal({
+                title: 'Mailer Created!',
+                type: 'success',
+                allowOutsideClick: false
+            }).then(() => {
+                window.location.replace(window.dropsIndexUrl);
+            });
+        },
+        onImageSelected(image) {
             this.clearError('image');
-            this.dropForm.image = file.file.file;
+            this.image = image;
         },
         saveDrop() {
             let valid = true;
             this.dropForm.errors.clear();
-            if (!this.dropForm.image) {
+            if (!this.image) {
                 valid = false;
                 this.dropForm.errors.add('image', 'This field is required.');
             }
@@ -58,21 +71,8 @@ window['app'] = new Vue({
                 return;
             }
             this.loading = true;
-            this.dropForm
-                .post(window.saveMailerDropUrl)
-                .then(() => {
-                    this.loading = false;
-                    this.$swal({
-                        title: 'Mailer Created!',
-                        type: 'success',
-                        allowOutsideClick: false
-                    }).then(() => {
-                        window.location.replace(window.dropsIndexUrl);
-                    });
-                }, e => {
-                    window.PmEvent.fire('errors.api', "Unable to process your request");
-                    this.loading = false;
-                });
+            this.$refs.resumable.addData('send_at', this.dropForm.send_at);
+            this.$refs.resumable.startUpload();
         }
     }
 });

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Storage;
+use Spatie\MediaLibrary\Models\Media;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -52,6 +53,14 @@ class Drop extends Model implements HasMedia
     public function recipients()
     {
         return $this->belongsToMany(Recipient::class, 'deployment_recipients', 'deployment_id', 'recipient_id');
+    }
+
+    public function registerMediaConversions(Media $media = null)
+    {
+        $this->addMediaConversion('thumb')
+            ->width(720)
+            ->keepOriginalImageFormat()
+            ->nonQueued();
     }
 
     public function scopeInGroup($query, $group_id)
@@ -120,8 +129,9 @@ class Drop extends Model implements HasMedia
 
     public function getImageUrlAttribute()
     {
+//        return $this->getMedia('image')->last()->getPath('thumb');
         if ($this->type === 'mailer' && $image = $this->getMedia('image')->last()) {
-            return Storage::disk($image->disk)->url($image->id.'/'.$image->file_name);
+            return Storage::disk($image->disk)->url($image->id.'/conversions/'.$image->name.'-thumb.'.$image->getExtensionAttribute());
         } else {
             return '';
         }

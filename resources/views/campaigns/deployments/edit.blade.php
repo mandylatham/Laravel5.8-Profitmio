@@ -9,6 +9,7 @@
         window.drop = @json($drop);
         window.dropsIndexUrl = @json(route('campaigns.drops.index', ['campaign' => $campaign->id]));
         window.updateDropUrl = @json(route('campaigns.drops.update', ['campaign' => $campaign->id, 'drop' => $drop->id]));
+        window.updateMailerImageUrl = @json(route('campaigns.drops.update-image', ['campaign' => $campaign->id, 'drop' => $drop->id]));
     </script>
     <script src="{{ asset('js/deployments-edit.js') }}"></script>
 @endsection
@@ -19,19 +20,13 @@
             <h4 class="mb-4">Drop Details</h4>
             <form @submit.prevent="save" >
                 <div class="row mb-3" v-if="dropForm.type === 'mailer'">
-                    <div class="col-12 col-lg-6 offset-lg-3" >
-                        <div class="image-preview" v-if="!editImage"
-                             :style="image_url">
+                    <div class="col-12 col-lg-6 offset-lg-3">
+                        <div  class="image-preview" ref="droppable" v-droppable="droppableConfig" @file-added="onFileSelected" @file-success="onFileSuccess">
+                            <img :src="dropForm.image_url" alt="Mailer">
                             <button class="btn pm-btn pm-btn-purple" type="button" @click="editImage = !editImage">Change Image</button>
-                        </div>
-                        <div v-if="editImage">
-                            <label>Mailer Image:</label>
-                            <resumable :target-url="''" :file-type="fileTypes" ref="resumable" @file-added="onImageSelected" :hide-progress="true" :class="{'is-invalid': dropForm.errors.has('image')}">
-                                <template slot="message">
-                                    Choose an image
-                                </template>
-                            </resumable>
-                            <input-errors :error-bag="dropForm.errors" :field="'image'"></input-errors>
+                            <div class="image-preview--loader" v-if="uploadingImage">
+                                <spinner-icon></spinner-icon>
+                            </div>
                         </div>
                     </div>
                 </div>

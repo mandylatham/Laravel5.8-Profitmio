@@ -8,8 +8,8 @@
 
 @section('body-script')
     <script>
-        window.saveMailerDropUrl = "{{ route('campaigns.drops.store-mailer', ['campaign' => $campaign->id]) }}";
         window.dropsIndexUrl = "{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}";
+        window.saveMailerDropUrl = "{{ route('campaigns.drops.store-mailer', ['campaign' => $campaign->id]) }}";
     </script>
     <script src="{{ asset('js/mailer-create.js') }}"></script>
 @endsection
@@ -25,7 +25,7 @@
                     <div class="card-body">
                         <h2 class="mb-4">New Mailer</h2>
                         <label>Mailer Image:</label>
-                        <resumable :target-url="''" :file-type="fileTypes" ref="resumable" @file-added="onImageSelected" :hide-progress="true" :class="{'is-invalid': dropForm.errors.has('image')}">
+                        <resumable :target-url="uploadImageUrl" :file-type="fileTypes" ref="resumable" @file-added="onImageSelected" @file-error="onFileError" @file-success="onFileSuccess" :hide-progress="true" :class="{'is-invalid': dropForm.errors.has('image')}">
                             <template slot="message">
                                 Choose an image
                             </template>

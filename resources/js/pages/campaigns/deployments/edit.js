@@ -5,7 +5,7 @@ import VueFormWizard from 'vue-form-wizard';
 Vue.use(VueFormWizard);
 import DatePicker from 'vue2-datepicker';
 import moment from 'moment';
-
+import * as Resumable from 'resumablejs/resumable.js';
 
 window['app'] = new Vue({
     el: '#deployments-edit',
@@ -16,21 +16,28 @@ window['app'] = new Vue({
         DatePicker,
         'editor': require('vue2-ace-editor'),
     },
+    directives: {
+        'droppable': require('./../../../directives/droppable').default
+    },
     data: {
         editImage: false,
         loading: false,
+        droppableConfig: {
+            browseSelector: 'button',
+            targetUrl: window.updateMailerImageUrl
+        },
         dropForm: new Form({
             id: null,
             send_at_date: null,
             send_at_time: null,
             send_at: null,
-            image: null,
             image_url: null,
             type: null,
             text_message: null,
             email_subject: null
         }),
-        fileTypes: ['jpeg', 'jpg', 'png', 'bmp', 'gif', 'svg']
+        fileTypes: ['jpeg', 'jpg', 'png', 'bmp', 'gif', 'svg'],
+        uploadingImage: false
     },
     computed: {
         image_url: function () {
@@ -55,9 +62,16 @@ window['app'] = new Vue({
             require('brace/mode/html').default;
             require('brace/theme/chrome').default;
         },
-        onImageSelected(file) {
-            this.dropForm.errors.clear('image');
-            this.dropForm.image = file.file.file;
+        onFileSelected(event) {
+            const data = event.detail;
+            this.uploadingImage = true;
+            data.resumable.upload();
+        },
+        onFileSuccess(event) {
+            const data = event.detail;
+            this.dropForm.image_url = data.message.image_url;
+            this.uploadingImage = false;
+            this.$toastr.success("Image updated successfully");
         },
         save() {
             let valid = true;

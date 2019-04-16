@@ -12,7 +12,12 @@ use App\Models\RecipientList;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
+use App\Models\CampaignSchedule;
 use Illuminate\Support\Facades\Log;
+use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
+use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
+use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
+use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 
 class DeploymentController extends Controller
 {
@@ -198,6 +203,19 @@ class DeploymentController extends Controller
         return view('campaigns.deployments.new-sms-drop', $viewData);
     }
 
+    public function createNewMailerDrop(Campaign $campaign, Request $request)
+    {
+        if ($campaign->isExpired) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
+        }
+
+        $viewData['recipient_info'] = [];
+        $viewData['campaign'] = $campaign;
+        $viewData['templates'] = CampaignScheduleTemplate::all();
+
+        return view('campaigns.deployments.new-mailer-drop', $viewData);
+    }
+
     public function create(Campaign $campaign, BulkDeploymentRequest $request)
     {
         if ($campaign->isExpired) {
@@ -278,16 +296,38 @@ class DeploymentController extends Controller
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
-        $drop = new Drop();
-        $drop->campaign_id = $campaign->id;
-        $drop->type = 'mailer';
-        $drop->send_at = (new Carbon($request->input('send_at')))->toDateTimeString();
-        $drop->save();
+        // create the file receiver
+        $receiver = new FileReceiver("file", $request, HandlerFactory::classFromRequest($request));
+        // check if the upload is success, throw exception or return response you need
+        if ($receiver->isUploaded() === false) {
+            throw new UploadMissingFileException();
+        }
+        // receive the file
+        $save = $receiver->receive();
+        // check if the upload has finished (in chunk mode it will send smaller files)
+        if ($save->isFinished()) {
+            $drop = new Drop();
+            $drop->campaign_id = $campaign->id;
+            $drop->type = 'mailer';
+            $drop->send_at = (new Carbon($request->input('send_at')))->toDateTimeString();
+            $drop->save();
+            // save the file and return any response you need, current example uses `move` function. If you are
+            // not using move, you need to manually delete the file by unlink($save->getFile()->getPathname())
+            $drop->addMedia($save->getFile())
+                ->toMediaCollection('image', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
+            return response()->json([
+                'message' => 'Resource created.',
+                'resource' => $drop
+            ]);
+        }
+        // we are in chunk mode, lets send the current progress
+        /** @var AbstractHandler $handler */
+        $handler = $save->handler();
 
-        $drop->addMedia($request->file('image'))->toMediaCollection('image', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
-
-
-        return response()->json(['message' => 'Resource created.']);
+        return response()->json([
+            "done"   => $handler->getPercentageDone(),
+            'status' => true,
+        ]);
     }
 
     public function update(Campaign $campaign, Drop $drop, DeploymentRequest $request)
@@ -306,14 +346,44 @@ class DeploymentController extends Controller
 
         $drop->save();
 
-        if ($drop->type === 'mailer' && $request->hasFile('image')) {
-            $drop->addMedia($request->file('image'))->toMediaCollection('image', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
+        return response()->json(['message' => 'Resource Updated.']);
+    }
+
+    public function updateImage(Campaign $campaign, Drop $drop, Request $request)
+    {
+        if ($campaign->isExpired()) {
+            abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
 
-        return response()->json(['message' => 'Resource Updated.']);
+        // create the file receiver
+        $receiver = new FileReceiver("file", $request, HandlerFactory::classFromRequest($request));
+        // check if the upload is success, throw exception or return response you need
+        if ($receiver->isUploaded() === false) {
+            throw new UploadMissingFileException();
+        }
+        // receive the file
+        $save = $receiver->receive();
+        // check if the upload has finished (in chunk mode it will send smaller files)
+        if ($save->isFinished()) {
+            // save the file and return any response you need, current example uses `move` function. If you are
+            // not using move, you need to manually delete the file by unlink($save->getFile()->getPathname())
+            $drop->addMedia($save->getFile())
+                ->toMediaCollection('image', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
+            return response()->json([
+                'message' => 'Resource created.',
+                'image_url' => $drop->image_url
+            ]);
+        }
+        // we are in chunk mode, lets send the current progress
+        /** @var AbstractHandler $handler */
+        $handler = $save->handler();
 
-//        return redirect()->route('campaigns.drop.index', ['campaign' => $campaign->id]);
+        return response()->json([
+            "done"   => $handler->getPercentageDone(),
+            'status' => true,
+        ]);
     }
+
 
     public function updateForm(Campaign $campaign, Drop $drop)
     {

@@ -22,7 +22,8 @@
                 fileSelected: null,
                 uploadingProgress: 0.1,
                 uploadingFile: false,
-                resetDomElements: false
+                resetDomElements: false,
+                data: {}
             };
         },
         props: {
@@ -47,6 +48,9 @@
             this.bootstrapResumable();
         },
         methods: {
+            addData(property, value) {
+                this.data[property] = value;
+            },
             bootstrapResumable() {
                 if (this.bootstraping) return;
                 this.bootstraping = true;
@@ -57,6 +61,7 @@
                             fileType: this.fileType,
                             simultaneousUploads: 3,
                             testChunks: false,
+                            query: this.data,
                             throttleProgressCallbacks: 1,
                             target: this.targetUrl,
                             headers: {

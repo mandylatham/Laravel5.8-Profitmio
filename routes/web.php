@@ -185,6 +185,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/drop/{drop}', 'DeploymentController@show')->name('campaigns.drops.details');
             Route::delete('/drop/{drop}', 'DeploymentController@delete')->name('campaigns.drops.delete');
             Route::post('/drop/{drop}/update', 'DeploymentController@update')->name('campaigns.drops.update');
+            Route::post('/drop/{drop}/update-image', 'DeploymentController@updateImage')->name('campaigns.drops.update-image');
             Route::get('/drops/new', 'DeploymentController@createNew')->name('campaigns.drops.create');
             // Deployment group
             Route::get('/mailer/new', 'DeploymentController@createNewMailer')->name('campaigns.mailer.create');
