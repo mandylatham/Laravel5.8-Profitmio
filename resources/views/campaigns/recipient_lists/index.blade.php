@@ -125,6 +125,7 @@
                 <button class="btn pm-btn-purple float-right" @click="closeModal('listErrorsModalRef')">
                     Close
                 </button>
+            </div>
         </b-modal>
 
         <b-modal ref="addPhoneModalRef" id="upload-recipient-modal" size="lg" hide-footer>
