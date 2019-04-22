@@ -296,7 +296,15 @@ window['app'] = new Vue({
                 .then((request) => {
                     this.loadingPurchaseNumber = false;
                     delete this.availableCallSources[this.purchasePhoneNumberForm.call_source_name];
-                    this.purchasePhoneNumberForm.reset();
+
+                    // Reset form data with a new form instance
+                    this.purchasePhoneNumberForm = new Form({
+                        call_source_name: '',
+                        campaign_id: window.campaign.id,
+                        forward: '',
+                        phone_number: null,
+                    });
+
                     this.showAvailablePhoneNumbers = false;
                     this.getCampaignPhones();
                     this.closeModal('addPhoneModalRef');
