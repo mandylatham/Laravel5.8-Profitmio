@@ -351,7 +351,10 @@ window['app'] = new Vue({
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 }, (error) => {
-                    window.PmEvent.fire('errors.api', 'Unable to get phone numbers.');
+                    if (error.response.status !== 422) {
+                        window.PmEvent.fire('errors.api', 'Unable to get phone numbers.');
+                    }
+
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 });
