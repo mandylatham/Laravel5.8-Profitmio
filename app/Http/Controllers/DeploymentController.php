@@ -9,6 +9,7 @@ use App\Http\Requests\StoreMailerRequest;
 use App\Http\Requests\BulkDeploymentRequest;
 use App\Models\Recipient;
 use App\Models\RecipientList;
+use ProfitMiner\Base\Services\Drops\Processors\SMSDropProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
@@ -22,9 +23,19 @@ use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
 class DeploymentController extends Controller
 {
     /**
+     * @var SMSDropProcessor
+     */
+    protected $processor;
+
+    public function __construct(SMSDropProcessor $processor)
+    {
+        parent::__construct();
+
+        $this->processor = $processor;
+    }
+
+    /**
      * Send out the SMS message
-     *
-     * TODO: Clean this up
      *
      * @param \App\Models\Campaign  $campaign
      * @param \App\Models\Drop      $drop
@@ -33,123 +44,31 @@ class DeploymentController extends Controller
      * @return array
      * @throws \Exception
      */
-    public function deploySms(Campaign $campaign, Drop $drop, Recipient $recipient)
-    {
+    public function deploySms(
+        Campaign $campaign,
+        Drop $drop,
+        Recipient $recipient
+    ) {
         if ($campaign->isExpired) {
             return response()->json(['error' => ['error' => 'Illegal Request. This abuse of the system has been logged.']], 403);
         }
 
-        $unsent = \DB::table('deployment_recipients')
-                ->where('deployment_id', $drop->id)
-                ->where('recipient_id', $recipient->id)
-                ->whereNotNull('sent_at')
-                ->get();
-
-        if ($unsent->count() > 0) {
-            return ['success' => 1, 'message' => 'This recipient has already been sent an sms message'];
-        }
-
-        $loader = new \Twig_Loader_Array([
-            'text_message' => $drop->text_message,
-        ]);
-
-        $twig = new \Twig_Environment($loader);
-
-        $templateVars = collect($recipient->toArray())->except(['pivot'])->toArray();
-
-        if (! $text = $twig->render('text_message', $templateVars)) {
-            throw new \Exception("Unable to parse message template");
-        }
-
-        if ($campaign->phones()->whereCallSourceName('sms')->count() == 0) {
-            throw new \Exception('No SMS phone number available for campaign ' . $campaign->id);
-        }
-
-        $from = $campaign->phones()->whereCallSourceName('sms')->first()->phone_number;
-        $to = $recipient->phone;
-        $message = $text;
-        $mediaUrl = null;
-
-        //if we want to send an MMS, we want $mms set to true
-        if ($drop->send_vehicle_image) {
-            $year = 99999999; //will never exist in this image list
-            if ((int)$recipient->year > 2000) {
-                $year = (int)$recipient->year - 2000;
-            }
-
-            $filename = strtolower("{$recipient->make}_{$year}{$recipient->model}.png");
-
-            if (\Storage::disk('s3')->exists($filename)) {
-                $mediaUrl = 'https://s3.amazonaws.com/profitminer/vehicles/'.$filename;
-            }
-        } else {
-            // we might want to send an image attached to the campaign rather than an image of their vehicle.
-            if (! empty(trim($drop->text_message_image))) {
-                $mediaUrl = $drop->text_message_image;
-            }
-        }
-
-
         try {
-            $updateField = 'failed_at';
-
-            if ($recipient->suppressions->count() > 0) {
-                throw new \Exception("Recipient is suppressed from SMS communication");
-            }
-
-            if ($recipient->last_responded_at == null) {
-                //Log::create(['message'=>'sending text to ' . $recipient->phone, 'code'=>'phone', 'file'=>$recipient->phone, 'line_number'=>$recipient->campaign_id]);
-                \Twilio::sendSms($from, $to, $message, $mediaUrl);
-
-                $updateField = 'sent_at';
-            }
-
-            /*  Mark DropRecipient as Sent  */
-            if ($drop->system_id == 2) {
-                \DB::table('deployment_recipients')
-                    ->where('deployment_id', $drop->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->update([$updateField => Carbon::now()]);
-                $stats = \DB::table('deployment_recipients')->where('deployment_id', $drop->id)->selectRaw("sum(case when sent_at is null and failed_at is null then 1 else 0 end) as pending, sum(case when sent_at is not null or failed_at is not null then 1 else 0 end) as sent")->first();
-            } else {
-                \DB::table('campaign_schedule_lists')
-                    ->where('campaign_schedule_id', $drop->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->update([$updateField => Carbon::now()]);
-                $stats = \DB::table('campaign_schedule_lists')->where('campaign_schedule_id', $drop->id)->selectRaw("sum(case when sent_at is null and failed_at is null then 1 else 0 end) as pending, sum(case when sent_at is not null or failed_at is not null then 1 else 0 end) as sent")->first();
-            }
-
-            $percent = floor(($stats->pending / ($stats->pending + $stats->sent)) * 100);
-            $filler = [
-                'status' => $stats->pending == 0 ? 'Completed' : 'Processing',
-                'completed_at' => \Carbon\Carbon::now('UTC'),
-                'percentage_complete' => $percent,
-            ];
-
-            $drop->fill($filler)->save();
-
-            return [
-                'success' => 1,
-                'message' => 'This recipient has been sent a customized copy of the sms message',
-                'debug' => json_encode($filler),
-            ];
-        } catch (\Exception $e) {
-            /*  Mark DropRecipient as Sent  */
-            if ($drop->system_id == 2) {
-                \DB::table('deployment_recipients')
-                    ->where('deployment_id', $drop->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->update(['failed_at' => Carbon::now()]);
-            } else {
-                \DB::table('campaign_schedule_lists')
-                    ->where('campaign_schedule_id', $drop->id)
-                    ->where('recipient_id', $recipient->id)
-                    ->update(['failed_at' => Carbon::now()]);
-            }
-            \Log::error("There was an error sending SMS to recipient #{$recipient->id}: " . $e->getMessage());
+            $this->processor->processRecipient($drop, $recipient);
+        }
+        catch (\Throwable $e) {
+            return ['success' => 0, 'There was a problem sending the sms message'];
         }
 
-        return ['success' => 0, 'There was a problem sending the sms message'];
+        return [
+            'success' => 1,
+            'message' => 'This recipient has been sent a customized copy of the sms message',
+            'debug' => [
+                'status' => $drop->status,
+                'completed_at' => now('UTC'),
+                'percentage_complete' => $drop->percentage_complete,
+            ],
+        ];
     }
 
     public function createNew(Campaign $campaign, Request $request)
@@ -453,13 +372,12 @@ class DeploymentController extends Controller
     }
 
 
-    public function start(Campaign $campaign, Drop $deployment)
+    public function start(Drop $deployment)
     {
         try {
-            $deployment->status = "Processing";
-            $deployment->started_at = Carbon::now('UTC');
-            $deployment->save();
-        } catch (\Exception $e) {
+            $this->processor->launch($deployment);
+        }
+        catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => $e->getMessage()

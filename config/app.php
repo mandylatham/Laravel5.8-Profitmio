@@ -174,6 +174,8 @@ return [
         Pion\Laravel\ChunkUpload\Providers\ChunkUploadServiceProvider::class,
         Aws\Laravel\AwsServiceProvider::class,
 
+        ProfitMiner\Base\Providers\MediaServiceProvider::class,
+        ProfitMiner\Base\Providers\DropServiceProvider::class,
     ],
 
     /*

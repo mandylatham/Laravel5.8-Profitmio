@@ -6,60 +6,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Events\CampaignCountsUpdated;
 use App\Events\RecipientLabelAdded;
-use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Sofa\Eloquence\Eloquence;
 
-class Recipient extends Model
+class Recipient extends \ProfitMiner\Base\Models\Recipient
 {
     use SoftDeletes, Eloquence;
-
-    protected $table = 'recipients';
-
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'archived_at',
-    ];
-
-    protected $fillable = [
-        'first_name',
-        'last_name',
-        'email',
-        'phone',
-        'address1',
-        'city',
-        'state',
-        'zip',
-        'year',
-        'make',
-        'model',
-        'campaign_id',
-        'interested',
-        'not_interested',
-        'service',
-        'wrong_number',
-        'car_sold',
-        'heat',
-        'appointment',
-        'notes',
-        'last_responded_at',
-        'carrier',
-        'subgroup',
-        'from_dealer_db',
-        'callback',
-        'sent_to_crm',
-    ];
-
-    protected $appends = [
-        'name',
-        'vehicle',
-        'location',
-        'labels',
-    ];
 
     protected $searchable = ['first_name', 'last_name'];
 
@@ -117,76 +69,6 @@ class Recipient extends Model
             ->whereNotNull('deployment_recipients.sent_at')
             ->first();
         return $dropped ? $dropped->sent_at : null;
-    }
-
-    /**
-     * Accessors
-     */
-    public function getVehicleAttribute()
-    {
-        return trim(implode(' ', [$this->year, $this->make, $this->model]));
-    }
-
-    public function getNameAttribute()
-    {
-        return $this->first_name . ' ' . $this->last_name;
-    }
-
-    public function getLocationAttribute()
-    {
-        $location = [];
-        if (!empty($this->city)) {
-            $location[] = $this->city;
-        }
-        if (!empty($this->state)) {
-            $location[] = $this->state;
-        }
-
-        return implode(', ', $location);
-    }
-
-    public function getLabelsAttribute()
-    {
-        $labels = [];
-
-        if ((bool)$this->interested) {
-            $labels['interested'] = 'Interested';
-        }
-
-        if ((bool)$this->not_interested) {
-            $labels['not_interested'] = 'Not Interested';
-        }
-
-        if ((bool)$this->callback) {
-            $labels['callback'] = 'Callback';
-        }
-
-        if ((bool)$this->appointment) {
-            $labels['appointment'] = 'Appointment';
-        }
-
-        if ((bool)$this->service) {
-            $labels['service'] = 'Service Dept';
-        }
-
-        if ((bool)$this->heat) {
-            $labels['heat'] = 'Heat Case';
-        }
-
-        if ((bool)$this->car_sold) {
-            $labels['car_sold'] = 'Car Sold';
-        }
-
-        if ((bool)$this->wrong_number) {
-            $labels['wrong_number'] = 'Wrong Number';
-        }
-
-        return (object)$labels;
-    }
-
-    public function getEmailAttribute()
-    {
-        return strtolower($this->attributes['email']);
     }
 
     public static function searchByRequest(Request $request, RecipientList $recipientList)

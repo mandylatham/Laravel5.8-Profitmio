@@ -2,20 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class EmailLog extends Model
+class EmailLog extends \ProfitMiner\Base\Models\EmailLog
 {
-    protected $table = 'email_logs';
-
-    protected $fillable = [
-        'message_id',
-        'code',
-        'campaign_id',
-        'recipient_id',
-        'event',
-        'recipient'
-    ];
-
 
 }

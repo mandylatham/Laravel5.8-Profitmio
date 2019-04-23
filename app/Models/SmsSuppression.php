@@ -2,11 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
-
-class SmsSuppression extends Model
+class SmsSuppression extends \ProfitMiner\Base\Models\SmsSuppression
 {
-    protected $table = 'sms_suppressions';
 
-	protected $fillable = ['phone'];
 }

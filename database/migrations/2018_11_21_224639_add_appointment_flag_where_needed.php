@@ -1,8 +1,5 @@
 <?php
 
-use App\Models\Recipient;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
 class AddAppointmentFlagWhereNeeded extends Migration
@@ -14,7 +11,15 @@ class AddAppointmentFlagWhereNeeded extends Migration
      */
     public function up()
     {
-        Recipient::with('appointments')->has('appointments')->update(['appointment' => true]);
+        \DB::query()
+            ->from('recipients')
+            ->whereIn('id', function ($query)
+            {
+                $query->select(['recipient_id'])
+                    ->from('appointments')
+                    ->groupBy('recipient_id');
+            })
+            ->update(['appointment' => true]);
     }
 
     /**
