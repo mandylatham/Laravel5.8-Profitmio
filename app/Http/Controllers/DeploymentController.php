@@ -35,14 +35,20 @@ class DeploymentController extends Controller
         }
 
         $unsent = \DB::table('deployment_recipients')
-                ->where('deployment_id', $drop->id)
-                ->where('recipient_id', $recipient->id)
-                ->whereNotNull('sent_at')
-                ->get();
+				->whereDeploymentId($drop->id)
+                ->whereRecipientId($recipient->id)
+				->whereNotNull('sent_at')
+				->whereNotNull('failed_at')
+                ->count();
 
-        if ($unsent->count() > 0) {
+		$cleanPhone = str_replace($recipient->phone, '+1', '');
+		$alreadyResponded = $campaign->recipients()->whereRaw("right(phone,10) = right(?,10)", [$cleanPhone])->whereNotNull('last_responded_at')->count();
+		// $alreadyResponded = false;
+
+        if ($alreadyResponded || $unsent->count()) {
             return ['success' => 1, 'message' => 'This recipient has already been sent an sms message'];
         }
+
 
         $loader = new \Twig_Loader_Array([
             'text_message' => $drop->text_message,
