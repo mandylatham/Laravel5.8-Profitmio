@@ -45,7 +45,7 @@ class DeploymentController extends Controller
 		$alreadyResponded = $campaign->recipients()->whereRaw("right(phone,10) = right(?,10)", [$cleanPhone])->whereNotNull('last_responded_at')->count();
 		// $alreadyResponded = false;
 
-        if ($alreadyResponded || $unsent->count()) {
+        if ($alreadyResponded || $unsent) {
             return ['success' => 1, 'message' => 'This recipient has already been sent an sms message'];
         }
 
