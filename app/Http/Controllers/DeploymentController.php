@@ -41,13 +41,20 @@ class DeploymentController extends Controller
 				->whereNotNull('failed_at')
                 ->count();
 
-		$cleanPhone = str_replace($recipient->phone, '+1', '');
-		$alreadyResponded = $campaign->recipients()->whereRaw("right(phone,10) = right(?,10)", [$cleanPhone])->whereNotNull('last_responded_at')->count();
+		$alreadyResponded = $campaign->recipients()->whereRaw("right(phone,10) = right(?,10)", [$recipient->phone])->whereNotNull('last_responded_at')->count();
 		// $alreadyResponded = false;
 
-        if ($alreadyResponded || $unsent) {
+        if ($unsent) {
             return ['success' => 1, 'message' => 'This recipient has already been sent an sms message'];
         }
+		if ($alreadyResponded > 0) {
+			\DB::table('deployment_recipients')
+				->where('deployment_id', $drop->id)
+				->where('recipient_id', $recipient->id)
+				->update(['failed_at' => Carbon::now()]);
+			return ['success' => 1, 'message' => 'This recipient has already responded'];
+		}
+
 
 
         $loader = new \Twig_Loader_Array([
