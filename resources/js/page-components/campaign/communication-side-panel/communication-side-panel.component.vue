@@ -26,7 +26,7 @@
                     </div>
                     <div class="phone" v-if="recipient.phone && recipient.phone.length > 0">
                         <i class="fas fa-phone mr-2"></i>
-                        {{ recipient.phone }}
+                        <a :href="this.phone_link">{{ recipient.phone }}</a>
                     </div>
                 </div>
                 <div class="col-4">
@@ -297,6 +297,11 @@
             DatePicker
         },
         computed: {
+            phone_link: function () {
+                return "tel://" + this.recipient.phone
+                    .replace(/[ext\.|ext|x]/,",,")
+                    .replace(/\s/,"");
+            },
             labelDropdownOptions: function () {
                 return pickBy(this.labelDropdownItems, (label, index) => {
                     return !this.labels[index];
