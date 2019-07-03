@@ -287,7 +287,7 @@ class DeploymentController extends Controller
         ]);
     }
 
-    public function update(Campaign $campaign, CampaignSchedule $drop, DeploymentRequest $request)
+    public function update(Campaign $campaign, Drop $drop, DeploymentRequest $request)
     {
         $date = new Carbon($request->send_at_date);
         $time = new Carbon($request->send_at_time);
@@ -336,7 +336,7 @@ class DeploymentController extends Controller
         ]);
     }
 
-    public function resume(CampaignSchedule $deployment)
+    public function resume(Drop $deployment)
     {
         try {
             $deployment->status = "Pending";
@@ -354,7 +354,7 @@ class DeploymentController extends Controller
         ]);
     }
 
-    public function pause(CampaignSchedule $deployment)
+    public function pause(Drop $deployment)
     {
         try {
             $deployment->status = "Paused";
@@ -424,7 +424,7 @@ class DeploymentController extends Controller
 
             $deployment['send_at'] = (new Carbon($request->get('Group' . $i . '_date') . ' ' . $request->get('Group' . $i . '_time'), \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
 
-            $deployment = new CampaignSchedule($deployment);
+            $deployment = new Drop($deployment);
 
             $deployment->save();
 
