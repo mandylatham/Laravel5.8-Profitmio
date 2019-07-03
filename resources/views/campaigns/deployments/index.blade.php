@@ -68,8 +68,8 @@
                             </div>
                             <div class="drop-info--date">
                                 <span class="pm-font-date-icon mr-3"></span>
-                                <span v-if="drop.type !== 'mailer'">@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : $options.filters.amDateTimeFormat(drop.send_at, 'YYYY-MM-DD @ h:mm A')) }}</span>
-                                <span v-if="drop.type === 'mailer'">@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : $options.filters.amDateTimeFormat(drop.send_at, 'YYYY-MM-DD')) }}</span>
+                                <span v-if="drop.type !== 'mailer'">@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : drop.send_at_formatted) }}</span>
+                                <span v-if="drop.type === 'mailer'">@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : drop.send_at_formatted) }}</span>
                             </div>
                         </div>
                         <div class="col-12 col-md-3 drop-status text-center">
