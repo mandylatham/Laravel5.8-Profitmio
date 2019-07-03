@@ -161,7 +161,6 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        App\Providers\DuskServiceProvider::class,
         App\Providers\SentimentServiceProvider::class,
         App\Providers\TwilioClientProvider::class,
         App\Providers\ImpersonateServiceProvider::class,
