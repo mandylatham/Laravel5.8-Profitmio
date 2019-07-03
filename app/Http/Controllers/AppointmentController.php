@@ -133,15 +133,16 @@ class AppointmentController extends Controller
 
         $phone_number = TwilioClient::getFormattedPhoneNumber($request->json()->get('phone_number'));
         if ($phone_number) {
-            $phone_number = $phone_number->phoneNumber;
+            $phone_number = str_replace('+1', '', $phone_number->phoneNumber);
         }
         $alt_phone_number = TwilioClient::getFormattedPhoneNumber($request->json()->get('alt_phone_number'));
         if ($alt_phone_number) {
-            $alt_phone_number = $alt_phone_number->phoneNumber;
+            $alt_phone_number = str_replace('+1', '', $alt_phone_number->phoneNumber);
         }
+        $request_phone_number = str_replace('+1', '', $request->json()->get('phone_number'));
 
         $recipient = $this->recipient->where('campaign_id', $campaign->id)
-            ->where('phone', $phone_number ?: $request->json()->get('phone_number'))
+            ->whereRaw("replace(phone, '+1', '') = ?", [$phone_number ?: $request_phone_number])
             ->first();
 
         if (!$recipient) {
