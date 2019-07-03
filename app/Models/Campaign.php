@@ -22,6 +22,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         'email_responses_count',
         'call_sources_in_use',
         'appointment_counts',
+        'interested_counts',
     ];
 
     protected $casts = [
@@ -293,5 +294,12 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         return $this->appointments()
             ->whereNotNull('appointments.appointment_at')
             ->count();
+    }
+
+    public function getInterestedCountsAttribute()
+    {
+        return $this->recipients()
+                    ->whereInterested(true)
+                    ->count();
     }
 }
