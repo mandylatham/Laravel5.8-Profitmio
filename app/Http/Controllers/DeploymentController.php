@@ -13,6 +13,7 @@ use ProfitMiner\Base\Services\Drops\Processors\SMSDropProcessor;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Campaign;
+use App\Models\Company;
 use App\Models\CampaignSchedule;
 use Illuminate\Support\Facades\Log;
 use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
@@ -398,6 +399,7 @@ class DeploymentController extends Controller
      */
     protected function createBulkDeployments(Campaign $campaign, BulkDeploymentRequest $request)
     {
+        $userTimezone = auth()->user()->getTimezone(Company::findOrFail(get_active_company()));
         $base = [
             'campaign_id' => $campaign->id,
             'type' => $request->type,
@@ -420,7 +422,11 @@ class DeploymentController extends Controller
         for ($i = 0; $i < $x; $i++) {
             $deployment = $base;
 
-            $deployment['send_at'] = (new Carbon($request->get('Group' . $i . '_date') . ' ' . $request->get('Group' . $i . '_time'), \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
+            $deployment['send_at'] = (new Carbon(
+                    $request->get('Group' . $i . '_date') . ' ' . $request->get('Group' . $i . '_time'), 
+                    $userTimezone))
+                ->timezone('UTC');
+            \Log::debug("time is ".$request->get('Group' . $i . '_time') . " and send at is ". $deployment['send_at']);
 
             $deployment = new Drop($deployment);
 
