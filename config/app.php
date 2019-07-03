@@ -161,7 +161,7 @@ return [
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        // App\Providers\DuskServiceProvider::class,
+        App\Providers\SentimentServiceProvider::class,
         App\Providers\TwilioClientProvider::class,
         App\Providers\ImpersonateServiceProvider::class,
         App\Providers\PhoneVerificationServiceProvider::class,
@@ -171,7 +171,10 @@ return [
         Intervention\Image\ImageServiceProvider::class,
         Spatie\Activitylog\ActivitylogServiceProvider::class,
         Pion\Laravel\ChunkUpload\Providers\ChunkUploadServiceProvider::class,
+        Aws\Laravel\AwsServiceProvider::class,
 
+        ProfitMiner\Base\Providers\MediaServiceProvider::class,
+        ProfitMiner\Base\Providers\DropServiceProvider::class,
     ],
 
     /*
@@ -190,6 +193,7 @@ return [
         'App' => Illuminate\Support\Facades\App::class,
         'Artisan' => Illuminate\Support\Facades\Artisan::class,
         'Auth' => Illuminate\Support\Facades\Auth::class,
+        'AWS' => Aws\Laravel\AwsFacade::class,
         'Blade' => Illuminate\Support\Facades\Blade::class,
         'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
         'Bus' => Illuminate\Support\Facades\Bus::class,

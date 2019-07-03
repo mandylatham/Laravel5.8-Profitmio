@@ -2,22 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Campaign;
+use App\Models\EmailLog;
+use App\Models\Response;
+use App\Models\Recipient;
+use App\Models\PhoneNumber;
+use Illuminate\Http\Request;
+use App\Services\TwilioClient;
 use App\Classes\MailgunService;
+use Illuminate\Support\Facades\DB;
+use App\Services\SentimentService;
+use Illuminate\Support\Facades\Log;
 use App\Events\CampaignCountsUpdated;
+use App\Services\PusherBroadcastingService;
 use App\Events\RecipientTextResponseReceived;
 use App\Events\RecipientEmailResponseReceived;
 use App\Events\RecipientPhoneResponseReceived;
-use App\Models\Campaign;
-use App\Models\EmailLog;
-use App\Models\PhoneNumber;
-use App\Models\Recipient;
-use App\Models\Response;
-use App\Services\PusherBroadcastingService;
-use App\Services\TwilioClient;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ResponseConsoleController extends Controller
 {
@@ -27,13 +28,19 @@ class ResponseConsoleController extends Controller
     protected $mailgun;
 
     /**
+     * @var App\Services\SentimentService
+     */
+    protected $sentiment;
+
+    /**
      * ResponseConsoleController constructor.
      * @param MailgunService $mailgun
      */
-    public function __construct(MailgunService $mailgun)
+    public function __construct(MailgunService $mailgun, SentimentService $sentiment)
     {
         $this->mailgun = $mailgun;
         $this->pages = 15;
+        $this->sentiment = $sentiment;
     }
 
     /**
@@ -444,6 +451,8 @@ class ResponseConsoleController extends Controller
         $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
         $recipient->save();
 
+        $this->sentiment->forResponse($response);
+
         event(new RecipientEmailResponseReceived($campaign, $recipient, $response));
         event(new CampaignCountsUpdated($campaign));
 
@@ -509,6 +518,7 @@ class ResponseConsoleController extends Controller
         ]);
         $response->save();
         $response->load('impersonation.impersonator');
+        $this->sentiment->forResponse($response);
 
         # Log the transaction
         $log = new EmailLog([
@@ -557,6 +567,7 @@ class ResponseConsoleController extends Controller
             'recording_sid' => 0,
         ]);
         $response->load('impersonation.impersonator');
+        $this->sentiment->forResponse($response);
 
         return response()->json(['response' => $response]);
     }
@@ -687,6 +698,8 @@ class ResponseConsoleController extends Controller
 
             $response->recipient_id = $recipient->id;
             $response->save();
+
+            $this->sentiment->forResponse($response);
 
             event(new RecipientTextResponseReceived($response));
             event(new CampaignCountsUpdated($campaign));

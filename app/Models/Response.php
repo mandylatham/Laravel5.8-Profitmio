@@ -46,6 +46,11 @@ class Response extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function sentiment()
+    {
+        return $this->hasOne(Sentiment::class);
+    }
+
     public function scopeInboundEmail($query)
     {
         return $query->where('type', 'email')->where('incoming', 1);

@@ -222,7 +222,7 @@
                 this.fileForm
                     .post(window.saveRecipientsUrl)
                     .then(() => {
-                        this.$emit('recipient-list-uploaded');
+                        window.location.replace(window.recipientsIndexUrl);
                     }, e => {
                         window.PmEvent.fire('errors.api', "Unable to process your request");
                         this.loading = false;

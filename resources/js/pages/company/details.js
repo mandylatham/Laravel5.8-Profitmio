@@ -98,16 +98,21 @@ window['app'] = new Vue({
         }),
         updateForm: new Form({
             name: '',
+            country: null,
             address: '',
             address2: '',
             city: '',
             state: '',
             zip: '',
+            phone: '',
+            url: '',
+            facebook: '',
+            twitter: ''
         }),
         updateUrl: '',
         users: [],
         usersForCampaignAccess: [],
-        companyFormFields: ['name', 'address', 'address2', 'city', 'state', 'zip'],
+        companyFormFields: ['name', 'country', 'address', 'address2', 'city', 'state', 'zip', 'phone', 'url', 'facebook', 'twitter'],
         showCompanyFormControls: false,
         loadingCampaigns: false,
         targetUrl: window.updateCompanyImageUrl,
@@ -208,7 +213,9 @@ window['app'] = new Vue({
         updateFields: function () {
             // update the form
             this.companyFormFields.forEach((field) => {
-                this.updateForm[field] = JSON.parse(JSON.stringify(this.modifiedCompany[field]));
+                if (this.modifiedCompany[field]) {
+                    this.updateForm[field] = JSON.parse(JSON.stringify(this.modifiedCompany[field]));
+                }
             });
         },
         resetFields: function () {
@@ -265,6 +272,7 @@ window['app'] = new Vue({
             this.showCompanyFormControls = false;
         },
         update: function () {
+            console.log('this.updateForm', this.updateForm);
             this.updateForm.put(updateUrl)
                 .then(response => {
                     this.showCompanyFormControls = false;

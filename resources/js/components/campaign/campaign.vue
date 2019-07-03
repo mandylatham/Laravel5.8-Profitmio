@@ -49,8 +49,8 @@
         </div>
         <div class="col-6 col-md-3 campaign-links" v-else>
             <div class="campaign-apointment-totals">
-                <i class="far fa-calendar-check"></i>
-                <div class="total"><div class="m-0 p-0">{{ campaign.appointment_counts }}</div><div class="label">Appointments</div></div>
+                <i class="far fa-thumbs-up"></i>
+                <div class="total"><div class="m-0 p-0">{{ campaign.interested_counts }}</div><div class="label">Interested</div></div>
             </div>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})" class="btn btn-console-outline pm-btn-outline-purple">
                 <span class="fa fa-terminal"></span> Console
@@ -108,6 +108,7 @@
 
     export default {
         components: {
+            'b-popover': require('bootstrap-vue/src/components/popover/popover').default,
             'status': require('./../status/status').default,
         },
         props: {

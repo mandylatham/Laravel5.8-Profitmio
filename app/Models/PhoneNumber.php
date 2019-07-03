@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class PhoneNumber extends Model
+class PhoneNumber extends \ProfitMiner\Base\Models\PhoneNumber
 {
     use SoftDeletes;
 
@@ -14,12 +13,6 @@ class PhoneNumber extends Model
         'mailer' => 'Mailer', 
         'sms' => 'SMS', 
         'text_in' => 'Text-In'
-    ];
-
-    protected $table = 'phone_numbers';
-
-    public $fillable = [
-        'client_id', 'campaign_id', 'phone_number', 'forward', 'sid', 'region', 'state', 'zip', 'call_source_name'
     ];
 
     public function campaign()

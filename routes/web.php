@@ -4,6 +4,10 @@ Route::impersonate();
 
 use Illuminate\Support\Facades\Route;
 
+// AWS heartbeat
+Route::get('/heartbeat', function () {
+    return response()->json('ok', 200);
+});
 //region OUTSIDE API CALLS
 Route::any('/text-in/', 'TextInController@createFromSms')->name('pub-api.text-in')->middleware(null);
 Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->name('pub-api.text-response-inbound')->middleware(null);
@@ -181,7 +185,11 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/drop/{drop}', 'DeploymentController@show')->name('campaigns.drops.details');
             Route::delete('/drop/{drop}', 'DeploymentController@delete')->name('campaigns.drops.delete');
             Route::post('/drop/{drop}/update', 'DeploymentController@update')->name('campaigns.drops.update');
+            Route::post('/drop/{drop}/update-image', 'DeploymentController@updateImage')->name('campaigns.drops.update-image');
             Route::get('/drops/new', 'DeploymentController@createNew')->name('campaigns.drops.create');
+            // Deployment group
+            Route::get('/mailer/new', 'DeploymentController@createNewMailer')->name('campaigns.mailer.create');
+            Route::post('/mailer', 'DeploymentController@storeMailer')->name('campaigns.drops.store-mailer');
             Route::post('/drops', 'DeploymentController@create')->name('campaigns.drops.store');
             Route::post('/drops/add-groups', 'DeploymentController@saveGroups')->name('campaigns.drops.add-groups');
             Route::post('/drop/{drop}/send-sms/{recipient}', 'DeploymentController@deploySms')->name('campaigns.drops.send-sms');

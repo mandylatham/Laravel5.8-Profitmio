@@ -3,47 +3,15 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Sofa\Eloquence\Eloquence;
 use Spatie\Activitylog\Traits\LogsActivity;
 
-class Campaign extends Model
+class Campaign extends \ProfitMiner\Base\Models\Campaign
 {
     use LogsActivity, Eloquence;
 
     protected $searchableColumns = ['id', 'name', 'order_id'];
-
-    protected $fillable = [
-        'agency_id',
-        'dealership_id',
-        'name',
-        'status',
-        'order_id',
-        'starts_at',
-        'ends_at',
-        'adf_crm_export',
-        'adf_crm_export_email',
-        'lead_alerts',
-        'lead_alert_email',
-        'client_passthrough',
-        'client_passthrough_email',
-        'service_dept',
-        'service_dept_email',
-        'phone_number_id',
-        'expires_at',
-        'sms_on_callback',
-        'sms_on_callback_number',
-    ];
-
-    protected $dates = [
-        'created_at',
-        'updated_at',
-        'deleted_at',
-        'starts_at',
-        'ends_at',
-        'expires_at',
-    ];
 
     protected static $logAttributes = ['id', 'agency_id', 'dealership_id', 'name'];
 
@@ -54,6 +22,7 @@ class Campaign extends Model
         'email_responses_count',
         'call_sources_in_use',
         'appointment_counts',
+        'interested_counts',
     ];
 
     protected $casts = [
@@ -287,19 +256,9 @@ class Campaign extends Model
         return $this->hasMany(Mailer::class, 'campaign_id', 'id');
     }
 
-    public function isExpired()
-    {
-        return $this->expires_at && $this->expires_at <= Carbon::now('UTC');
-    }
-
     public function schedules()
     {
         return $this->hasMany(CampaignSchedule::class, 'campaign_id', 'id');
-    }
-
-    public function getIsExpiredAttribute()
-    {
-        return $this->expires_at && $this->expires_at <= Carbon::now('UTC');
     }
 
     public function getTextResponsesCountAttribute()
@@ -315,11 +274,6 @@ class Campaign extends Model
     public function getPhoneResponsesCountAttribute()
     {
         return $this->phoneResponses()->count() ;
-    }
-
-    public function getIsNotExpiredAttribute()
-    {
-        return $this->expires_at && !$this->isExpired;
     }
 
     public function getSmsPhoneAttribute()
@@ -340,5 +294,12 @@ class Campaign extends Model
         return $this->appointments()
             ->whereNotNull('appointments.appointment_at')
             ->count();
+    }
+
+    public function getInterestedCountsAttribute()
+    {
+        return $this->recipients()
+                    ->whereInterested(true)
+                    ->count();
     }
 }

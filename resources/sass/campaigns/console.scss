@@ -9,6 +9,11 @@
     margin-left: -15px;
 }
 
+.collapsed > .opened,
+:not(.collapsed) > .closed {
+    display: none;
+}
+
 #sidebar-nav-content {
     padding: 3rem 2rem;
 

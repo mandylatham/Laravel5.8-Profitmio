@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Spatie\Activitylog\Traits\LogsActivity;
 use Sofa\Eloquence\Eloquence;
@@ -10,31 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class Company extends Model implements HasMedia
+class Company extends \ProfitMiner\Base\Models\Company implements HasMedia
 {
     use LogsActivity, Eloquence, SoftDeletes, HasMediaTrait;
 
-    const TYPE_SUPPORT = 'support';
-    const TYPE_AGENCY = 'agency';
-    const TYPE_DEALERSHIP = 'dealership';
-
     protected $searchableColumns = ['name', 'type', 'phone', 'id', 'address'];
-
-    protected $fillable = [
-        'name',
-        'type',
-        'phone',
-        'address',
-        'address2',
-        'city',
-        'state',
-        'zip',
-        'country',
-        'url',
-        'facebook',
-        'twitter',
-        'image_url',
-    ];
 
     protected $appends = ['image'];
 
@@ -47,7 +26,7 @@ class Company extends Model implements HasMedia
 
     public function getImageAttribute()
     {
-        $image = $this->getMedia('company-image')->last();
+        $image = $this->getMedia('company-photo')->last();
         if ($image) {
             return $image->getFullUrl();
         }
@@ -83,21 +62,6 @@ class Company extends Model implements HasMedia
     public static function getDealerships()
     {
         return self::where('type', self::TYPE_DEALERSHIP)->whereNull('deleted_at')->select(['id', 'name'])->get();
-    }
-
-    public function isAgency()
-    {
-        return $this->type === self::TYPE_AGENCY;
-    }
-
-    public function isDealership()
-    {
-        return $this->type === self::TYPE_DEALERSHIP;
-    }
-
-    public function isSupport()
-    {
-        return $this->type === self::TYPE_SUPPORT;
     }
 
     public function isUserProfileReady($userId)

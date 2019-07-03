@@ -2,33 +2,22 @@
 
 namespace App\Models;
 
+use Storage;
+use Spatie\MediaLibrary\Models\Media;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Http\Request;
+use Spatie\MediaLibrary\HasMedia\HasMedia;
+use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class Drop extends Model
+class Drop extends \ProfitMiner\Base\Models\Drop implements HasMedia
 {
-    use SoftDeletes;
-
-    protected $table = 'campaign_schedules';
+    use SoftDeletes, HasMediaTrait;
 
     protected $searchablecolumns = ['send_at', 'started_at', 'status'];
 
-    public $dates = [
-        'send_at', 'created_at', 'started_at', 'updated_at', 'deleted_at', 'completed_at',
-    ];
-
-    public $fillable = [
-        'type', 'send_at', 'email_subject', 'email_text', 'email_html', 'recipient_group',
-        'text_message', 'text_message_image', 'send_vehicle_image', 'campaign_id', 'status',
-        'percentage_complete', 'completed_at', 'system_id', 'started_at', 'completed_at',
-    ];
-
-    protected $primaryKey = 'id';
-
     protected $appends = [
-        'sms_phones', 'send_at_formatted', 'completed_at_formatted',
+        'image_url', 'sms_phones', 'send_at_formatted', 'completed_at_formatted',
     ];
 
     public function getSmsPhonesAttribute()
@@ -41,14 +30,24 @@ class Drop extends Model
         return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
     }
 
-//    public function recipients()
-//    {
-//        return $this->hasMany(Recipient::class, 'campaign_id', 'campaign_id');
-//    }
-
+    /**
+     * Recipients relationship
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function recipients()
     {
-        return $this->belongsToMany(Recipient::class, 'deployment_recipients', 'deployment_id', 'recipient_id');
+        return $this->belongsToMany(Recipient::class, 'deployment_recipients', 'deployment_id', 'recipient_id')
+            ->using(DropRecipient::class)
+            ->withPivot('sent_at', 'failed_at');
+    }
+
+    public function registerMediaConversions(Media $media = null)
+    {
+        $this->addMediaConversion('thumb')
+            ->width(720)
+            ->keepOriginalImageFormat()
+            ->nonQueued();
     }
 
     public function scopeInGroup($query, $group_id)
@@ -93,6 +92,10 @@ class Drop extends Model
             $query->filterByQuery($request->input('q'));
         }
 
+        if ($request->filled('type')) {
+            $query->where('type', $request->input('type'));
+        }
+
         return $query;
     }
 
@@ -111,12 +114,24 @@ class Drop extends Model
         return isset($this->completed_at) ? $this->completed_at->timezone($this->getUserTimezone())->format("m/d/Y @ g:i A") : '';
     }
 
+    public function getImageUrlAttribute()
+    {
+//        return $this->getMedia('image')->last()->getPath('thumb');
+        if ($this->type === 'mailer' && $image = $this->getMedia('image')->last()) {
+            return Storage::disk($image->disk)->url($image->id.'/conversions/'.$image->name.'-thumb.'.$image->getExtensionAttribute());
+        } else {
+            return '';
+        }
+    }
+
     private function getUserTimezone()
     {
-        if (auth()->user() && $company = auth()->user()->getActiveCompany()) {
+        if (auth()->user() && $company = get_active_company()) {
+            \Log::debug("user timezone found");
             return auth()->user()->getTimezone($company);
         }
 
+        \Log::debug("user timezone not found");
         return null;
     }
 }

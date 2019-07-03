@@ -296,7 +296,15 @@ window['app'] = new Vue({
                 .then((request) => {
                     this.loadingPurchaseNumber = false;
                     delete this.availableCallSources[this.purchasePhoneNumberForm.call_source_name];
-                    this.purchasePhoneNumberForm.reset();
+
+                    // Reset form data with a new form instance
+                    this.purchasePhoneNumberForm = new Form({
+                        call_source_name: '',
+                        campaign_id: window.campaign.id,
+                        forward: '',
+                        phone_number: null,
+                    });
+
                     this.showAvailablePhoneNumbers = false;
                     this.getCampaignPhones();
                     this.closeModal('addPhoneModalRef');
@@ -351,7 +359,10 @@ window['app'] = new Vue({
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 }, (error) => {
-                    window.PmEvent.fire('errors.api', 'Unable to get phone numbers.');
+                    if (error.response.status !== 422) {
+                        window.PmEvent.fire('errors.api', 'Unable to get phone numbers.');
+                    }
+
                     this.showAvailablePhoneNumbers = true;
                     this.loadingPhoneModal = false;
                 });

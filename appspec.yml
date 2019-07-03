@@ -1,0 +1,10 @@
+version: 0.0
+os: linux
+files:
+  - source: /
+    destination: /home/forge/migration-test.profitminer.io/
+hooks:
+  BeforeInstall:
+    - location: .aws/codedeploy/scripts/beforeInstall.sh
+  AfterInstall:
+    - location: .aws/codedeploy/scripts/afterInstall.sh

@@ -26,7 +26,7 @@
                     </div>
                     <div class="phone" v-if="recipient.phone && recipient.phone.length > 0">
                         <i class="fas fa-phone mr-2"></i>
-                        {{ recipient.phone }}
+                        <a :href="this.phone_link">{{ recipient.phone }}</a>
                     </div>
                 </div>
                 <div class="col-4">
@@ -209,10 +209,19 @@
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
+
                 <div class="message-drop-text" v-if="threads.emailDrop && threads.emailDrop.email_html">
-                    <strong class="mb-3">Original Message</strong>
-                    <div v-html="threads.emailDrop.email_html"></div>
+                    <div class="cursor-pointer" v-b-toggle.emailTemplateCollapse>
+                        <strong class="mb-3">Original Message</strong>&nbsp;
+                        <i class="fa fa-angle-down closed"></i>
+                        <i class="fa fa-angle-up opened"></i>
+                    </div>
+
+                    <b-collapse id="emailTemplateCollapse" class="mt-2">
+                        <div v-html="threads.emailDrop.email_html"></div>
+                    </b-collapse>
                 </div>
+
                 <div class="panel-body">
                     <div class="email-message-container">
                         <div v-for="msg in threads.email">
@@ -288,6 +297,11 @@
             DatePicker
         },
         computed: {
+            phone_link: function () {
+                return "tel://" + this.recipient.phone
+                    .replace(/[ext\.|ext|x]/,",,")
+                    .replace(/\s/,"");
+            },
             labelDropdownOptions: function () {
                 return pickBy(this.labelDropdownItems, (label, index) => {
                     return !this.labels[index];

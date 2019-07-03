@@ -22,12 +22,25 @@
         <div class="row align-items-end no-gutters">
             <div class="col-12 col-sm-5 col-lg-4 mb-3">
                 @if (auth()->user()->isAdmin())
-                <a dusk="new-drop-button" class="btn pm-btn pm-btn-blue" href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id]) }}">
-                    <i class="fas fa-plus mr-2"></i> NEW
-                </a>
+                <b-dropdown toggle-class="pm-btn pm-btn-purple">
+                    <template slot="button-content">
+                        <i class="fas fa-plus mr-2"></i> NEW
+                    </template>
+                    <b-dropdown-item href="{{ route('campaigns.mailer.create', ['campaign' => $campaign->id]) }}"><i class="fas fa-mail-bulk mr-2"></i>Mailer</b-dropdown-item>
+                    <b-dropdown-item href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id, 'type' => 'mail']) }}"><i class="fa fa-envelope mr-2"></i> Mail</b-dropdown-item>
+                    <b-dropdown-item href="{{ route('campaigns.drops.create', ['campaign' => $campaign->id, 'type' => 'sms']) }}"><i class="fa fa-comment mr-2"></i>SMS</b-dropdown-item>
+                </b-dropdown>
                 @endif
             </div>
-            <div class="col-none col-sm-2 col-lg-4"></div>
+        </div>
+        <div class="row align-items-end no-gutters">
+            <div class="col-12 col-sm-5 col-lg-3 mb-3">
+                <div class="form-group filter--form-group">
+                    <label>Filter By Type</label>
+                    <v-select :options="types" v-model="typeSelected" class="filter--v-select" @input="fetchData"></v-select>
+                </div>
+            </div>
+            <div class="col-none col-sm-2 col-lg-5"></div>
             <div class="col-12 col-sm-5 col-lg-4 mb-3">
                 <input type="text" v-model="searchDropForm.q" class="form-control filter--search-box" aria-describedby="search"
                        placeholder="Search" @keyup.enter="fetchData">
@@ -45,18 +58,18 @@
                     <div class="row no-gutters">
                         <div class="col-12 col-md-4 drop-info">
                             <div class="drop-info--type">
-                                <span v-if="drop.type === 'email'">
-                                    <i class="fa fa-envelope mr-2"></i>
-                                    @{{ drop.id }}
+                                <span>
+                                    <i class="fa fa-envelope mr-2" v-if="drop.type === 'email'"></i>
+                                    <i class="fa fa-comment mr-2" v-else-if="drop.type === 'sms'"></i>
+                                    <i class="fas fa-mail-bulk mr-2" v-else-if="drop.type === 'mailer'"></i>
+                                    <i class="pm-font-templates-icon mr-2" v-else></i>
+                                    ID: @{{ drop.id }}
                                 </span>
-                                <span v-else-if="drop.type === 'sms'">
-                                    <i class="fa fa-comment mr-2"></i>
-                                    @{{ drop.id }}
-                                </span>
-                                <span class="pm-font-templates-icon" v-else></span>
                             </div>
                             <div class="drop-info--date">
-                                <span class="pm-font-date-icon mr-3"></span>@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : $options.filters.amDateTimeFormat(drop.send_at, 'YYYY-MM-DD @ h:mm A')) }}
+                                <span class="pm-font-date-icon mr-3"></span>
+                                <span v-if="drop.type !== 'mailer'">@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : drop.send_at_formatted) }}</span>
+                                <span v-if="drop.type === 'mailer'">@{{ (drop.status === 'Completed' ? drop.completed_at_formatted : drop.send_at_formatted) }}</span>
                             </div>
                         </div>
                         <div class="col-12 col-md-3 drop-status text-center">

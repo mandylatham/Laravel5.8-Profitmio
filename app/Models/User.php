@@ -16,7 +16,7 @@ use Spatie\Activitylog\Traits\LogsActivity;
 use Spatie\MediaLibrary\HasMedia\HasMedia;
 use Spatie\MediaLibrary\HasMedia\HasMediaTrait;
 
-class User extends Authenticatable implements HasMedia, CanResetPassword
+class User extends \ProfitMiner\Base\Models\User implements HasMedia, CanResetPassword
 {
     use Notifiable, Impersonate, LogsActivity, Eloquence, HasMediaTrait, CanResetPasswordTrait;
 
@@ -24,39 +24,7 @@ class User extends Authenticatable implements HasMedia, CanResetPassword
 
     protected static $logAttributes = ['id', 'name', 'is_admin', 'email', 'campaigns', 'companies'];
 
-    const ROLE_USER = 'user';
-    const ROLE_ADMIN = 'admin';
-
     protected $appends = ['image_url', 'name'];
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'first_name',
-        'last_name',
-        'last_name',
-        'email',
-        'timezone',
-        'phone_number',
-        'password',
-        'is_admin',
-    ];
-
-    protected $casts = [
-        'config' => 'array'
-    ];
-
-    /**
-     * The attributes that should be hidden for arrays.
-     *
-     * @var array
-     */
-    protected $hidden = [
-        'password', 'remember_token',
-    ];
 
     protected $attributes = [];
 
@@ -119,8 +87,7 @@ class User extends Authenticatable implements HasMedia, CanResetPassword
     {
         $image = $this->getMedia('profile-photo')->last();
         if ($image) {
-            return Storage::disk(env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'))
-                ->url($image->getPath());
+            return Storage::disk($image->disk)->url($image->id.'/'.$image->file_name);
         }
         return '';
     }
@@ -313,11 +280,6 @@ class User extends Authenticatable implements HasMedia, CanResetPassword
     public function getPossibleTimezones()
     {
         return self::getPossibleTimezonesForUser();
-    }
-
-    public function getNameAttribute()
-    {
-        return $this->first_name || $this->last_name ? ucwords(implode(' ', [Str::lower($this->first_name), Str::lower($this->last_name)])) : '';
     }
 
     static function getPossibleTimezonesForUser()

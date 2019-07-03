@@ -44,14 +44,23 @@
             </div>
             <div class="recipient mb-4" v-for="(row, index) in recipientList">
                 <div class="row no-gutters">
-                    <div class="col-12 col-sm-6 col-lg-4 recipient-name">
+                    <div class="col-12 col-sm-6 col-lg-4 recipient-name" :class="{ error: row.error }">
                         <div class="recipient-name--icon">
-                            <span class="pm-font-system-icon"></span>
+                            <i v-if="row.error" class="fas fa-exclamation-triangle fa-md"></i>
+                            <span v-else class="pm-font-system-icon"></span>
                         </div>
                         <div class="recipient-name--data">
                             <strong>@{{ row.name }}</strong>
+
+                            <a v-if="row.error" href="#" @click="showListErrorModal(row)" class="status-text float-right">
+                                Status: ERROR
+                            </a>
+                            <span v-else class="status-text float-right">Status: OK</span>
+
                             <small>Database List</small>
-                            <div class="recipient-name--id">List File ID: @{{ row.id }}</div>
+                            <div class="recipient-name--id">
+                                List File ID: @{{ row.id }}
+                            </div>
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-lg-3 recipient-stats">
@@ -84,11 +93,11 @@
                         </div>
                     </div>
                     <div class="col-12 col-sm-6 col-lg-2 recipient-options">
-                        <a class="btn btn-action" :href="generateRoute(showRecipientListUrl, {listId: row.id})">
+                        <a class="btn btn-action" :class="{disabled: row.error}" :href="generateRoute(showRecipientListUrl, {listId: row.id})">
                             MODIFY MEMBERS
                         </a>
                         <div class="options-group">
-                            <a class="btn pm-btn btn-transparent" :href="generateRoute(downloadRecipientListUrl, {listId: row.id})" download>
+                            <a class="btn pm-btn btn-transparent" :class="{disabled: row.error}" :href="generateRoute(downloadRecipientListUrl, {listId: row.id})" download>
                                 <download-icon></download-icon>
                             </a>
                             <a class="btn pm-btn btn-transparent" href="javascript:;" @click.prevent="removeList(row, index)">
@@ -101,6 +110,24 @@
             </div>
             <pm-pagination class="mt-3" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
         </div>
+
+        <b-modal ref="listErrorsModalRef" id="errors-modal" title="Errors" size="lg">
+            <template slot="modal-header">
+                <h4>"@{{ listError.name }}" list errors</h4>
+                <span class="close-modal-header float-right" @click="closeModal('listErrorsModalRef')">
+                    <i class="fas fa-times float-right"></i>
+                </span>
+            </template>
+
+            <pre>@{{ listError.error.time | formatTime }}: @{{ listError.error.message }}</pre>
+
+            <div slot="modal-footer" class="w-100">
+                <button class="btn pm-btn-purple float-right" @click="closeModal('listErrorsModalRef')">
+                    Close
+                </button>
+            </div>
+        </b-modal>
+
         <b-modal ref="addPhoneModalRef" id="upload-recipient-modal" size="lg" hide-footer>
             <template slot="modal-header">
                 <h4>Upload Recipients</h4>

@@ -1,7 +1,7 @@
 <template>
     <div class="resumable-component" v-if="!resetDomElements">
         <div class="resumable-drop" v-if="!fileSelected"></div>
-        <button class="btn pm-btn pm-btn-purple pm-btn-md resumable-browse" v-if="!fileSelected">
+        <button type="button" class="btn pm-btn pm-btn-purple pm-btn-md resumable-browse" v-if="!fileSelected">
             <slot name="message">Browse for the file</slot>
         </button>
         <div class="resumable-file" v-if="fileSelected">
@@ -22,13 +22,21 @@
                 fileSelected: null,
                 uploadingProgress: 0.1,
                 uploadingFile: false,
-                resetDomElements: false
+                resetDomElements: false,
+                data: {}
             };
         },
         props: {
             targetUrl: {
                 required: true,
                 type: String
+            },
+            fileType: {
+                required: false,
+                type: Array,
+                default() {
+                    return [];
+                }
             },
             hideProgress: {
                 type: Boolean,
@@ -40,6 +48,9 @@
             this.bootstrapResumable();
         },
         methods: {
+            addData(property, value) {
+                this.data[property] = value;
+            },
             bootstrapResumable() {
                 if (this.bootstraping) return;
                 this.bootstraping = true;
@@ -47,8 +58,10 @@
                     .then(() => {
                         this.resumable = new Resumable({
                             chunkSize: 1 * 1024 * 1024, // 1MB
+                            fileType: this.fileType,
                             simultaneousUploads: 3,
                             testChunks: false,
+                            query: this.data,
                             throttleProgressCallbacks: 1,
                             target: this.targetUrl,
                             headers: {

@@ -28,9 +28,18 @@ window['app'] = new Vue({
         searchDropForm: new Form({
             q: null,
             page: 1,
-            per_page: 15
+            per_page: 15,
+            type: null
         }),
-        total: 0
+        total: 0,
+        types: [{
+            label: 'Sms',
+            value: 'sms'
+        }, {
+            label: 'Email',
+            value: 'email'
+        }],
+        typeSelected: null
     },
     methods: {
         deleteDrop(drop) {
@@ -63,6 +72,11 @@ window['app'] = new Vue({
         },
         fetchData() {
             this.loading = true;
+            if (this.typeSelected) {
+                this.searchDropForm.type = this.typeSelected.value;
+            } else {
+                this.searchDropForm.type = null;
+            }
             this.searchDropForm
                 .get(window.searchDropsUrl)
                 .then(response => {

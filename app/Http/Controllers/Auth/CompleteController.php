@@ -84,7 +84,7 @@ class CompleteController extends Controller
 
         \Log::debug('complete registration for company id ' . $request->input('company'));
         $user->companies()->updateExistingPivot($request->input('company'), $data);
-        $this->companyUserActivityLog->updatePreferences($user, $request->input('company'), $data);
+        $this->companyUserActivityLog->updatePreferences($user, (int)$request->input('company'), $data);
 
         return response()->json([
             'redirect_url' => route('login')
