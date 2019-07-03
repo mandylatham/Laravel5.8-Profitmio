@@ -85,10 +85,16 @@ class SendAppointmentNotifications
             try {
                 $phone = $campaign->phones()->whereCallSourceName('sms')->orderBy('id', 'desc')->firstOrFail();
                 $from = $phone->phone_number;
-                $to = $campaign->sms_on_callback_number;
-                $message = $this->getCallbackMessage($appointment);
-                TwilioClient::sendSms($from, $to, $message);
-                $this->log->channel('operations')->info('SendAppointmentNotifications: callback (id:'.$appointment->id.') sent to callback sms notification number (phone:'.$to.')');
+                $to_numbers = $campaign->sms_on_callback_number;
+				if (count($to_numbers)) {
+					foreach ($to_numbers as $to) {
+					$message = $this->getCallbackMessage($appointment);
+					TwilioClient::sendSms($from, $to, $message);
+					$this->log->channel('operations')->info('SendAppointmentNotifications: callback (id:'.$appointment->id.') sent to callback sms notification number (phone:'.$to.')');
+					}
+				} else {
+					$this->log->error("Campaign {$campaign->id} is misconfigured, causing callback notifications to fail");
+				}
             } catch (\Exception $e) {
                 $this->log->error("Unable to send callback SMS: " . $e->getMessage());
             }

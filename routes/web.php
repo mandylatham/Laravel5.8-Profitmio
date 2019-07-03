@@ -177,7 +177,7 @@ Route::group(['middleware' => 'auth'], function () {
             // End of Recipient list pages
             Route::get('phones', 'PhoneController@forCampaign')->middleware('can:modify-campaigns')->name('phone.list');
             Route::get('phone-list-json', 'PhoneController@fromCampaignAsJson')->middleware('can:view-campaigns');
-            Route::patch('phone/{phone}', 'PhoneController@store')->middleware('can:change-campaigns')->name('phone.store');
+            Route::any('phone/{phone}', 'PhoneController@store')->middleware('can:change-campaigns')->name('phone.store');
             Route::post('phone/{phone}/release', 'PhoneController@release')->middleware('can:change-campaigns')->name('phone-number.release');
             // Drops
             Route::get('/drops', 'DeploymentController@forCampaign')->name('campaigns.drops.index');
