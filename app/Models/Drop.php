@@ -127,11 +127,8 @@ class Drop extends \ProfitMiner\Base\Models\Drop implements HasMedia
     private function getUserTimezone()
     {
         if (auth()->user() && $company = Company::find(get_active_company())) {
-            \Log::debug("user timezone found");
             return auth()->user()->getTimezone($company);
         }
-
-        \Log::debug("user timezone not found");
         return null;
     }
 }
