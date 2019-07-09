@@ -119,7 +119,7 @@ class AppointmentController extends Controller
             $this->log->error("appointment failed to save, no campaign_id present: " . json_encode($request->all(),
                     JSON_UNESCAPED_SLASHES));
 
-            return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
+            return response()->json(['error' => 1, 'message' => 'The requested communication failed to save.']);
         }
 
         $campaign = $this->campaign->find($request->json()->get('campaign_id'));
@@ -128,7 +128,7 @@ class AppointmentController extends Controller
             $this->log->error("appointment failed to save, no campaign_id present: " . json_encode($request->all(),
                     JSON_UNESCAPED_SLASHES));
 
-            return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
+            return response()->json(['error' => 1, 'message' => 'The requested communication failed to save.']);
         }
 
         $phone_number = TwilioClient::getFormattedPhoneNumber($request->json()->get('phone_number'));
@@ -185,10 +185,10 @@ class AppointmentController extends Controller
         }
 
         if (!$appointment->save()) {
-            $this->log->error("AppointmentController@insert: unable to save appointment for new request, " . json_encode($request->all(),
+            $this->log->error("AppointmentController@insert: unable to save ' . $appointment->type . ' for new request, " . json_encode($request->all(),
                     JSON_UNESCAPED_SLASHES));
 
-            return response()->json(['error' => 1, 'message' => 'The appointment failed to save.']);
+            return response()->json(['error' => 1, 'message' => 'The ' . $appointment->type . ' failed to save.']);
         }
 
         if ($appointment->type == 'appointment') {
@@ -202,7 +202,7 @@ class AppointmentController extends Controller
         event(new AppointmentCreated($appointment));
         event(new CampaignCountsUpdated($campaign));
 
-        return response()->json(['error' => 0, 'message' => 'The appointment has been saved.']);
+        return response()->json(['error' => 0, 'message' => 'The ' . $appointment->type . ' has been saved.']);
     }
 
     /**
