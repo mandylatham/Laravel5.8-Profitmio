@@ -252,13 +252,12 @@ class DeploymentController extends Controller
 
     public function update(Campaign $campaign, Drop $drop, DeploymentRequest $request)
     {
-        $date = new Carbon($request->send_at_date);
-        if ($campaign->type === 'mailer') {
-            $send_at = $date->toDateTimeString();
-        } else {
-            $time = new Carbon($request->send_at_time);
-            $send_at = (new Carbon($date->toDateString() . ' ' . $time->format('H:i:s'), \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
-        }
+        $timezone = auth()->user()->getTimezone(Company::findOrFail(get_active_company()));
+        $sendAtDatetime = (new Carbon($request->send_at_date . " " . $request->send_at_time, $timezone))->timezone('UTC');
+        $date = $sendAtDatetime->toDateString();
+        $time = $sendAtDatetime->format('H:i:s');
+        $send_at = $sendAtDatetime->toDateTimeString();
+        \Log::debug($timezone);
 		$requestDrop = $request->all();
 		$requestDrop['send_at'] = $send_at;
 
