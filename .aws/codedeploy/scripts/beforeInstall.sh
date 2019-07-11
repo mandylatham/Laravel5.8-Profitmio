@@ -1,4 +1,6 @@
 #!/bin/bash
 
-pip3 install awscli --upgrade
-rm -R /home/forge/app.profitminer.io
+pip install --upgrade awscli
+if [[ -d /home/forge/app.profitminer.io ]]; then
+    rm -R /home/forge/app.profitminer.io
+fi
