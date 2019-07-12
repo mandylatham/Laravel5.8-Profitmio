@@ -56,7 +56,7 @@ window['app'] = new Vue({
         this.dropForm.text_message = window.drop.text_message;
         this.dropForm.email_subject = window.drop.email_subject;
         this.dropForm.email_text = window.drop.email_text;
-        this.dropForm.email_html = window.drop.email_html;
+        this.dropForm.email_html = (window.drop.email_html ? window.drop.email_html : '');
         this.dropForm.image_url = window.drop.image_url;
         if (window.drop.send_at) {
             Vue.set(this.dropForm, 'send_at_date', local_tz.format('YYYY-MM-DD HH:mm:ss'));
