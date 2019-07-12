@@ -11,5 +11,3 @@ composer install
 chown forge:forge -R /home/forge/app.profitminer.io
 php artisan key:generate
 php artisan queue:restart
-
-
