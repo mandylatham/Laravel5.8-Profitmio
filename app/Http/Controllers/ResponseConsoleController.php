@@ -716,7 +716,7 @@ class ResponseConsoleController extends Controller
                 $suppress->save();
             }
 
-            return response();
+            return response('<?xml version="1.0" encoding="UTF-8"?><Response>Ok</Response>', 200)->header('Content-Type', 'text/xml');
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
 
