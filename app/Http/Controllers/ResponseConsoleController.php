@@ -623,7 +623,7 @@ class ResponseConsoleController extends Controller
             $response->dial('', ['record' => 'record-from-answer'])
                     ->number($phoneNumber->forward);
 
-            return response($response, 200)
+            return response($response->asXml(), 200)
                 ->header('Content-Type', 'text/xml');
         } catch (\Exception $e) {
             Log::error("inboundPhone(): {$e->getMessage()}");
