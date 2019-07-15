@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $CODEDEPLOY_ENVIRONMENT -eq "" ]]; then
+if [[ $CODEDEPLOY_ENVIRONMENT == "" ]]; then
     echo "This server is not configured for CodeDeploy script use";
     exit 125;
 fi
