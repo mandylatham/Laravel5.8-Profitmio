@@ -10,6 +10,7 @@ use App\Models\PhoneNumber;
 use Illuminate\Http\Request;
 use App\Services\TwilioClient;
 use App\Classes\MailgunService;
+use Twilio\TwiMl\VoiceResponse;
 use Illuminate\Support\Facades\DB;
 use App\Services\SentimentService;
 use Illuminate\Support\Facades\Log;
@@ -617,11 +618,12 @@ class ResponseConsoleController extends Controller
             event(new RecipientPhoneResponseReceived($campaign, $recipient, $response));
             event(new CampaignCountsUpdated($campaign));
 
-            return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                '<Response>' . "\n" .
-                '<Say voice="Polly.Joanna">This call may be recorded for quality assurance purposes</Say>' . "\n" .
-                '<Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial>' . "\n" .
-                '</Response>', 200)
+            $response = new VoiceResponse();
+            $response->say('This call may be recorded for quality assurance purposes', ['voice' => 'Polly.Joanna']);
+            $response->dial('', ['record' => 'record-from-answer'])
+                    ->number($phoneNumber->forward);
+
+            return response($response, 200)
                 ->header('Content-Type', 'text/xml');
         } catch (\Exception $e) {
             Log::error("inboundPhone(): {$e->getMessage()}");
@@ -714,9 +716,7 @@ class ResponseConsoleController extends Controller
                 $suppress->save();
             }
 
-            return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
-                ->header('Content-Type', 'text/xml');
+            return response();
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
 
