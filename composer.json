@@ -16,6 +16,7 @@
         "aws/aws-sdk-php-laravel": "^3.3",
         "barryvdh/laravel-debugbar": "^3.2",
         "bogardo/mailgun": "^5.0",
+        "bugsnag/bugsnag-laravel": "^2.0",
         "doctrine/dbal": "^2.9",
         "fideloper/proxy": "^4.0",
         "fzaninotto/faker": "^1.8",
