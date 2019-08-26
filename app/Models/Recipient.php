@@ -29,6 +29,8 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         'vin',
     ];
 
+    protected $appends = ['status'];
+
     protected $searchableColumns = ['first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip', 'year', 'make', 'model', 'vin'];
 
     public function list()
@@ -39,6 +41,11 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
+    }
+
+    public function activity()
+    {
+        return $this->hasMany(RecipientActivity::class);
     }
 
     public function appointments()
@@ -172,5 +179,10 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         $this->email = '';
 
         $this->save();
+    }
+
+    public function getStatusAttribute()
+    {
+        return  'new'; // $this->status ?: 'new';
     }
 }
