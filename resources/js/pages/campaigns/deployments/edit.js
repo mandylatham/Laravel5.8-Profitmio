@@ -36,7 +36,9 @@ window['app'] = new Vue({
             image_url: null,
             type: null,
             text_message: null,
-            email_subject: null
+            email_subject: null,
+			email_text: null,
+			email_html: null,
         }),
         fileTypes: ['jpeg', 'jpg', 'png', 'bmp', 'gif', 'svg'],
         uploadingImage: false
