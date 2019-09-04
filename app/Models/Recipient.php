@@ -13,6 +13,10 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 {
     use SoftDeletes, Eloquence;
 
+    const NEW_STATUS = 'new';
+    const OPEN_STATUS = 'open';
+    const CLOSED_STATUS = 'closed';
+
     protected $searchable = ['first_name', 'last_name'];
 
     public static $mappable = [
@@ -29,9 +33,7 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         'vin',
     ];
 
-    protected $appends = ['status'];
-
-    protected $searchableColumns = ['first_name', 'last_name', 'email', 'phone', 'address1', 'city', 'state', 'zip', 'year', 'make', 'model', 'vin'];
+    protected $searchableColumns = ['first_name', 'last_name', 'email', 'phone', 'status', 'address1', 'city', 'state', 'zip', 'year', 'make', 'model', 'vin'];
 
     public function list()
     {
@@ -181,8 +183,36 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         $this->save();
     }
 
-    public function getStatusAttribute()
+    public function open(User $user)
     {
-        return  'new'; // $this->status ?: 'new';
+        $this->status = self::OPEN_STATUS;
+
+        $this->activity()->create([
+            'action' => RecipientActivity::OPENED,
+            'action_at' => now(),
+            'action_by' => $user->id,
+        ]);
+    }
+
+    public function close(User $user)
+    {
+        $this->status = self::CLOSED_STATUS;
+
+        $this->activity()->create([
+            'action' => RecipientActivity::CLOSED,
+            'action_at' => now(),
+            'action_by' => $user->id,
+        ]);
+    }
+
+    public function reopen(User $user)
+    {
+        $this->status = self::OPEN_STATUS;
+
+        $this->activity()->create([
+            'action' => RecipientActivity::REOPENED,
+            'action_at' => now(),
+            'action_by' => $user->id,
+        ]);
     }
 }

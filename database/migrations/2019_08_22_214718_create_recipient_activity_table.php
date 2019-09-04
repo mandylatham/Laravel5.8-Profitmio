@@ -13,11 +13,13 @@ class CreateRecipientActivityTable extends Migration
      */
     public function up()
     {
-        Schema::create('recipient_activity', function (Blueprint $table) {
+        Schema::create('recipient_activities', function (Blueprint $table) {
+            $table->bigIncrements('id');
             $table->bigInteger('recipient_id');
-            $table->bigInteger('user_id')->nullable();
-            $table->json('action');
+            $table->string('action', 50);
             $table->dateTime('action_at')->default(now());
+            $table->bigInteger('action_by')->nullable();
+            $table->bigInteger('response_id')->nullable();
         });
     }
 
@@ -28,6 +30,6 @@ class CreateRecipientActivityTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('recipient_activity');
+        Schema::dropIfExists('recipient_activities');
     }
 }
