@@ -182,54 +182,6 @@ class ResponseConsoleController extends Controller
     /**
      * @param Request  $request
      * @param Campaign $campaign
-     * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
-     */
-    public function show(Request $request, Campaign $campaign, $filter = null)
-    {
-        $counters = [];
-        $counters['total'] = Recipient::withResponses($campaign->id)->count();
-        $counters['unread'] = Recipient::unread($campaign->id)->count();
-        $counters['idle'] = Recipient::idle($campaign->id)->count();
-        $counters['calls'] = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
-            )
-        )->count();
-        $counters['email'] = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
-            )
-        )->count();
-        $counters['sms'] = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
-            )
-        )->count();
-
-        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
-        foreach ($labels as $label) {
-            $counters[$label] = Recipient::withResponses($campaign->id)
-                ->labelled($label, $campaign->id)
-                ->count();
-        }
-
-        $data = [
-            'counters' => $counters,
-            'campaign' => $campaign
-        ];
-
-        if ($filter) {
-            $data['filterApplied'] = $filter;
-        }
-        return view('campaigns.console', $data);
-    }
-
-    /**
-     * @param Request  $request
-     * @param Campaign $campaign
      * @return mixed
      */
     public function getRecipientsForUserDisplay(Request $request, Campaign $campaign)
@@ -730,23 +682,6 @@ class ResponseConsoleController extends Controller
                 "<Response>{$e->getMessage()}</Response>", 401)
                 ->header('Content-Type', 'text/xml');
         }
-    }
-
-    /**
-     * Parse out the encoded email data
-     *
-     * @param $email
-     *
-     * @return array
-     */
-    protected function getEmailMetadata($email)
-    {
-        $metadata = preg_split('/(_|@)/', $email);
-
-        $campaign_id = $metadata[1];
-        $recipient_id = $metadata[2];
-
-        return [$campaign_id, $recipient_id];
     }
 
     /**

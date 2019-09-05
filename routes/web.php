@@ -138,8 +138,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/campaigns', 'CampaignController@index')->name('campaigns.index')->middleware('can:view-campaigns');
     Route::get('/campaigns/for-user-display', 'CampaignController@getForUserDisplay')->name('campaign.for-user-display');
     Route::get('/campaigns/user/{user}', 'CampaignController@getUserCampaigns')->name('campaign.user.show')->middleware('can:view-campaigns');
-    Route::get('/campaigns/new', 'CampaignController@createNew')->name('campaigns.create')->middleware('can:change-campaigns');
-    Route::post('/campaigns/create', 'CampaignController@create')->middleware('can:change-campaigns')->name('campaigns.store');
+    Route::get('/campaigns/new', 'CampaignController@create')->name('campaigns.create')->middleware('can:change-campaigns');
+    Route::post('/campaigns/create', 'CampaignController@store')->middleware('can:change-campaigns')->name('campaigns.store');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['can:view,campaign']], function () {
         Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
         Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->name('campaign.recipient.email-response');
@@ -213,7 +213,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
 
         Route::get('/recipients/for-user-display', 'RecipientController@getRecipients')->name('campaign.recipient.for-user-display');
-        Route::get('/response-console/{field?}', 'ResponseConsoleController@show')->name('campaign.response-console.index');
+        Route::get('/response-console/{field?}', 'CampaignController@console')->name('campaign.response-console.index');
     });
     //endregion
 

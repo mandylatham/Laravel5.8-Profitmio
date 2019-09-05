@@ -36,6 +36,58 @@ class CampaignController extends Controller
         return view('campaigns.index', []);
     }
 
+
+    /**
+     * Load Campaign Console Page
+     * 
+     * @param Request  $request
+     * @param Campaign $campaign
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function console(Request $request, Campaign $campaign, $filter = null)
+    {
+        $counters = [];
+        $counters['total'] = Recipient::withResponses($campaign->id)->count();
+        $counters['unread'] = Recipient::unread($campaign->id)->count();
+        $counters['idle'] = Recipient::idle($campaign->id)->count();
+        $counters['calls'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
+            )
+        )->count();
+        $counters['email'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
+            )
+        )->count();
+        $counters['sms'] = Recipient::withResponses($campaign->id)->whereIn(
+            'recipients.id',
+            result_array_values(
+                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
+            )
+        )->count();
+
+        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
+        foreach ($labels as $label) {
+            $counters[$label] = Recipient::withResponses($campaign->id)
+                ->labelled($label, $campaign->id)
+                ->count();
+        }
+
+        $data = [
+            'counters' => $counters,
+            'campaign' => $campaign
+        ];
+
+        if ($filter) {
+            $data['filterApplied'] = $filter;
+        }
+        return view('campaigns.console', $data);
+    }
+
     /**
      * Return all campaigns for user display
      * @param Request $request
@@ -108,7 +160,7 @@ class CampaignController extends Controller
         ]);
     }
 
-    public function createNew()
+    public function create()
     {
         $dealerships = Company::getDealerships();
         $agencies = Company::getAgencies();
@@ -120,7 +172,7 @@ class CampaignController extends Controller
         return view('campaigns.create', $viewData);
     }
 
-    public function create(NewCampaignRequest $request)
+    public function store(NewCampaignRequest $request)
     {
         $expires_at = null;
         $starts_at = (new Carbon($request->start, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();
