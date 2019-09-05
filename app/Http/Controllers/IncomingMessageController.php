@@ -1,22 +1,11 @@
 <?php
-namespace App\Classes;
 
-use App\Models\Campaign;
-use App\Models\Response;
-use App\Models\Recipient;
+namespace App\Http\Controllers;
+
 use Illuminate\Http\Request;
 
-class InboundMessageHandler
+class IncomingMessageController extends Controller
 {
-    protected $smsEngine;
-    protected $emailEngine;
-
-    public function __construct(MailgunService $emailEngine, TwilioClient $smsEngine)
-    {
-        $this->emailEngine = $emailEngine;
-        $this->smsEngine = $smsEngine;
-    }
-
     public function receiveSmsMessage(Request $request)
     {
         // Add the record
@@ -34,7 +23,7 @@ class InboundMessageHandler
 
     public function receivePhoneCallStatus(Request $request)
     {
-        // Send it.
+        // Do it.
     }
 
     public function getEmailMetadata(Request $request)
