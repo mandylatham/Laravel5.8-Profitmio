@@ -71,7 +71,7 @@ class CampaignController extends Controller
     {
         $mailer = $this->campaign->mailers()->create([
             'name' => $request->mailer_name,
-            'in_home_ap' => $request->in_home_date,
+            'in_home_at' => $request->in_home_date,
         ]);
 
         $mailer->addMedia($request->file('mailer_image'));
