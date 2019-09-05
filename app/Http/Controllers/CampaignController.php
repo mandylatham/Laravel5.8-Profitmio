@@ -67,16 +67,6 @@ class CampaignController extends Controller
         return $campaigns->toJson();
     }
 
-    public function addMailer(Request $request)
-    {
-        $mailer = $this->campaign->mailers()->create([
-            'name' => $request->mailer_name,
-            'in_home_at' => $request->in_home_date,
-        ]);
-
-        $mailer->addMedia($request->file('mailer_image'));
-    }
-
     /**
      * Show a specific campaign
      *
