@@ -10,11 +10,11 @@ Route::get('/heartbeat', function () {
 });
 //region OUTSIDE API CALLS
 Route::any('/text-in/', 'TextInController@createFromSms')->name('pub-api.text-in')->middleware(null);
-Route::any('/text-responses/inbound', 'ResponseConsoleController@inboundText')->name('pub-api.text-response-inbound')->middleware(null);
-Route::any('/email-responses/inbound', 'ResponseConsoleController@inboundEmail')->name('pub-api.email-response-inbound')->middleware(null);
-Route::any('/email-responses/log', 'ResponseConsoleController@logEmail')->name('pub-api.email-response-log')->middleware(null);
-Route::any('/phone-responses/inbound', 'ResponseConsoleController@inboundPhone')->name('pub-api.phone-response-inbound')->middleware(null);
-Route::any('/phone-responses/status', 'ResponseConsoleController@inboundPhoneStatus')->name('pub-api.phone-response-status')->middleware(null);
+Route::any('/text-responses/inbound', 'InboundMessageController@receiveSmsMessage')->name('pub-api.text-response-inbound')->middleware(null);
+Route::any('/email-responses/inbound', 'InboundMessageController@receiveEmailMessage')->name('pub-api.email-response-inbound')->middleware(null);
+Route::any('/email-responses/log', 'InboundMessageController@logEmail')->name('pub-api.email-response-log')->middleware(null);
+Route::any('/phone-responses/inbound', 'InboundMessageController@receivePhoneCall')->name('pub-api.phone-response-inbound')->middleware(null);
+Route::any('/phone-responses/status', 'InboundMessageController@receivePhoneCallStatus')->name('pub-api.phone-response-status')->middleware(null);
 
 Route::any('/appointments/insert', 'AppointmentController@insert')->name('pub-api.appointment-insert')->middleware(null);
 Route::any('/appointments/save', 'AppointmentController@save')->name('pub-api.appointment-save')->middleware(null);
@@ -141,8 +141,8 @@ Route::group(['middleware' => 'auth'], function () {
     Route::get('/campaigns/new', 'CampaignController@create')->name('campaigns.create')->middleware('can:change-campaigns');
     Route::post('/campaigns/create', 'CampaignController@store')->middleware('can:change-campaigns')->name('campaigns.store');
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['can:view,campaign']], function () {
-        Route::post('/text-response/{recipient}', 'ResponseConsoleController@smsReply')->name('campaign.recipient.text-response');
-        Route::post('/email-response/{recipient}', 'ResponseConsoleController@emailReply')->name('campaign.recipient.email-response');
+        Route::post('/text-response/{lead}', 'LeadController@sendSms')->name('campaign.recipient.text-response');
+        Route::post('/email-response/{lead}', 'LeadController@sendEmail')->name('campaign.recipient.email-response');
         Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
         Route::group(['middleware' => ['can:site-admin,App\Models\User']], function () {
             Route::post('/user-access/{user}', 'CampaignController@toggleCampaignUserAccess')->name('campaigns.toggle-user-access');

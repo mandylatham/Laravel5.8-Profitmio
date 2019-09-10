@@ -3,14 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Builders\ResponseBuilder;
+use ProfitMiner\Base\Services\Media\Transport\Messages\SmsMessage;
+use ProfitMiner\Base\Services\Media\Transport\Messages\EmailMessage;
+use ProfitMiner\Base\Services\Media\Transport\Contracts\SMSTransportContract;
+use ProfitMiner\Base\Services\Media\Transport\Contracts\EmailTransportContract;
 
 class LeadController extends Controller
 {
     /**
-     * @var \App\Classes\MailgunService
+     * @var SmsTransportContract Service
      */
-    protected $mailgun;
+    protected $sms;
+
+    /**
+     * @var EmailTransportContract $email
+     */
+    protected $email;
 
     /**
      * @var App\Services\SentimentService
@@ -23,9 +34,10 @@ class LeadController extends Controller
      * @param MailgunService   $mailgun   Dependency Injected Class
      * @param SentimentService $sentiment Dependency Injected Class
      */
-    public function __construct(MailgunService $mailgun, SentimentService $sentiment)
+    public function __construct(EmailTransportContract $email, SMSTransportContract $sms, SentimentService $sentiment)
     {
-        $this->mailgun = $mailgun;
+        $this->sms = $sms;
+        $this->email = $email;
         $this->sentiment = $sentiment;
     }
 
@@ -76,25 +88,61 @@ class LeadController extends Controller
 
         // Broadcast update to counts
     }
-
-    public function sendText(Lead $lead, Request $request)
+    /**
+     * Send the lead an sms response
+     * 
+     * @param Campaign $campaign
+     * @param Lead $lead
+     * @param Request $request
+     */
+    public function sendSms(Campaign $campaign, Lead $lead, Request $request)
     {
-        //
+        $this->authorize('create', [Response::class, $campaign]);
+
+        $from = $campaign->phones()->whereCallSourceName('sms')->firstOrFail();
+
+        $sms = new SmsMessage($from->phone_number, $lead->phone, $request->input('message'));
+
+        $sid = $this->sms->send($sms);
+
+        $response = ResponseBuilder::createSmsReply($request->user(), $lead, $sms->getContent(), $sid);
+
+        $this->sentiment->forResponse($response);
+
+        return response()->json(['response' => $response]);
     }
 
-    public function sendEmail(Lead $lead, Request $request)
+    /**
+     * Send the lead an email response
+     * 
+     * @param Campaign $campaign
+     * @param Lead $lead
+     * @param Request $request
+     */
+    public function sendEmail(Campaign $campaign, Lead $lead, Request $request)
     {
-        //
+        $this->authorize('create', [Response::class, $campaign]);
+
+        $lastMessage = Response::where('type', 'email')->where('campaign_id', $campaign->id)->where('incoming', 1)->where('recipient_id', $lead->id)->orderBy('id', 'desc')->firstOrFail();
+
+        $subject = 'Re: ' . $lastMessage->subject;
+
+        $message = $request->input('message');
+
+        $email = new EmailMessage($this->getEmailFromLine($campaign, $lead), $lead->email, $subject, $message, nl2br($message));
+
+        $sid = $this->email->send($email);
+
+        $response = ResponseBuilder::createEmailReply($request->user(), $lead, $subject, $lastMessage->message_id, $email->getContent(), $sid);
+
+        $this->sentiment->forResponse($response);
+
+        return response()->json(['response' => $response]);
     }
 
     public function updateNotes(Lead $lead, Request $request)
     {
         // 
-    }
-
-    public function addAppointment(Lead $lead, Request $request)
-    {
-        //
     }
 
     public function markCalledBack(Lead $lead, Appointment $callback)
@@ -110,5 +158,22 @@ class LeadController extends Controller
     public function sendToCrm(Lead $lead)
     {
         //
+    }
+
+    /**
+     * The Email "from" address
+     *
+     *
+     * @param Campaign  $campaign
+     * @param Recipient $recipient
+     * @param User      $client
+     * @return string
+     */
+    private function getEmailFromLine(Campaign $campaign, Lead $lead)
+    {
+        $from = $campaign->dealership->name;
+        $domain = env('MAILGUN_DOMAIN');
+
+        return "{$from} <" . Str::slug("{$from}") . "_{$campaign->id}_{$lead->id}@{$domain}>";
     }
 }
