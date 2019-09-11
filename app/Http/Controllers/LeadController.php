@@ -105,7 +105,7 @@ class LeadController extends Controller
 
         $sid = $this->sms->send($sms);
 
-        $response = ResponseBuilder::createSmsReply($request->user(), $lead, $sms->getContent(), $sid);
+        $response = ResponseBuilder::buildSmsReply($request->user(), $lead, $sms->getContent(), $sid);
 
         $this->sentiment->forResponse($response);
 
@@ -123,7 +123,11 @@ class LeadController extends Controller
     {
         $this->authorize('create', [Response::class, $campaign]);
 
-        $lastMessage = Response::where('type', 'email')->where('campaign_id', $campaign->id)->where('incoming', 1)->where('recipient_id', $lead->id)->orderBy('id', 'desc')->firstOrFail();
+        $lastMessage = Response::where('type', 'email')->where('campaign_id', $campaign->id)
+                                                       ->where('incoming', 1)
+                                                       ->where('recipient_id', $lead->id)
+                                                       ->orderBy('id', 'desc')
+                                                       ->firstOrFail();
 
         $subject = 'Re: ' . $lastMessage->subject;
 
@@ -133,7 +137,7 @@ class LeadController extends Controller
 
         $sid = $this->email->send($email);
 
-        $response = ResponseBuilder::createEmailReply($request->user(), $lead, $subject, $lastMessage->message_id, $email->getContent(), $sid);
+        $response = ResponseBuilder::builderEmailReply($request->user(), $lead, $subject, $lastMessage->message_id, $email->getContent(), $sid);
 
         $this->sentiment->forResponse($response);
 

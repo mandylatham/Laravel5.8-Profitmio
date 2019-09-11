@@ -9,12 +9,16 @@ use App\Models\Response;
 class ResponseBuilder
 {
     /**
+     * Build the SMS Reply Objects
+     *
      * @param User $user
      * @param Lead $lead
      * @param string $message
      * @param string $sid
+     *
+     * @return Response
      */
-    public static function createSmsReply(User $user, Lead $lead, $message, $sid) : void
+    public static function buildSmsReply(User $user, Lead $lead, $message, $sid) : Response
     {
         // Mark all previous messages as read
         Response::where('type', 'text')
@@ -35,9 +39,21 @@ class ResponseBuilder
         ]);
 
         $response->load('impersonation.impersonator');
+
+        return $response;
     }
 
-    public static function createEmailReply(User $user, Lead $lead, $lastMessageId, $subject, $message, $sid) : void
+    /**
+     * Build the Email Reply Objects
+     *
+     * @param User $user
+     * @param Lead $lead
+     * @param string $message
+     * @param string $sid
+     *
+     * @return Response
+     */
+    public static function buildEmailReply(User $user, Lead $lead, $lastMessageId, $subject, $message, $sid) : Response
     {
         // Mark all previous messages as read
         Response::where('type', 'email')
@@ -71,5 +87,7 @@ class ResponseBuilder
             'event'        => 'reply',
             'recipient'    => $lead->email,
         ]);
+
+        return $response;
     }
 }
