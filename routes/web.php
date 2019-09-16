@@ -4,11 +4,14 @@ Route::impersonate();
 
 use Illuminate\Support\Facades\Route;
 
+Route::any('/campaign/{campaign}/testme', 'LeadController@index')->name('test');
+
 // AWS heartbeat
 Route::get('/heartbeat', function () {
     return response()->json('ok', 200);
 });
 //region OUTSIDE API CALLS
+//TODO: test
 Route::any('/text-in/', 'TextInController@createFromSms')->name('pub-api.text-in')->middleware(null);
 Route::any('/text-responses/inbound', 'InboundMessageController@receiveSmsMessage')->name('pub-api.text-response-inbound')->middleware(null);
 Route::any('/email-responses/inbound', 'InboundMessageController@receiveEmailMessage')->name('pub-api.email-response-inbound')->middleware(null);
@@ -199,14 +202,10 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/responses/export-nonresponders', 'ResponseController@getNonResponders');
             Route::any('/get-responses-hash', 'ResponseController@getResponsesHash');
             Route::any('/responses/{recipient}/get-text-hash', 'ResponseController@getTextHash');
-            // TODO: remove me from this routes group
-            // Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->middleware('can:view-console')->name('add-appointment');
             Route::any('/responses/{recipient}/get-email-hash', 'ResponseController@getEmailHash');
             Route::any('/responses/{recipient}/get-text-thread', 'ResponseController@getTextThread');
             Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
             Route::any('/get-response-list', 'ResponseController@getResponseList');
-            // TODO: remove me from this routes group
-            // Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
         });
 
         Route::get('/response/{recipient}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
@@ -218,12 +217,15 @@ Route::group(['middleware' => 'auth'], function () {
     //endregion
 
     //region RECIPIENT
-    Route::group(['prefix' => '/recipient/{recipient}', 'middleware' => ['can:update,recipient']], function () {
-        Route::post('/send-to-crm', 'RecipientController@sendToCrm')->name('recipient.send-to-crm');
-        Route::post('/add-label', 'RecipientController@addLabel')->name('recipient.add-label');
-        Route::post('/remove-label', 'RecipientController@removeLabel')->name('recipient.remove-label');
-        Route::post('/update-notes', 'RecipientController@updateNotes')->name('recipient.update-notes');
-        Route::get('/get-responses-by-recipient', 'RecipientController@fetchResponsesByRecipient')->name('recipient.get-responses');
+    Route::group(['prefix' => '/recipient/{lead}', 'middleware' => ['can:update,recipient']], function () {
+        Route::post('/open', 'LeadController@open')->name('recipient.open');
+        Route::post('/close', 'LeadController@close')->name('recipient.close');
+        Route::post('/reopen', 'LeadController@reopen')->name('recipient.reopen');
+        Route::post('/send-to-crm', 'LeadController@sendToCrm')->name('recipient.send-to-crm');
+        Route::post('/add-label', 'LeadController@addLabel')->name('recipient.add-label');
+        Route::post('/remove-label', 'LeadController@removeLabel')->name('recipient.remove-label');
+        Route::post('/update-notes', 'LeadController@updateNotes')->name('recipient.update-notes');
+        Route::get('/get-responses-by-recipient', 'LeadController@fetchResponsesByRecipient')->name('recipient.get-responses');
     });
     //endregion
 

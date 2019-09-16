@@ -167,6 +167,11 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         return $template;
     }
 
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
+    }
+
     public function phones()
     {
         return $this->hasMany(PhoneNumber::class);

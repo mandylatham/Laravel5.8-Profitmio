@@ -13,9 +13,11 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 {
     use SoftDeletes, Eloquence;
 
-    const NEW_STATUS = 'new';
-    const OPEN_STATUS = 'open';
-    const CLOSED_STATUS = 'closed';
+    const UNMARKETED_STATUS = 'unmarketed';
+    const MARKETED_STATUS = 'marketed';
+    const NEW_STATUS = 'new-lead';
+    const OPEN_STATUS = 'open-lead';
+    const CLOSED_STATUS = 'closed-lead';
 
     protected $searchable = ['first_name', 'last_name'];
 
@@ -43,11 +45,6 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
-    }
-
-    public function activity()
-    {
-        return $this->hasMany(RecipientActivity::class);
     }
 
     public function appointments()
@@ -183,36 +180,4 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         $this->save();
     }
 
-    public function open(User $user)
-    {
-        $this->status = self::OPEN_STATUS;
-
-        $this->activity()->create([
-            'action' => RecipientActivity::OPENED,
-            'action_at' => now(),
-            'action_by' => $user->id,
-        ]);
-    }
-
-    public function close(User $user)
-    {
-        $this->status = self::CLOSED_STATUS;
-
-        $this->activity()->create([
-            'action' => RecipientActivity::CLOSED,
-            'action_at' => now(),
-            'action_by' => $user->id,
-        ]);
-    }
-
-    public function reopen(User $user)
-    {
-        $this->status = self::OPEN_STATUS;
-
-        $this->activity()->create([
-            'action' => RecipientActivity::REOPENED,
-            'action_at' => now(),
-            'action_by' => $user->id,
-        ]);
-    }
 }

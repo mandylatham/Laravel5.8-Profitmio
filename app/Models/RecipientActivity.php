@@ -3,9 +3,12 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Impersonation\Traits\MayBeImpersonated;
 
 class RecipientActivity extends Model
 {
+    use MayBeImpersonated;
+
     const OPENED = 'opened';
     const CLOSED = 'closed';
     const VIEWED = 'viewed';
@@ -18,16 +21,18 @@ class RecipientActivity extends Model
     const SENTTOCRM = 'sent lead to the crm';
     const UPDATEDNOTES = 'updated the notes';
 
+    public $timestamps = false;
+
     protected $casts = [
         'action' => 'array',
     ];
 
     protected $fillable = [
-        'action', 'action_by', 'action_at', 'response_id'
+        'action', 'action_at', 'response_id', 'user_id'
     ];
 
-    public function recipient()
+    public function lead()
     {
-        return $this->belongsTo(Recipient::class);
+        return $this->belongsTo(Lead::class, 'recipient_id', 'id');
     }
 }

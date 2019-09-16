@@ -2,28 +2,28 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\CompanyCollection;
-use App\Models\Campaign;
-use App\Classes\CampaignUserActivityLog;
-use App\Classes\CompanyUserActivityLog;
-use App\Models\Company;
-use App\Mail\InviteUser;
-use App\Models\User;
 use Carbon\Carbon;
+use App\Models\User;
+use App\Models\Company;
+use App\Models\Campaign;
+use App\Mail\InviteUser;
 use Illuminate\Http\Request;
+use Mockery\ReceivedMethodCalls;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Filesystem\FilesystemManager;
-use App\Http\Requests\StoreCompanyRequest;
+use App\Classes\CompanyUserActivityLog;
 use App\Http\Requests\StoreUserRequest;
+use App\Classes\CampaignUserActivityLog;
 use App\Http\Requests\UpdateUserRequest;
-use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
-use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
-use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
+use App\Http\Resources\CompanyCollection;
+use App\Http\Requests\StoreCompanyRequest;
+use Illuminate\Filesystem\FilesystemManager;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
-use Mockery\ReceivedMethodCalls;
+use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
+use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
+use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 
 class CompanyController extends Controller
 {

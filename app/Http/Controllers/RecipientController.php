@@ -149,100 +149,6 @@ class RecipientController extends Controller
     }
 
     /**
-     * @param Recipient $recipient
-     * @param Request   $request
-     * @return string
-     * @throws \Pusher\PusherException
-     */
-    public function updateNotes(Recipient $recipient, Request $request)
-    {
-        $recipient->fill(['notes' => $request->notes]);
-
-        $recipient->save();
-
-        // TODO: fix me
-        // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
-
-        return $recipient->toJson();
-    }
-
-    /**
-     * @param \App\Models\Recipient    $recipient
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return string
-     * @throws \Pusher\PusherException
-     */
-    public function removeLabel(Recipient $recipient, Request $request)
-    {
-        if ($request->label && in_array($request->label, [
-                'interested',
-                'not_interested',
-                'appointment',
-                'service',
-                'wrong_number',
-                'car_sold',
-                'heat',
-                'callback',
-            ])) {
-            $recipient->fill([
-                $request->label => 0,
-            ]);
-            $recipient->save();
-
-            event(new CampaignCountsUpdated($recipient->campaign));
-
-            $class = 'badge-danger';
-            if (in_array($request->label, ['interested', 'appointment', 'service', 'callback'])) {
-                $class = 'badge-success';
-            }
-        }
-    }
-
-    /**
-     * @param \App\Models\Recipient    $recipient
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public function addLabel(Recipient $recipient, Request $request)
-    {
-        $sendNotifications = !! $recipient->campaign->service_dept;
-
-        if ($request->label && in_array($request->label, [
-                'interested',
-                'not_interested',
-                'appointment',
-                'service',
-                'wrong_number',
-                'car_sold',
-                'heat',
-                'callback',
-            ])) {
-            $recipient->fill([
-                $request->label => 1,
-            ]);
-
-            $recipient->save();
-
-            if ($request->input('label') == 'service' && !! $recipient->campaign->service_dept) {
-                event(new ServiceDeptLabelAdded($recipient));
-            }
-
-            event(new CampaignCountsUpdated($recipient->campaign));
-
-            return response()->json([
-                "label" => $request->label,
-                "labelText" => $this->getLabelText($request->label),
-            ]);
-        }
-
-        return '';
-    }
-
-    /**
      * @param \App\Models\Campaign $campaign
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -1079,30 +985,6 @@ class RecipientController extends Controller
     }
 
     /**
-     * @param $label
-     * @return mixed
-     * @throws \Exception
-     */
-    private function getLabelText($label)
-    {
-        $labels = [
-            'interested'     => 'Interested',
-            'not_interested' => 'Not Interested',
-            'appointment'    => 'Appointment',
-            'service'        => 'Service Department',
-            'wrong_number'   => 'Wrong Number',
-            'car_sold'       => 'Car Sold',
-            'heat'           => 'Heat Case',
-        ];
-
-        if (!in_array($label, array_keys($labels))) {
-            throw new \Exception('Invalid Label Name provided by user form');
-        }
-
-        return $labels[$label];
-    }
-
-    /**
      * Get the max recipient group number for a campaign
      *
      * @param int $campaign_id
@@ -1164,87 +1046,7 @@ class RecipientController extends Controller
         ];
     }
 
-    /**
-     * @param Recipient $recipient
-     * @param array     $list
-     * @return array
-     */
-    public function fetchResponsesByRecipient(Recipient $recipient, array $list = [])
-    {
-        $data = [];
-
-        if (empty($list)) {
-            $appointments = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
-            $emailThreads = Response::where('campaign_id', $recipient->campaign->id)
-                ->where('recipient_id', $recipient->id)
-                ->where('type', 'email')
-                ->get()
-                ->toArray();
-            $textThreads = Response::where('campaign_id', $recipient->campaign->id)
-                ->where('recipient_id', $recipient->id)
-                ->where('type', 'text')
-                ->get()
-                ->toArray();
-            $phoneThreads = Response::where('campaign_id', $recipient->campaign->id)
-                ->where('recipient_id', $recipient->id)
-                ->where('type', 'phone')
-                ->get()
-                ->toArray();
-
-            $data = [
-                'appointments' => $appointments,
-                'threads'      => [
-                    'email' => $emailThreads,
-                    'text'  => $textThreads,
-                    'phone' => $phoneThreads,
-                ],
-                'recipient'    => $recipient->toArray(),
-            ];
-        } else {
-            foreach ($list as $item) {
-                switch ($item) {
-                    case 'appointments':
-                        $data['appointments'] = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
-                        break;
-                    case 'emails':
-                        $data['threads']['email'] = Response::where('campaign_id', $recipient->campaign->id)
-                            ->where('recipient_id', $recipient->id)
-                            ->where('type', 'email')
-                            ->get()
-                            ->toArray();
-                        break;
-                    case 'texts':
-                        $data['threads']['text'] = Response::where('campaign_id', $recipient->campaign->id)
-                            ->where('recipient_id', $recipient->id)
-                            ->where('type', 'text')
-                            ->get()
-                            ->toArray();
-                        break;
-                    case 'calls':
-                        $data['threads']['phone'] = Response::where('campaign_id', $recipient->campaign->id)
-                            ->where('recipient_id', $recipient->id)
-                            ->where('type', 'phone')
-                            ->get()
-                            ->toArray();
-                        break;
-                    case 'recipient':
-                        $data['recipient'] = $recipient->toArray();
-                        break;
-                }
-            }
-        }
-
-        return $data;
-    }
-
     public function sendToCrm(Recipient $recipient)
     {
-        try {
-            $this->crm->sendRecipient($recipient, \Auth::user());
-            return response()->json(['message' => 'Successfully sent recipient to CRM']);
-        } catch (\Exception $e) {
-            $this->log->error("Unable to send recipient to crm: " .$e->getMessage());
-            abort(500, 'Unable to send to CRM');
-        }
     }
 }

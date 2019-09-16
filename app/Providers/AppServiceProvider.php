@@ -2,12 +2,11 @@
 
 namespace App\Providers;
 
-use App\Models\Recipient;
-use App\Observers\RecipientObserver;
-use Illuminate\Support\Facades\Schema;
+use App\Repositories\LeadSearch;
 use Illuminate\Support\Facades\View;
-use Illuminate\Support\ServiceProvider;
 use Laravel\Dusk\DuskServiceProvider;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -19,7 +18,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Schema::defaultStringLength(191);
-        // Recipient::observe(RecipientObserver::class);
     }
 
     /**
@@ -40,6 +38,13 @@ class AppServiceProvider extends ServiceProvider
         if ($this->app->environment('local', 'testing')) {
             $this->app->register(DuskServiceProvider::class);
         }
+
+        /*
+         * LeadSearchRepository
+         */
+        $this->app->singleton(LeadSearch::class, function () {
+            return new LeadSearch();
+        });
 
         View::composer('*', function ($view) {
             $view->with('loggedUser', auth()->user());

@@ -10,7 +10,7 @@ import './../../filters/m-utc-parse.filter';
 import './../../filters/m-format-localized.filter';
 import './../../filters/m-duration-for-humans.filter';
 
-toastr.options.positionClass = "toast-bottom-left"; 
+toastr.options.positionClass = "toast-bottom-left";
 toastr.options.newestOnTop = true;
 toastr.options.progressBar = true;
 
@@ -19,7 +19,7 @@ Vue.use(VueSlideoutPanel);
 let pusherService = null;
 
 // Main vue
-window['app'] = new Vue({
+window.app = new Vue({
     el: '#console',
     components: {
         SearchIcon,
@@ -62,7 +62,7 @@ window['app'] = new Vue({
     filters: {
         shortDate: function(value) {
             if (value == "") { return; }
-            return moment(String(value)).format('MM/DD/YYYY hh:mm A')
+            return moment(String(value)).format('MM/DD/YYYY hh:mm A');
         }
     },
     methods: {
@@ -146,13 +146,13 @@ window['app'] = new Vue({
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
         // this.fetchRecipients();
-        
+
         this.registerGlobalEventListeners();
     }
 });
 
 // Sidebar
-window['sidebar'] = new Vue({
+window.sidebar = new Vue({
     el: '#sidebar-nav-content',
     data: {
         activeFilterSection: 'all',

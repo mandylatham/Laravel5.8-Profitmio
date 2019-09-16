@@ -23,7 +23,9 @@
         window.pusherAuthEndpoint = "{{ url('/broadcasting/auth') }}";
         window.csrfToken = "{{ csrf_token() }}";
         // URLs
-        window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
+        // window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
+        // @fixme: setup to work with new LeadController for search
+        window.getRecipientsUrl = "{{ route('test', ['campaign' => $campaign->id]) }}";
         window.getResponsesUrl = "{{ route('campaign.recipient.responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.updateNotesUrl = "{{ route('recipient.update-notes', ['recipient' => ':recipientId']) }}";
         window.appointmentUpdateCalledStatusUrl = "{{ route('appointment.update-called-status', ['appointment' => ':appointmentId']) }}";
@@ -45,7 +47,7 @@
         <ul class="filter">
             <li class="all">
                 <a class="all-filter" :class="{'active': activeFilterSection === 'all'}" href="javascript:;"
-                   @click="changeFilter('filter', 'all')"><i class="fas fa-expand-arrows-alt"></i> All
+                   @click="changeFilter('filter', '')"><i class="fas fa-expand-arrows-alt"></i> All
                     <span class="counter">@{{ counters.total }}</span></a>
             </li>
             <li class="unread">
@@ -66,17 +68,17 @@
         <ul class="media-type">
             <li class="calls">
                 <a class="call-filter" :class="{'active': activeFilterSection === 'calls'}" href="javascript:;"
-                   @click="changeFilter('filter', 'calls')"><i class="fas fa-phone"></i> Calls
+                   @click="changeFilter('media', 'phone')"><i class="fas fa-phone"></i> Calls
                     <span class="counter">@{{ counters.calls }}</span></a>
             </li>
             <li class="email">
                 <a class="email-filter" :class="{'active': activeFilterSection === 'email'}" href="javascript:;"
-                   @click="changeFilter('filter', 'email')"><i class="far fa-envelope"></i> Email
+                   @click="changeFilter('media', 'email')"><i class="far fa-envelope"></i> Email
                     <span class="counter">@{{ counters.email }}</span></a>
             </li>
             <li class="sms">
                 <a class="sms-filter" :class="{'active': activeFilterSection === 'sms'}" href="javascript:;"
-                   @click="changeFilter('filter', 'sms')"><i class="far fa-comment-alt"></i> SMS
+                   @click="changeFilter('media', 'text')"><i class="far fa-comment-alt"></i> SMS
                     <span class="counter">@{{ counters.sms }}</span></a>
             </li>
         </ul>
