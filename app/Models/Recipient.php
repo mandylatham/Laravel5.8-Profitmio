@@ -169,10 +169,6 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         return $query->where($label, 1);
     }
 
-    public function scopeSearch($query, $searchString)
-    {
-    }
-
     public function markInvalidEmail()
     {
         $this->email = '';

@@ -29,7 +29,7 @@
                         <a :href="this.phone_link">{{ recipient.phone }}</a>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-4" v-if="recipient.status != 'new-lead'">
                     <b-dropdown right text="Add Label" :disabled="Object.keys(labelDropdownOptions).length === 0"
                                 class="float-right" v-if="campaign.status == 'Active'">
                         <b-dropdown-item v-for="(label, index) in labelDropdownOptions" :key="index" :value="index"
