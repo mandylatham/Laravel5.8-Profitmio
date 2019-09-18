@@ -57,7 +57,7 @@
             </li>
             <li class="open-leads">
                 <a class="unread-filter" :class="{'active': activeFilterSection === 'open'}" href="javascript:;"
-                   @click="changeFilter('status', 'opened')"><i class="far fa-flag"></i> Open Leads
+                   @click="changeFilter('status', 'open')"><i class="far fa-flag"></i> Open Leads
                     <span class="counter">@{{ counters.open }}</span></a>
             </li>
             <li class="closed-leads">
@@ -67,6 +67,7 @@
             </li>
         </ul>
 
+<!-- NOT SHOWING THESE RIGHT NOW
         <hr>
         <h4>Media</h4>
 
@@ -147,6 +148,7 @@
                     <span class="counter">@{{ counters.heat }}</span></a>
             </li>
         </ul>
+-->
     </nav>
 @endsection
 

@@ -9,9 +9,14 @@ interface SearchableRepositoryContract
     /**
      * Search by Request
      *
-     * @param mixed $id
-     *
-     * @return Model
+     * @param Request $request
      */
-    public function byRequest(Campaign $campaign, Request $request);
+    public function byRequest(Request $request);
+
+    /**
+     * Set the campaign
+     *
+     * @param Campaign $campaign
+     */
+    public function forCampaign(Campaign $campaign);
 }

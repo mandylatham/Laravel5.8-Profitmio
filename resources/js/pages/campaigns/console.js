@@ -182,11 +182,13 @@ window.sidebar = new Vue({
     },
     methods: {
         changeFilter: function (filter, value) {
+            /*
             let newUrl = window.baseUrl;
             newUrl += value;
             if (newUrl !== window.location.href) {
                 window.history.pushState("", "", newUrl);
             }
+            */
             this.activeFilterSection = value;
 
             window.PmEvent.fire('filters.filter-changed', {

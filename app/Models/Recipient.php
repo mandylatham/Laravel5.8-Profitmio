@@ -151,10 +151,10 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         return $query->whereNotNull('archived_at');
     }
 
-    public function scopeLabelled($query, $label, $campaignId)
+    public function scopeLabelled($query, $label)
     {
         if ($label == 'none') {
-            return $query->where('recipients.campaign_id', $campaignId)->where([
+            return $query->where([
                 'interested'     => 0,
                 'not_interested' => 0,
                 'service'        => 0,
@@ -166,7 +166,7 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
             ]);
         }
 
-        return $query->where('recipients.campaign_id', $campaignId)->where($label, 1);
+        return $query->where($label, 1);
     }
 
     public function scopeSearch($query, $searchString)

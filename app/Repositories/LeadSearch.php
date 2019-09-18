@@ -29,34 +29,85 @@ class LeadSearch implements SearchableRepositoryContract
      */
     public $statuses = ['new', 'open', 'closed'];
 
-    public function byRequest(Campaign $campaign, Request $request)
+    /**
+     * @var QueryBuilder
+     */
+    private $leads;
+
+    /**
+     * @var Campaign
+     */
+    private $campaign;
+
+    /**
+     * @var int
+     */
+    private $per_page = 30;
+
+    /**
+     * Allow this to be used for a specific campaign
+     *
+     * @param Campaign $campaign
+     */
+    public function forCampaign(Campaign $campaign)
     {
+        $this->campaign = $campaign;
+
+        $this->leads = $this->campaign->leads();
+
+        return $this;
+    }
+
+    public function byRequest(Request $request)
+    {
+        if (!$this->campaign) {
+            throw new \Exception("No campaign specified");
+        }
+
         $healths = (array) $request->input('health', []);
         $labels = (array) $request->input('labels', []);
         $media = (array) $request->input('media', []);
         $statuses = (array) $request->input('filter', []);
+        $keywords = $request->input('search');
+        $this->per_page = $request->input('per_page', $this->per_page);
 
-        $leads = $campaign->leads();
+        return $this->byHealth($healths)
+                    ->byStatus($statuses)
+                    ->byMedia($media)
+                    ->byKeyword($keywords)
+                    ->results();
 
-        foreach ($healths as $health) { //$this->healths as $health) {
-            if (in_array($health, $this->healths)) {
-                $leads->healthIs($health);
-            } else {
-                throw new \Exception('invalid parameter for health');
-            }
-        }
+    }
+
+    public function results()
+    {
+        return $this->leads->orderBy('last_responded_at', 'DESC')
+            ->orderBy('last_status_changed_at', 'DESC')
+            ->paginate($this->per_page);
+    }
+
+    public function byStatus($statuses)
+    {
+        $statuses = (array) $statuses;
 
         foreach ($statuses as $status) {
             if (in_array($status, $this->statuses)) {
-                $leads->$status();
+                $this->leads->$status();
             } else {
                 throw new \Exception('invalid parameter for status');
             }
         }
 
+        return $this;
+    }
+
+    public function byMedia($media)
+    {
+        $media = (array) $media;
+
         foreach ($media as $medium) {
             if (in_array($medium, $this->media)) {
-                $leads->whereHas(
+                $this->leads->whereHas(
                     'responses', function ($query) use ($medium) {
                         $query->whereType($medium);
                     }
@@ -66,22 +117,43 @@ class LeadSearch implements SearchableRepositoryContract
             }
         }
 
+        return $this;
+    }
+
+    public function byHealth($healths)
+    {
+        $healths = (array) $healths;
+
+        foreach ($healths as $health) {
+            if (in_array($health, $this->healths)) {
+                $this->leads->healthIs($health);
+            } else {
+                throw new \Exception('invalid parameter for health');
+            }
+        }
+
+        return $this;
+    }
+
+    public function byLabel($labels)
+    {
+        $labels = (array) $labels;
+
         foreach ($labels as $label) {
             if (in_array($label, $this->labels)) {
-                $leads->labelled($label, $campaign->id);
+                $this->leads->labelled($label);
             } else {
                 throw new \Exception('invalid parameter for labels');
             }
-
         }
 
-        if ($request->filled('search')) {
-            $leads->search($request->input('search'));
-        }
+        return $this;
+    }
 
-        return $leads->orderBy('last_responded_at', 'DESC')
-            ->orderBy('last_status_changed_at', 'DESC')
-            ->paginate($request->input('per_page', 30));
+    public function byKeyword($keywords)
+    {
+        $this->leads->search($keywords);
 
+        return $this;
     }
 }

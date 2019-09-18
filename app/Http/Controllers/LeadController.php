@@ -80,7 +80,13 @@ class LeadController extends Controller
      */
     public function index(Campaign $campaign, Request $request)
     {
-        return new LeadCollection($this->leadSearch->byRequest($campaign, $request));
+        $status = $request->status;
+        return new LeadCollection(
+            $this->leadSearch
+                 ->forCampaign($campaign)
+                 ->byStatus($status)
+                 ->results()
+        );
     }
 
     public function show(Campaign $campaign, Lead $lead)
