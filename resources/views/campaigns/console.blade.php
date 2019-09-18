@@ -45,20 +45,25 @@
 @section('sidebar-content')
     <nav id="sidebar-nav-content" class="wrapper-aside--navigation" v-cloak>
         <ul class="filter">
-            <li class="all">
+            <li class="all-leads">
                 <a class="all-filter" :class="{'active': activeFilterSection === 'all'}" href="javascript:;"
-                   @click="changeFilter('filter', '')"><i class="fas fa-expand-arrows-alt"></i> All
+                   @click="changeFilter('reset')"><i class="fas fa-expand-arrows-alt"></i> All Leads
                     <span class="counter">@{{ counters.total }}</span></a>
             </li>
-            <li class="unread">
-                <a class="unread-filter" :class="{'active': activeFilterSection === 'unread'}" href="javascript:;"
-                   @click="changeFilter('filter', 'unread')"><i class="far fa-flag"></i> Unread
-                    <span class="counter">@{{ counters.unread }}</span></a>
+            <li class="new-leads">
+                <a class="unread-filter" :class="{'active': activeFilterSection === 'new'}" href="javascript:;"
+                   @click="changeFilter('status', 'new')"><i class="far fa-flag"></i> New Leads
+                    <span class="counter">@{{ counters.new }}</span></a>
             </li>
-            <li class="idle">
-                <a class="idle-filter" :class="{'active': activeFilterSection === 'idle'}" href="javascript:;"
-                   @click="changeFilter('filter', 'idle')"><i class="far fa-hourglass"></i> Idle
-                    <span class="counter">@{{ counters.idle }}</span></a>
+            <li class="open-leads">
+                <a class="unread-filter" :class="{'active': activeFilterSection === 'open'}" href="javascript:;"
+                   @click="changeFilter('status', 'opened')"><i class="far fa-flag"></i> Open Leads
+                    <span class="counter">@{{ counters.open }}</span></a>
+            </li>
+            <li class="closed-leads">
+                <a class="idle-filter" :class="{'active': activeFilterSection === 'closed'}" href="javascript:;"
+                   @click="changeFilter('status', 'closed')"><i class="far fa-hourglass"></i> Closed Leads
+                    <span class="counter">@{{ counters.closed }}</span></a>
             </li>
         </ul>
 

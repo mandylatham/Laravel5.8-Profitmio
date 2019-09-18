@@ -25,10 +25,10 @@ class CampaignCountsUpdated implements ShouldBroadcast
     private $campaign;
 
     /** @var  int */
-    private $totalCount;
-    private $unread;
-    private $idle;
-    private $archived;
+    private $total;
+    private $new;
+    private $open;
+    private $closed;
     private $calls;
     private $emails;
     private $sms;
@@ -70,30 +70,16 @@ class CampaignCountsUpdated implements ShouldBroadcast
     {
         $counters = [];
         $counters['total'] = Recipient::withResponses($this->campaign->id)->count();
-        $counters['unread'] = Recipient::unread($this->campaign->id)->count();
-        $counters['idle'] = Recipient::idle($this->campaign->id)->count();
-        $counters['calls'] = Recipient::withResponses($this->campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$this->campaign->id} and type='phone'")
-            )
-        )->count();
-        $counters['email'] = Recipient::withResponses($this->campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$this->campaign->id} and type='email'")
-            )
-        )->count();
-        $counters['sms'] = Recipient::withResponses($this->campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$this->campaign->id} and type='text'")
-            )
-        )->count();
+        $counters['new'] = $this->campaign->leads()->new()->count();
+        $counters['open'] = $this->campaign->leads()->open()->count();
+        $counters['closed'] = $this->campaign->leads()->closed()->count();
+        $counters['calls'] = $this->campaign->leads()->whereHas('responses', function ($q) { $q->whereType('phone'); })->count();
+        $counters['email'] = $this->campaign->leads()->whereHas('responses', function ($q) { $q->whereType('email'); })->count();
+        $counters['sms'] = $this->campaign->leads()->whereHas('responses', function ($q) { $q->whereType('text'); })->count();
 
         $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
         foreach ($labels as $label) {
-            $counters[$label] = Recipient::withResponses($this->campaign->id)
+            $counters[$label] = $this->campaign->leads()
                 ->labelled($label, $this->campaign->id)
                 ->count();
         }

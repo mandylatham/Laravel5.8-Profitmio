@@ -29,5 +29,6 @@ $factory->define(Recipient::class, function (Faker $faker) {
         'state' => $faker->state,
         'email_valid' => true,
         'phone_valid' => true,
+        'status' => 'open-lead',
     ];
 });

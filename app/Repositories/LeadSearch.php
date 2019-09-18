@@ -80,7 +80,7 @@ class LeadSearch implements SearchableRepositoryContract
         }
 
         return $leads->orderBy('last_responded_at', 'DESC')
-            ->orderBy('last_status_change_at', 'DESC')
+            ->orderBy('last_status_changed_at', 'DESC')
             ->paginate($request->input('per_page', 30));
 
     }

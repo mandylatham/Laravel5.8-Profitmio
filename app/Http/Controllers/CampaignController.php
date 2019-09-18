@@ -48,27 +48,13 @@ class CampaignController extends Controller
     public function console(Request $request, Campaign $campaign, $filter = null)
     {
         $counters = [];
-        $counters['total'] = Recipient::withResponses($campaign->id)->count();
-        $counters['unread'] = Recipient::unread($campaign->id)->count();
-        $counters['idle'] = Recipient::idle($campaign->id)->count();
-        $counters['calls'] = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
-            )
-        )->count();
-        $counters['email'] = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
-            )
-        )->count();
-        $counters['sms'] = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
-            )
-        )->count();
+        $counters['total'] = $campaign->leads()->count();
+        $counters['new'] = $campaign->leads()->new()->count();
+        $counters['open'] = $campaign->leads()->open()->count();
+        $counters['closed'] = $campaign->leads()->closed()->count();
+        $counters['calls'] = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('phone'); })->count();
+        $counters['email'] = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('email'); })->count();
+        $counters['sms'] = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('text'); })->count();
 
         $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
         foreach ($labels as $label) {

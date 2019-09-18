@@ -75,7 +75,7 @@ class CampaignTableSeeder extends Seeder
                                 'type' => 'text'
                             ]);
                         //  Attach phone
-                        factory(\App\Models\Response::class, $faker->numberBetween(5, 15))
+                        factory(\App\Models\Response::class, $faker->numberBetween(0, 3))
                             ->create([
                                 'campaign_id' => $campaign->id,
                                 'recipient_id' => $recipient->id,

@@ -50,7 +50,7 @@ window.app = new Vue({
             search: null,
             page: 1,
             per_page: 30,
-            filter: null,
+            status: null,
             label: null,
             media: null
         }),
@@ -128,10 +128,14 @@ window.app = new Vue({
             window.PmEvent.listen('filters.filter-changed', (data) => {
                 if (data.filter === 'media') {
                     this.searchForm.media = data.value;
-                } else if (data.filter === 'filter') {
-                    this.searchForm.filter = data.value;
+                } else if (data.filter === 'status') {
+                    this.searchForm.status = data.value;
                 } else if (data.filter === 'label') {
                     this.searchForm.label = data.value;
+                } else if (data.filter === 'reset') {
+                    this.searchForm.status = '';
+                    this.searchForm.media = '';
+                    this.searchForm.label = '';
                 }
                 this.fetchRecipients();
             });

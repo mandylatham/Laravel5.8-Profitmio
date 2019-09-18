@@ -63,6 +63,13 @@ class Lead extends Recipient
         return $query;
     }
 
+    public function hasEmails($query)
+    {
+        return $query->whereHas(['responses' => function ($q) {
+            $q->whereType('email');
+        }]);
+    }
+
     /**
      * @param User $user
      */
