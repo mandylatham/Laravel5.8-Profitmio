@@ -131,19 +131,38 @@
     }
 
     .recipient-row {
-        cursor: pointer;
+        align-items: center;
         background-color: #fff;
         border: none;
-        margin-bottom: 4px;
-        border-radius: 5px;
-        padding: 0.5rem 2rem;
+        border-radius: 8px;
+        cursor: pointer;
         display: flex;
-        align-items: center;
         min-height: 40px;
+        padding: 0;
 
         & > .row {
+            box-shadow: 0px 0px 2px #707070;
             line-height: 1rem;
+            padding: 0;
             width: 100%;
+            margin-bottom: 0.6rem;
+
+            &:hover {
+                box-shadow: 2px 2px 6px #707070;
+            }
+
+            & > * {
+                background-color: #fff;
+                padding: 0.8rem;
+            }
+            & > .lead-status {
+                align-items: center;
+                background-color: $brand-purple;
+                color: #f0f0f0;
+                display: flex;
+                justify-content: center;
+                width: 2.8rem;
+            }
         }
         .label-wrapper {
             > span {

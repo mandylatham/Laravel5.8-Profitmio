@@ -29,7 +29,7 @@
                         <a :href="this.phone_link">{{ recipient.phone }}</a>
                     </div>
                 </div>
-                <div class="col-4" v-if="recipient.status != 'new-lead'">
+                <div class="col-4" v-if="recipient.status != 'New'">
                     <b-dropdown right text="Add Label" :disabled="Object.keys(labelDropdownOptions).length === 0"
                                 class="float-right" v-if="campaign.status == 'Active'">
                         <b-dropdown-item v-for="(label, index) in labelDropdownOptions" :key="index" :value="index"
@@ -39,7 +39,11 @@
                 </div>
             </div>
 
-            <div class="row align-items-end no-gutters mt-4 mb-3" v-if="Object.keys(labels).length > 0">
+            <div class="row mt-4 mb-3 no-gutters" v-if="recipient.status == 'New'">
+                <button class="btn btn-success">Open Lead</button>
+            </div>
+
+            <div class="row align-items-end no-gutters mt-4 mb-3" v-if="recipient.status != 'New' && Object.keys(labels).length > 0">
                 <div class="col-12 labels-wrapper">
                     <ul class="labels">
                         <li :class="index" v-for="(label, index) in labels">{{ label }}<i
@@ -48,16 +52,16 @@
                 </div>
             </div>
 
-            <div class="notes-wrapper">
+            <div class="notes-wrapper" v-if="recipient.status != 'New'">
                 <div class="form-group">
                     <textarea class="form-control" placeholder="Notes..." name="notes" rows="4"
-                              v-model="notes">{{ this.recipient.notes }}</textarea>
+                              v-model="notes"></textarea>
                 </div>
                 <div class="form-group" v-if="campaign.status == 'Active'">
-                    <button type="button" class="btn btn-primary" @click="addNotes(recipientId)">Save note</button>
+                    <button type="button" class="btn btn-primary" v-if="starting_notes !== notes" @click="addNotes(recipientId)">Save note</button>
                 </div>
             </div>
-            <div class="call-in-wrapper" v-if="appointments.length">
+            <div class="call-in-wrapper" v-if="recipient.status != 'New' && appointments.length">
                 <ul class="list-group">
                     <li class="list-group-item" v-for="appointment in appointments">
                         <div v-if="appointment.type === 'callback'" class="alert" :class="{'alert-success': appointment.called_back, 'alert-warning': !appointment.called_back}">
@@ -89,7 +93,7 @@
                     </li>
                 </ul>
             </div>
-            <div id="new-appointment" class="mail-attachments mt-2 mb-3" v-if="needsAppointment()">
+            <div id="new-appointment" class="mail-attachments mt-2 mb-3" v-if="recipient.status != 'New' && needsAppointment()">
                 <div class="alert alert-info" role="alert">
                     <button class="btn pm-btn btn-primary mr-2" @click="showNewApptForm = !showNewApptForm" v-if="campaign.status == 'Active'">
                         Add Appointment
@@ -114,18 +118,18 @@
                 </div>
             </div>
 
-            <div class="alert alert-info" role="alert" v-if="campaign.adf_crm_export && !recipient.sent_to_crm">
+            <div class="alert alert-info" role="alert" v-if="recipient.status != 'New' && campaign.adf_crm_export && !recipient.sent_to_crm">
                 <button class="btn pm-btn btn-primary mr-2" @click.once="sendToCrm()">
                     Send to CRM
                 </button>
                 {{ recipient.name }} has not been sent to the CRM.
             </div>
-            <div class="alert alert-success" role="alert" v-if="campaign.adf_crm_export && recipient.sent_to_crm">
+            <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.adf_crm_export && recipient.sent_to_crm">
                 <i class="fa fa-database mr-2"></i>
                 {{ recipient.name }} has already been sent to the CRM.
             </div>
 
-            <div class="mail-attachments" v-if="threads.phone && threads.phone.length">
+            <div class="mail-attachments" v-if="recipient.status != 'New' && threads.phone && threads.phone.length">
                 <h5>Call History</h5>
                 <ul class="list-group">
                     <li class="list-group-item" v-for="call in threads.phone">
@@ -146,7 +150,7 @@
                 </ul>
             </div>
 
-            <div class="panel panel-primary messaging-panel sms-messages" v-if="threads.text && threads.text.length">
+            <div class="panel panel-primary messaging-panel sms-messages" v-if="recipient.status != 'New' && threads.text && threads.text.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
@@ -205,7 +209,7 @@
                 </div>
             </div>
 
-            <div class="panel panel-primary messaging-panel email-messages" v-if="threads.email && threads.email.length">
+            <div class="panel panel-primary messaging-panel email-messages" v-if="recipient.status != 'New' && threads.email && threads.email.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
@@ -325,6 +329,7 @@
                 isAdmin: false,
                 rest: [],
                 loading: false,
+                starting_notes: '',
                 notes: '',
                 calledCheckbox: false,
                 appointmentSelectedDateUnformatted: '',
@@ -364,6 +369,7 @@
                 this.appointments = [];
                 this.rest = [];
                 this.loading = false;
+                this.starting_notes = '';
                 this.notes = '';
                 this.calledCheckbox = false;
                 this.appointmentSelectedDateUnformatted = '';
@@ -380,18 +386,19 @@
 
                 axios.get(generateRoute(window.getResponsesUrl, {'recipientId': recipientId}))
                     .then(({data: r}) => {
-                        this.recipient = r.recipient;
+                        this.recipient = r.lead;
                         this.threads = r.threads;
                         this.appointments = r.appointments;
                         this.rest = r.rest;
-                        this.notes = r.recipient.notes;
-                        this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
+                        this.starting_notes = r.lead.notes;
+                        this.notes = r.lead.notes;
+                        this.labels = r.lead.labels.length === 0 ? {} : r.lead.labels;
 
                         if (this.threads.textDrop && this.threads.textDrop.text_message) {
-                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.recipient);
+                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.lead);
                         }
                         if (this.threads.emailDrop && this.threads.emailDrop.email_html) {
-                            this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.recipient);
+                            this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.lead);
                         }
 
                         this.registerPusherListeners();

@@ -175,5 +175,4 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
         $this->save();
     }
-
 }

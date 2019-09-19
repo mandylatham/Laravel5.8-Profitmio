@@ -176,12 +176,15 @@
         <div class="table-loader-spinner" v-if="loading">
             <spinner-icon></spinner-icon>
         </div>
-        <div class="recipient-row" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
+        <div class="recipient-row container" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
             <div class="row no-gutters">
-                <div class="col-12 col-sm-2 text-center d-flex flex-column justify-content-center">
-                    @{{ recipient.last_responded_at | mUtcParse('YYYY-MM-DD HH:mm') | mDurationForHumans('MM/DD/YYYY hh:mm') }}
+                <div class="col-12 col-sm-2 lead-status no-gutters">
+                    <i class="fas fa-star mr-2" style="color: #ff0" v-if="recipient.status == 'New'"></i>
+                    <i class="fas fa-door-open mr-2" style="color: #00e000" v-if="recipient.status == 'Open'"></i>
+                    <i class="fas fa-door-closed mr-2" v-if="recipient.status == 'Closed'"></i>
+                    @{{ recipient.status }}
                 </div>
-                <div class="col-12 col-sm-7 d-flex flex-column justify-content-center">
+                <div class="col-12 col-sm-7 no-gutters d-flex flex-column justify-content-center">
                     <div class="name-wrapper">
                         <strong>@{{ recipient.name }}</strong>
                     </div>
@@ -189,7 +192,7 @@
                         <span v-for="(label, index) in recipient.labels" :class="index">@{{ label }}</span>
                     </div>
                 </div>
-                <div class="col-12 col-sm-3">
+                <div class="col-12 col-sm-3 no-gutters">
                     <div class="phone-email">
                         <div v-if="recipient.email"><i class="fa fa-envelope mr-2"></i> @{{ recipient.email }}</div>
                         <div v-if="recipient.phone"><i class="fa fa-phone mr-2"></i> @{{ recipient.phone }}</div>
