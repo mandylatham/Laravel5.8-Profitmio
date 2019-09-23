@@ -481,8 +481,6 @@
                 axios.post(generateRoute(window.openLeadUrl, {'leadId': leadId}))
                     .then(response => {
                         this.$toastr.success('Lead Opened');
-                        console.log(response.data.recipient.status);
-                        // this.recipient.status = repsonse.data.recipient.status;
                         window.app.$set(this.recipient, 'status', response.data.recipient.status);
                         window.PmEvent.fire('changed.recipient.status', response.data.recipient);
                     })
@@ -496,8 +494,18 @@
                 axios.post(generateRoute(window.closeLeadUrl, {'leadId': leadId}))
                     .then(response => {
                         this.$toastr.success('Lead Closed');
-                        console.log(response.data.recipient.status);
-                        // this.recipient.status = repsonse.data.recipient.status;
+                        window.app.$set(this.recipient, 'status', response.data.recipient.status);
+                        window.PmEvent.fire('changed.recipient.status', response.data.recipient);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        window.PmEvent.fire('errors.api', 'Failed to open lead');
+                    });
+            },
+            reopenLead: function (leadId) {
+                axios.post(generateRoute(window.reopenLeadUrl, {'leadId': leadId}))
+                    .then(response => {
+                        this.$toastr.success('Lead Reopened');
                         window.app.$set(this.recipient, 'status', response.data.recipient.status);
                         window.PmEvent.fire('changed.recipient.status', response.data.recipient);
                     })
@@ -556,7 +564,7 @@
                         this.$toastr.success("Recipient sent to CRM");
                     })
                     .catch(error => {
-                        console.log(error);
+                        console.error(error);
                         window.PmEvent.fire('errors.api', "Unable to send recipient to CRM at this time");
                     });
             },
@@ -567,7 +575,7 @@
                         this.$toastr.success("Lead sent to Service");
                     })
                     .catch(error => {
-                        console.log(error);
+                        console.error(error);
                         window.PmEvent.fire('errors.api', "Unable to send lead to Service at this time");
                     });
             },

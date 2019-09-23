@@ -126,10 +126,8 @@ window.app = new Vue({
             });
 
             window.PmEvent.listen('changed.recipient.status', (data) => {
-                console.log(data);
                 this.recipients.forEach((recipient, index) => {
                     if (recipient.id === data.id) {
-                        console.log(index);
                         this.$set(this.recipients[index], 'status', data.status);
                     }
                 });

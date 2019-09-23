@@ -151,7 +151,7 @@ class LeadController extends Controller
         // Log Lead Activity
 
         // ReOpen the Lead
-        $lead->reopen();
+        $lead->reopen(auth()->user());
 
         // Broadcast update to counts
         event(new CampaignCountsUpdated($lead->campaign));
