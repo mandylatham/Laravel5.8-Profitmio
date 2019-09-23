@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid list-campaign-container">
         <div class="clearfix mt-3 mb-1">
-            <button class="btn pm-btn pm-btn-blue float-right " v-on:click.prevent="closePanel">Close</button>
+            <button class="btn pm-btn pm-btn-blue float-right " v-on:click.prevent="closePanel">&times;</button>
         </div>
 
         <div class="table-loader-spinner" v-if="loading">
@@ -29,7 +29,7 @@
                         <a :href="this.phone_link">{{ recipient.phone }}</a>
                     </div>
                 </div>
-                <div class="col-4" v-if="recipient.status != 'New'">
+                <div class="col-4" v-show="false">
                     <b-dropdown right text="Add Label" :disabled="Object.keys(labelDropdownOptions).length === 0"
                                 class="float-right" v-if="campaign.status == 'Active'">
                         <b-dropdown-item v-for="(label, index) in labelDropdownOptions" :key="index" :value="index"
@@ -37,10 +37,20 @@
                         </b-dropdown-item>
                     </b-dropdown>
                 </div>
-            </div>
-
-            <div class="row mt-4 mb-3 no-gutters" v-if="recipient.status == 'New'">
-                <button class="btn btn-success" @click="openLead(recipient.id)">Open Lead</button>
+                <div class="col-4" v-if="recipient.status == 'Open'">
+                    <button class="btn btn-warning"
+                            style="width: 100%; font-size: 1.2rem;"
+                            @click="closeLead(recipient.id)">
+                        Close Lead
+                    </button>
+                </div>
+                <div class="col-4 no-gutters" v-if="recipient.status == 'New'">
+                    <button class="btn btn-success"
+                            style="width: 100%; font-size: 1.2rem;"
+                            @click="openLead(recipient.id)">
+                        Open Lead
+                    </button>
+                </div>
             </div>
 
             <div class="row align-items-end no-gutters mt-4 mb-3" v-if="recipient.status != 'New' && Object.keys(labels).length > 0">
@@ -127,6 +137,16 @@
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.adf_crm_export && recipient.sent_to_crm">
                 <i class="fa fa-database mr-2"></i>
                 {{ recipient.name }} has already been sent to the CRM.
+            </div>
+
+            <div class="alert alert-info" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 0">
+                <button class="btn pm-btn btn-primary mr-2" @click="sendToService()" v-if="campaign.status == 'Active'">
+                    Send To Service Department
+                </button>
+                {{ recipient.name }} not sent to Service.
+            </div>
+            <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 1">
+                {{ recipient.name }} already sent to Service.
             </div>
 
             <div class="mail-attachments" v-if="recipient.status != 'New' && threads.phone && threads.phone.length">

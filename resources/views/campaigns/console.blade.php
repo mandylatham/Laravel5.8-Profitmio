@@ -47,6 +47,36 @@
 
 @section('sidebar-content')
     <nav id="sidebar-nav-content" class="wrapper-aside--navigation" v-cloak>
+        <hr>
+        <h4>Campaign</h4>
+        <ul class="list-group">
+            <li class="list-group-item">
+                <a class="{{ \Route::current()->getName() === 'campaigns.drops.index' ? 'active' : '' }}" href="{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}">
+                    <i class="pm-font-drops-icon"></i>
+                    <span>DROPS</span>
+                </a>
+            </li>
+            <li class="list-group-item">
+                <a class="{{ \Route::current()->getName() === 'campaigns.recipient-lists.index' ? 'active' : '' }}" href="{{ route('campaigns.recipient-lists.index', ['campaign' => $campaign->id]) }}">
+                    <i class="pm-font-recipients-icon"></i>
+                    <span>RECIPIENTS</span>
+                </a>
+            </li>
+            <li class="list-group-item">
+                <a class="{{ \Route::current()->getName() === 'campaigns.responses.index' ? 'active' : '' }}" href="{{ route('campaigns.responses.index', ['campaign' => $campaign->id]) }}">
+                    <i class="pm-font-responses-icon"></i>
+                    <span>RESPONSES</span>
+                </a>
+            </li>
+            <li class="list-group-item">
+                <a class="{{ \Route::current()->getName() === 'campaigns.edit' ? 'active' : '' }}" href="{{ route('campaigns.edit', ['campaign' => $campaign->id]) }}">
+                    <i class="pm-font-edit-icon"></i>
+                    <span>EDIT</span>
+                </a>
+            </li>
+        </ul>
+        <hr>
+        <h4>Leads</h4>
         <ul class="filter">
             <li class="all-leads">
                 <a class="all-filter" :class="{'active': activeFilterSection === 'all'}" href="javascript:;"
