@@ -218,7 +218,7 @@
                     <i class="fas fa-door-closed mr-2" v-if="recipient.status == 'Closed'"></i>
                     @{{ recipient.status }}
                 </div>
-                <div class="col-12 col-sm-7 no-gutters d-flex flex-column justify-content-center">
+                <div class="col-12 col-sm-5 col-md-6 no-gutters d-flex flex-column justify-content-center">
                     <div class="name-wrapper">
                         <strong>@{{ recipient.name }}</strong>
                     </div>
@@ -226,7 +226,7 @@
                         <span v-for="(label, index) in recipient.labels" :class="index">@{{ label }}</span>
                     </div>
                 </div>
-                <div class="col-12 col-sm-3 no-gutters">
+                <div class="col-12 col-sm-5 col-md-4 no-gutters">
                     <div class="phone-email">
                         <div v-if="recipient.email"><i class="fa fa-envelope mr-2"></i> @{{ recipient.email }}</div>
                         <div v-if="recipient.phone"><i class="fa fa-phone mr-2"></i> @{{ recipient.phone }}</div>

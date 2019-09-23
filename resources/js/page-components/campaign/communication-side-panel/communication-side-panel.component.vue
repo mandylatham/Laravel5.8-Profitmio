@@ -100,7 +100,7 @@
                                 <i class="fas fa-question-circle mr-2"></i>
                                 Curiosity Call
                             </span>
-                            <span>{{ recipient.name }} called, but did not elect to reserve a callback or an appointment</span>
+                            <span>{{ recipient.first_name }} called, but did not elect to reserve a callback or an appointment</span>
                         </div>
                         <div v-else-if="appointment.type === 'appointment'" class="alert alert-success">
                             <span class="btn btn-success recipient-action mr-2">
@@ -121,7 +121,7 @@
                             v-if="campaign.status == 'Active'">
                         Add Appointment
                     </button>
-                    {{ recipient.name }} has no appointments.
+                    {{ recipient.first_name }} has no appointments.
                 </div>
                 <div id="add-appointment-form" class="card" v-if="showNewApptForm">
                     <div class="card-body">
@@ -146,14 +146,14 @@
                         @click.once="sendToCrm()" :disabled="recipient.status != 'Open'">
                     Send to CRM
                 </button>
-                {{ recipient.name }} has not been sent to the CRM.
+                {{ recipient.first_name }} has not been sent to the CRM.
             </div>
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.adf_crm_export && recipient.sent_to_crm">
                 <span class="btn btn-success recipient-action mr-2">
                     <i class="fa fa-database mr-2"></i>
                     CRM
                 </span>
-                {{ recipient.name }} has already been sent to the CRM.
+                {{ recipient.first_name }} has already been sent to the CRM.
             </div>
 
             <div class="alert alert-info" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 0">
@@ -161,14 +161,14 @@
                         v-if="campaign.status == 'Active'" :disabled="recipient.status != 'Open'">
                     Send To Service Department
                 </button>
-                {{ recipient.name }} not sent to Service.
+                {{ recipient.first_name }} not sent to Service.
             </div>
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 1">
                 <span class="btn btn-success recipient-action mr-2">
                     <i class="fa fa-wrench mr-2"></i>
                     Service
                 </span>
-                {{ recipient.name }} already sent to Service.
+                {{ recipient.first_name }} already sent to Service.
             </div>
 
             <div class="mail-attachments" v-if="recipient.status != 'New' && threads.phone && threads.phone.length">
@@ -563,7 +563,7 @@
             sendToService: function () {
                 axios.post(generateRoute(window.sendServiceUrl, {'leadId': this.recipientId}))
                     .then(response => {
-                        this.recipient.sent_to_crm = true;
+                        this.recipient.service = 1;
                         this.$toastr.success("Lead sent to Service");
                     })
                     .catch(error => {
