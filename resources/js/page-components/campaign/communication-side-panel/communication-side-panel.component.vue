@@ -37,6 +37,15 @@
                         </b-dropdown-item>
                     </b-dropdown>
                 </div>
+                <div class="col-4" v-if="recipient.status == 'Closed'">
+                    <button class="btn btn-secondary"
+                            v-show="false"
+                            style="width: 100%; font-size: 1.2rem;"
+                            @click="reopenLead(recipient.id)">
+                        ReOpen Lead
+                    </button>
+                    <p class="alert alert-secondary">Closed Lead</p>
+                </div>
                 <div class="col-4" v-if="recipient.status == 'Open'">
                     <button class="btn btn-warning"
                             style="width: 100%; font-size: 1.2rem;"
@@ -64,7 +73,7 @@
 
             <div class="notes-wrapper" v-if="recipient.status != 'New'">
                 <div class="form-group">
-                    <textarea class="form-control" placeholder="Notes..." name="notes" rows="4"
+                    <textarea class="form-control" placeholder="Notes..." name="notes" rows="4" :class="recipient.status != 'Open' ? 'disabled' : ''" :disabled="recipient.status != 'Open'"
                               v-model="notes"></textarea>
                 </div>
                 <div class="form-group" v-if="campaign.status == 'Active'">
@@ -81,8 +90,8 @@
                             </span>
                             {{ appointment.name }} @ {{ appointment.phone_number }}
                             <label class="ml-2">
-                                <input type="checkbox" class="toggle_called" :checked="appointment.called_back"
-                                        @click="appointmentCalledBackToggle($event, appointment)">
+                                <input type="checkbox" class="toggle_called" :class="recipient.status == 'Open' ? '' : 'disabled'" :checked="appointment.called_back"
+                                        @click="appointmentCalledBackToggle($event, appointment)" :disabled="recipient.status != 'Open'">
                                 Called
                             </label>
                         </div>
@@ -105,7 +114,11 @@
             </div>
             <div id="new-appointment" class="mail-attachments mt-2 mb-3" v-if="recipient.status != 'New' && needsAppointment()">
                 <div class="alert alert-info" role="alert">
-                    <button class="btn pm-btn btn-primary mr-2" @click="showNewApptForm = !showNewApptForm" v-if="campaign.status == 'Active'">
+                    <button class="btn pm-btn btn-primary mr-2"
+                            :class="recipient.status != 'Open' ? 'disabled' : ''"
+                            @click="showNewApptForm = !showNewApptForm"
+                            :disabled="recipient.status != 'Open'"
+                            v-if="campaign.status == 'Active'">
                         Add Appointment
                     </button>
                     {{ recipient.name }} has no appointments.
@@ -129,7 +142,8 @@
             </div>
 
             <div class="alert alert-info" role="alert" v-if="recipient.status != 'New' && campaign.adf_crm_export && !recipient.sent_to_crm">
-                <button class="btn pm-btn btn-primary mr-2" @click.once="sendToCrm()">
+                <button class="btn pm-btn btn-primary mr-2" :class="recipient.status != 'Open' ? 'disabled' : ''"
+                        @click.once="sendToCrm()" :disabled="recipient.status != 'Open'">
                     Send to CRM
                 </button>
                 {{ recipient.name }} has not been sent to the CRM.
@@ -140,7 +154,8 @@
             </div>
 
             <div class="alert alert-info" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 0">
-                <button class="btn pm-btn btn-primary mr-2" @click="sendToService()" v-if="campaign.status == 'Active'">
+                <button class="btn pm-btn btn-primary mr-2" :class="recipient.status != 'Open' ? 'disabled' : ''" @click="sendToService()"
+                        v-if="campaign.status == 'Active'" :disabled="recipient.status != 'Open'">
                     Send To Service Department
                 </button>
                 {{ recipient.name }} not sent to Service.
@@ -205,7 +220,8 @@
                                 <div class="message" :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}">{{ msg.message_formatted }}</div>
                                 <div class="checkbox" v-if="msg.incoming">
                                     <label>
-                                        <input type="checkbox" class="message-read" :checked="msg.read"
+                                        <input type="checkbox" class="message-read" :class="recipient.status != 'Open' ? 'disabled' : ''"
+                                               :checked="msg.read" :disabled="recipient.status != 'Open'"
                                                @click="messageUpdateReadStatus($event, msg.id)">
                                         Read
                                     </label>
@@ -213,7 +229,10 @@
                             </div>
                         </div>
                     </div>
-                    <form @submit.prevent="sendText" v-if="campaign.status == 'Active' && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
+                    <!-- @todo: refactor v-if into discrete checker method -->
+                    <form @submit.prevent="sendText"
+                            v-if="campaign.status == 'Active' && recipient.status == 'Open' &&
+                                (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="sms-form" style="margin-top: 20px;">
                             <div class="input-group">
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
@@ -270,7 +289,8 @@
 
                                 <div class="checkbox" v-if="msg.incoming">
                                     <label>
-                                        <input type="checkbox" class="message-read" :checked="msg.read"
+                                        <input type="checkbox" class="message-read" :class="recipient.status != 'Open' ? 'disabled' : ''"
+                                               :checked="msg.read" :disabled="recipient.status != 'Open'"
                                                @click="messageUpdateReadStatus($event, msg.id)">
                                         Read
                                     </label>
@@ -280,7 +300,9 @@
                     </div>
 
 
-                    <form class="mt-3" @submit.prevent="sendEmail" v-if="campaign.status == 'Active' && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
+                    <form class="mt-3" @submit.prevent="sendEmail"
+                            v-if="campaign.status == 'Active' && recipient.status == 'Open' &&
+                                (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="email-form">
                             <div class="input-group">
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
@@ -452,6 +474,21 @@
                 axios.post(generateRoute(window.openLeadUrl, {'leadId': leadId}))
                     .then(response => {
                         this.$toastr.success('Lead Opened');
+                        console.log(response.data.recipient.status);
+                        // this.recipient.status = repsonse.data.recipient.status;
+                        window.app.$set(this.recipient, 'status', response.data.recipient.status);
+                        window.PmEvent.fire('changed.recipient.status', response.data.recipient);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        window.PmEvent.fire('errors.api', 'Failed to open lead');
+                    });
+            },
+            closeLead: function (leadId) {
+                           // show modal with requirements
+                axios.post(generateRoute(window.closeLeadUrl, {'leadId': leadId}))
+                    .then(response => {
+                        this.$toastr.success('Lead Closed');
                         console.log(response.data.recipient.status);
                         // this.recipient.status = repsonse.data.recipient.status;
                         window.app.$set(this.recipient, 'status', response.data.recipient.status);

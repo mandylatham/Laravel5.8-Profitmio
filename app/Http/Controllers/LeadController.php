@@ -111,6 +111,8 @@ class LeadController extends Controller
             throw new \Exception("Invalid Operation");
         }
 
+        // Log Lead Activity
+
         // Open the Lead
         $lead->open();
 
@@ -127,8 +129,10 @@ class LeadController extends Controller
             throw new \Exception("Invalid Operation");
         }
 
+        // Log Lead Activity
+
         // Close the Lead
-        $lead->close();
+        $lead->close(auth()->user());
 
         // Broadcast update to counts
         event(new CampaignCountsUpdated($lead->campaign));
@@ -142,6 +146,8 @@ class LeadController extends Controller
         if ($lead->status != 'Closed') {
             throw new \Exception("Invalid Operation");
         }
+
+        // Log Lead Activity
 
         // ReOpen the Lead
         $lead->reopen();
