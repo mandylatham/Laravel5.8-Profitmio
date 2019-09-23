@@ -107,7 +107,7 @@ class LeadController extends Controller
     public function open(Lead $lead)
     {
         // Sanity check: cuurent state is new
-        if ($lead->status != 'new') {
+        if ($lead->status != 'New') {
             throw new \Exception("Invalid Operation");
         }
 
@@ -116,24 +116,40 @@ class LeadController extends Controller
 
         // Broadcast update to counts
         event(new CampaignCountsUpdated($lead->campaign));
+
+        return response()->json(['recipient' => $lead]);
     }
 
     public function close(Lead $lead)
     {
         // Sanity check: current state is open
+        if ($lead->status != 'Open') {
+            throw new \Exception("Invalid Operation");
+        }
 
         // Close the Lead
+        $lead->close();
 
         // Broadcast update to counts
+        event(new CampaignCountsUpdated($lead->campaign));
+
+        return response()->json(['recipient' => $lead]);
     }
 
     public function reopen(Lead $lead)
     {
         // Sanity check: current state is closed
+        if ($lead->status != 'Closed') {
+            throw new \Exception("Invalid Operation");
+        }
 
         // ReOpen the Lead
+        $lead->reopen();
 
         // Broadcast update to counts
+        event(new CampaignCountsUpdated($lead->campaign));
+
+        return response()->json(['recipient' => $lead]);
     }
     /**
      * Send the lead an sms response

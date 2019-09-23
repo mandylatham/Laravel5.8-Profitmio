@@ -40,7 +40,7 @@
             </div>
 
             <div class="row mt-4 mb-3 no-gutters" v-if="recipient.status == 'New'">
-                <button class="btn btn-success">Open Lead</button>
+                <button class="btn btn-success" @click="openLead(recipient.id)">Open Lead</button>
             </div>
 
             <div class="row align-items-end no-gutters mt-4 mb-3" v-if="recipient.status != 'New' && Object.keys(labels).length > 0">
@@ -426,6 +426,20 @@
                     })
                     .catch((response) => {
                         window.PmEvent.fire('errors.api', 'Failed to add note.');
+                    });
+            },
+            openLead: function (leadId) {
+                axios.post(generateRoute(window.openLeadUrl, {'leadId': leadId}))
+                    .then(response => {
+                        this.$toastr.success('Lead Opened');
+                        console.log(response.data.recipient.status);
+                        // this.recipient.status = repsonse.data.recipient.status;
+                        window.app.$set(this.recipient, 'status', response.data.recipient.status);
+                        window.PmEvent.fire('changed.recipient.status', response.data.recipient);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        window.PmEvent.fire('errors.api', 'Failed to open lead');
                     });
             },
             needsAppointment: function () {

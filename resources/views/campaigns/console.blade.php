@@ -26,6 +26,9 @@
         // window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
         // @fixme: setup to work with new LeadController for search
         window.getRecipientsUrl = "{{ route('test', ['campaign' => $campaign->id]) }}";
+        window.openLeadUrl = "{{ route('lead.open', ['lead' => ':leadId']) }}";
+        window.closeLeadUrl = "{{ route('lead.close', ['lead' => ':leadId']) }}";
+        window.reopenLeadUrl = "{{ route('lead.reopen', ['lead' => ':leadId']) }}";
         window.getResponsesUrl = "{{ route('campaign.recipient.responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.updateNotesUrl = "{{ route('recipient.update-notes', ['recipient' => ':recipientId']) }}";
         window.appointmentUpdateCalledStatusUrl = "{{ route('appointment.update-called-status', ['appointment' => ':appointmentId']) }}";

@@ -217,10 +217,10 @@ Route::group(['middleware' => 'auth'], function () {
     //endregion
 
     //region RECIPIENT
-    Route::group(['prefix' => '/recipient/{lead}', 'middleware' => ['can:update,recipient']], function () {
-        Route::post('/open', 'LeadController@open')->name('recipient.open');
-        Route::post('/close', 'LeadController@close')->name('recipient.close');
-        Route::post('/reopen', 'LeadController@reopen')->name('recipient.reopen');
+    Route::group(['prefix' => '/lead/{lead}', 'middleware' => ['can:update,recipient']], function () {
+        Route::post('/open', 'LeadController@open')->name('lead.open');
+        Route::post('/close', 'LeadController@close')->name('lead.close');
+        Route::post('/reopen', 'LeadController@reopen')->name('lead.reopen');
         Route::post('/send-to-crm', 'LeadController@sendToCrm')->name('recipient.send-to-crm');
         Route::post('/add-label', 'LeadController@addLabel')->name('recipient.add-label');
         Route::post('/remove-label', 'LeadController@removeLabel')->name('recipient.remove-label');
