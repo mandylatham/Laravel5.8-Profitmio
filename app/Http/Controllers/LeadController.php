@@ -13,6 +13,7 @@ use App\Repositories\LeadSearch;
 use App\Builders\ResponseBuilder;
 use App\Services\SentimentService;
 use App\Events\CampaignCountsUpdated;
+use App\Events\ServiceDeptLabelAdded;
 use App\Http\Resources\LeadCollection;
 use App\Http\Resources\Lead as LeadResource;
 use ProfitMiner\Base\Services\Media\Transport\Messages\SmsMessage;
@@ -266,9 +267,27 @@ class LeadController extends Controller
         );
     }
 
+    /**
+     * Send the lead to the campaign CRM
+     *
+     * @param Lead $lead
+     */
+    public function sendToCrm(Lead $lead)
+    {
+        try {
+            $this->crm->sendRecipient($lead, \Auth::user());
+            return response()->json(['message' => 'Successfully sent lead to CRM']);
+        } catch (\Exception $e) {
+            $this->log->error("Unable to send lead to crm: " .$e->getMessage());
+            abort(500, 'Unable to send to CRM');
+        }
+    }
+
     public function sendToServiceDepartment(Lead $lead)
     {
-        //
+        $lead->update(['service' => 1]);
+
+        event(new ServiceDeptLabelAdded($lead));
     }
 
     /**

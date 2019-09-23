@@ -40,6 +40,7 @@
         window.removeLabelUrl = "{{ route('recipient.remove-label', ['recipient' => ':recipientId']) }}";
         window.recipientGetResponsesUrl = "{{ route('recipient.get-responses', ['recipient' => ':recipientId']) }}";
         window.sendCrmUrl = "{{ route('recipient.send-to-crm', ['recipient' => ':recipientId']) }}";
+        window.sendServiceUrl = "{{ route('recipient.send-to-service', ['lead' => ':leadId']) }}";
     </script>
     {{--<script src="//js.pusher.com/4.3/pusher.min.js"></script>--}}
     <script src="{{ asset('js/console.js') }}"></script>
@@ -221,7 +222,7 @@
                     <div class="name-wrapper">
                         <strong>@{{ recipient.name }}</strong>
                     </div>
-                    <div class="label-wrapper" v-if="recipient.labels">
+                    <div class="label-wrapper" v-if="recipient.labels" v-show="false">
                         <span v-for="(label, index) in recipient.labels" :class="index">@{{ label }}</span>
                     </div>
                 </div>

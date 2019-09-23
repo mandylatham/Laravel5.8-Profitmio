@@ -16,7 +16,8 @@ class Lead extends Recipient
     const WARN_HEALTH = 'warning';
     const POOR_HEALTH = 'past-due';
 
-    protected $fillable = ['status', 'notes', 'last_status_changed_at', 'last_responded_at', ];
+    protected $fillable = ['status', 'notes', 'last_status_changed_at', 'last_responded_at', 'sent_to_crm',
+        'service', 'interested', 'not_interested', 'heat'];
 
     /**
      * Constructor Override.

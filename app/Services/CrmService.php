@@ -51,7 +51,7 @@ class CrmService
         $this->recipient = $recipient;
         $this->mail = $mail;
     }
-    public function sendAppointment(Appointment $appointment) 
+    public function sendAppointment(Appointment $appointment)
     {
         $send = function ($email) use ($appointment) {
             try {
@@ -112,7 +112,7 @@ class CrmService
                 $this->log->channel('operations')->warning('CrmService: unable to use CRM with invalid email (email:'.$email.')');
                 continue;
             }
-            
+
             $send($email);
         }
     }

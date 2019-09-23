@@ -39,12 +39,12 @@
                 </div>
                 <div class="col-4" v-if="recipient.status == 'Closed'">
                     <button class="btn btn-secondary"
-                            v-show="false"
+                            v-show="true"
                             style="width: 100%; font-size: 1.2rem;"
                             @click="reopenLead(recipient.id)">
                         ReOpen Lead
                     </button>
-                    <p class="alert alert-secondary">Closed Lead</p>
+                    <p v-show="false" class="alert alert-secondary">Closed Lead</p>
                 </div>
                 <div class="col-4" v-if="recipient.status == 'Open'">
                     <button class="btn btn-warning"
@@ -62,7 +62,7 @@
                 </div>
             </div>
 
-            <div class="row align-items-end no-gutters mt-4 mb-3" v-if="recipient.status != 'New' && Object.keys(labels).length > 0">
+            <div class="row align-items-end no-gutters mt-4 mb-3" v-show="false" v-if="recipient.status != 'New' && Object.keys(labels).length > 0">
                 <div class="col-12 labels-wrapper">
                     <ul class="labels">
                         <li :class="index" v-for="(label, index) in labels">{{ label }}<i
@@ -149,18 +149,25 @@
                 {{ recipient.name }} has not been sent to the CRM.
             </div>
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.adf_crm_export && recipient.sent_to_crm">
-                <i class="fa fa-database mr-2"></i>
+                <span class="btn btn-success recipient-action mr-2">
+                    <i class="fa fa-database mr-2"></i>
+                    CRM
+                </span>
                 {{ recipient.name }} has already been sent to the CRM.
             </div>
 
             <div class="alert alert-info" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 0">
-                <button class="btn pm-btn btn-primary mr-2" :class="recipient.status != 'Open' ? 'disabled' : ''" @click="sendToService()"
+                <button class="btn pm-btn btn-primary mr-2" :class="recipient.status != 'Open' ? 'disabled' : ''" @click.once="sendToService()"
                         v-if="campaign.status == 'Active'" :disabled="recipient.status != 'Open'">
                     Send To Service Department
                 </button>
                 {{ recipient.name }} not sent to Service.
             </div>
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 1">
+                <span class="btn btn-success recipient-action mr-2">
+                    <i class="fa fa-wrench mr-2"></i>
+                    Service
+                </span>
                 {{ recipient.name }} already sent to Service.
             </div>
 
@@ -551,6 +558,17 @@
                     .catch(error => {
                         console.log(error);
                         window.PmEvent.fire('errors.api', "Unable to send recipient to CRM at this time");
+                    });
+            },
+            sendToService: function () {
+                axios.post(generateRoute(window.sendServiceUrl, {'leadId': this.recipientId}))
+                    .then(response => {
+                        this.recipient.sent_to_crm = true;
+                        this.$toastr.success("Lead sent to Service");
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        window.PmEvent.fire('errors.api', "Unable to send lead to Service at this time");
                     });
             },
             sendText: function () {

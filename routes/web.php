@@ -222,6 +222,7 @@ Route::group(['middleware' => 'auth'], function () {
         Route::post('/close', 'LeadController@close')->name('lead.close');
         Route::post('/reopen', 'LeadController@reopen')->name('lead.reopen');
         Route::post('/send-to-crm', 'LeadController@sendToCrm')->name('recipient.send-to-crm');
+        Route::post('/send-to-service', 'LeadController@sendToServiceDepartment')->name('recipient.send-to-service');
         Route::post('/add-label', 'LeadController@addLabel')->name('recipient.add-label');
         Route::post('/remove-label', 'LeadController@removeLabel')->name('recipient.remove-label');
         Route::post('/update-notes', 'LeadController@updateNotes')->name('recipient.update-notes');
