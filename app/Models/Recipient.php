@@ -175,4 +175,23 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
         $this->save();
     }
+
+    public function getLastDialogStart($type = null)
+    {
+        $responseQuery = $this->responses();
+        if ($type) $responseQuery->whereType($type);
+        $responses = $responseQuery->select(['incoming', 'created_at'])->get();
+
+
+        $lsca = $responses->first()->created_at;
+
+        for ($i=0; $i<count($responses); $i++) {
+            if ($i < 1) { continue; }
+            if ($responses[$i]->incoming == 1 && $responses[$i-1]->incoming == 0) {
+                $lsca = $responses[$i]->created_at;
+            }
+        }
+
+        return $lsca;
+    }
 }

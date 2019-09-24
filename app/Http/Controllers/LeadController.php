@@ -15,6 +15,7 @@ use App\Services\SentimentService;
 use App\Events\CampaignCountsUpdated;
 use App\Events\ServiceDeptLabelAdded;
 use App\Http\Resources\LeadCollection;
+use App\Builders\RecipientActivityBuilder;
 use App\Http\Resources\Lead as LeadResource;
 use ProfitMiner\Base\Services\Media\Transport\Messages\SmsMessage;
 use ProfitMiner\Base\Services\Media\Transport\Messages\EmailMessage;
@@ -113,6 +114,7 @@ class LeadController extends Controller
         }
 
         // Log Lead Activity
+        RecipientActivityBuilder::logOpen($lead, auth()->user());
 
         // Open the Lead
         $lead->open();
@@ -131,6 +133,7 @@ class LeadController extends Controller
         }
 
         // Log Lead Activity
+        RecipientActivityBuilder::logClosed($lead, auth()->user());
 
         // Close the Lead
         $lead->close(auth()->user());

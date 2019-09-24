@@ -18,6 +18,7 @@ class CreateRecipientActivityTable extends Migration
             $table->bigInteger('recipient_id');
             $table->string('action', 50);
             $table->dateTime('action_at')->default(now());
+            $table->json('metadata')->nullable();
             $table->bigInteger('user_id');
         });
     }
