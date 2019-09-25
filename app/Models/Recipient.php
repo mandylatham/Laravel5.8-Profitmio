@@ -37,6 +37,8 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
     protected $searchableColumns = ['first_name', 'last_name', 'email', 'phone', 'status', 'address1', 'city', 'state', 'zip', 'year', 'make', 'model', 'vin'];
 
+    /** BEGIN RELATIONSHIPS BLOCK **/
+
     public function list()
     {
         return $this->belongsTo(RecipientList::class, 'recipient_list_id');
@@ -45,6 +47,11 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
     public function campaign()
     {
         return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
+    }
+
+    public function activity()
+    {
+        return $this->hasMany(RecipientActivity::class, 'recipient_id', 'id');
     }
 
     public function appointments()
@@ -67,26 +74,9 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         return $this->hasMany(SmsSuppression::class, 'phone', 'phone');
     }
 
-    public function getDroppedTime()
-    {
-        $dropped = DeploymentRecipients::join('campaign_schedules', 'deployment_recipients.deployment_id', '=', 'campaign_schedules.id')
-            ->where('campaign_schedules.campaign_id', $this->campaign_id)
-            ->where('deployment_recipients.recipient_id', $this->id)
-            ->whereNotNull('deployment_recipients.sent_at')
-            ->first();
-        return $dropped ? $dropped->sent_at : null;
-    }
+    /** END RELATIONSHIPS BLOCK **/
 
-    public static function searchByRequest(Request $request, RecipientList $recipientList)
-    {
-        $query = $recipientList->recipients();
-
-        if ($request->has('q')) {
-            $query->filterByQuery($request->get('q'));
-        }
-
-        return $query;
-    }
+    /** BEGIN SCOPES BLOCK **/
 
     public function scopeFilterByQuery($query, $q)
     {
@@ -169,11 +159,36 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         return $query->where($label, 1);
     }
 
+    /** END SCOPES BLOCK **/
+
+    /** BEGIN ACTIONS BLOCK **/
+
+    public static function searchByRequest(Request $request, RecipientList $recipientList)
+    {
+        $query = $recipientList->recipients();
+
+        if ($request->has('q')) {
+            $query->filterByQuery($request->get('q'));
+        }
+
+        return $query;
+    }
+
     public function markInvalidEmail()
     {
         $this->email = '';
 
         $this->save();
+    }
+
+    public function getDroppedTime()
+    {
+        $dropped = DeploymentRecipients::join('campaign_schedules', 'deployment_recipients.deployment_id', '=', 'campaign_schedules.id')
+            ->where('campaign_schedules.campaign_id', $this->campaign_id)
+            ->where('deployment_recipients.recipient_id', $this->id)
+            ->whereNotNull('deployment_recipients.sent_at')
+            ->first();
+        return $dropped ? $dropped->sent_at : null;
     }
 
     public function getLastDialogStart($type = null)
@@ -194,4 +209,6 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
         return $lsca;
     }
+
+    /** END ACTIONS BLOCK **/
 }

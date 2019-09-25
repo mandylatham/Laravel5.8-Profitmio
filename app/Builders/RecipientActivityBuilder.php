@@ -38,7 +38,7 @@ class RecipientActivityBuilder
 
         $activity->load('impersonation.impersonator');
 
-        $recipient->activity()->attach($activity);
+        $recipient->activity()->save($activity);
     }
 
     /**
@@ -64,7 +64,7 @@ class RecipientActivityBuilder
 
         $activity->load('impersonation.impersonator');
 
-        $recipient->activity()->attach($activity);
+        $recipient->activity()->save($activity);
     }
 
     /**
@@ -89,12 +89,12 @@ class RecipientActivityBuilder
             'action_at' => now(),
             'user_id' => $user->id,
             'metadata' => [
-                'seconds_since_last_activity' => $lastActivity->action_at->diffInSeconds(now()),
+                'seconds_since_last_activity' => $lastActivityAt->diffInSeconds(now()),
             ]
         ]);
 
         $activity->load('impersonation.impersonator');
 
-        $recipient->activity()->attach($activity);
+        $recipient->activity()->save($activity);
     }
 }

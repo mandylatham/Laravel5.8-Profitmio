@@ -36,14 +36,6 @@ class Lead extends Recipient
 
     // todo: find a way to perform serches in-model
 
-    /**
-     * Activity Relationship
-     */
-    public function activity()
-    {
-        return $this->hasMany(RecipientActivity::class, 'recipient_id', 'id');
-    }
-
     public function scopeNew($query)
     {
         return $query->whereStatus(Recipient::NEW_STATUS);
@@ -92,12 +84,6 @@ class Lead extends Recipient
     public function open() : void
     {
         $this->update(['status' => self::OPEN_STATUS]);
-
-        $this->activity()->create([
-            'action' => RecipientActivity::OPENED,
-            'action_at' => now(),
-            'action_by' => auth()->user()
-        ]);
     }
 
     /**
@@ -106,12 +92,6 @@ class Lead extends Recipient
     public function close(User $user) : void
     {
         $this->update(['status' => self::CLOSED_STATUS]);
-
-        $this->activity()->create([
-            'action' => RecipientActivity::CLOSED,
-            'action_at' => now(),
-            'action_by' => auth()->user()
-        ]);
     }
 
     /**
@@ -120,11 +100,5 @@ class Lead extends Recipient
     public function reopen(User $user)
     {
         $this->update(['status' => self::OPEN_STATUS]);
-
-        $this->activity()->create([
-            'action' => RecipientActivity::REOPENED,
-            'action_at' => now(),
-            'action_by' => auth()->user()
-        ]);
     }
 }
