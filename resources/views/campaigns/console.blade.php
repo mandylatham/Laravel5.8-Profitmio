@@ -213,10 +213,13 @@
         <div class="recipient-row container" v-for="(recipient, key) in recipients" @click="showPanel(recipient, key)">
             <div class="row no-gutters">
                 <div class="col-12 col-sm-2 lead-status no-gutters">
-                    <i class="fas fa-star mr-2" style="color: #ff0" v-if="recipient.status == 'New'"></i>
-                    <i class="fas fa-door-open mr-2" style="color: #00e000" v-if="recipient.status == 'Open'"></i>
-                    <i class="fas fa-door-closed mr-2" v-if="recipient.status == 'Closed'"></i>
-                    @{{ recipient.status }}
+                    <div class="status-icon">
+                        <i class="fas fa-star mr-2" style="color: #ff0" v-if="recipient.status == 'New'"></i>
+                        <i class="fas fa-door-open mr-2" style="color: #00e000" v-if="recipient.status == 'Open'"></i>
+                        <i class="fas fa-door-closed mr-2" v-if="recipient.status == 'Closed'"></i>
+                    </div>
+                    <div class="status-text">@{{ recipient.status }}</div>
+                    <countdown v-bind:seconds-left="recipient.secondsLeft"></countdown>
                 </div>
                 <div class="col-12 col-sm-5 col-md-6 no-gutters d-flex flex-column justify-content-center">
                     <div class="name-wrapper">

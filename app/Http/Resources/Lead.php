@@ -24,6 +24,7 @@ class Lead extends JsonResource
             'labels' => $this->labels,
             'last_responded_at' => $this->last_responded_at,
             'status' => $this->status,
+            'secondsLeft' => 300,
         ];
     }
 }

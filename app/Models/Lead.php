@@ -83,7 +83,10 @@ class Lead extends Recipient
      */
     public function open() : void
     {
-        $this->update(['status' => self::OPEN_STATUS]);
+        $this->update([
+            'status' => self::OPEN_STATUS,
+            'last_status_changed_at' => now(),
+        ]);
     }
 
     /**
@@ -91,7 +94,10 @@ class Lead extends Recipient
      */
     public function close(User $user) : void
     {
-        $this->update(['status' => self::CLOSED_STATUS]);
+        $this->update([
+            'status' => self::CLOSED_STATUS,
+            'last_status_changed_at' => now(),
+        ]);
     }
 
     /**
@@ -99,6 +105,9 @@ class Lead extends Recipient
      */
     public function reopen(User $user)
     {
-        $this->update(['status' => self::OPEN_STATUS]);
+        $this->update([
+            'status' => self::OPEN_STATUS,
+            'last_status_changed_at' => now(),
+        ]);
     }
 }

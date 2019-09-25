@@ -25,6 +25,7 @@ window.app = new Vue({
         SearchIcon,
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'countdown': require('./../../components/countdown/countdown').default,
     },
     computed: {
         pagination: function () {
