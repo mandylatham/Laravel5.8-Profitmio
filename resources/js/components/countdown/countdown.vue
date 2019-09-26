@@ -15,11 +15,11 @@
         computed: {
             timeLeftClass: function () {
                 if (this.seconds < 5*60 && this.seconds > 1*60) {
-                    return 'text-warning';
-                } else if (this.seconds < 1*60) {
                     return 'text-danger';
+                } else if (this.seconds < 1*60) {
+                    return 'text-red';
                 } else {
-                    return 'text-secondary';
+                    return 'text-primary';
                 }
             },
             timeLeft: function () {

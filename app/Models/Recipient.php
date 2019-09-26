@@ -37,6 +37,8 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
     protected $searchableColumns = ['first_name', 'last_name', 'email', 'phone', 'status', 'address1', 'city', 'state', 'zip', 'year', 'make', 'model', 'vin'];
 
+    public $dates = ['last_responded_at', 'last_status_change_at'];
+
     /** BEGIN RELATIONSHIPS BLOCK **/
 
     public function list()

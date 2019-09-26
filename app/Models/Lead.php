@@ -19,6 +19,8 @@ class Lead extends Recipient
     protected $fillable = ['status', 'notes', 'last_status_changed_at', 'last_responded_at', 'sent_to_crm',
         'service', 'interested', 'not_interested', 'heat'];
 
+    public $dates = ['last_status_changed_at', 'last_responded_at'];
+
     /**
      * Constructor Override.
      *
