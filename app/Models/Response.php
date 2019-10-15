@@ -12,22 +12,7 @@ class Response extends Model
 {
     use SoftDeletes, MayBeImpersonated;
 
-    protected $fillable = [
-        'read',
-        'campaign_id',
-        'recipient_id',
-        'message',
-        'message_id',
-        'duration',
-        'in_reply_to',
-        'subject',
-        'type',
-        'recording_sid',
-        'incoming',
-        'call_sid',
-        'recording_uri',
-        'user_id',
-    ];
+	protected $guarded = [];
 
     protected $appends = ['message_formatted', 'reply_user', 'recording_url'];
 

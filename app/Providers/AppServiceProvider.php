@@ -38,7 +38,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind('mailgun.client', $adapter);
 
         if ($this->app->environment('local', 'testing')) {
-            $this->app->register(DuskServiceProvider::class);
+            #$this->app->register(DuskServiceProvider::class);
         }
 
         View::composer('*', function ($view) {

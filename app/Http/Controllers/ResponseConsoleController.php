@@ -10,7 +10,7 @@ use App\Models\PhoneNumber;
 use Illuminate\Http\Request;
 use App\Services\TwilioClient;
 use App\Classes\MailgunService;
-use Twilio\TwiMl\VoiceResponse;
+use Twilio\TwiML\VoiceResponse;
 use Illuminate\Support\Facades\DB;
 use App\Services\SentimentService;
 use Illuminate\Support\Facades\Log;
@@ -235,8 +235,8 @@ class ResponseConsoleController extends Controller
      */
     public function getRecipientsForUserDisplay(Request $request, Campaign $campaign)
     {
-        $filter = $request->get('filter') ?: 'all';
-        $label = $request->get('label') ?: null;
+        $filter = $request->input('filter') ?: 'all';
+        $label = $request->input('label') ?: null;
 
         $viewData = $this->getRecipientData($request, $campaign, $filter, $label);
 
@@ -430,7 +430,7 @@ class ResponseConsoleController extends Controller
      */
     public function inboundEmail(Request $request)
     {
-        list($campaign_id, $recipient_id) = $this->getEmailMetadata($request->get('To'));
+        list($campaign_id, $recipient_id) = $this->getEmailMetadata($request->input('To'));
 
         $campaign = Campaign::findOrFail($campaign_id);
         $recipient = Recipient::findOrFail($recipient_id);
@@ -438,10 +438,10 @@ class ResponseConsoleController extends Controller
         $response = new Response([
             'campaign_id'   => $campaign->id,
             'recipient_id'  => $recipient->id,
-            'message'       => $request->get('stripped-text'),
-            'message_id'    => $request->get('Message-Id'),
-            'in_reply_to'   => $request->get('In-Reply-To'),
-            'subject'       => $request->get('subject'),
+            'message'       => $request->input('stripped-text'),
+            'message_id'    => $request->input('Message-Id'),
+            'in_reply_to'   => $request->input('In-Reply-To'),
+            'subject'       => $request->input('subject'),
             'type'          => 'email',
             'recording_sid' => 0,
             'incoming'      => 1,
@@ -461,9 +461,9 @@ class ResponseConsoleController extends Controller
             $this->mailgun->sendPassthroughEmail(
                 $campaign,
                 $recipient,
-                $request->get('subject'),
-                $request->get('stripped-html'),
-                $request->get('stripped-text')
+                $request->input('subject'),
+                $request->input('stripped-html'),
+                $request->input('stripped-text')
             );
         }
     }
@@ -482,7 +482,7 @@ class ResponseConsoleController extends Controller
     {
         $this->authorize('create', [Response::class, $campaign]);
 
-        $request->request->set('message', nl2br($request->get('message')));
+        $request->request->set('message', nl2br($request->input('message')));
 
         $lastMessage = Response::where('type', 'email')
             ->where('campaign_id', $campaign->id)
@@ -494,8 +494,8 @@ class ResponseConsoleController extends Controller
         $subject = 'Re: ' . $lastMessage->subject;
 
         # Send off the email
-        $reply = $this->mailgun->sendClientEmail($campaign, $recipient, $subject, $request->get('message'),
-            $request->get('message'));
+        $reply = $this->mailgun->sendClientEmail($campaign, $recipient, $subject, $request->input('message'),
+            $request->input('message'));
 
         // Mark all previous messages as read
         Response::where('type', 'email')
@@ -507,7 +507,7 @@ class ResponseConsoleController extends Controller
         $response = new Response([
             'campaign_id'   => $campaign->id,
             'recipient_id'  => $recipient->id,
-            'message'       => $request->get('message'),
+            'message'       => $request->input('message'),
             'message_id'    => $reply->getId(),
             'in_reply_to'   => $lastMessage->message_id,
             'subject'       => $subject,
@@ -560,7 +560,7 @@ class ResponseConsoleController extends Controller
         $response = Response::create([
             'campaign_id'   => $campaign->id,
             'recipient_id'  => $recipient->id,
-            'message'       => $request->get('message'),
+            'message'       => $request->input('message'),
             'incoming'      => 0,
             'read'          => 1,
             'type'          => 'text',
@@ -584,9 +584,9 @@ class ResponseConsoleController extends Controller
         try {
             list($phoneNumber, $campaign, $recipient) = $this->getRequestObjects($request);
 
-            $response = Response::where('call_sid', $request->get('CallSid'))->first();
+            $response = Response::where('call_sid', $request->input('CallSid'))->first();
 
-            $calling_to = PhoneNumber::wherePhoneNumber($request->get('To'))->first();
+            $calling_to = PhoneNumber::wherePhoneNumber($request->input('To'))->first();
             $phone_number_id = null;
             if ($calling_to) {
                 $phone_number_id = $calling_to->id;
@@ -594,14 +594,14 @@ class ResponseConsoleController extends Controller
 
             if (!$response) {
                 $response = new Response([
-                    'call_sid'             => $request->get('CallSid'),
+                    'call_sid'             => $request->input('CallSid'),
                     'call_phone_number_id' => $phone_number_id,
                     'incoming'             => 1,
                     'type'                 => 'phone',
-                    'duration'             => $request->get('CallDuration')?: 0,
+                    'duration'             => $request->input('CallDuration')?: 0,
                     'campaign_id'          => $campaign->id,
-                    'response_source'      => $request->get('From'),
-                    'response_destination' => $request->get('To'),
+                    'response_source'      => $request->input('From'),
+                    'response_destination' => $request->input('To'),
                 ]);
             }
 
@@ -670,7 +670,7 @@ class ResponseConsoleController extends Controller
             list($phoneNumber, $campaign, $recipient) = $this->getRequestObjects($request);
 
             $invalidCharacters = '/[^\w\s]*/';
-            $message = preg_replace($invalidCharacters, '', $request->get('Body'));
+            $message = preg_replace($invalidCharacters, '', $request->input('Body'));
 
             $response = new Response([
                 'message'       => $message,
@@ -784,13 +784,13 @@ class ResponseConsoleController extends Controller
     protected function createRecipientFromSender(Request $request, $campaign)
     {
         # Lookup caller's "caller-name" from Twilio
-        $sender = (object)(new TwilioClient)->getNameFromPhoneNumber($request->get('From'));
+        $sender = (object)(new TwilioClient)->getNameFromPhoneNumber($request->input('From'));
 
         # Create a new Recipient and add it to the campaign for the person
         $recipient = new Recipient([
             'first_name'  => $sender->first_name,
             'last_name'   => $sender->last_name,
-            'phone'       => $request->get('From'),
+            'phone'       => $request->input('From'),
             'campaign_id' => $campaign->id,
         ]);
 
