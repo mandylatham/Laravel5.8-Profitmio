@@ -490,7 +490,9 @@
                     });
             },
             closeLead: function (leadId) {
-                           // show modal with requirements
+               // show modal with requirements
+                window.PmEvent.fire('lead.close-request', leadId);
+                /*
                 axios.post(generateRoute(window.closeLeadUrl, {'leadId': leadId}))
                     .then(response => {
                         this.$toastr.success('Lead Closed');
@@ -501,6 +503,7 @@
                         console.error(error);
                         window.PmEvent.fire('errors.api', 'Failed to open lead');
                     });
+                */
             },
             reopenLead: function (leadId) {
                 axios.post(generateRoute(window.reopenLeadUrl, {'leadId': leadId}))

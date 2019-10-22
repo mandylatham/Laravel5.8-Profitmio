@@ -65,17 +65,17 @@ class Lead extends Recipient
         }]);
     }
 
-    public function getStatusAttribute($status)
+    public function getStatusForHumansAttribute()
     {
-        if ($status === parent::UNMARKETED_STATUS) return 'Uploaded';
+        if ($this->status === parent::UNMARKETED_STATUS) return 'Uploaded';
 
-        if ($status === parent::MARKETED_STATUS) return 'Contacted';
+        if ($this->status === parent::MARKETED_STATUS) return 'Contacted';
 
-        if ($status === parent::NEW_STATUS) return 'New';
+        if ($this->status === parent::NEW_STATUS) return 'New';
 
-        if ($status === parent::OPEN_STATUS) return 'Open';
+        if ($this->status === parent::OPEN_STATUS) return 'Open';
 
-        if ($status === parent::CLOSED_STATUS) return 'Closed';
+        if ($this->status === parent::CLOSED_STATUS) return 'Closed';
 
         return 'ERR';
     }

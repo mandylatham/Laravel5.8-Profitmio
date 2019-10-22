@@ -33,6 +33,7 @@ class CampaignTableSeeder extends Seeder
                 $this->processCampaign($campaign);
             });
     }
+
     public function processCampaign($campaign)
     {
         $faker = Faker\Factory::create();
@@ -57,25 +58,26 @@ class CampaignTableSeeder extends Seeder
                 factory(\App\Models\Recipient::class, $faker->numberBetween(1, 20))
                     ->create([
                         'campaign_id' => $campaign->id,
-                        'recipient_list_id' => $recipientList->id
+                        'recipient_list_id' => $recipientList->id,
+                        'status' => 'open-lead',
                     ])
                     ->each(function ($recipient) use ($campaign, $faker) {
                         //  Attach emails
-                        factory(\App\Models\Response::class, $faker->numberBetween(5, 15))
+                        factory(\App\Models\Response::class, $faker->numberBetween(1, 15))
                             ->create([
                                 'campaign_id' => $campaign->id,
                                 'recipient_id' => $recipient->id,
                                 'type' => 'email'
                             ]);
                         //  Attach text
-                        factory(\App\Models\Response::class, $faker->numberBetween(5, 15))
+                        factory(\App\Models\Response::class, $faker->numberBetween(1, 15))
                             ->create([
                                 'campaign_id' => $campaign->id,
                                 'recipient_id' => $recipient->id,
                                 'type' => 'text'
                             ]);
                         //  Attach phone
-                        factory(\App\Models\Response::class, $faker->numberBetween(0, 3))
+                        factory(\App\Models\Response::class, $faker->numberBetween(0, 2))
                             ->create([
                                 'campaign_id' => $campaign->id,
                                 'recipient_id' => $recipient->id,

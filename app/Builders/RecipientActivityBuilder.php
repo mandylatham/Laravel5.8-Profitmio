@@ -75,21 +75,70 @@ class RecipientActivityBuilder
      */
     public static function logClosed(Recipient $recipient, User $user)
     {
-        $lastActivityAt = null;
-        $lastActivity = $recipient->activity()->orderBy('id', 'desc')->limit(1)->first();
-        if ($lastActivity) {
-            $lastActivityAt = $lastActivity->action_at;
-        } else {
-            $lastActivityAt = $recipient->getLastDialogStart();
-        }
-
+        $lastInbound = $recipient->getLastInboundDialogStart();
+        $lastOutbound = $recipient->getLastOutboundDialogStart();
 
         $activity = RecipientActivity::create([
             'action' => RecipientActivity::CLOSED,
             'action_at' => now(),
             'user_id' => $user->id,
             'metadata' => [
-                'seconds_since_last_activity' => $lastActivityAt->diffInSeconds(now()),
+                'seconds_since_last_inbound' => $lastInbound ? $lastInbound->diffInSeconds(now()) : null,
+                'seconds_since_last_outbound' => $lastOutbound ? $lastOutbound->diffInSeconds(now()) : null,
+            ]
+        ]);
+
+        $activity->load('impersonation.impersonator');
+
+        $recipient->activity()->save($activity);
+    }
+
+    /**
+     * Log reopen event
+     *
+     * @param Recipient $recipient
+     * @param User      $user
+     */
+    public static function logReopen(Recipient $recipient, User $user)
+    {
+        // Get the first recipient response time
+        $closed = $recipient->activity()->whereAction(RecipientActivity::CLOSED)->orderBy('id', 'desc')->first();
+
+
+        $activity = RecipientActivity::create([
+            'action' => RecipientActivity::REOPENED,
+            'action_at' => now(),
+            'user_id' => $user->id,
+            'metadata' => [
+                'seconds_since_closed' => $closed->action_at->diffInSeconds(now()),
+            ]
+        ]);
+
+        $activity->load('impersonation.impersonator');
+
+        $recipient->activity()->save($activity);
+    }
+
+    /**
+     * Log sent sms event
+     *
+     * @param Recipient $recipient
+     * @param User      $user
+     *
+     * @todo fix metadata
+     */
+    public static function logSendSms(Recipient $recipient, Response $response, User $user)
+    {
+        $lastInbound = $recipient->getLastInboundDialogStart();
+
+        // todo fix outbound
+        $activity = RecipientActivity::create([
+            'action' => RecipientActivity::REOPENED,
+            'action_at' => now(),
+            'user_id' => $user->id,
+            'metadata' => [
+                'seconds_since_lead_dialog' => $lastInbound->diffInSeconds(now()),
+                'allow_points' => true
             ]
         ]);
 

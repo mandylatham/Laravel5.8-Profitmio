@@ -16,6 +16,7 @@ class Lead extends JsonResource
      */
     public function toArray($request)
     {
+        $last_change = $this->last_status_changed_at;
         return [
             'id' => $this->id,
             'name' => $this->name,
@@ -23,7 +24,7 @@ class Lead extends JsonResource
             'phone' => $this->phone,
             'labels' => $this->labels,
             'last_responded_at' => $this->last_responded_at,
-            'status' => $this->status,
+            'status' => $this->status_for_humans,
             'secondsLeft' => $this->last_status_changed_at->diffInSeconds(now()),
         ];
     }

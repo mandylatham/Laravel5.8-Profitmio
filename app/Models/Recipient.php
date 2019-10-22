@@ -193,23 +193,64 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         return $dropped ? $dropped->sent_at : null;
     }
 
-    public function getLastDialogStart($type = null)
+    /**
+     * Get datetime of last lead reply dialog
+     *
+     * @param string $type "text", "email", or null (any)
+     *
+     * @return \App\Models\Response|null
+     */
+    public function getLastInboundDialogStart($type = null)
+    {
+        $response = $this->getLastDialogStartResponse(true, $type);
+
+        return $response ? $response->created_at: null;
+    }
+
+    /**
+     * Get datetime of last company response dialog
+     *
+     * @param string $type "text", "email", or null (any)
+     *
+     * @return \App\Models\Response|null
+     */
+    public function getLastOutboundDialogStart($type = null)
+    {
+        $response = $this->getLastDialogStartResponse(false, $type)->created_at;
+
+        return $response ? $response->created_at: null;
+    }
+
+    /**
+     * Get the last Response beginning a dialog
+     *
+     * @param boolean $inbound Get last lead dialog start (true) or company response dialog start (false)
+     * @param string  $type    "text", "email", or null (any)
+     *
+     * @return \App\Models\Response|null
+     */
+    private function getLastDialogStartResponse($inbound = true, $type = null)
     {
         $responseQuery = $this->responses();
         if ($type) $responseQuery->whereType($type);
-        $responses = $responseQuery->select(['incoming', 'created_at'])->get();
+        $responses = $responseQuery->select(['incoming', 'created_at'])
+                                   ->orderBy('id', 'asc')
+                                   ->get();
 
-
-        $lsca = $responses->first()->created_at;
+        $leadDialogStarts = collect($responses->first());
+        $companyDialogStarts = collect();
 
         for ($i=0; $i<count($responses); $i++) {
-            if ($i < 1) { continue; }
+            if ($i < 1) continue;
             if ($responses[$i]->incoming == 1 && $responses[$i-1]->incoming == 0) {
-                $lsca = $responses[$i]->created_at;
+                $leadDialogStarts->add($responses[$i]);
+            }
+            if ($responses[$i]->incoming == 0 && $responses[$i-1]->incoming == 1) {
+                $companyDialogStarts->add($responses[$i]);
             }
         }
 
-        return $lsca;
+        return $inbound ? $leadDialogStarts->last() : $companyDialogStarts->last();
     }
 
     /** END ACTIONS BLOCK **/

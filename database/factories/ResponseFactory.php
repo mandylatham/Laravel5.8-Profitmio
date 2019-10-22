@@ -10,6 +10,6 @@ $factory->define(\App\Models\Response::class, function (Faker $faker, $type = nu
         'message' => $type != 'phone' ? $faker->realText : null,
         'call_sid' => $type == 'phone' ? $faker->randomNumber : null,
         'recording_sid' => $type == 'phone' ? $faker->randomNumber : null,
-        'incoming' => $faker->randomElement([true, false])
+        'incoming' => $faker->randomElement([true, false]),
     ];
 });

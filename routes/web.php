@@ -2,10 +2,6 @@
 
 Route::impersonate();
 
-use Illuminate\Support\Facades\Route;
-
-Route::any('/campaign/{campaign}/testme', 'LeadController@index')->name('test');
-
 // AWS heartbeat
 Route::get('/heartbeat', function () {
     return response()->json('ok', 200);
@@ -13,11 +9,11 @@ Route::get('/heartbeat', function () {
 //region OUTSIDE API CALLS
 //TODO: test
 Route::any('/text-in/', 'TextInController@createFromSms')->name('pub-api.text-in')->middleware(null);
-Route::any('/text-responses/inbound', 'InboundMessageController@receiveSmsMessage')->name('pub-api.text-response-inbound')->middleware(null);
-Route::any('/email-responses/inbound', 'InboundMessageController@receiveEmailMessage')->name('pub-api.email-response-inbound')->middleware(null);
-Route::any('/email-responses/log', 'InboundMessageController@logEmail')->name('pub-api.email-response-log')->middleware(null);
-Route::any('/phone-responses/inbound', 'InboundMessageController@receivePhoneCall')->name('pub-api.phone-response-inbound')->middleware(null);
-Route::any('/phone-responses/status', 'InboundMessageController@receivePhoneCallStatus')->name('pub-api.phone-response-status')->middleware(null);
+Route::any('/text-responses/inbound', 'IncomingMessageController@receiveSmsMessage')->name('pub-api.text-response-inbound')->middleware(null);
+Route::any('/email-responses/inbound', 'IncomingMessageController@receiveEmailMessage')->name('pub-api.email-response-inbound')->middleware(null);
+Route::any('/email-responses/log', 'IncomingMessageController@logEmail')->name('pub-api.email-response-log')->middleware(null);
+Route::any('/phone-responses/inbound', 'IncomingMessageController@receivePhoneCall')->name('pub-api.phone-response-inbound')->middleware(null);
+Route::any('/phone-responses/status', 'IncomingMessageController@receivePhoneCallStatus')->name('pub-api.phone-response-status')->middleware(null);
 
 Route::any('/appointments/insert', 'AppointmentController@insert')->name('pub-api.appointment-insert')->middleware(null);
 Route::any('/appointments/save', 'AppointmentController@save')->name('pub-api.appointment-save')->middleware(null);
@@ -209,6 +205,7 @@ Route::group(['middleware' => 'auth'], function () {
         });
 
         Route::get('/response/{lead}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
+        Route::any('/leads', 'LeadController@index')->name('lead.index');
         Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
 
         Route::get('/recipients/for-user-display', 'RecipientController@getRecipients')->name('campaign.recipient.for-user-display');
@@ -217,7 +214,7 @@ Route::group(['middleware' => 'auth'], function () {
     //endregion
 
     //region RECIPIENT
-    Route::group(['prefix' => '/lead/{lead}', 'middleware' => ['can:update,recipient']], function () {
+    Route::group(['prefix' => '/lead/{lead}', ['middleware' => 'can:update,lead']], function () {
         Route::post('/open', 'LeadController@open')->name('lead.open');
         Route::post('/close', 'LeadController@close')->name('lead.close');
         Route::post('/reopen', 'LeadController@reopen')->name('lead.reopen');

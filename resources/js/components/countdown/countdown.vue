@@ -23,7 +23,16 @@
                 }
             },
             timeLeft: function () {
-                return (new Date(this.seconds * 1000)).toUTCString().match(/(\d\d:\d\d:\d\d)/)[0];
+                var delta = this.seconds;
+                var days = Math.floor(delta / 86400);
+                delta -= days * 86400;
+                var hours = Math.floor(delta / 3600) % 24;
+                delta -= hours * 3600;
+                var minutes = Math.floor(delta / 60)% 60;
+                delta -= minutes * 60;
+                var seconds = delta % 60;
+
+                return (days ? days+"d " : '')+(hours ? hours + ":" : '00:')+(minutes ? minutes+':' : '00:')+(seconds ? seconds : '00');
             }
         },
         data() {

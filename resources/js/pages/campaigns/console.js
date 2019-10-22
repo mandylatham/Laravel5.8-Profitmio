@@ -9,6 +9,10 @@ import PusherService from "../../common/pusher-service";
 import './../../filters/m-utc-parse.filter';
 import './../../filters/m-format-localized.filter';
 import './../../filters/m-duration-for-humans.filter';
+import Modal from 'bootstrap-vue';
+Vue.use(Modal);
+import { BFormCheckbox } from 'bootstrap-vue';
+Vue.component('checkbox', BFormCheckbox);
 
 toastr.options.positionClass = "toast-bottom-left";
 toastr.options.newestOnTop = true;
@@ -45,6 +49,22 @@ window.app = new Vue({
         panel1Form: {
             openOn: 'right'
         },
+        positiveOptions: [
+            {name: "walk-in", value: "Lead came in"},
+            {name: "will-come-in", value: "Lead will come in"},
+            {name: "serviced", value: "Serviced their vehicle"},
+            {name: "future-lead", value: "Interested but not just yet"},
+        ],
+        negativeOptions: [
+            {name: "suppress", value: "Never wants to be contacted"},
+            {name: "heat-prior", value: "Lead upset over prior experience"},
+            {name: "heat-current", value: "Lead upset over current experience because it was really bad for them like totally"},
+            {name: "old-data-vehicle", value: "Lead no longer owns vehicle"},
+            {name: "wrong-data-vehicle", value: "Lead never owned vehicle"},
+            {name: "old-data-address", value: "Lead moved out of the area"},
+            {name: "wrong-lead-identity-phone", value: "Wrong Number"},
+            {name: "wrong-lead-identity-email", value: "Wrong Email Address"},
+        ],
         recipients: [],
         rowsTest: [],
         searchForm: new Form({
@@ -59,6 +79,10 @@ window.app = new Vue({
         pusherKey: '',
         pusherCluster: '',
         pusherAuthEndpoint: '',
+        leadClosePositiveDetails: false,
+        leadCloseNegativeDetails: false,
+        closingLead: null,
+        closed_details: [],
     },
     filters: {
         shortDate: function(value) {
@@ -108,6 +132,24 @@ window.app = new Vue({
             this.searchForm.page = page;
             return this.fetchRecipients();
         },
+        closeLead: function (lead) {
+            console.log('close-lead');
+            this.closingLead = lead;
+            this.$refs.closeLeadModalRef.show();
+        },
+        closeLeadWithDetails: function () {
+            console.log('done');
+        },
+        selectPositiveOutcome: function () {
+            console.log('set-positive-outcome');
+            this.leadClosePositiveDetails = true;
+            this.leadCloseNegativeDetails = false;
+        },
+        selectNegativeOutcome: function () {
+            console.log('set-negative-outcome');
+            this.leadClosePositiveDetails = false;
+            this.leadCloseNegativeDetails = true;
+        },
         registerGlobalEventListeners() {
             // Events
             window.PmEvent.listen('removed.recipient.label', (data) => {
@@ -149,6 +191,10 @@ window.app = new Vue({
                 this.fetchRecipients();
             });
 
+            window.PmEvent.listen('lead.close-request', (data) => {
+                this.closeLead(data);
+            });
+
         }
     },
     mounted() {
@@ -169,9 +215,10 @@ window.sidebar = new Vue({
     el: '#sidebar-nav-content',
     data: {
         activeFilterSection: 'all',
+        baseUrl: window.baseUrl,
         counters: {},
         campaign: {},
-        baseUrl: window.baseUrl
+        loggedUser: {}
     },
     mounted: function () {
         each(window.counters, (value, key) => {
@@ -186,6 +233,8 @@ window.sidebar = new Vue({
         } else {
             this.changeFilter('filter', this.activeFilterSection);
         }
+
+        this.loggedUser = window['app'].currentUser;
 
         this.registerPusherListeners();
     },

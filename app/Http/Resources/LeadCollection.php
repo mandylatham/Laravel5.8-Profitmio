@@ -13,7 +13,7 @@ class LeadCollection extends ResourceCollection
      * ::collection
      *
      * @param  \Illuminate\Http\Request $request
-     * @return array
+     * @return areturnrray
      */
     public function toArray($request)
     {

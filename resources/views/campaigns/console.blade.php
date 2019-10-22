@@ -1,4 +1,4 @@
-@extends('layouts.base', [
+@extends('layouts.console', [
     'hasSidebar' => true
 ])
 
@@ -25,30 +25,32 @@
         // URLs
         // window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
         // @fixme: setup to work with new LeadController for search
-        window.getRecipientsUrl = "{{ route('test', ['campaign' => $campaign->id]) }}";
-        window.openLeadUrl = "{{ route('lead.open', ['lead' => ':leadId']) }}";
-        window.closeLeadUrl = "{{ route('lead.close', ['lead' => ':leadId']) }}";
-        window.reopenLeadUrl = "{{ route('lead.reopen', ['lead' => ':leadId']) }}";
+        window.getRecipientsUrl = "{{ route('lead.index', ['campaign' => $campaign->id]) }}";
+        window.openLeadUrl = "{{ route('lead.open', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
+        window.closeLeadUrl = "{{ route('lead.close', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
+        window.reopenLeadUrl = "{{ route('lead.reopen', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
         window.getResponsesUrl = "{{ route('campaign.recipient.responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
-        window.updateNotesUrl = "{{ route('recipient.update-notes', ['recipient' => ':recipientId']) }}";
+        window.updateNotesUrl = "{{ route('recipient.update-notes', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.appointmentUpdateCalledStatusUrl = "{{ route('appointment.update-called-status', ['appointment' => ':appointmentId']) }}";
         window.addAppointmentUrl = "{{ route('add-appointment', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.messageUpdateReadStatusUrl = "{{ route('response.update-read-status', ['response' => ':responseId']) }}";
         window.sendTextUrl = "{{ route('campaign.recipient.text-response', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.sendEmailUrl = "{{ route('campaign.recipient.email-response', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
-        window.addLabelUrl = "{{ route('recipient.add-label', ['recipient' => ':recipientId']) }}";
-        window.removeLabelUrl = "{{ route('recipient.remove-label', ['recipient' => ':recipientId']) }}";
-        window.recipientGetResponsesUrl = "{{ route('recipient.get-responses', ['recipient' => ':recipientId']) }}";
-        window.sendCrmUrl = "{{ route('recipient.send-to-crm', ['recipient' => ':recipientId']) }}";
-        window.sendServiceUrl = "{{ route('recipient.send-to-service', ['lead' => ':leadId']) }}";
+        window.addLabelUrl = "{{ route('recipient.add-label', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.removeLabelUrl = "{{ route('recipient.remove-label', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.recipientGetResponsesUrl = "{{ route('recipient.get-responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.sendCrmUrl = "{{ route('recipient.send-to-crm', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.sendServiceUrl = "{{ route('recipient.send-to-service', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
     </script>
     {{--<script src="//js.pusher.com/4.3/pusher.min.js"></script>--}}
     <script src="{{ asset('js/console.js') }}"></script>
 @endsection
 
 @section('sidebar-content')
+    <div class="logo">
+        <img src="/img/logo-large.png" height="40px" class="d-none d-sm-block">
+    </div>
     <nav id="sidebar-nav-content" class="wrapper-aside--navigation" v-cloak>
-        <hr>
         <h4>Campaign</h4>
         <ul class="list-group">
             <li class="list-group-item">
@@ -76,7 +78,6 @@
                 </a>
             </li>
         </ul>
-        <hr>
         <h4>Leads</h4>
         <ul class="filter">
             <li class="all-leads">
@@ -101,6 +102,32 @@
             </li>
         </ul>
 
+        <ul class="footer list-group">
+            @impersonating
+            <b-nav-item right href="{{ route('admin.impersonate-leave') }}">
+                <i class="fas fa-sign-out-alt"></i>
+            </b-nav-item>
+            @endImpersonating
+            <b-nav-item-dropdown class="profile" right variant="link" size="lg" no-caret>
+                <template slot="button-content">
+                    <img :src="loggedUser.image_url" alt="Avatar" v-if="loggedUser.image_url">
+                    <div class="avatar-placeholder" v-if="!loggedUser.image_url">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-name">
+                        <div>@{{ loggedUser.name || loggedUser.email }}</div>
+                        @if (!auth()->user()->isAdmin())
+                        <small>{{ get_active_company_model()->name }}</small>
+                        @endif
+                    </div>
+                </template>
+                @if (!auth()->user()->isAdmin() && auth()->user()->companies()->count() > 1)
+                    <b-dropdown-item href="{{ route('selector.select-active-company') }}">Switch Company</b-dropdown-item>
+                @endif
+                <b-dropdown-item href="{{ route('profile.index') }}">Profile</b-dropdown-item>
+                <b-dropdown-item @click="signout('{{ route('logout') }}')">Signout</b-dropdown-item>
+            </b-nav-item-dropdown>
+        </ul>
 <!-- NOT SHOWING THESE RIGHT NOW
         <hr>
         <h4>Media</h4>
@@ -193,16 +220,16 @@
 @section('main-content')
     <div id="console" class="container list-campaign-container" v-cloak>
         <div class="row">
-            <div class="col-12 col-sm-5 col-lg-3 mb-3">
-                <a class="btn pm-btn go-back" href="{{ auth()->user()->isAdmin() ? route('campaigns.index') : route('dashboard') }}">
-                    <i class="fas fa-arrow-circle-left mr-2"></i> Go Back
-                </a>
+            <div class="col-12 col-sm-7 col-lg-9 mb-3">
+                <h3>{{ $campaign->name }}</h3>
             </div>
-            <div class="col-none col-sm-2 col-lg-6" style="text-align:center"><h3>{{ $campaign->name }}</div>
             <div class="col-12 col-sm-5 col-lg-3 mb-3">
                 <input type="text" v-model="searchForm.search" class="form-control filter--search-box"
                            aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
             </div>
+        </div>
+        <div class="col-12">
+            <v-select class="mb-3 col-4"></v-select>
         </div>
         <div class="no-items-row" v-if="recipients.length === 0">
             No recipients found.
@@ -240,5 +267,55 @@
         <pm-pagination v-if="recipients.length > 0" class="mt-3" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
 
         <slideout-panel></slideout-panel>
+        <b-modal ref="closeLeadModalRef"
+                 id="close-lead-modal"
+                 title="Close Lead"
+                 size="sm"
+                 @ok="closeLeadWithDetails">
+            <template v-slot:modal-header="">
+                <h4>Close Lead</h4>
+            </template>
+                <div class="sentiment">
+                    <button class="btn btn-success" @click="selectPositiveOutcome">
+                        <i class="fa fa-thumbs-up"></i>
+                    </button>
+                    <button class="btn btn-danger" @click="selectNegativeOutcome"></i>
+                        <i class="fa fa-thumbs-down"></i>
+                    </button>
+                </div>
+
+                <div class="close-details" v-if="leadClosePositiveDetails || leadCloseNegativeDetails">
+                    <div v-if="leadClosePositiveDetails">
+                        <b-form-checkbox
+                            button
+                            button-variant="info"
+                            v-for="option in positiveOptions"
+                            v-model="closed_details"
+                            :key="option.name"
+                            :value="option.name">
+                            @{{ option.value }}
+                        </b-form-checkbox>
+                    </div>
+                    <div v-if="leadCloseNegativeDetails">
+                        <b-form-checkbox
+                            button
+                            button-variant="info"
+                            v-for="option in negativeOptions"
+                            v-model="closed_details"
+                            :key="option.name"
+                            :value="option.name">
+                            @{{ option.value }}
+                        </b-form-checkbox>
+                    </div>
+                </div>
+            <template v-slot:modal-footer="">
+                <button class="btn btn-secondary" @click="cancel()">
+                    Cancel
+                </button>
+                <button class="btn btn-primary" @click="ok()" v-if="closed_details.length > 0">
+                    Ok
+                </button>
+            </template>
+        </b-modal>
     </div>
 @endsection

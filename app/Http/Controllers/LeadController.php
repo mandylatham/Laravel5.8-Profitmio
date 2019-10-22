@@ -15,6 +15,7 @@ use App\Services\SentimentService;
 use App\Events\CampaignCountsUpdated;
 use App\Events\ServiceDeptLabelAdded;
 use App\Http\Resources\LeadCollection;
+use App\Jobs\CalculateCampaignUserScore;
 use App\Builders\RecipientActivityBuilder;
 use App\Http\Resources\Lead as LeadResource;
 use ProfitMiner\Base\Services\Media\Transport\Messages\SmsMessage;
@@ -108,19 +109,23 @@ class LeadController extends Controller
 
     public function open(Lead $lead)
     {
+        $user = auth()->user();
+
         // Sanity check: cuurent state is new
-        if ($lead->status != 'New') {
-            throw new \Exception("Invalid Operation");
+        if ($lead->status != Lead::NEW_STATUS) {
+            throw new \Exception("Invalid Operation, status is {$lead->status}");
         }
 
         // Log Lead Activity
-        RecipientActivityBuilder::logOpen($lead, auth()->user());
+        RecipientActivityBuilder::logOpen($lead, $user);
 
         // Open the Lead
         $lead->open();
 
         // Broadcast update to counts
         event(new CampaignCountsUpdated($lead->campaign));
+
+        event(new CalculateCampaignUserScore($lead->campaign, $user));
 
         return response()->json(['recipient' => $lead]);
     }
