@@ -204,7 +204,7 @@ Route::group(['middleware' => 'auth'], function () {
             Route::any('/get-response-list', 'ResponseController@getResponseList');
         });
 
-        Route::get('/response/{lead}', 'ResponseController@getResponse')->name('campaign.recipient.responses');
+        Route::get('/response/{lead}', 'LeadController@show')->name('campaign.recipient.responses');
         Route::any('/leads', 'LeadController@index')->name('lead.index');
         Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
 

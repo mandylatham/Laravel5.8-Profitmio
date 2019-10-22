@@ -95,14 +95,14 @@ window.app = new Vue({
             this.loading = true;
             this.searchForm
                 .get(window.getRecipientsUrl)
-                .then(response => {
+                .then((response) => {
                     this.recipients = response.data;
                     this.searchForm.page = response.current_page;
                     this.searchForm.per_page = response.per_page;
                     this.total = response.total;
                     this.loading = false;
                 })
-                .catch(error => {
+                .catch((error) => {
                     this.loading = false;
                     window.PmEvent.fire('errors.api', 'Unable to get recipient');
                 });
@@ -204,7 +204,7 @@ window.app = new Vue({
         this.pusherCluster = window.pusherCluster;
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
-        // this.fetchRecipients();
+        this.fetchRecipients();
 
         this.registerGlobalEventListeners();
     }

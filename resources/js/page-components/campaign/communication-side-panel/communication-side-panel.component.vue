@@ -435,13 +435,13 @@
 
                 axios.get(generateRoute(window.getResponsesUrl, {'recipientId': recipientId}))
                     .then(({data: r}) => {
-                        this.recipient = r.lead;
-                        this.threads = r.threads;
-                        this.appointments = r.appointments;
-                        this.rest = r.rest;
-                        this.starting_notes = r.lead.notes;
-                        this.notes = r.lead.notes;
-                        this.labels = r.lead.labels.length === 0 ? {} : r.lead.labels;
+                        this.recipient = r.data.lead;
+                        this.threads = r.data.threads;
+                        this.appointments = r.data.appointments;
+                        // this.rest = r.rest;
+                        this.starting_notes = r.data.lead.notes;
+                        this.notes = r.data.lead.notes;
+                        this.labels = r.data.lead.labels.length === 0 ? {} : r.lead.labels;
 
                         if (this.threads.textDrop && this.threads.textDrop.text_message) {
                             this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.lead);

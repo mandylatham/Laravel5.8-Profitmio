@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use App\Repositories\LeadSearch;
 use App\Builders\ResponseBuilder;
 use App\Services\SentimentService;
+use App\Http\Resources\LeadDetails;
 use App\Events\CampaignCountsUpdated;
 use App\Events\ServiceDeptLabelAdded;
 use App\Http\Resources\LeadCollection;
@@ -96,15 +97,7 @@ class LeadController extends Controller
 
     public function show(Campaign $campaign, Lead $lead)
     {
-        // Validate the request
-
-        // Authorize the request
-
-        // Gather object data from models
-        $threads = new ResponseThread($campaign, $lead);
-        // nope, there is a lot more...
-
-        // Convert raw data to custom object notation
+        return new LeadDetails($lead);
     }
 
     public function open(Lead $lead)
