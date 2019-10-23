@@ -140,17 +140,22 @@ window.app = new Vue({
         cancelCloseLead: function (lead) {
             this.closingLead = null;
             this.$refs.closeLeadModalRef.hide();
+            this.closed_details = [];
+            this.leadClosePositiveDetails = false;
+            this.leadCloseNegativeDetails = false;
         },
         closeLeadWithDetails: function () {
             console.log('done');
         },
         selectPositiveOutcome: function () {
             console.log('set-positive-outcome');
+            this.closed_details = [];
             this.leadClosePositiveDetails = true;
             this.leadCloseNegativeDetails = false;
         },
         selectNegativeOutcome: function () {
             console.log('set-negative-outcome');
+            this.closed_details = [];
             this.leadClosePositiveDetails = false;
             this.leadCloseNegativeDetails = true;
         },
