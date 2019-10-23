@@ -441,13 +441,13 @@
                         // this.rest = r.rest;
                         this.starting_notes = r.data.lead.notes;
                         this.notes = r.data.lead.notes;
-                        this.labels = r.data.lead.labels.length === 0 ? {} : r.lead.labels;
+                        this.labels = r.data.lead.labels.length === 0 ? {} : r.data.lead.labels;
 
                         if (this.threads.textDrop && this.threads.textDrop.text_message) {
-                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.lead);
+                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.data.lead);
                         }
                         if (this.threads.emailDrop && this.threads.emailDrop.email_html) {
-                            this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.lead);
+                            this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.data.lead);
                         }
 
                         this.registerPusherListeners();
@@ -455,6 +455,7 @@
                     })
                     .catch((response) => {
                         this.setLoading(false);
+                        console.log(response);
                         window.PmEvent.fire('errors.api', "Couldn't fetch responses.");
                     });
             },

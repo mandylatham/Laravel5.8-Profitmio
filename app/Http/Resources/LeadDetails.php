@@ -30,6 +30,7 @@ class LeadDetails extends JsonResource
             'sent_to_crm' => $this->sent_to_crm,
             'service' => $this->service,
             'vehicle' => implode(' ', [$this->year, $this->make, $this->model]),
+            'labels' => $this->labels,
         ];
 
         $data['threads']['email'] = EmailResponse::collection($this->responses()->whereType('email')->get());

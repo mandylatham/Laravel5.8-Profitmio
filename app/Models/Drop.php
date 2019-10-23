@@ -14,6 +14,12 @@ class Drop extends \ProfitMiner\Base\Models\Drop implements HasMedia
 {
     use SoftDeletes, HasMediaTrait;
 
+    const STATUS_COMPLETED = 'Completed';
+    const STATUS_ABORTED = 'Aborted';
+    const STATUS_DELETED = 'Deleted';
+    const STATUS_PENDING = 'Pending';
+    const STATUS_PROCESSING = 'Processing';
+
     protected $searchablecolumns = ['send_at', 'started_at', 'status'];
 
     protected $appends = [

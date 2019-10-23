@@ -14,6 +14,8 @@ class EmailDrop extends JsonResource
      */
     public function toArray($request)
     {
-        return parent::toArray($request);
+        return [
+            'email_html' => $this->email_html,
+        ];
     }
 }
