@@ -3,11 +3,11 @@
 namespace App\Models;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use App\Events\CampaignCountsUpdated;
-use App\Events\RecipientLabelAdded;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Sofa\Eloquence\Eloquence;
+use Illuminate\Support\Facades\DB;
+use App\Events\RecipientLabelAdded;
+use App\Events\CampaignCountsUpdated;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Recipient extends \ProfitMiner\Base\Models\Recipient
 {

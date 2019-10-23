@@ -120,7 +120,7 @@ class LeadController extends Controller
 
         event(new CalculateCampaignUserScore($lead->campaign, $user));
 
-        return response()->json(['recipient' => $lead]);
+        return new LeadResource($lead);
     }
 
     public function close(Lead $lead)

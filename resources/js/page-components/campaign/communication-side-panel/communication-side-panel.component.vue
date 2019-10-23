@@ -481,9 +481,9 @@
             openLead: function (leadId) {
                 axios.post(generateRoute(window.openLeadUrl, {'leadId': leadId}))
                     .then(response => {
-                        this.$toastr.success('Lead Opened');
-                        window.app.$set(this.recipient, 'status', response.data.recipient.status);
-                        window.PmEvent.fire('changed.recipient.status', response.data.recipient);
+                        this.$toastr.success('Lead Opened with status: ' + response.data.data.status);
+                        window.app.$set(this.recipient, 'status', response.data.data.status);
+                        window.PmEvent.fire('changed.recipient.status', response.data.data);
                     })
                     .catch((error) => {
                         console.error(error);
