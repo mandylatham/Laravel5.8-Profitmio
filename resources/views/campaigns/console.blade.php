@@ -267,6 +267,7 @@
         <pm-pagination v-if="recipients.length > 0" class="mt-3" :pagination="pagination" @page-changed="onPageChanged"></pm-pagination>
 
         <slideout-panel></slideout-panel>
+
         <b-modal ref="closeLeadModalRef"
                  id="close-lead-modal"
                  title="Close Lead"
@@ -309,7 +310,7 @@
                     </div>
                 </div>
             <template v-slot:modal-footer="">
-                <button class="btn btn-secondary" @click="cancel()">
+                <button class="btn btn-secondary" @click="cancelCloseLead">
                     Cancel
                 </button>
                 <button class="btn btn-primary" @click="ok()" v-if="closed_details.length > 0">

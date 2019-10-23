@@ -137,6 +137,10 @@ window.app = new Vue({
             this.closingLead = lead;
             this.$refs.closeLeadModalRef.show();
         },
+        cancelCloseLead: function (lead) {
+            this.closingLead = null;
+            this.$refs.closeLeadModalRef.hide();
+        },
         closeLeadWithDetails: function () {
             console.log('done');
         },
