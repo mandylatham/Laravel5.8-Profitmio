@@ -708,6 +708,9 @@
             this.isImpersonated = window.isImpersonated;
             pusherService = new PusherService();
             this.getResponses();
+            window.PmEvent.listen('recipient.closed', (data) => {
+                this.recipient.status = 'Closed';
+            });
         },
         props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
         watch: {

@@ -204,7 +204,7 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
     {
         $response = $this->getLastDialogStartResponse(true, $type);
 
-        return $response ? $response->created_at: null;
+        return $response ? $response->created_at : null;
     }
 
     /**
@@ -216,9 +216,9 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
      */
     public function getLastOutboundDialogStart($type = null)
     {
-        $response = $this->getLastDialogStartResponse(false, $type)->created_at;
+        $response = $this->getLastDialogStartResponse(false, $type);
 
-        return $response ? $response->created_at: null;
+        return $response ? $response->created_at : null;
     }
 
     /**
@@ -237,10 +237,10 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
                                    ->orderBy('id', 'asc')
                                    ->get();
 
-        $leadDialogStarts = collect($responses->first());
-        $companyDialogStarts = collect();
+        $leadDialogStarts = collect([$responses->first()]);
+        $companyDialogStarts = collect([]);
 
-        for ($i=0; $i<count($responses); $i++) {
+        for ($i=0; $i < $responses->count(); $i++) {
             if ($i < 1) continue;
             if ($responses[$i]->incoming == 1 && $responses[$i-1]->incoming == 0) {
                 $leadDialogStarts->add($responses[$i]);

@@ -75,8 +75,12 @@ class RecipientActivityBuilder
      */
     public static function logClosed(Recipient $recipient, User $user)
     {
-        $lastInbound = $recipient->getLastInboundDialogStart();
-        $lastOutbound = $recipient->getLastOutboundDialogStart();
+        try {
+            $lastInbound = $recipient->getLastInboundDialogStart();
+            $lastOutbound = $recipient->getLastOutboundDialogStart();
+        } catch (\Exception $e) {
+            throw new \Exception("Unable to get dialog data: {$e->getMessage()}");
+        }
 
         $activity = RecipientActivity::create([
             'action' => RecipientActivity::CLOSED,

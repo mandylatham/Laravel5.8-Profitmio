@@ -271,8 +271,7 @@
         <b-modal ref="closeLeadModalRef"
                  id="close-lead-modal"
                  title="Close Lead"
-                 size="sm"
-                 @ok="closeLeadWithDetails">
+                 size="sm">
             <template v-slot:modal-header="">
                 <h4>Close Lead</h4>
             </template>
@@ -285,24 +284,24 @@
                     </button>
                 </div>
 
-                <div class="close-details" v-if="leadClosePositiveDetails || leadCloseNegativeDetails">
-                    <div v-if="leadClosePositiveDetails">
+                <div class="close-details" v-if="closeLeadForm.outcome">
+                    <div v-if="closeLeadForm.outcome === 'positive'">
                         <b-form-checkbox
                             button
                             button-variant="info"
                             v-for="option in positiveOptions"
-                            v-model="closed_details"
+                            v-model="closeLeadForm.tags"
                             :key="option.name"
                             :value="option.name">
                             @{{ option.value }}
                         </b-form-checkbox>
                     </div>
-                    <div v-if="leadCloseNegativeDetails">
+                    <div v-if="closeLeadForm.outcome === 'negative'">
                         <b-form-checkbox
                             button
                             button-variant="info"
                             v-for="option in negativeOptions"
-                            v-model="closed_details"
+                            v-model="closeLeadForm.tags"
                             :key="option.name"
                             :value="option.name">
                             @{{ option.value }}
@@ -313,7 +312,7 @@
                 <button class="btn btn-secondary" @click="cancelCloseLead">
                     Cancel
                 </button>
-                <button class="btn btn-primary" @click="ok()" v-if="closed_details.length > 0">
+                <button class="btn btn-primary" @click="sendCloseForm" v-if="closeLeadForm.outcome && closeLeadForm.tags.length > 0">
                     Ok
                 </button>
             </template>

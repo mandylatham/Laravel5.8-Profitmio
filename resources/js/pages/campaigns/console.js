@@ -9,6 +9,7 @@ import PusherService from "../../common/pusher-service";
 import './../../filters/m-utc-parse.filter';
 import './../../filters/m-format-localized.filter';
 import './../../filters/m-duration-for-humans.filter';
+import {generateRoute} from './../../common/helpers';
 import Modal from 'bootstrap-vue';
 Vue.use(Modal);
 import { BFormCheckbox } from 'bootstrap-vue';
@@ -42,6 +43,10 @@ window.app = new Vue({
     },
     data: {
         campaign: {},
+        closeLeadForm: new Form({
+            outcome: null,
+            tags: null,
+        }),
         currentRecipientId: null,
         currentUser: {},
         recipientKey: null,
@@ -140,24 +145,35 @@ window.app = new Vue({
         cancelCloseLead: function (lead) {
             this.closingLead = null;
             this.$refs.closeLeadModalRef.hide();
-            this.closed_details = [];
-            this.leadClosePositiveDetails = false;
-            this.leadCloseNegativeDetails = false;
+            this.closeLeadForm.tags = [];
+            this.closeLeadForm.outcome = null;
         },
-        closeLeadWithDetails: function () {
-            console.log('done');
+        sendCloseForm: function () {
+            this.closeLeadForm.post(generateRoute(window.closeLeadUrl, {leadId: this.closingLead}))
+                .then((response) => {
+                    // @TODO refactor this into a method
+                    this.recipients.forEach((recipient, index) => {
+                        if (recipient.id === response.data.id) {
+                            this.$set(this.recipients[index], 'status', response.data.status);
+                        }
+                    });
+                    window.PmEvent.fire('recipient.closed', response.data);
+                    this.$toastr.success("Lead has been closed");
+                    this.cancelCloseLead();
+
+                })
+                .catch((err) => {
+                    // @TODO other stuff
+                    this.$toastr.error(err);
+                });
         },
         selectPositiveOutcome: function () {
-            console.log('set-positive-outcome');
-            this.closed_details = [];
-            this.leadClosePositiveDetails = true;
-            this.leadCloseNegativeDetails = false;
+            this.closeLeadForm.tags = [];
+            this.closeLeadForm.outcome = 'positive';
         },
         selectNegativeOutcome: function () {
-            console.log('set-negative-outcome');
-            this.closed_details = [];
-            this.leadClosePositiveDetails = false;
-            this.leadCloseNegativeDetails = true;
+            this.closeLeadForm.tags = [];
+            this.closeLeadForm.outcome = 'negative';
         },
         registerGlobalEventListeners() {
             // Events

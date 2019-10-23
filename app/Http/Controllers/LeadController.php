@@ -7,6 +7,7 @@ use App\Models\Campaign;
 use App\Models\Response;
 use Illuminate\Log\Logger;
 use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use App\Services\CrmService;
 use Illuminate\Http\Request;
 use App\Repositories\LeadSearch;
@@ -16,6 +17,7 @@ use App\Http\Resources\LeadDetails;
 use App\Events\CampaignCountsUpdated;
 use App\Events\ServiceDeptLabelAdded;
 use App\Http\Resources\LeadCollection;
+use App\Http\Requests\CloseLeadRequest;
 use App\Jobs\CalculateCampaignUserScore;
 use App\Builders\RecipientActivityBuilder;
 use App\Http\Resources\Lead as LeadResource;
@@ -123,12 +125,20 @@ class LeadController extends Controller
         return new LeadResource($lead);
     }
 
-    public function close(Lead $lead)
+    public function close(Lead $lead, CloseLeadRequest $request)
     {
         // Sanity check: current state is open
-        if ($lead->status != 'Open') {
+        if ($lead->status != Lead::OPEN_STATUS) {
             throw new \Exception("Invalid Operation");
         }
+
+        // Add to suppression if needed
+        if (Arr::has($request->input('tags'), 'suppress')) {
+            // @TODO Build suppression service
+        }
+
+        // Add tags to Lead
+        // @TODO add tags attribute to leads
 
         // Log Lead Activity
         RecipientActivityBuilder::logClosed($lead, auth()->user());
@@ -139,7 +149,7 @@ class LeadController extends Controller
         // Broadcast update to counts
         event(new CampaignCountsUpdated($lead->campaign));
 
-        return response()->json(['recipient' => $lead]);
+        return new LeadResource($lead);
     }
 
     public function reopen(Lead $lead)
