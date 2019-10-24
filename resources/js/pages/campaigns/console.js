@@ -150,7 +150,6 @@ window.app = new Vue({
         sendCloseForm: function () {
             this.closeLeadForm.post(generateRoute(window.closeLeadUrl, {leadId: this.closingLead}))
                 .then((response) => {
-                    // @TODO refactor this into a method
                     this.recipients.forEach((recipient, index) => {
                         if (recipient.id === response.data.id) {
                             console.log(this.searchForm.status + ": " + response.data.id);

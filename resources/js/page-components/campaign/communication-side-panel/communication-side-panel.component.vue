@@ -510,8 +510,8 @@
                 axios.post(generateRoute(window.reopenLeadUrl, {'leadId': leadId}))
                     .then(response => {
                         this.$toastr.success('Lead Reopened');
-                        window.app.$set(this.recipient, 'status', response.data.recipient.status);
-                        window.PmEvent.fire('changed.recipient.status', response.data.recipient);
+                        window.app.$set(this.recipient, 'status', response.data.data.status);
+                        window.PmEvent.fire('changed.recipient.status', response.data.data);
                     })
                     .catch((error) => {
                         console.error(error);

@@ -155,7 +155,7 @@ class LeadController extends Controller
     public function reopen(Lead $lead)
     {
         // Sanity check: current state is closed
-        if ($lead->status != 'Closed') {
+        if ($lead->status != Lead::CLOSED_STATUS) {
             throw new \Exception("Invalid Operation");
         }
 
@@ -167,7 +167,7 @@ class LeadController extends Controller
         // Broadcast update to counts
         event(new CampaignCountsUpdated($lead->campaign));
 
-        return response()->json(['recipient' => $lead]);
+        return new LeadResource($lead);
     }
     /**
      * Send the lead an sms response
