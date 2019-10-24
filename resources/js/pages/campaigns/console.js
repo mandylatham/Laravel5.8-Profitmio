@@ -138,7 +138,6 @@ window.app = new Vue({
             return this.fetchRecipients();
         },
         closeLead: function (lead) {
-            console.log('close-lead');
             this.closingLead = lead;
             this.$refs.closeLeadModalRef.show();
         },
@@ -154,7 +153,12 @@ window.app = new Vue({
                     // @TODO refactor this into a method
                     this.recipients.forEach((recipient, index) => {
                         if (recipient.id === response.data.id) {
-                            this.$set(this.recipients[index], 'status', response.data.status);
+                            console.log(this.searchForm.status + ": " + response.data.id);
+                            if (this.searchForm.status == 'new' || this.searchForm.status == 'open') {
+                                this.recipients.splice(index, 1);
+                            } else {
+                                this.$set(this.recipients[index], 'status', response.data.status);
+                            }
                         }
                     });
                     window.PmEvent.fire('recipient.closed', response.data);
@@ -194,7 +198,6 @@ window.app = new Vue({
             });
 
             window.PmEvent.listen('changed.recipient.status', (data) => {
-                console.log(data);
                 this.recipients.forEach((recipient, index) => {
                     if (recipient.id === data.id) {
                         this.$set(this.recipients[index], 'status', data.status);
@@ -207,6 +210,7 @@ window.app = new Vue({
                     this.searchForm.media = data.value;
                 } else if (data.filter === 'status') {
                     this.searchForm.status = data.value;
+                    window.displayFilter = data.value;
                 } else if (data.filter === 'label') {
                     this.searchForm.label = data.value;
                 } else if (data.filter === 'reset') {
@@ -266,13 +270,6 @@ window.sidebar = new Vue({
     },
     methods: {
         changeFilter: function (filter, value) {
-            /*
-            let newUrl = window.baseUrl;
-            newUrl += value;
-            if (newUrl !== window.location.href) {
-                window.history.pushState("", "", newUrl);
-            }
-            */
             this.activeFilterSection = value;
 
             window.PmEvent.fire('filters.filter-changed', {

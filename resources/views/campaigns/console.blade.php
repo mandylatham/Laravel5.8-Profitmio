@@ -22,6 +22,7 @@
         window.pusherCluster = "{{env('PUSHER_APP_CLUSTER')}}";
         window.pusherAuthEndpoint = "{{ url('/broadcasting/auth') }}";
         window.csrfToken = "{{ csrf_token() }}";
+        window.displayFilter = 'all';
         // URLs
         // window.getRecipientsUrl = "{{ route('campaign.recipient.for-user-display', ['campaign' => $campaign->id]) }}";
         // @fixme: setup to work with new LeadController for search

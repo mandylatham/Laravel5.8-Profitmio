@@ -710,6 +710,9 @@
             this.getResponses();
             window.PmEvent.listen('recipient.closed', (data) => {
                 this.recipient.status = 'Closed';
+                setTimeout(() => {
+                    this.$emit('closePanel', {});
+                }, 800);
             });
         },
         props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
