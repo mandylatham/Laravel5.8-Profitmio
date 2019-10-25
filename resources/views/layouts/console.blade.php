@@ -27,9 +27,6 @@
 <body>
     <div id="app" class="clearfix has-sidebar">
         <div id="sidebar" class="sidebar-container">
-            <a href="javascript:;" class="sidebar-close js-close-side-menu d-xl-none">
-                <i class="far fa-times-circle"></i>
-            </a>
             <div class="sidebar-wrapper">
                 @yield('sidebar-content')
             </div>
@@ -118,19 +115,6 @@
             </div>
 
             <div class="main-content">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-12">
-                            <div class="sidebar-toggler js-toggle-side-menu d-xl-none">
-                                @hasSection('sidebar-toggle-content')
-                                    @yield('sidebar-toggle-content')
-                                @else
-                                    <i class="fas fa-bars"></i>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 @yield('main-content')
             </div>
         </div>

@@ -49,11 +49,12 @@
 
 @section('sidebar-content')
     <div class="logo">
-        <img src="/img/logo-large.png" height="40px" class="d-none d-sm-block">
+        <img src="/img/logo-large.png" height="40px" class="d-none d-xl-block">
+        <img src="/img/apple-icon-120x120.png" height="40px" class="d-block d-xl-none">
     </div>
     <nav id="sidebar-nav-content" class="wrapper-aside--navigation" v-cloak>
         <h4>Campaign</h4>
-        <ul class="list-group">
+        <ul class="list-group campaign-nav">
             <li class="list-group-item">
                 <a class="{{ \Route::current()->getName() === 'campaigns.drops.index' ? 'active' : '' }}" href="{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-drops-icon"></i>
@@ -80,25 +81,29 @@
             </li>
         </ul>
         <h4>Leads</h4>
-        <ul class="filter">
+        <ul class="filter filter-nav">
             <li class="all-leads">
                 <a class="all-filter" :class="{'active': activeFilterSection === 'all'}" href="javascript:;"
-                   @click="changeFilter('reset')"><i class="fas fa-expand-arrows-alt"></i> All Leads
+                   @click="changeFilter('reset')"><i class="fas fa-list"></i>
+                    <span>All Leads</span>
                     <span class="counter">@{{ counters.total }}</span></a>
             </li>
             <li class="new-leads">
                 <a class="unread-filter" :class="{'active': activeFilterSection === 'new'}" href="javascript:;"
-                   @click="changeFilter('status', 'new')"><i class="far fa-flag"></i> New Leads
+                   @click="changeFilter('status', 'new')"><i class="far fa-star"></i>
+                    <span>New Leads</span>
                     <span class="counter">@{{ counters.new }}</span></a>
             </li>
             <li class="open-leads">
                 <a class="unread-filter" :class="{'active': activeFilterSection === 'open'}" href="javascript:;"
-                   @click="changeFilter('status', 'open')"><i class="far fa-flag"></i> Open Leads
+                   @click="changeFilter('status', 'open')"><i class="fa fa-address-card"></i>
+                    <span>Open Leads</span>
                     <span class="counter">@{{ counters.open }}</span></a>
             </li>
             <li class="closed-leads">
                 <a class="idle-filter" :class="{'active': activeFilterSection === 'closed'}" href="javascript:;"
-                   @click="changeFilter('status', 'closed')"><i class="far fa-hourglass"></i> Closed Leads
+                   @click="changeFilter('status', 'closed')"><i class="fa fa-bed"></i>
+                    <span>Closed Leads</span>
                     <span class="counter">@{{ counters.closed }}</span></a>
             </li>
         </ul>
@@ -109,7 +114,7 @@
                 <i class="fas fa-sign-out-alt"></i>
             </b-nav-item>
             @endImpersonating
-            <b-nav-item-dropdown class="profile" right variant="link" size="lg" no-caret>
+            <b-nav-item-dropdown class="profile" dropright variant="link" size="lg" no-caret>
                 <template slot="button-content">
                     <img :src="loggedUser.image_url" alt="Avatar" v-if="loggedUser.image_url">
                     <div class="avatar-placeholder" v-if="!loggedUser.image_url">
@@ -212,10 +217,6 @@
         </ul>
 -->
     </nav>
-@endsection
-
-@section('sidebar-toggle-content')
-    <i class="fas fa-bars mr-2"></i> Filters
 @endsection
 
 @section('main-content')
