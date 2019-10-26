@@ -122,6 +122,9 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
 
     /**
      * Return the HTML template to show the name of the company in datatables
+     * 
+     * @TODO fix this grossness
+     * 
      * @return string
      */
     public function getNameForTemplate()
@@ -165,6 +168,11 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         $template .= '</div>';
 
         return $template;
+    }
+
+    public function leads()
+    {
+        return $this->hasMany(Lead::class);
     }
 
     public function phones()

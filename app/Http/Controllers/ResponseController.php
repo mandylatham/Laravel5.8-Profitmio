@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lead;
 use App\Classes\MailgunService;
 use App\Events\CampaignCountsUpdated;
 use App\Models\Appointment;
@@ -192,39 +193,39 @@ class ResponseController extends Controller
 
     /**
      * @param Campaign  $campaign
-     * @param Recipient $recipient
+     * @param Lead $lead
      * @return array
      */
-    public function getResponse(Campaign $campaign, Recipient $recipient)
+    public function getResponse(Campaign $campaign, Lead $lead)
     {
-        $appointments = Appointment::where('recipient_id', $recipient->id)->get();
+        $appointments = Appointment::where('recipient_id', $lead->id)->get();
         $responses = Response::with('impersonation.impersonator')
             ->where('campaign_id', $campaign->id)
-            ->where('recipient_id', $recipient->id)
+            ->where('recipient_id', $lead->id)
             ->orderBy('created_at', 'asc')
             ->get();
 
         $threads = collect([
             'email'     => Response::with('impersonation.impersonator')
                 ->where('campaign_id', $campaign->id)
-                ->where('recipient_id', $recipient->id)
+                ->where('recipient_id', $lead->id)
                 ->where('type', 'email')
                 ->get(),
             'text'      => Response::with('impersonation.impersonator')
                 ->where('campaign_id', $campaign->id)
-                ->where('recipient_id', $recipient->id)
+                ->where('recipient_id', $lead->id)
                 ->where('type', 'text')
                 ->get(),
             'phone'     => Response::where('campaign_id', $campaign->id)
-                ->where('recipient_id', $recipient->id)
+                ->where('recipient_id', $lead->id)
                 ->where('type', 'phone')
                 ->get(),
-            'emailDrop' => $recipient->drops()
+            'emailDrop' => $lead->drops()
                 ->whereType('email')
                 ->whereStatus('Completed')
                 ->orderBy('send_at', 'desc')
                 ->first(),
-            'textDrop'  => $recipient->drops()
+            'textDrop'  => $lead->drops()
                 ->whereType('sms')
                 ->whereStatus('Completed')
                 ->orderBy('send_at', 'desc')
@@ -232,8 +233,8 @@ class ResponseController extends Controller
         ]);
 
         return [
+            'lead'         => $lead,
             'campaign'     => $campaign,
-            'recipient'    => $recipient,
             'appointments' => $appointments,
             'responses'    => $responses,
             'threads'      => $threads,

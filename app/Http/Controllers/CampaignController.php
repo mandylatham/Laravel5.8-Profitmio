@@ -36,6 +36,44 @@ class CampaignController extends Controller
         return view('campaigns.index', []);
     }
 
+
+    /**
+     * Load Campaign Console Page
+     * 
+     * @param Request  $request
+     * @param Campaign $campaign
+     * 
+     * @return \Illuminate\View\View
+     */
+    public function console(Request $request, Campaign $campaign, $filter = null)
+    {
+        $counters = [];
+        $counters['total'] = $campaign->leads()->count();
+        $counters['new'] = $campaign->leads()->new()->count();
+        $counters['open'] = $campaign->leads()->open()->count();
+        $counters['closed'] = $campaign->leads()->closed()->count();
+        $counters['calls'] = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('phone'); })->count();
+        $counters['email'] = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('email'); })->count();
+        $counters['sms'] = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('text'); })->count();
+
+        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
+        foreach ($labels as $label) {
+            $counters[$label] = Recipient::withResponses($campaign->id)
+                ->labelled($label, $campaign->id)
+                ->count();
+        }
+
+        $data = [
+            'counters' => $counters,
+            'campaign' => $campaign
+        ];
+
+        if ($filter) {
+            $data['filterApplied'] = $filter;
+        }
+        return view('campaigns.console', $data);
+    }
+
     /**
      * Return all campaigns for user display
      * @param Request $request
@@ -65,16 +103,6 @@ class CampaignController extends Controller
             ->get();
 
         return $campaigns->toJson();
-    }
-
-    public function addMailer(Request $request)
-    {
-        $mailer = $this->campaign->mailers()->create([
-            'name' => $request->mailer_name,
-            'in_home_ap' => $request->in_home_date,
-        ]);
-
-        $mailer->addMedia($request->file('mailer_image'));
     }
 
     /**
@@ -118,7 +146,7 @@ class CampaignController extends Controller
         ]);
     }
 
-    public function createNew()
+    public function create()
     {
         $dealerships = Company::getDealerships();
         $agencies = Company::getAgencies();
@@ -130,7 +158,7 @@ class CampaignController extends Controller
         return view('campaigns.create', $viewData);
     }
 
-    public function create(NewCampaignRequest $request)
+    public function store(NewCampaignRequest $request)
     {
         $expires_at = null;
         $starts_at = (new Carbon($request->start, \Auth::user()->timezone))->timezone('UTC')->toDateTimeString();

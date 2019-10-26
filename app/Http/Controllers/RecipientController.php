@@ -149,100 +149,6 @@ class RecipientController extends Controller
     }
 
     /**
-     * @param Recipient $recipient
-     * @param Request   $request
-     * @return string
-     * @throws \Pusher\PusherException
-     */
-    public function updateNotes(Recipient $recipient, Request $request)
-    {
-        $recipient->fill(['notes' => $request->notes]);
-
-        $recipient->save();
-
-        // TODO: fix me
-        // broadcast(new CampaignResponseUpdated($recipient->campaign, $recipient));
-        PusherBroadcastingService::broadcastRecipientResponseUpdated($recipient);
-
-        return $recipient->toJson();
-    }
-
-    /**
-     * @param \App\Models\Recipient    $recipient
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return string
-     * @throws \Pusher\PusherException
-     */
-    public function removeLabel(Recipient $recipient, Request $request)
-    {
-        if ($request->label && in_array($request->label, [
-                'interested',
-                'not_interested',
-                'appointment',
-                'service',
-                'wrong_number',
-                'car_sold',
-                'heat',
-                'callback',
-            ])) {
-            $recipient->fill([
-                $request->label => 0,
-            ]);
-            $recipient->save();
-
-            event(new CampaignCountsUpdated($recipient->campaign));
-
-            $class = 'badge-danger';
-            if (in_array($request->label, ['interested', 'appointment', 'service', 'callback'])) {
-                $class = 'badge-success';
-            }
-        }
-    }
-
-    /**
-     * @param \App\Models\Recipient    $recipient
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public function addLabel(Recipient $recipient, Request $request)
-    {
-        $sendNotifications = !! $recipient->campaign->service_dept;
-
-        if ($request->label && in_array($request->label, [
-                'interested',
-                'not_interested',
-                'appointment',
-                'service',
-                'wrong_number',
-                'car_sold',
-                'heat',
-                'callback',
-            ])) {
-            $recipient->fill([
-                $request->label => 1,
-            ]);
-
-            $recipient->save();
-
-            if ($request->input('label') == 'service' && !! $recipient->campaign->service_dept) {
-                event(new ServiceDeptLabelAdded($recipient));
-            }
-
-            event(new CampaignCountsUpdated($recipient->campaign));
-
-            return response()->json([
-                "label" => $request->label,
-                "labelText" => $this->getLabelText($request->label),
-            ]);
-        }
-
-        return '';
-    }
-
-    /**
      * @param \App\Models\Campaign $campaign
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
@@ -287,44 +193,29 @@ class RecipientController extends Controller
     public function getRecipientData(Request $request, Campaign $campaign, $filter = 'all', $label = null)
     {
         if ($filter == 'all') {
-            $recipients = Recipient::withResponses($campaign->id);
+            $recipients = $campaign->leads();
         }
-        if ($filter == 'unread') {
-            $recipients = Recipient::unread($campaign->id);
+        if ($filter == 'new') {
+            $recipients = $campaign->leads()->new();
         }
-        if ($filter == 'idle') {
-            $recipients = Recipient::idle($campaign->id);
+        if ($filter == 'open') {
+            $recipients = $campaign->leads()->open();
         }
-        if ($filter == 'archived') {
-            $recipients = Recipient::archived($campaign->id);
+        if ($filter == 'closed') {
+            $recipients = $campaign->leads()->closed();
         }
         if ($filter == 'labelled') {
-            $recipients = Recipient::withResponses($campaign->id)
+            $recipients = $campaign->leads()
                 ->labelled($campaign->id, $label);
         }
         if ($filter == 'email') {
-            $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.id',
-                result_array_values(
-                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
-                )
-            );
+            $recipients = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('email'); });
         }
         if ($filter == 'text') {
-            $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.id',
-                result_array_values(
-                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
-                )
-            );
+            $recipients = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('text'); });
         }
         if ($filter == 'calls') {
-            $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.id',
-                result_array_values(
-                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
-                )
-            );
+            $recipients = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('phone'); });
         }
 
         if (!isset($recipients)) {
@@ -359,28 +250,13 @@ class RecipientController extends Controller
 
         $recipients = $recipients->paginate($this->pages);
 
-        $recipients->totalCount = Recipient::withResponses($campaign->id)->count();
-        $recipients->unread = Recipient::unread($campaign->id)->count();
-        $recipients->idle = Recipient::idle($campaign->id)->count();
-        $recipients->archived = Recipient::archived()->count();
-        $recipients->email = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
-            )
-        )->count();
-        $recipients->calls = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
-            )
-        )->count();
-        $recipients->sms = Recipient::withResponses($campaign->id)->whereIn(
-            'recipients.id',
-            result_array_values(
-                DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
-            )
-        )->count();
+        $recipients->total = $campaign->leads()->count();
+        $recipients->new = $campaign->leads()->new()->count();
+        $recipients->open = $campaign->leads()->open()->count();
+        $recipients->closed = $campaign->leads()->closed()->count();
+        $recipients->email = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('email'); })->count();
+        $recipients->calls = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('phone'); })->count();
+        $recipients->sms = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('text'); })->count();
 
         $recipients->labelCounts = Recipient::withResponses($campaign->id)
             ->selectRaw("sum(interested) as interested, sum(not_interested) as not_interested,
@@ -395,10 +271,10 @@ class RecipientController extends Controller
         $viewData['filter'] = $filter;
         $viewData['label'] = $label;
         $viewData['counters'] = [
-            'totalCount'  => $recipients->totalCount,
-            'unread'      => $recipients->unread,
-            'idle'        => $recipients->idle,
-            'archived'    => $recipients->archived,
+            'total'  => $recipients->total,
+            'new'      => $recipients->new,
+            'open'        => $recipients->open,
+            'closed'    => $recipients->closed,
             'email'       => $recipients->email,
             'calls'       => $recipients->calls,
             'sms'         => $recipients->sms,
@@ -415,57 +291,39 @@ class RecipientController extends Controller
      */
     public function getRecipients(Request $request, Campaign $campaign)
     {
-        $filter = $request->input('filter', null);
+        $status = $request->input('status', null);
+        $media = $request->input('media', null);
+        $label = $request->input('label', null);
 
-        $recipients = Recipient::where('recipients.campaign_id', $campaign->id)
-            ->select('recipients.*');
+        $leads = $campaign->leads();
 
-        if (!$filter || $filter === 'all') {
-            $recipients->withResponses($campaign->id);
+        if ($status === 'new' || $status === 'open' || $status === 'closed') {
+            $leads->$status();
         }
 
-        if ($filter === 'unread' || $filter === 'idle') {
-            $recipients->$filter($campaign->id);
+        if ($media == 'email') {
+            $leads->whereHas('responses', function ($q) { $q->whereType('email'); });
         }
 
-        if ($filter == 'email') {
-            $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.id',
-                result_array_values(
-                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='email'")
-                )
-            );
+        if ($media == 'sms') {
+            $leads->whereHas('responses', function ($q) { $q->whereType('text'); });
         }
 
-        if ($filter == 'sms') {
-            $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.id',
-                result_array_values(
-                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='text'")
-                )
-            );
-        }
-
-        if ($filter == 'calls') {
-            $recipients = Recipient::withResponses($campaign->id)->whereIn(
-                'recipients.id',
-                result_array_values(
-                    DB::select("select recipient_id from responses where campaign_id = {$campaign->id} and type='phone'")
-                )
-            );
+        if ($media == 'calls') {
+            $leads->whereHas('responses', function ($q) { $q->whereType('phone'); });
         }
 
         $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
-        if (in_array($filter, $labels)) {
-            $recipients = Recipient::withResponses($campaign->id)
-                ->labelled($filter, $campaign->id);
+        if (in_array($label, $labels)) {
+            $leads = $campaign->leads()
+                ->labelled($label, $campaign->id);
         }
 
         if ($request->filled('search')) {
-            $recipients->search($request->input('search'));
+            $leads->search($request->input('search'));
         }
 
-        return $recipients->orderBy('last_responded_at', 'DESC')->paginate($request->input('per_page', 30));
+        return $leads->orderBy('last_responded_at', 'DESC')->paginate($request->input('per_page', 30));
     }
 
     public function showRecipientList(Request $request, Campaign $campaign, RecipientList $list)
@@ -1079,30 +937,6 @@ class RecipientController extends Controller
     }
 
     /**
-     * @param $label
-     * @return mixed
-     * @throws \Exception
-     */
-    private function getLabelText($label)
-    {
-        $labels = [
-            'interested'     => 'Interested',
-            'not_interested' => 'Not Interested',
-            'appointment'    => 'Appointment',
-            'service'        => 'Service Department',
-            'wrong_number'   => 'Wrong Number',
-            'car_sold'       => 'Car Sold',
-            'heat'           => 'Heat Case',
-        ];
-
-        if (!in_array($label, array_keys($labels))) {
-            throw new \Exception('Invalid Label Name provided by user form');
-        }
-
-        return $labels[$label];
-    }
-
-    /**
      * Get the max recipient group number for a campaign
      *
      * @param int $campaign_id
@@ -1164,87 +998,7 @@ class RecipientController extends Controller
         ];
     }
 
-    /**
-     * @param Recipient $recipient
-     * @param array     $list
-     * @return array
-     */
-    public function fetchResponsesByRecipient(Recipient $recipient, array $list = [])
-    {
-        $data = [];
-
-        if (empty($list)) {
-            $appointments = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
-            $emailThreads = Response::where('campaign_id', $recipient->campaign->id)
-                ->where('recipient_id', $recipient->id)
-                ->where('type', 'email')
-                ->get()
-                ->toArray();
-            $textThreads = Response::where('campaign_id', $recipient->campaign->id)
-                ->where('recipient_id', $recipient->id)
-                ->where('type', 'text')
-                ->get()
-                ->toArray();
-            $phoneThreads = Response::where('campaign_id', $recipient->campaign->id)
-                ->where('recipient_id', $recipient->id)
-                ->where('type', 'phone')
-                ->get()
-                ->toArray();
-
-            $data = [
-                'appointments' => $appointments,
-                'threads'      => [
-                    'email' => $emailThreads,
-                    'text'  => $textThreads,
-                    'phone' => $phoneThreads,
-                ],
-                'recipient'    => $recipient->toArray(),
-            ];
-        } else {
-            foreach ($list as $item) {
-                switch ($item) {
-                    case 'appointments':
-                        $data['appointments'] = Appointment::where('recipient_id', $recipient->id)->get()->toArray();
-                        break;
-                    case 'emails':
-                        $data['threads']['email'] = Response::where('campaign_id', $recipient->campaign->id)
-                            ->where('recipient_id', $recipient->id)
-                            ->where('type', 'email')
-                            ->get()
-                            ->toArray();
-                        break;
-                    case 'texts':
-                        $data['threads']['text'] = Response::where('campaign_id', $recipient->campaign->id)
-                            ->where('recipient_id', $recipient->id)
-                            ->where('type', 'text')
-                            ->get()
-                            ->toArray();
-                        break;
-                    case 'calls':
-                        $data['threads']['phone'] = Response::where('campaign_id', $recipient->campaign->id)
-                            ->where('recipient_id', $recipient->id)
-                            ->where('type', 'phone')
-                            ->get()
-                            ->toArray();
-                        break;
-                    case 'recipient':
-                        $data['recipient'] = $recipient->toArray();
-                        break;
-                }
-            }
-        }
-
-        return $data;
-    }
-
     public function sendToCrm(Recipient $recipient)
     {
-        try {
-            $this->crm->sendRecipient($recipient, \Auth::user());
-            return response()->json(['message' => 'Successfully sent recipient to CRM']);
-        } catch (\Exception $e) {
-            $this->log->error("Unable to send recipient to crm: " .$e->getMessage());
-            abort(500, 'Unable to send to CRM');
-        }
     }
 }

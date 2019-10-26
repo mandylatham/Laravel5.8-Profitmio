@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use stdClass;
 use Aws\Result;
 use Aws\Comprehend\ComprehendClient;
 
@@ -38,9 +39,9 @@ class AwsComprehendService
      * 
      * @param string $text The text string to derrive sentiment about
      * 
-     * @return Aws\Result
+     * @return stdClass
      */
-    public function getSentiment($text): object
+    public function getSentiment($text): stdClass
     {
         $awsResponse = (object)$this->comprehend->detectSentiment([
 
