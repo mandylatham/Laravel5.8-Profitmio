@@ -1,7 +1,8 @@
 @import './../common/index';
 @import "./communication-side-panel";
-@import './../components/spinner-icon';
+// @import './../components/spinner-ico';
 @import './../components/pm-pagination';
+
 
 $iconbar-width: 80px;
 
@@ -80,8 +81,21 @@ div#close-lead-modal {
 
 }
 
-.navbar {
+.top-navbar-menu {
     box-shadow: 1px 1px 2px #333;
+}
+
+button.clear {
+    z-index: 100;
+}
+.filter--v-select.v-select input[type=search],
+.filter--v-select.v-select input[type="search"]:focus {
+    padding-left: 10px;
+}
+.filter--v-select.v-select {
+    min-width: 250px;
+    width: 30%;
+    margin-right: 20px;
 }
 
 // Iconbar steup

@@ -230,9 +230,27 @@
                            aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
             </div>
         </div>
-        <div class="col-12">
-            <v-select class="mb-3 col-4"></v-select>
+        <div class="col-12 d-flex flex-wrap">
+            <v-select class="mb-3 filter--v-select"
+                      placeholder="Media"
+                      :options="mediaOptions"
+                      v-model="searchForm.media"
+                      index="value"
+                      @input="fetchRecipients"
+            ></v-select>
+            <v-select class="mb-3 filter--v-select"
+                      placeholder="Tags"
+                      :options="['heat', 'service', 'appointment']"
+                      v-model="searchForm.label"
+                      v-if="searchForm.status == 'closed'"
+                      @input="fetchRecipients"
+                      multiple
+                      taggable
+            ></v-select>
         </div>
+<div class="col-12">
+<pre><code>@{{ mediaOption }}</code></pre>
+</div>
         <div class="no-items-row" v-if="recipients.length === 0">
             No recipients found.
         </div>

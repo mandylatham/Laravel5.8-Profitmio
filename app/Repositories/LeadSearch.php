@@ -64,18 +64,20 @@ class LeadSearch implements SearchableRepositoryContract
             throw new \Exception("No campaign specified");
         }
 
-        $healths = (array) $request->input('health', []);
-        $labels = (array) $request->input('labels', []);
-        $media = (array) $request->input('media', []);
-        $statuses = (array) $request->input('filter', []);
-        $keywords = $request->input('search');
         $this->per_page = $request->input('per_page', $this->per_page);
+        $statuses = (array) $request->input('filter', []);
+        $search = $request->input('search');
+        $media = (array) $request->input('media', []);
+        $labels = (array) $request->input('labels', []);
 
-        return $this->byHealth($healths)
-                    ->byStatus($statuses)
-                    ->byMedia($media)
-                    ->byKeyword($keywords)
-                    ->results();
+        $leadSearch = $this;
+
+        if ($statuses) { $leadSearch = $leadSearch->byStatus($statuses); }
+        if ($search) { $leadSearch = $leadSearch->byKeyword($search); }
+        if ($media) { $leadSearch = $leadSearch->byMedia($media); }
+        if ($labels) { $leadSearch = $leadSearch->byLabel($labels); }
+
+        return $leadSearch->results();
 
     }
 

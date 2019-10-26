@@ -51,6 +51,21 @@ window.app = new Vue({
         currentUser: {},
         recipientKey: null,
         loading: false,
+        mediaOption: null,
+        mediaOptions: [
+            {
+                label: 'Email',
+                value: 'email'
+            },
+            {
+                label: 'SMS',
+                value: 'text'
+            },
+            {
+                label: 'Call',
+                value: 'phone'
+            }
+        ],
         panel1Form: {
             openOn: 'right'
         },
@@ -96,6 +111,9 @@ window.app = new Vue({
         }
     },
     methods: {
+        test() {
+            console.log(this.mediaOption);
+        },
         fetchRecipients() {
             this.loading = true;
             this.searchForm
@@ -152,7 +170,6 @@ window.app = new Vue({
                 .then((response) => {
                     this.recipients.forEach((recipient, index) => {
                         if (recipient.id === response.data.id) {
-                            console.log(this.searchForm.status + ": " + response.data.id);
                             if (this.searchForm.status == 'new' || this.searchForm.status == 'open') {
                                 this.recipients.splice(index, 1);
                             } else {
@@ -223,7 +240,6 @@ window.app = new Vue({
             window.PmEvent.listen('lead.close-request', (data) => {
                 this.closeLead(data);
             });
-
         }
     },
     mounted() {

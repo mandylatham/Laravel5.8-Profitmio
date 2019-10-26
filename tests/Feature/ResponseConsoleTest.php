@@ -110,6 +110,8 @@ class ResponseConsoleTest extends TestCase
     /** @test */
     public function a_user_can_see_lead_details()
     {
+        $this->withoutExceptionHandling();
+
         $url = route('campaign.recipient.responses', ['campaign' => $this->campaign->id, 'lead' => $this->recipient->id]);
 
         $this->actingAs($this->user)
