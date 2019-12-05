@@ -19,7 +19,7 @@ fi
 
 composer install --no-dev
 chown forge:forge -R /home/forge/app.profitminer.io
-php artisan key:generate
+#php artisan key:generate --force
 php artisan queue:restart
 
 exit 0;
