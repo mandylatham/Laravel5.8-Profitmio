@@ -69,6 +69,9 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     //Profile
     .js('resources/js/pages/profile/profile.js', 'public/js/profile.js')
     .sass('resources/sass/profile/profile.scss', 'public/css/profile.css')
+    // Template builder
+    .js('resources/js/pages/template-builder/editor.js', 'public/js/template-builder-editor.js')
+    .sass('resources/sass/template-builder/editor.scss', 'public/css/template-builder-editor.css')
     //Selector
     .js('resources/js/pages/selector/select-company.js', 'public/js/select-company.js')
     .sass('resources/sass/selector/select-company.scss', 'public/css/select-company.css')
@@ -77,6 +80,13 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/auth/forget-password.scss', 'public/css/forget-password.css')
     .js('resources/js/pages/auth/reset-password.js', 'public/js/reset-password.js')
     .sass('resources/sass/auth/reset-password.scss', 'public/css/reset-password.css')
+    // Plugins
+    .copyDirectory('resources/js/plugins', 'public/js/plugins')
+    .copyDirectory('resources/sass/plugins', 'public/css/plugins')
+    // Others
+    .copyDirectory('resources/others/favicon.png', 'public/images/')
+    // Folders
+    .copyDirectory('resources/others/emailTemplates/', 'public/emailTemplates/')
     .copyDirectory('resources/fonts', 'public/fonts/')
     .copyDirectory('resources/img', 'public/img');
     // .options({

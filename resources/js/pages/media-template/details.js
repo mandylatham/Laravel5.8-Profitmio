@@ -7,7 +7,7 @@ import {filter} from 'lodash';
 
 // Toastr Library
 import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr').default;
+window.toastr = require('toastr');
 Vue.use(VueToastr2);
 
 // Bootstrap-Vue

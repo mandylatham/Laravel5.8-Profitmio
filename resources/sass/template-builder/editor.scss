@@ -1,0 +1,13 @@
+body {
+    background: #333;
+}
+#toolbar {
+    background-color: #333;
+}
+#toolbar .ui-button,
+#preview-toolbar .ui-button {
+    background-color: #333;
+}
+#main-edit-area:before, #main-edit-area:after, #frame-container:before, #frame-container:after {
+    box-shadow: 2px 2px 5px #000;
+}

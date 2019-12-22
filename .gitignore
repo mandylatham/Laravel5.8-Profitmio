@@ -5,6 +5,8 @@ public/css
 public/js
 public/img
 public/fonts
+public/images
+public/emailTemplates
 .idea/
 .env.backup
 .vscode/

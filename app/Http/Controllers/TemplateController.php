@@ -30,7 +30,7 @@ class TemplateController extends Controller
             'text_message' => $request->input('text_message'),
         ]);
 
-        // dd($template);
+        session()->forget('email_html');
 
         $template->save();
 

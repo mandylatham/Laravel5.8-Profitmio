@@ -12,9 +12,7 @@ class TemplateBuildController extends Controller
      */
     public function index()
     {
-        // TODO: Add Template Builds to database and assign user
-
-        return view('template-builder.index');
+        return redirect()->route('template.index');
     }
 
     /**
