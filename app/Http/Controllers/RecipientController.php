@@ -17,6 +17,7 @@ use App\Models\RecipientList;
 use App\Models\Response;
 use App\Services\PusherBroadcastingService;
 use App\Services\CrmService;
+use App\Services\RecipientListExportFormatter;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
@@ -593,7 +594,7 @@ class RecipientController extends Controller
     public function downloadRecipientList(Campaign $campaign, RecipientList $list)
     {
         $recipients = $list->recipients;
-        $columns = \DB::getSchemaBuilder()->getColumnListing('recipients');
+        $exportFormatter = new RecipientListExportFormatter($recipients);
 
         $filename = 'List_' . $list->id . '_recipients.csv';
 
@@ -604,8 +605,8 @@ class RecipientController extends Controller
         // create a file pointer connected to the output stream
         $output = fopen('php://output', 'w');
 
-        fputcsv($output, $columns);
-        foreach ($recipients as $recipient) {
+        fputcsv($output, $exportFormatter->getColumnHeaders());
+        foreach ($exportFormatter->getRows() as $recipient) {
             fputcsv($output, $recipient);
         }
         fclose($output);
