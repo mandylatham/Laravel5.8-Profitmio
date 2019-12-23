@@ -6,8 +6,19 @@
                     <status no-label :active="campaignActive"></status>
                 </div>
                 <div class="campaign-header--title">
-                    <strong>Campaign {{ campaign.id }}</strong>
+                    <p><b>{{ campaign.id }}</b> - {{ campaign.dealership.name }}</p>
                     <p>{{ campaign.name }}</p>
+                </div>
+
+                <div class="campaign-header--dates">
+                    <div>
+                        <span class="label">Start Date:</span>
+                        <span class="value">{{ campaign.starts_at | amDateFormat('MM.DD.YY') }}</span>
+                    </div>
+                    <div>
+                        <span class="label">End Date:</span>
+                        <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>
+                    </div>
                 </div>
             </div>
             <div class="campaign-postcard" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">
@@ -27,19 +38,37 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-4 campaign-date">
-            <p>
-                <span class="label">Start Date:</span>
-                <span class="value">{{ campaign.starts_at | amDateFormat('MM.DD.YY') }}</span>
-            </p>
-            <p>
-                <span class="label">End Date:</span>
-                <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>
-            </p>
-            <div class="campaign-date--left">
-                <small>Days Left:</small>
-                <strong>{{ daysLeft | zeroIfNegative }}</strong>
+        <div class="col-6 col-md-4 campaign-count">
+            <div class="campaign-count--top">
+                <div class="campaign-count--stat">
+                    <span class="label">New:</span>
+                    <span class="value">{{ campaign.counters.new }}</span>
+                </div>
+                <div class="campaign-count--stat">
+                    <span class="label">Open:</span>
+                    <span class="value">{{ campaign.counters.open }}</span>
+                </div>
+                <div class="campaign-count--stat">
+                    <span class="label">Closed:</span>
+                    <span class="value">{{ campaign.counters.closed }}</span>
+                </div>
             </div>
+            <div class="campaign-count--bottom">
+                <span class="label">Total Not Closed/Total Closed:</span>
+                <span class="value">{{ campaign.counters.total - campaign.counters.closed }} / {{ campaign.counters.closed }}</span>
+            </div>
+<!--            <p>-->
+<!--                <span class="label">Start Date:</span>-->
+<!--                <span class="value">{{ campaign.starts_at | amDateFormat('MM.DD.YY') }}</span>-->
+<!--            </p>-->
+<!--            <p>-->
+<!--                <span class="label">End Date:</span>-->
+<!--                <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>-->
+<!--            </p>-->
+<!--            <div class="campaign-date&#45;&#45;left">-->
+<!--                <small>Days Left:</small>-->
+<!--                <strong>{{ daysLeft | zeroIfNegative }}</strong>-->
+<!--            </div>-->
         </div>
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
             <a class="drop-link" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>

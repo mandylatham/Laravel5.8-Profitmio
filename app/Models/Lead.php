@@ -15,6 +15,8 @@ class Lead extends Recipient
     const GOOD_HEALTH = 'ok';
     const WARN_HEALTH = 'warning';
     const POOR_HEALTH = 'past-due';
+    const POSITIVE_OUTCOME = 'positive';
+    const NEGATIVE_OUTCOME = 'negative';
 
     protected $fillable = ['status', 'notes', 'last_status_changed_at', 'last_responded_at', 'sent_to_crm',
         'service', 'interested', 'not_interested', 'heat'];
@@ -53,36 +55,27 @@ class Lead extends Recipient
         return $query->whereStatus(Recipient::CLOSED_STATUS);
     }
 
-    public function scopeHealthIs($query, $health)
+    public function scopeHasEmails($query)
     {
-        return $query;
+        return $query->whereHas('responses', function ($q) {
+            $q->where('type', 'email');
+        });
     }
 
-    public function hasEmails($query)
+    public function scopeHasCalls($query)
     {
-        return $query->whereHas(['responses' => function ($q) {
-            $q->whereType('email');
-        }]);
+        return $query->whereHas('responses', function ($q) {
+            $q->where('type', 'phone');
+        });
     }
 
-    public function getStatusForHumansAttribute()
+    public function scopeHasSms($query)
     {
-        if ($this->status === parent::UNMARKETED_STATUS) return 'Uploaded';
-
-        if ($this->status === parent::MARKETED_STATUS) return 'Contacted';
-
-        if ($this->status === parent::NEW_STATUS) return 'New';
-
-        if ($this->status === parent::OPEN_STATUS) return 'Open';
-
-        if ($this->status === parent::CLOSED_STATUS) return 'Closed';
-
-        return 'ERR';
+        return $query->whereHas('responses', function ($q) {
+            $q->where('type', 'text');
+        });
     }
 
-    /**
-     * @param User $user
-     */
     public function open() : void
     {
         $this->update([
@@ -91,10 +84,7 @@ class Lead extends Recipient
         ]);
     }
 
-    /**
-     * @param User $user
-     */
-    public function close(User $user) : void
+    public function close() : void
     {
         $this->update([
             'status' => self::CLOSED_STATUS,
@@ -102,10 +92,7 @@ class Lead extends Recipient
         ]);
     }
 
-    /**
-     * @param User $user
-     */
-    public function reopen(User $user)
+    public function reopen()
     {
         $this->update([
             'status' => self::OPEN_STATUS,

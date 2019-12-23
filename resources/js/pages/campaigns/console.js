@@ -69,22 +69,8 @@ window.app = new Vue({
         panel1Form: {
             openOn: 'right'
         },
-        positiveOptions: [
-            {name: "walk-in", value: "Lead came in"},
-            {name: "will-come-in", value: "Lead will come in"},
-            {name: "serviced", value: "Serviced their vehicle"},
-            {name: "future-lead", value: "Interested but not just yet"},
-        ],
-        negativeOptions: [
-            {name: "suppress", value: "Never wants to be contacted"},
-            {name: "heat-prior", value: "Lead upset over prior experience"},
-            {name: "heat-current", value: "Lead upset over current experience because it was really bad for them like totally"},
-            {name: "old-data-vehicle", value: "Lead no longer owns vehicle"},
-            {name: "wrong-data-vehicle", value: "Lead never owned vehicle"},
-            {name: "old-data-address", value: "Lead moved out of the area"},
-            {name: "wrong-lead-identity-phone", value: "Wrong Number"},
-            {name: "wrong-lead-identity-email", value: "Wrong Email Address"},
-        ],
+        positiveOptions: window.positiveTags,
+        negativeOptions: window.negativeTags,
         recipients: [],
         rowsTest: [],
         searchForm: new Form({

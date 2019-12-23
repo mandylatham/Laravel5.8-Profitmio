@@ -5,7 +5,7 @@ namespace Tests\Feature;
 use Tests\TestCase;
 use App\Models\Lead;
 use App\Models\Recipient;
-use App\Models\RecipientActivity;
+use App\Models\LeadActivity;
 use App\Events\CampaignCountsUpdated;
 use App\Jobs\CalculateCampaignUserScore;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -39,6 +39,10 @@ class ResponseConsoleTest extends TestCase
             'dealership_id' => $this->dealership->id,
         ]);
         $this->assertDatabaseHas('campaigns', $this->campaign->only('id'));
+
+        foreach ($this->campaign->responses as $response) {
+            $this->assertEquals($this->campaign->id, $response->campaign_id);
+        }
 
         // Setup User
         $this->user = factory('App\Models\User')->create(['is_admin' => false]);
@@ -74,9 +78,11 @@ class ResponseConsoleTest extends TestCase
 
         // Setup Response
         $response = factory('App\Models\Response')->create([
+            'campaign_id' => $this->campaign->id,
             'recipient_id' => $this->recipient->id,
             'type' => 'text',
             'message' => 'Please tell me more',
+            'created_at' => now()->subHour(),
         ]);
         $this->assertDatabaseHas('responses', ['id' => $response->id]);
     }
@@ -136,7 +142,6 @@ class ResponseConsoleTest extends TestCase
 
         $url = route('lead.open', ['lead' => $this->recipient->id]);
 
-        echo $url;
         $this->actingAs($this->user)
              ->post($url)
              ->assertStatus(200);

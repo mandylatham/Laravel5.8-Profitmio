@@ -77,6 +77,10 @@ export default class Form {
         return this.submit('get', url);
     }
 
+    delete(url) {
+        return this.submit('delete', url);
+    }
+
     submit(method, url) {
         if (!url) {
             return Promise.reject('No url passed.');

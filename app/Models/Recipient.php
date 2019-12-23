@@ -39,19 +39,30 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
     public $dates = ['last_responded_at', 'last_status_change_at'];
 
+    public $casts = [
+        'tags' => 'array',
+    ];
+
+    /** BEGIN ATTRIBUTES BLOCK **/
+    public function getStatusForHumansAttribute()
+    {
+        if ($this->status === self::UNMARKETED_STATUS) return 'Uploaded';
+
+        if ($this->status === self::MARKETED_STATUS) return 'Contacted';
+
+        if ($this->status === self::NEW_STATUS) return 'New';
+
+        if ($this->status === self::OPEN_STATUS) return 'Open';
+
+        if ($this->status === self::CLOSED_STATUS) return 'Closed';
+
+        return 'ERR';
+    }
+    /** END ATTRIBUTES BLOCK **/
+
     /** BEGIN RELATIONSHIPS BLOCK **/
 
-    public function list()
-    {
-        return $this->belongsTo(RecipientList::class, 'recipient_list_id');
-    }
-
-    public function campaign()
-    {
-        return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
-    }
-
-    public function activity()
+    public function activities()
     {
         return $this->hasMany(RecipientActivity::class, 'recipient_id', 'id');
     }
@@ -61,9 +72,19 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         return $this->hasMany(Appointment::class, 'recipient_id', 'id');
     }
 
+    public function campaign()
+    {
+        return $this->belongsTo(Campaign::class, 'campaign_id', 'id');
+    }
+
     public function drops()
     {
         return $this->belongsToMany(Drop::class, 'deployment_recipients', 'recipient_id', 'deployment_id');
+    }
+
+    public function list()
+    {
+        return $this->belongsTo(RecipientList::class, 'recipient_list_id');
     }
 
     public function responses()
@@ -75,7 +96,6 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
     {
         return $this->hasMany(SmsSuppression::class, 'phone', 'phone');
     }
-
     /** END RELATIONSHIPS BLOCK **/
 
     /** BEGIN SCOPES BLOCK **/

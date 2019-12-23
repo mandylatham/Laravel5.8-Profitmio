@@ -65,7 +65,7 @@ class LeadSearch implements SearchableRepositoryContract
         }
 
         $this->per_page = $request->input('per_page', $this->per_page);
-        $statuses = (array) $request->input('filter', []);
+        $statuses = (array) $request->input('status', []);
         $search = $request->input('search');
         $media = (array) $request->input('media', []);
         $labels = (array) $request->input('labels', []);

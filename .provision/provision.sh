@@ -54,9 +54,9 @@ exe 'Create nginx ssl directory' \
     sudo mkdir -p /etc/nginx/ssl
 
 exe 'Create self-signed certificate' \
-    sudo openssl req -x509 -nodes -days 2365 -newkey rsa:2048 -keyout /etc/nginx/ssl/self-signed.key -out \
-    /etc/nginx/ssl/self-signed.crt -subj \
-    '/C=GB/ST=Location/L=Location/O=Company/OU=IT Department/CN=example.tld'
+    sudo openssl req -x509 -nodes -days 2365 -newkey rsa:4096 -keyout /etc/nginx/ssl/app.profitminer.dev.key -out \
+    /etc/nginx/ssl/app.profitminer.dev.crt -subj \
+    '/C=US/ST=Louisiana/L=Location/O=Company/OU=IT Department/CN=app.profitminer.dev'
 
 exe 'Removing any enabled sites from /etc/nginx/sites-enabled' \
     sudo rm -f /etc/nginx/sites-enabled/*

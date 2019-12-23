@@ -34,7 +34,7 @@
         "profitminer/base": "1.0.6",
         "pusher/pusher-php-server": "^3.3",
         "sofa/eloquence-base": "^5.6",
-        "spatie/laravel-activitylog": "^3.1",
+        "spatie/laravel-activitylog": "^3.9",
         "spatie/laravel-medialibrary": "^7.5",
         "twig/twig": "^2.0",
         "twilio/sdk": "^5.24"

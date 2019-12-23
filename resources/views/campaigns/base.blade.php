@@ -8,6 +8,7 @@
     </div>
     <nav class="company-navigation">
         <ul>
+            @if(auth()->user()->isAdmin())
             <li>
                 <a class="{{ \Route::current()->getName() === 'campaigns.drops.index' ? 'active' : '' }}" href="{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-drops-icon"></i>
@@ -30,6 +31,13 @@
                 <a class="{{ \Route::current()->getName() === 'campaigns.edit' ? 'active' : '' }}" href="{{ route('campaigns.edit', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-edit-icon"></i>
                     <span>EDIT</span>
+                </a>
+            </li>
+            @endif
+            <li>
+                <a class="{{ \Route::current()->getName() === 'campaigns.stats' ? 'active' : '' }}" href="{{ route('campaigns.stats', ['campaign' => $campaign->id]) }}">
+                    <i class="far fa-chart-bar"></i>
+                    <span>STATS</span>
                 </a>
             </li>
             <li>

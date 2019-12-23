@@ -2,32 +2,39 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Lead;
-use App\Models\Campaign;
-use App\Models\Response;
-use Illuminate\Log\Logger;
-use Illuminate\Support\Str;
-use Illuminate\Support\Arr;
-use App\Services\CrmService;
-use Illuminate\Http\Request;
-use App\Repositories\LeadSearch;
 use App\Builders\ResponseBuilder;
-use App\Services\SentimentService;
-use App\Http\Resources\LeadDetails;
-use App\Events\CampaignCountsUpdated;
-use App\Events\ServiceDeptLabelAdded;
-use App\Http\Resources\LeadCollection;
+use App\Events\{CampaignCountsUpdated, ServiceDeptLabelAdded};
+use App\Factories\ActivityLogFactory;
 use App\Http\Requests\CloseLeadRequest;
-use App\Jobs\CalculateCampaignUserScore;
-use App\Builders\RecipientActivityBuilder;
-use App\Http\Resources\Lead as LeadResource;
-use ProfitMiner\Base\Services\Media\Transport\Messages\SmsMessage;
-use ProfitMiner\Base\Services\Media\Transport\Messages\EmailMessage;
-use ProfitMiner\Base\Services\Media\Transport\Contracts\SMSTransportContract;
-use ProfitMiner\Base\Services\Media\Transport\Contracts\EmailTransportContract;
+use App\Http\Resources\{LeadDetails, Lead as LeadResource, LeadCollection};
+use App\Models\{Lead, User, Campaign, Response, Appointment};
+use App\Repositories\LeadSearch;
+use App\Services\{CrmService, CampaignUserScoreService, SentimentService};
+
+use Illuminate\{
+    Log\Logger,
+    Support\Str,
+    Support\Arr,
+    Http\Request,
+    Http\JsonResponse,
+    Support\Facades\Auth,
+    Http\Response as HttpResponse
+};
+
+use ProfitMiner\Base\Services\Media\Transport\{
+    Messages\SmsMessage,
+    Messages\EmailMessage,
+    Contracts\SMSTransportContract,
+    Contracts\EmailTransportContract
+};
 
 class LeadController extends Controller
 {
+    /**
+     * @var ActivityLogFactory
+     */
+    protected $activityFactory;
+
     /**
      * @var CrmService
      */
@@ -49,6 +56,11 @@ class LeadController extends Controller
     protected $log;
 
     /**
+     * @var CampaignUserScoreService
+     */
+    protected $scoring;
+
+    /**
      * @var App\Services\SentimentService
      */
     protected $sentiment;
@@ -59,10 +71,20 @@ class LeadController extends Controller
     protected $sms;
 
     /**
+     * @var App\Models\User
+     */
+    protected $user;
+
+    /**
      * Constructor.
      *
-     * @param MailgunService   $mailgun   Dependency Injected Class
-     * @param SentimentService $sentiment Dependency Injected Class
+     * @param Logger                   $log        Log Service
+     * @param CrmService               $crm        Crm Service
+     * @param LeadSearch               $leadSearch Lead Search
+     * @param SmsTransportContract     $sms        Sms Service
+     * @param SentimentService         $sentiment  Sentiment Service
+     * @param EmailTransportContract   $email      Email Service
+     * @param CampaignUserScoreService $scoring  Campaign User Score Service
      */
     public function __construct(
         Logger $log,
@@ -70,7 +92,9 @@ class LeadController extends Controller
         LeadSearch $leadSearch,
         SMSTransportContract $sms,
         SentimentService $sentiment,
-        EmailTransportContract $email
+        EmailTransportContract $email,
+        CampaignUserScoreService $scoring,
+        ActivityLogFactory $activityFactory
     ) {
         $this->crm = $crm;
         $this->log = $log;
@@ -78,46 +102,73 @@ class LeadController extends Controller
         $this->email = $email;
         $this->sentiment = $sentiment;
         $this->leadSearch = $leadSearch;
+        $this->scoring = $scoring;
+        $this->activityFactory = $activityFactory;
     }
 
     /**
+     * Index of Leads (searchable)
+     *
      * @param Campaign $campaign
-     * @param Request  $request
+     * @param Request $request
+     *
+     * @return LeadCollection
+     * @throws \Exception
      */
-    public function index(Campaign $campaign, Request $request)
+    public function index(Campaign $campaign, Request $request): LeadCollection
     {
-        return new LeadCollection($this->leadSearch->forCampaign($campaign)->byRequest($request));
+        return new LeadCollection($this->leadSearch
+            ->forCampaign($campaign)
+            ->byRequest($request));
     }
 
-    public function show(Campaign $campaign, Lead $lead)
+    /**
+     * JSON object for all lead details
+     *
+     * @param Campaign $campaign
+     * @param Lead     $lead
+     *
+     * @return LeadDetails
+     */
+    public function show(Campaign $campaign, Lead $lead): LeadDetails
     {
         return new LeadDetails($lead);
     }
 
-    public function open(Lead $lead)
+    /**
+     * Open a lead
+     *
+     * @param Lead $lead
+     *
+     * @return LeadResource
+     * @throws \Exception
+     */
+    public function open(Lead $lead): LeadResource
     {
-        $user = auth()->user();
-
-        // Sanity check: cuurent state is new
+        // Sanity check: current state is new
         if ($lead->status != Lead::NEW_STATUS) {
             throw new \Exception("Invalid Operation, status is {$lead->status}");
         }
 
-        // Log Lead Activity
-        RecipientActivityBuilder::logOpen($lead, $user);
-
-        // Open the Lead
         $lead->open();
+        $activity = $this->activityFactory->forUserOpenedLead($lead);
+        $this->scoring->forActivity($activity);
 
-        // Broadcast update to counts
         event(new CampaignCountsUpdated($lead->campaign));
-
-        event(new CalculateCampaignUserScore($lead->campaign, $user));
 
         return new LeadResource($lead);
     }
 
-    public function close(Lead $lead, CloseLeadRequest $request)
+    /**
+     * Close a lead
+     *
+     * @param Lead $lead
+     * @param CloseLeadRequest $request
+     *
+     * @return LeadResource
+     * @throws \Exception
+     */
+    public function close(Lead $lead, CloseLeadRequest $request): LeadResource
     {
         // Sanity check: current state is open
         if ($lead->status != Lead::OPEN_STATUS) {
@@ -129,46 +180,63 @@ class LeadController extends Controller
             // @TODO Build suppression service
         }
 
-        // Add tags to Lead
-        // @TODO add tags attribute to leads
+        $lead->tags = $request->input('tags');
+        $lead->outcome = $request->input('outcome');
+        $lead->save();
 
-        // Log Lead Activity
-        RecipientActivityBuilder::logClosed($lead, auth()->user());
+        $lead->close();
+        $activity = $this->activityFactory->forUserClosedLead($lead);
+        $this->scoring->forActivity($activity);
 
-        // Close the Lead
-        $lead->close(auth()->user());
-
-        // Broadcast update to counts
         event(new CampaignCountsUpdated($lead->campaign));
 
         return new LeadResource($lead);
     }
 
-    public function reopen(Lead $lead)
+    /**
+     * Reopen a lead
+     *
+     * @param Lead $lead
+     *
+     * @return LeadResource
+     * @throws \Exception
+     */
+    public function reopen(Lead $lead): LeadResource
     {
         // Sanity check: current state is closed
         if ($lead->status != Lead::CLOSED_STATUS) {
             throw new \Exception("Invalid Operation");
         }
 
-        // Log Lead Activity
+        // Remove from Suppression if needed
+        if (Arr::has($lead->tags, 'suppress')) {
+            // @TODO Build suppression service
+        }
 
-        // ReOpen the Lead
-        $lead->reopen(auth()->user());
+        // Reset the lead tags
+        $lead->tags = [];
 
-        // Broadcast update to counts
+        $lead->reopen();
+        $activity = $this->activityFactory->forUserReopenedLead($lead);
+        $this->scoring->forActivity($activity);
+
         event(new CampaignCountsUpdated($lead->campaign));
 
         return new LeadResource($lead);
     }
+
     /**
      * Send the lead an sms response
      *
      * @param Campaign $campaign
-     * @param Lead     $lead
-     * @param Request  $request
+     * @param Lead $lead
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \ProfitMiner\Base\Services\Media\Exceptions\TransportException
      */
-    public function sendSms(Campaign $campaign, Lead $lead, Request $request)
+    public function sendSms(Campaign $campaign, Lead $lead, Request $request): JsonResponse
     {
         $this->authorize('create', [Response::class, $campaign]);
 
@@ -183,13 +251,16 @@ class LeadController extends Controller
         $sid = $this->sms->send($sms);
 
         $response = ResponseBuilder::buildSmsReply(
-            $request->user(),
+            auth()->user(),
             $lead,
             $sms->getContent(),
             $sid
         );
 
         $this->sentiment->forResponse($response);
+
+        $activity = $this->activityFactory->forUserTextedLead($lead);
+        $this->scoring->forActivity($activity);
 
         return response()->json(['response' => $response]);
     }
@@ -198,10 +269,14 @@ class LeadController extends Controller
      * Send the lead an email response
      *
      * @param Campaign $campaign
-     * @param Lead     $lead
-     * @param Request  $request
+     * @param Lead $lead
+     * @param Request $request
+     *
+     * @return JsonResponse
+     * @throws \Illuminate\Auth\Access\AuthorizationException
+     * @throws \ProfitMiner\Base\Services\Media\Exceptions\TransportException
      */
-    public function sendEmail(Campaign $campaign, Lead $lead, Request $request)
+    public function sendEmail(Campaign $campaign, Lead $lead, Request $request): JsonResponse
     {
         $this->authorize('create', [Response::class, $campaign]);
 
@@ -227,7 +302,7 @@ class LeadController extends Controller
         $sid = $this->email->send($email);
 
         $response = ResponseBuilder::buildEmailReply(
-            $request->user(),
+            auth()->user(),
             $lead,
             $subject,
             $lastMessage->message_id,
@@ -237,35 +312,49 @@ class LeadController extends Controller
 
         $this->sentiment->forResponse($response);
 
+        $activity = $this->activityFactory->forUserEmailedLead($lead);
+        $this->scoring->forActivity($activity);
+
         return response()->json(['response' => $response]);
     }
 
     /**
-     * @param Lead    $lead
+     * Update the lead notes
+     *
+     * @param Lead $lead
      * @param Request $request
+     *
+     * @return JsonResponse
      */
-    public function updateNotes(Lead $lead, Request $request)
+    public function updateNotes(Lead $lead, Request $request): LeadResponse
     {
         $lead->fill(['notes' => $request->notes]);
-
         $lead->save();
 
-        return $lead->toJson();
+        return new LeadResponse($lead);
     }
 
     /**
+     * Mark a callback as called
+     *
      * @param Appointment $callback
      * @param Request     $request
+     *
+     * @return JsonResponse
      */
-    public function markCalledBack(Appointment $callback, Request $request)
+    public function markCalledBack(Appointment $callback, Request $request): JsonResponse
     {
         $callback->update(['called_back' => (int) $request->called_back]);
 
         event(new CampaignCountsUpdated($callback->campaign));
 
+        $lead = Lead::find($callback->recipient_id);
+        $activity = $this->activityFactory->forUserCalledLeadBack($lead, $callback);
+        $this->scoring->forActivity($activity);
+
         return response()->json(
             [
-            'called_back' => $callback->called_back,
+                'called_back' => $callback->called_back,
             ]
         );
     }
@@ -274,190 +363,48 @@ class LeadController extends Controller
      * Send the lead to the campaign CRM
      *
      * @param Lead $lead
+     *
+     * @return HttpResponse
      */
-    public function sendToCrm(Lead $lead)
+    public function sendToCrm(Lead $lead): JsonResponse
     {
         try {
-            $this->crm->sendRecipient($lead, \Auth::user());
+            $this->crm->sendRecipient($lead, Auth::user());
+
+            $activity = $this->activityFactory->forUserSentLeadToCrm($lead);
+            $this->scoring->forActivity($activity);
+
             return response()->json(['message' => 'Successfully sent lead to CRM']);
         } catch (\Exception $e) {
-            $this->log->error("Unable to send lead to crm: " .$e->getMessage());
+            $this->log->error("Unable to send lead to crm: " . $e->getMessage());
             abort(500, 'Unable to send to CRM');
         }
     }
 
-    public function sendToServiceDepartment(Lead $lead)
+    /**
+     * Send the lead to the service department
+     *
+     * @param Lead $lead
+     *
+     * @return HttpResponse
+     */
+    public function sendToServiceDepartment(Lead $lead): JsonResponse
     {
         $lead->update(['service' => 1]);
 
+        $activity = $this->activityFactory->forUserSentLeadToService($lead);
+        $this->scoring->forActivity($activity);
+
         event(new ServiceDeptLabelAdded($lead));
-    }
 
-    /**
-     * @param \App\Models\Lead         $lead
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return string
-     */
-    public function removeLabel(Lead $recipient, Request $request)
-    {
-        if ($request->label && in_array(
-            $request->label, [
-                'interested',
-                'not_interested',
-                'appointment',
-                'service',
-                'wrong_number',
-                'car_sold',
-                'heat',
-                'callback',
-            ]
-        )
-        ) {
-            $lead->fill(
-                [
-                $request->label => 0,
-                ]
-            );
-            $lead->save();
-
-            event(new CampaignCountsUpdated($lead->campaign));
-
-            $class = 'badge-danger';
-            if (in_array($request->label, ['interested', 'appointment', 'service', 'callback'])) {
-                $class = 'badge-success';
-            }
-        }
-    }
-
-    /**
-     * @param \App\Models\Recipient    $recipient
-     * @param \Illuminate\Http\Request $request
-     *
-     * @return string
-     * @throws \Exception
-     */
-    public function addLabel(Lead $lead, Request $request)
-    {
-        $sendNotifications = !! $lead->campaign->service_dept;
-
-        if ($request->label && in_array(
-            $request->label, [
-                'interested',
-                'not_interested',
-                'appointment',
-                'service',
-                'wrong_number',
-                'car_sold',
-                'heat',
-                'callback',
-            ]
-        )
-        ) {
-            $lead->fill(
-                [
-                $request->label => 1,
-                ]
-            );
-
-            $lead->save();
-
-            if ($request->input('label') == 'service' && !! $lead->campaign->service_dept) {
-                event(new ServiceDeptLabelAdded($lead));
-            }
-
-            event(new CampaignCountsUpdated($lead->campaign));
-
-            return response()->json(
-                [
-                "label" => $request->label,
-                "labelText" => $this->getLabelText($request->label),
-                ]
-            );
-        }
-
-        return '';
-    }
-
-    /**
-     * @param Recipient $recipient
-     * @param array     $list
-     * @return array
-     */
-    public function fetchResponsesByRecipient(Lead $lead, array $list = [])
-    {
-        $data = [];
-
-        if (empty($list)) {
-            $appointments = Appointment::where('recipient_id', $lead->id)->get()->toArray();
-            $emailThreads = Response::where('campaign_id', $lead->campaign->id)
-                ->where('recipient_id', $lead->id)
-                ->where('type', 'email')
-                ->get()
-                ->toArray();
-            $textThreads = Response::where('campaign_id', $lead->campaign->id)
-                ->where('recipient_id', $lead->id)
-                ->where('type', 'text')
-                ->get()
-                ->toArray();
-            $phoneThreads = Response::where('campaign_id', $lead->campaign->id)
-                ->where('recipient_id', $lead->id)
-                ->where('type', 'phone')
-                ->get()
-                ->toArray();
-
-            $data = [
-                'appointments' => $appointments,
-                'threads'      => [
-                    'email' => $emailThreads,
-                    'text'  => $textThreads,
-                    'phone' => $phoneThreads,
-                ],
-                'recipient'    => $lead->toArray(),
-            ];
-        } else {
-            foreach ($list as $item) {
-                switch ($item) {
-                case 'appointments':
-                    $data['appointments'] = Appointment::where('lead_id', $lead->id)->get()->toArray();
-                    break;
-                case 'emails':
-                    $data['threads']['email'] = Response::where('campaign_id', $lead->campaign->id)
-                        ->where('recipient_id', $lead->id)
-                        ->where('type', 'email')
-                        ->get()
-                        ->toArray();
-                    break;
-                case 'texts':
-                    $data['threads']['text'] = Response::where('campaign_id', $lead->campaign->id)
-                        ->where('recipient_id', $lead->id)
-                        ->where('type', 'text')
-                        ->get()
-                        ->toArray();
-                    break;
-                case 'calls':
-                    $data['threads']['phone'] = Response::where('campaign_id', $lead->campaign->id)
-                        ->where('recpient_id', $lead->id)
-                        ->where('type', 'phone')
-                        ->get()
-                        ->toArray();
-                    break;
-                case 'lead':
-                    $data['recipient'] = $lead->toArray();
-                    break;
-                }
-            }
-        }
-
-        return $data;
+        return response()->json(['message' => 'Successfully sent lead to Service Department']);
     }
 
     /**
      * The Email "from" address
      *
-     * @param  Campaign  $campaign
-     * @param  Recipient $recipient
-     * @param  User      $client
+     * @param Campaign $campaign
+     * @param Lead $lead
      * @return string
      */
     private function getEmailFromLine(Campaign $campaign, Lead $lead)
@@ -469,11 +416,10 @@ class LeadController extends Controller
     }
 
     /**
-     * @param $label
-     * @return mixed
-     * @throws \Exception
+     * @param string $label
+     * @return string
      */
-    private function getLabelText($label)
+    private function getLabelText(string $label) : string
     {
         $labels = [
             'interested'     => 'Interested',

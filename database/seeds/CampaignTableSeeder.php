@@ -14,32 +14,38 @@ class CampaignTableSeeder extends Seeder
     public function run()
     {
         $this->command->getOutput()->progressStart(30);
-        // Active Campaigns
-        factory(Campaign::class, 15)
-            ->create([
-                'status' => 'Active'
-            ])
-            ->each(function ($campaign) {
-                $this->command->getOutput()->progressAdvance();
-                $this->processCampaign($campaign);
-            });
 
         // Upcoming Campaigns
         factory(Campaign::class, 15)
             ->create([
-                'status' => 'Upcoming',
-                'starts_at' => Carbon::now()->addDays(5)->toDateTimeString(),
                 'ends_at' => Carbon::now()->addDays(15)->toDateTimeString(),
                 'expires_at' => Carbon::now()->addDays(25)->toDateTimeString(),
+                'starts_at' => Carbon::now()->addDays(5)->toDateTimeString(),
+                'status' => 'Upcoming',
             ])
             ->each(function ($campaign) {
                 $this->command->getOutput()->progressAdvance();
                 $this->processCampaign($campaign);
             });
+
+        // Active Campaigns
+        factory(Campaign::class, 15)
+            ->create([
+                'ends_at' => Carbon::now()->subDays(10)->toDateTimeString(),
+                'expires_at' => Carbon::now()->subDays(5)->toDateTimeString(),
+                'starts_at' => Carbon::now()->subDays(25)->toDateTimeString(),
+                'status' => 'Active',
+            ])
+            ->each(function ($campaign) {
+                $this->command->getOutput()->progressAdvance();
+                $this->processCampaign($campaign);
+            });
+
+        Artisan::call('leads:calculate-last-status');
         $this->command->getOutput()->progressFinish();
     }
 
-    public function processCampaign($campaign)
+    public function processCampaign(Campaign $campaign)
     {
         $faker = Faker\Factory::create();
         $dealership = $campaign->dealership;
@@ -122,6 +128,37 @@ class CampaignTableSeeder extends Seeder
                                 'type' => 'phone'
                             ]);
                     });
+                // Attach closed recipients to recipient list
+                factory(\App\Models\Recipient::class, $faker->numberBetween(0, 3))
+                    ->create([
+                        'campaign_id' => $campaign->id,
+                        'recipient_list_id' => $recipientList->id,
+                        'status' => 'closed-lead',
+                    ])
+                    ->each(function ($recipient) use ($campaign, $faker) {
+                        //  Attach emails
+                        factory(\App\Models\Response::class, $faker->numberBetween(1, 5))
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'email'
+                            ]);
+                        //  Attach text
+                        factory(\App\Models\Response::class, $faker->numberBetween(1, 5))
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'text'
+                            ]);
+                        //  Attach phone
+                        factory(\App\Models\Response::class, $faker->numberBetween(0, 1))
+                            ->create([
+                                'campaign_id' => $campaign->id,
+                                'recipient_id' => $recipient->id,
+                                'type' => 'phone'
+                            ]);
+                    });
+
 
                 // Add email drops
                 factory(\App\Models\Drop::class, $faker->numberBetween(1,3))
@@ -162,4 +199,5 @@ class CampaignTableSeeder extends Seeder
                     });
             });
     }
+
 }

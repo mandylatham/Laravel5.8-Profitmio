@@ -9,6 +9,8 @@
 @section('body-script')
     <script>
         window.baseUrl = @json(route("campaign.response-console.index", ['campaign' => $campaign->id]).'/');
+        window.positiveTags = @json($positiveTags);
+        window.negativeTags = @json($negativeTags);
         window.counters = @json($counters);
         window.campaign = @json($campaign);
         window.user = @json(auth()->user());
@@ -56,6 +58,13 @@
         <h4>Campaign</h4>
         <ul class="list-group campaign-nav">
             <li class="list-group-item">
+                <a class="{{ \Route::current()->getName() === 'campaigns.edit' ? 'active' : '' }}" href="{{ route('campaigns.stats', ['campaign' => $campaign->id]) }}">
+                    <i class="far fa-chart-bar"></i>
+                    <span>STATS</span>
+                </a>
+            </li>
+            @if(auth()->user()->isAdmin())
+            <li class="list-group-item">
                 <a class="{{ \Route::current()->getName() === 'campaigns.drops.index' ? 'active' : '' }}" href="{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-drops-icon"></i>
                     <span>DROPS</span>
@@ -79,6 +88,7 @@
                     <span>EDIT</span>
                 </a>
             </li>
+            @endif
         </ul>
         <h4>Leads</h4>
         <ul class="filter filter-nav">
@@ -248,9 +258,6 @@
                       taggable
             ></v-select>
         </div>
-<div class="col-12">
-<pre><code>@{{ mediaOption }}</code></pre>
-</div>
         <div class="no-items-row" v-if="recipients.length === 0">
             No recipients found.
         </div>
@@ -313,7 +320,7 @@
                             v-model="closeLeadForm.tags"
                             :key="option.name"
                             :value="option.name">
-                            @{{ option.value }}
+                            @{{ option.text }}
                         </b-form-checkbox>
                     </div>
                     <div v-if="closeLeadForm.outcome === 'negative'">
@@ -324,7 +331,7 @@
                             v-model="closeLeadForm.tags"
                             :key="option.name"
                             :value="option.name">
-                            @{{ option.value }}
+                            @{{ option.text }}
                         </b-form-checkbox>
                     </div>
                 </div>

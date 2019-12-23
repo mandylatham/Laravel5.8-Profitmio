@@ -145,7 +145,6 @@ Route::group(['middleware' => 'auth'], function () {
         Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
         Route::group(['middleware' => ['can:site-admin,App\Models\User']], function () {
             Route::post('/user-access/{user}', 'CampaignController@toggleCampaignUserAccess')->name('campaigns.toggle-user-access');
-            Route::get('/stats', 'CampaignController@showStats')->name('campaigns.stats');
             Route::get('/', 'CampaignController@show')->name('campaigns.view');
             Route::delete('/', 'CampaignController@delete');
             Route::get('/details', 'CampaignController@details');
@@ -203,6 +202,12 @@ Route::group(['middleware' => 'auth'], function () {
             Route::any('/responses/{recipient}/get-email-thread', 'ResponseController@getEmailThread');
             Route::any('/get-response-list', 'ResponseController@getResponseList');
         });
+        // Tag group
+        Route::group(['prefix' => 'tag'], function () {
+            Route::get('/index', 'LeadTagController@index')->name('tag.index');
+            Route::post('/', 'LeadTagController@store')->name('tag.store');
+            Route::delete('/{tag}', 'LeadTagController@destroy')->name('tag.destory');
+        });
 
         Route::get('/response/{lead}', 'LeadController@show')->name('campaign.recipient.responses');
         Route::any('/leads', 'LeadController@index')->name('lead.index');
@@ -210,6 +215,9 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/recipients/for-user-display', 'RecipientController@getRecipients')->name('campaign.recipient.for-user-display');
         Route::get('/response-console/{field?}', 'CampaignController@console')->name('campaign.response-console.index');
+
+        Route::get('/stats', 'CampaignController@stats')->name('campaigns.stats');
+        Route::get('/stats/data', 'CampaignController@getStatsData')->name('campaigns.stats.data');
     });
     //endregion
 

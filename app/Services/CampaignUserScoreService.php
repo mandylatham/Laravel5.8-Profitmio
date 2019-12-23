@@ -1,18 +1,29 @@
 <?php
 
-namespace App\Service;
+namespace App\Services;
 
-use App\Models\User;
-use App\Models\Campaign;
-use App\Models\RecipientActivity;
+use App\Models\LeadActivity;
+use App\Models\CampaignUserScore;
+use App\Factories\ActivityLogFactory;
+use Spatie\Activitylog\Models\Activity;
+use App\Factories\CampaignUserScoreFactory;
 
 class CampaignUserScoreService
 {
+    /** @var bool */
+    const ENFORCE_PENALTIES = true;
+
+    /** @var int */
     const FALSE_OPEN_PENALTY = 25;
 
-    private $scores = [];
+    /** @var CampaignUserScoreFactory */
+    private $score;
+
+    /**
+     * @var array
+     * */
     private $scoreMap = [
-        RecipientActivity::OPENED => [
+        LeadActivity::OPENED => [
             'good' => 7200,
             'goodPoints' => 75,
             'ok' => 28800,
@@ -20,7 +31,7 @@ class CampaignUserScoreService
             'bad' => 86400,
             'badPoints' => 5,
         ],
-        RecipientActivity::CLOSED => [
+        LeadActivity::CLOSED => [
             'good' => 259200,
             'goodPoints' => 25,
             'ok' => 432000,
@@ -28,61 +39,58 @@ class CampaignUserScoreService
             'bad' => 604800,
             'badPoints' => 5,
         ],
-        RecipientActivity::SENTEMAIL => ['points' => 1],
-        RecipientActivity::SENTSMS => ['points' => 1],
-        RecipientActivity::SENTTOCRM => ['points' => 5],
-        RecipientActivity::SENTTOSERVICE => ['points' => 5],
-        RecipientActivity::ADDAPPOINTMENT => ['points' => 10],
+        LeadActivity::SENTEMAIL => ['points' => 1],
+        LeadActivity::SENTSMS => ['points' => 1],
+        LeadActivity::SENTTOCRM => ['points' => 5],
+        LeadActivity::SENTTOSERVICE => ['points' => 5],
+        LeadActivity::ADDEDAPPOINTMENT => ['points' => 10],
+        LeadActivity::CALLEDBACK => ['points' => 10],
     ];
 
-    public function forUser(Campaign $campaign, User $user)
+    /** @var array */
+    private $inertActivities = [
+        LeadActivity::MARKETED,
+        LeadActivity::VIEWED,
+    ];
+
+    /**
+     * @param CampaignUserScoreFactory $score
+     */
+    public function __construct(CampaignUserScoreFactory $score)
     {
-        $score = 0;
-        $closedScore = 0;
-        $activities = $campaign->leads()->activity()->whereUserId($user->id)->get();
-
-        foreach ($activities as $activity) {
-            if ($activity->action == RecipientActivity::REOPENED) {
-                $closedScore = 0;
-            }
-            if (array_key_exists($activity->action, $this->scoreMap)) {
-                $firstOutboundResponse = $activity->recipient()->responses()->whereIncoming(0)->first();
-
-                if ($activity->action == RecipientActivity::CLOSED) {
-                    $closedScore = $this->getPoints($activity);
-                }
-
-                // If the user opened a lead, but someone else responsded first, they get penalized
-                if ($activity->action == RecipientActivity::OPENED) {
-                    if ($firstOutboundResponse && $firstOutboundResponse->user_id !== $user->id) {
-                        $score -= self::FALSE_OPEN_PENALTY;
-                        continue;
-                    }
-                }
-
-                // If a first responder on an open lead, they get the opener's points
-                if (in_array($activity->action, [RecipientActivity::SENTSMS, RecipientActivity::SENTEMAIL])) {
-                    if ($firstOutboundResponse && $firstOutboundResponse->user_id == $user->id) {
-                        $activity->action = RecipientActivity::OPENED;
-                    }
-                }
-
-                $score += $this->getPoints($activity);
-            }
-        }
-
-        return $score + $closedScore;
+        $this->score = $score;
     }
 
-    private function getPoints(RecipientActivity $activity)
+    /**
+     * @param Activity $activity
+     * @return void
+     */
+    public function forActivity(Activity $activity) : void
     {
-        $pointMap = $this->scoreMap[$activity->action];
+        if (!$this->isScorable($activity)) return;
+
+        // If the lead was reopened, previous closing points are removed from that user
+        if ($activity->action == LeadActivity::REOPENED) {
+            $this->removeClosedPoints($activity);
+        }
+
+        $this->penalizeFalseOpen($activity);
+
+        $this->addActivityPoints($activity);
+    }
+
+    /**
+     * @param Activity $activity
+     * @return integer
+     */
+    private function getPoints(Activity $activity): int
+    {
+        $pointMap = $this->scoreMap[$activity->description];
         $seconds = $this->getSeconds($activity);
 
         if (!$seconds) {
             return $pointMap['points'];
         }
-
         if ($seconds <= $pointMap['good']) {
             return $pointMap['goodPoints'];
         }
@@ -95,17 +103,106 @@ class CampaignUserScoreService
         return 0;
     }
 
-    private function getSeconds(RecipientActivity $activity)
+    /**
+     * @param Activity $activity
+     * @return void
+     */
+    private function addActivityPoints(Activity $activity): void
     {
-        switch ($activity->action) {
-        case RecipientActivity::OPENED:
-            return $activity->metadata['seconds_since_last_activity'];
-            break;
-        case RecipientActivity::CLOSED:
-            return $activity->recipient()->responses()->first()->created_at->diffInSeconds($activity->activity_at);
-            break;
+        $points = $this->getPoints($activity);
+
+        $this->score->createFromActivity($activity, $points);
+    }
+
+    /**
+     * Get the number of seconds since the last activity
+     * @param Activity $activity
+     * @return ?int
+     */
+    private function getSeconds(Activity $activity): ?int
+    {
+        switch ($activity->description) {
+            case LeadActivity::OPENED:
+            case LeadActivity::CLOSED:
+                return $activity->subject->responses()->first()->created_at->diffInSeconds($activity->activity_at);
+                break;
         }
 
         return null;
+    }
+
+    /**
+     * Remove closed points for closer
+     * @param Activity $activity
+     * @return void
+     * @throws \Exception
+     */
+    private function removeClosedPoints(Activity $activity): void
+    {
+        $lastClose = $activity->subject->activities()
+            ->whereStatus(LeadActivity::CLOSED)
+            ->orderBy('id', 'desc')
+            ->firstOrFail();
+
+        $lastCloseScore = CampaignUserScore::whereActivityId($lastClose->id)
+            ->firstOrFail();
+
+        $closePoints = $lastCloseScore->delta;
+        $delta = 0 - abs($closePoints);
+
+        $this->score->create(
+            $activity->subject->campaign_id,
+            $lastClose->user_id,
+            $activity->id, $delta);
+    }
+
+    /**
+     * @param Activity $activity
+     * @return void
+     */
+    private function penalizeFalseOpen(Activity $activity): void
+    {
+        // Get last activity
+        $lastActivity = Activity::whereLogName(ActivityLogFactory::LEAD_ACTIVITY_LOG)
+            ->whereSubjectType($activity->subject_type)
+            ->whereSubjectId($activity->subject_id_)
+            ->where('id', '<>', $activity->id)
+            ->whereNotIn('description', $this->inertActivities)
+            ->orderBy('id', 'desc')
+            ->first();
+
+        if ($lastActivity
+            && $lastActivity->description === LeadActivity::OPENED
+            && $lastActivity->causer_id !== $activity->causer_id
+            && ! in_array($activity->description, $this->inertActivities)
+        ) {
+            $campaign_id = $activity->subject->campaign_id;
+            $user_id = $activity->causer->id;
+
+            $falseOpen = CampaignUserScore::getLastScoreFromActivity($lastActivity);
+
+            $pointsToRemove = 0 - $falseOpen->delta;
+            $this->score->create(
+                $campaign_id,
+                $user_id,
+                $activity->id,
+                $pointsToRemove);
+
+            // award false opener's points to this user
+            $this->score->create(
+                $campaign_id,
+                $user_id,
+                $activity->id,
+                $falseOpen->delta);
+        }
+    }
+
+    /**
+     * @param Activity $activity
+     * @return boolean
+     */
+    private function isScorable(Activity $activity): bool
+    {
+        return array_key_exists($activity->description, $this->scoreMap);
     }
 }
