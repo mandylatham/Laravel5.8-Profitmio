@@ -14,7 +14,9 @@ class AddOutcomeColumnToRecipientsTable extends Migration
     public function up()
     {
         Schema::table('recipients', function (Blueprint $table) {
-            $table->string("outcome", 50)->nullable()->after("last_status_changed_at");
+            if (! Schema::hasColumn('recipients', 'outcome')) {
+                $table->string("outcome", 50)->nullable()->after("last_status_changed_at");
+            }
         });
     }
 
@@ -26,7 +28,9 @@ class AddOutcomeColumnToRecipientsTable extends Migration
     public function down()
     {
         Schema::table('recipients', function (Blueprint $table) {
-            $table->dropColumn("outcome");
+            if (Schema::hasColumn('recipients', 'outcome')) {
+                $table->dropColumn("outcome");
+            }
         });
     }
 }

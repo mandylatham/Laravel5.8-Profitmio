@@ -12,6 +12,7 @@ use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\Recipient;
 use App\Services\PusherBroadcastingService;
+use App\Services\CampaignUserScoreService;
 use App\Facades\TwilioClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

@@ -326,12 +326,12 @@ class LeadController extends Controller
      *
      * @return JsonResponse
      */
-    public function updateNotes(Lead $lead, Request $request): LeadResponse
+    public function updateNotes(Lead $lead, Request $request): LeadResource
     {
         $lead->fill(['notes' => $request->notes]);
         $lead->save();
 
-        return new LeadResponse($lead);
+        return new LeadResource($lead);
     }
 
     /**
