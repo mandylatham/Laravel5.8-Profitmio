@@ -71,6 +71,7 @@
                         <i class="fa fa-thumbs-up mr-3"></i>
                         <span>@{{ outcomes.positive.total || 0 }}</span>
                     </div>
+                    <i class="fas fa-chart-pie" v-if="Object.keys(outcomes.positive.tags).length === 0"></i>
                     <div class="stat-cell--subtitle text-center" v-if="Object.keys(outcomes.positive.tags).length > 0">Tags</div>
                     <pie-chart v-if="Object.keys(outcomes.positive.tags).length > 0" class="mt-2" :library="{legend: {position: 'bottom'}}" height="200px" :data="outcomes.positive.tags || []"></pie-chart>
                 </div>
@@ -82,6 +83,7 @@
                         <i class="fa fa-thumbs-down mr-3"></i>
                         <span>@{{ outcomes.negative.total || 0 }}</span>
                     </div>
+                    <i class="fas fa-chart-pie" v-if="Object.keys(outcomes.negative.tags).length === 0"></i>
                     <div class="stat-cell--subtitle text-center" v-if="Object.keys(outcomes.negative.tags).length > 0">Tags</div>
                     <pie-chart v-if="Object.keys(outcomes.negative.tags).length > 0" class="mt-2" :library="{legend: {position: 'bottom'}}" height="200px" :data="outcomes.negative.tags"></pie-chart>
                 </div>

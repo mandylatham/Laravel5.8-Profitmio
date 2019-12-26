@@ -28,7 +28,7 @@
         color: $brand-purple;
         display: flex;
         justify-content: center;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0;
 
         .far {
             font-size: 2.5rem;
@@ -259,8 +259,16 @@
         background-color: #fff;
         padding: 0.5rem;
 
+        &--charts {
+            display: flex;
+            align-items: center;
+        }
+
         &--labels {
             padding-left: 10px;
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
 
             span {
                 position: relative;

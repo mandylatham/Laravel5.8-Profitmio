@@ -6,6 +6,7 @@ const SECONDS_PER_MINUTE = 60;
 
 Vue.filter('humanizeWithNumber', function (value) {
     const result = [];
+    value = parseInt(value, 10);
     if (value >= SECONDS_PER_DAY) {
         const days = parseInt(value / SECONDS_PER_DAY);
         value = value % SECONDS_PER_DAY;
@@ -13,7 +14,7 @@ Vue.filter('humanizeWithNumber', function (value) {
     }
     if (value >= SECONDS_PER_HOUR) {
         const hours = parseInt(value / SECONDS_PER_HOUR);
-        value = value % SECONDS_PER_DAY;
+        value = value % SECONDS_PER_HOUR;
         result.push(hours + 'h');
     }
     if (value >= SECONDS_PER_MINUTE) {

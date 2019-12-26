@@ -56,12 +56,20 @@ class Company extends \ProfitMiner\Base\Models\Company implements HasMedia
 
     public static function getAgencies()
     {
-        return self::where('type', self::TYPE_AGENCY)->whereNull('deleted_at')->select(['id', 'name'])->get();
+        return self::where('type', self::TYPE_AGENCY)
+            ->whereNull('deleted_at')
+            ->select(['id', 'name'])
+            ->orderBy('name', 'ASC')
+            ->get();
     }
 
     public static function getDealerships()
     {
-        return self::where('type', self::TYPE_DEALERSHIP)->whereNull('deleted_at')->select(['id', 'name'])->get();
+        return self::where('type', self::TYPE_DEALERSHIP)
+            ->whereNull('deleted_at')
+            ->select(['id', 'name'])
+            ->orderBy('name', 'ASC')
+            ->get();
     }
 
     public function isUserProfileReady($userId)

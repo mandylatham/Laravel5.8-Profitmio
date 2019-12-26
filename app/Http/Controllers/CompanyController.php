@@ -79,7 +79,7 @@ class CompanyController extends Controller
     {
         return $this->company
             ->searchByRequest($request)
-            ->orderBy('id', 'desc')
+            ->orderBy('name', 'asc')
             ->paginate($request->input('per_page', 15));
     }
 

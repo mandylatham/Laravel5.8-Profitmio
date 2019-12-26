@@ -212,8 +212,7 @@ class CampaignController extends Controller
             'service_dept' => (bool) $request->input('service_dept'),
             'service_dept_email' => $request->input('service_dept_email', []),
             'sms_on_callback' => (bool) $request->input('service_dept'),
-            'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
-            'tags' => $request->input('tags', []),
+            'sms_on_callback_number' => $request->input('sms_on_callback_number', [])
         ]);
 
         if (! $campaign->expires_at) {
@@ -476,7 +475,7 @@ class CampaignController extends Controller
             'ends_at' => $ends_at,
             'expires_at' => $expires_at,
             'lead_alerts' => (bool) $request->input('lead_alerts'),
-            'lead_alert_email' => $request->input('lead_alert_emails', []),
+            'lead_alert_email' => $request->input('lead_alert_email', []),
             'name' => $request->input('name'),
             'order_id' => $request->input('order'),
             'service_dept' => (bool) $request->input('service_dept'),
@@ -484,8 +483,7 @@ class CampaignController extends Controller
             'sms_on_callback' => (bool) $request->input('sms_on_callback'),
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'starts_at' => $starts_at,
-            'status' => $status,
-            'tags' => (array) $request->input('tags', []),
+            'status' => $status
         ]);
 
         $campaign->save();

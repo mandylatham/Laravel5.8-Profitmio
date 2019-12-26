@@ -57,24 +57,13 @@
                 <span class="label">Total Not Closed/Total Closed:</span>
                 <span class="value">{{ campaign.counters.total - campaign.counters.closed }} / {{ campaign.counters.closed }}</span>
             </div>
-<!--            <p>-->
-<!--                <span class="label">Start Date:</span>-->
-<!--                <span class="value">{{ campaign.starts_at | amDateFormat('MM.DD.YY') }}</span>-->
-<!--            </p>-->
-<!--            <p>-->
-<!--                <span class="label">End Date:</span>-->
-<!--                <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>-->
-<!--            </p>-->
-<!--            <div class="campaign-date&#45;&#45;left">-->
-<!--                <small>Days Left:</small>-->
-<!--                <strong>{{ daysLeft | zeroIfNegative }}</strong>-->
-<!--            </div>-->
         </div>
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
             <a class="drop-link" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
             <a class="recipient-list-link" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
             <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})"><span class="fas fa-edit"></span> Edit</a>
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="far fa-chart-bar"></span> Stats</a>
         </div>
         <div class="col-6 col-md-3 campaign-links" v-else>
             <div class="campaign-apointment-totals">
@@ -105,9 +94,10 @@
         <div class="col-6 col-md-2 campaign-postcard--image campaign-links">
             <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})" v-if="isAdmin"><span class="fas fa-edit"></span> Edit</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="far fa-chart-bar"></span> Stats</a>
         </div>
         <div class="col-12 col-md-3 campaign-chart">
-            <div class="row no-gutters" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">
+            <div class="row no-gutters h-100" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">
                 <div class="col-7 campaign-chart--charts">
                     <pie-chart height="70px" :colors="['#572E8D', '#e7f386', '#67A7CC']" :legend="false" :data="pieChartDataSet"></pie-chart>
                 </div>
@@ -157,7 +147,8 @@
                 campaignStatsUrl: '',
                 campaignDropIndex: '',
                 campaignRecipientIndex: '',
-                campaignResponseConsoleIndex: ''
+                campaignResponseConsoleIndex: '',
+                campaignStatsUrl: ''
             };
         },
         computed: {
@@ -189,6 +180,7 @@
             this.campaignDropIndex = window.campaignDropIndex;
             this.campaignRecipientIndex = window.campaignRecipientIndex;
             this.campaignResponseConsoleIndex = window.campaignResponseConsoleIndex;
+            this.campaignStatsUrl = window.campaignStatsUrl;
         }
     }
 </script>
