@@ -348,6 +348,8 @@ class CampaignController extends Controller
         }
         // Outcomes
         $leadsWithOutcome = $campaign->leads()
+            ->whereDate('last_status_changed_at', '>=', $startDate)
+            ->whereDate('last_status_changed_at', '<=', $endDate)
             ->whereNotNull('recipients.outcome')
             ->get();
         $resumeOutcomes = [
@@ -373,13 +375,31 @@ class CampaignController extends Controller
         $ranking = $campaign->getOverallRanking();
         // Leads by email
         $leadsByEmail = $campaign->leads()
-            ->hasEmails()
+            ->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'email')
+            ->whereDate('responses.created_at', '>=', $startDate)
+            ->whereDate('responses.created_at', '<=', $endDate)
+            ->groupBy('recipients.id')
+            ->selectRaw('recipients.id')
+            ->get()
             ->count();
         $leadsByPhone = $campaign->leads()
-            ->hasCalls()
+            ->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'phone')
+            ->whereDate('responses.created_at', '>=', $startDate)
+            ->whereDate('responses.created_at', '<=', $endDate)
+            ->groupBy('recipients.id')
+            ->selectRaw('recipients.id')
+            ->get()
             ->count();
         $leadsBySms = $campaign->leads()
-            ->hasSms()
+            ->join('responses', 'responses.recipient_id', '=', 'recipients.id')
+            ->where('responses.type', 'text')
+            ->whereDate('responses.created_at', '>=', $startDate)
+            ->whereDate('responses.created_at', '<=', $endDate)
+            ->groupBy('recipients.id')
+            ->selectRaw('recipients.id')
+            ->get()
             ->count();
         // List of open leads by time
         $leadsOpenedWithTime = DB::query()

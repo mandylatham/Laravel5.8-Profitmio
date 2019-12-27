@@ -159,9 +159,12 @@ window['app'] = new Vue({
                     ];
                     this.averageTimeToOpen = response.averageTimeToOpen;
                     this.averageTimeToClose = response.averageTimeToClose;
-                    this.leadsByMedia.email = response.leadsByEmail;
-                    this.leadsByMedia.phone = response.leadsByPhone;
-                    this.leadsByMedia.sms = response.leadsBySms;
+                    console.log('response', response);
+                    this.leadsByMedia = {
+                        email: response.leadsByEmail,
+                        phone: response.leadsByPhone,
+                        sms: response.leadsBySms
+                    };
                     this.outcomes = response.outcomes;
                     this.ranking = response.ranking;
                     this.leadsOpenByTime = response.leadsOpenByTime.map((total, idx) => {
@@ -197,7 +200,7 @@ function parseListToObject(list, startDate, endDate) {
     const result = {};
     const start = startDate.clone();
     const end = endDate.clone();
-    while(start.isBefore(end)) {
+    while(start.isBefore(end) || start.isSame(end)) {
         result[start.format('YYYY-MM-DD')] = 0;
         start.add(1, 'days');
     }

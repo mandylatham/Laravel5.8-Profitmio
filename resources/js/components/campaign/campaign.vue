@@ -59,11 +59,11 @@
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="far fa-chart-bar"></span> Stats</a>
             <a class="drop-link" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
             <a class="recipient-list-link" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
             <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})"><span class="fas fa-edit"></span> Edit</a>
-            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="far fa-chart-bar"></span> Stats</a>
         </div>
         <div class="col-6 col-md-3 campaign-links" v-else>
             <div class="campaign-apointment-totals">
@@ -92,9 +92,9 @@
             </div>
         </div>
         <div class="col-6 col-md-2 campaign-postcard--image campaign-links">
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="far fa-chart-bar"></span> Stats</a>
             <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})" v-if="isAdmin"><span class="fas fa-edit"></span> Edit</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
-            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="far fa-chart-bar"></span> Stats</a>
         </div>
         <div class="col-12 col-md-3 campaign-chart">
             <div class="row no-gutters h-100" v-if="campaign.text_responses_count > 0 || campaign.phone_responses_count > 0 || campaign.email_responses_count > 0">

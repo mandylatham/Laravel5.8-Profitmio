@@ -251,6 +251,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
                     ->where('campaign_id', $this->id)
                     ->groupBy('user_id');
             })
+            ->where('campaign_id', $this->id)
             ->with('user')
             ->get();
 
@@ -263,14 +264,19 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
                 $score->percentage = round($score->score * 100 / $total, 2);
             }
             $score->openLeads = Activity::where('causer_id', $score->user_id)
+                ->where('activity_log.causer_type', User::class)
+                ->where('activity_log.subject_type', Lead::class)
                 ->where('description', LeadActivity::OPENED)
                 ->where('log_name', ActivityLogFactory::LEAD_ACTIVITY_LOG)
+                ->join('recipients', 'recipients.id', '=', 'activity_log.subject_id')
+                ->where('recipients.campaign_id', $this->id)
                 ->count();
             $closedLeads = Lead::closed()
                 ->join('activity_log', 'activity_log.subject_id', '=', 'recipients.id')
-                ->where('activity_log.causer_id', $score->user_id)
                 ->where('activity_log.causer_type', User::class)
+                ->where('activity_log.causer_id', $score->user_id)
                 ->where('activity_log.subject_type', Lead::class)
+                ->where('recipients.campaign_id', $this->id)
                 ->where('activity_log.description', LeadActivity::CLOSED)
                 ->select('recipients.id', 'outcome', 'tags')
                 ->get();

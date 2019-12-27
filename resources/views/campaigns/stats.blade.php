@@ -41,6 +41,38 @@
                     </table>
                 </div>
             </div>
+            <div class="col-12 col-xl-6">
+                <div class="stat-cell stat-cell_by-media">
+                    <div class="stat-cell--title">Time to open</div>
+                    <column-chart
+                        :library="timeToOpenChartOptions"
+                        :data="leadsOpenByTime"
+                        xtitle="Time" ytitle="Recipients"
+                    ></column-chart>
+                </div>
+            </div>
+            <div class="col-12 col-xl-6">
+                <div class="stat-cell stat-cell_by-media">
+                    <div class="stat-cell--title">Time to close</div>
+                    <column-chart
+                        :library="timeToCloseChartOptions"
+                        :data="leadsClosedByTime"
+                        xtitle="Time" ytitle="Recipients"
+                    ></column-chart>
+                </div>
+            </div>
+            <div class="col-12 col-xl-6">
+                <div class="stat-cell">
+                    <div class="stat-cell--title text-center">Average time to open</div>
+                    <div class="stat-cell--value">@{{ averageTimeToOpen | humanizeWithNumber }}</div>
+                </div>
+            </div>
+            <div class="col-12 col-xl-6">
+                <div class="stat-cell">
+                    <div class="stat-cell--title text-center">Average time to close</div>
+                    <div class="stat-cell--value">@{{ averageTimeToClose | humanizeWithNumber }}</div>
+                </div>
+            </div>
             <div class="col-12 mb-3 mt-5">
                 <div class="row">
                     <div class="col-6">
@@ -86,38 +118,6 @@
                     <i class="fas fa-chart-pie" v-if="Object.keys(outcomes.negative.tags).length === 0"></i>
                     <div class="stat-cell--subtitle text-center" v-if="Object.keys(outcomes.negative.tags).length > 0">Tags</div>
                     <pie-chart v-if="Object.keys(outcomes.negative.tags).length > 0" class="mt-2" :library="{legend: {position: 'bottom'}}" height="200px" :data="outcomes.negative.tags"></pie-chart>
-                </div>
-            </div>
-            <div class="col-12 col-xl-6">
-                <div class="stat-cell stat-cell_by-media">
-                    <div class="stat-cell--title">Time to open</div>
-                    <column-chart
-                        :library="timeToOpenChartOptions"
-                        :data="leadsOpenByTime"
-                        xtitle="Time" ytitle="Recipients"
-                    ></column-chart>
-                </div>
-            </div>
-            <div class="col-12 col-xl-6">
-                <div class="stat-cell stat-cell_by-media">
-                    <div class="stat-cell--title">Time to close</div>
-                    <column-chart
-                        :library="timeToCloseChartOptions"
-                        :data="leadsClosedByTime"
-                        xtitle="Time" ytitle="Recipients"
-                    ></column-chart>
-                </div>
-            </div>
-            <div class="col-12 col-xl-6">
-                <div class="stat-cell">
-                    <div class="stat-cell--title text-center">Average time to open</div>
-                    <div class="stat-cell--value">@{{ averageTimeToOpen | humanizeWithNumber }}</div>
-                </div>
-            </div>
-            <div class="col-12 col-xl-6">
-                <div class="stat-cell">
-                    <div class="stat-cell--title text-center">Average time to close</div>
-                    <div class="stat-cell--value">@{{ averageTimeToClose | humanizeWithNumber }}</div>
                 </div>
             </div>
         </div>
