@@ -86,9 +86,10 @@ class CampaignUserScoreService
     private function getPoints(Activity $activity): int
     {
         $pointMap = $this->scoreMap[$activity->description];
+
         $seconds = $this->getSeconds($activity);
 
-        if (!$seconds) {
+        if (is_null($seconds)) {
             return $pointMap['points'];
         }
         if ($seconds <= $pointMap['good']) {
@@ -97,10 +98,7 @@ class CampaignUserScoreService
         if ($seconds <= $pointMap['ok']) {
             return $pointMap['okPoints'];
         }
-        if ($seconds <= $pointMap['bad']) {
-            return $pointMap['badPoints'];
-        }
-        return 0;
+        return $pointMap['badPoints'];
     }
 
     /**

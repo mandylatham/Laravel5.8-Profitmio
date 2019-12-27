@@ -65,8 +65,7 @@ return [
         ],
 
         'sms' => [
-
-            // Empty for now
+            'class' => env('SMS_DROP_PROCESSOR', 'ProfitMiner\Base\Services\Media\Transport\DummySMSTransport'),
         ],
     ],
 ];

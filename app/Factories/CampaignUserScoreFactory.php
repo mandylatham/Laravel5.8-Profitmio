@@ -19,7 +19,8 @@ class CampaignUserScoreFactory
             $activity->subject->campaign_id,
             $activity->causer->id,
             $activity->id,
-            $delta);
+            $delta
+        );
     }
 
     /**
