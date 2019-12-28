@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Factories\ActivityLogFactory;
+use App\Models\Impersonation\ImpersonatedUser;
 use Illuminate\Http\Request;
 use Sofa\Eloquence\Eloquence;
 use Spatie\Activitylog\Models\Activity;
@@ -264,7 +265,10 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
                 $score->percentage = round($score->score * 100 / $total, 2);
             }
             $score->openLeads = Activity::where('causer_id', $score->user_id)
-                ->where('activity_log.causer_type', User::class)
+                ->where(function ($query) {
+                    return $query->where('activity_log.causer_type', ImpersonatedUser::class)
+                        ->orWhere('activity_log.causer_type', User::class);
+                })
                 ->where('activity_log.subject_type', Lead::class)
                 ->where('description', LeadActivity::OPENED)
                 ->where('log_name', ActivityLogFactory::LEAD_ACTIVITY_LOG)
@@ -273,7 +277,10 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
                 ->count();
             $closedLeads = Lead::closed()
                 ->join('activity_log', 'activity_log.subject_id', '=', 'recipients.id')
-                ->where('activity_log.causer_type', User::class)
+                ->where(function ($query) {
+                    return $query->where('activity_log.causer_type', ImpersonatedUser::class)
+                        ->orWhere('activity_log.causer_type', User::class);
+                })
                 ->where('activity_log.causer_id', $score->user_id)
                 ->where('activity_log.subject_type', Lead::class)
                 ->where('recipients.campaign_id', $this->id)
