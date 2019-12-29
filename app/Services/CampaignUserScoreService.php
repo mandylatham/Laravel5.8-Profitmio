@@ -163,7 +163,7 @@ class CampaignUserScoreService
         // Get last activity
         $lastActivity = Activity::whereLogName(ActivityLogFactory::LEAD_ACTIVITY_LOG)
             ->whereSubjectType($activity->subject_type)
-            ->whereSubjectId($activity->subject_id_)
+            ->whereSubjectId($activity->subject_id)
             ->where('id', '<>', $activity->id)
             ->whereNotIn('description', $this->inertActivities)
             ->orderBy('id', 'desc')
@@ -172,26 +172,29 @@ class CampaignUserScoreService
         if ($lastActivity
             && $lastActivity->description === LeadActivity::OPENED
             && $lastActivity->causer_id !== $activity->causer_id
-            && ! in_array($activity->description, $this->inertActivities)
+            && !in_array($activity->description, $this->inertActivities)
         ) {
             $campaign_id = $activity->subject->campaign_id;
-            $user_id = $activity->causer->id;
 
-            $falseOpen = CampaignUserScore::getLastScoreFromActivity($lastActivity);
+            $lastActivityScoreRecord = CampaignUserScore::getScoreRecordFromActivity($lastActivity);
 
-            $pointsToRemove = 0 - $falseOpen->delta;
+            $pointsToRemove = $lastActivityScoreRecord->delta;
+
+            // Remove points from false opener's user
             $this->score->create(
                 $campaign_id,
-                $user_id,
+                $lastActivity->causer_id,
                 $activity->id,
-                $pointsToRemove);
+                -$pointsToRemove
+            );
 
             // award false opener's points to this user
             $this->score->create(
                 $campaign_id,
-                $user_id,
+                $activity->causer_id,
                 $activity->id,
-                $falseOpen->delta);
+                $pointsToRemove
+            );
         }
     }
 

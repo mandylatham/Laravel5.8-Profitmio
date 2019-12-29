@@ -51,6 +51,13 @@ class CampaignUserScore extends Model
         return self::getLastScore($activity->subject->campaign_id, $activity->causer->id);
     }
 
+    public static function getScoreRecordFromActivity(Activity $activity)
+    {
+        return self::where('activity_id', $activity->id)
+            ->where('user_id', $activity->causer_id)
+            ->first();
+    }
+
     /**
      * @param integer $campaign_id
      * @param integer $user_id

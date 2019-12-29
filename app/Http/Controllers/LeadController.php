@@ -259,7 +259,7 @@ class LeadController extends Controller
 
         $this->sentiment->forResponse($response);
 
-        $activity = $this->activityFactory->forUserTextedLead($lead);
+        $activity = $this->activityFactory->forUserTextedLead($lead, $response);
         $this->scoring->forActivity($activity);
 
         return response()->json(['response' => $response]);
@@ -312,7 +312,7 @@ class LeadController extends Controller
 
         $this->sentiment->forResponse($response);
 
-        $activity = $this->activityFactory->forUserEmailedLead($lead);
+        $activity = $this->activityFactory->forUserEmailedLead($lead, $response);
         $this->scoring->forActivity($activity);
 
         return response()->json(['response' => $response]);
