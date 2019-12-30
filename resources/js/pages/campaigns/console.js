@@ -106,9 +106,9 @@ window.app = new Vue({
                 .get(window.getRecipientsUrl)
                 .then((response) => {
                     this.recipients = response.data;
-                    this.searchForm.page = response.current_page;
-                    this.searchForm.per_page = response.per_page;
-                    this.total = response.total;
+                    this.searchForm.page = response.meta.current_page;
+                    this.searchForm.per_page = response.meta.per_page;
+                    this.total = response.meta.total;
                     this.loading = false;
                 })
                 .catch((error) => {

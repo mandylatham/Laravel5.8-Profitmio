@@ -224,6 +224,11 @@ button.clear {
         justify-self: flex-end;
         margin-top: auto;
 
+        .avatar-image {
+            width: 24px;
+            margin-right: 1rem;
+        }
+
         .avatar-placeholder {
             width: 30px;
             height: 30px;
