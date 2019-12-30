@@ -57,7 +57,7 @@
     <nav id="sidebar-nav-content" class="wrapper-aside--navigation" v-cloak>
         <h4>Campaign</h4>
         <ul class="list-group campaign-nav">
-            <li class="list-group-item">
+            <li class="list-group-item" v-if="campaign.is_legacy">
                 <a class="{{ \Route::current()->getName() === 'campaigns.edit' ? 'active' : '' }}" href="{{ route('campaigns.stats', ['campaign' => $campaign->id]) }}">
                     <i class="far fa-chart-bar"></i>
                     <span>STATS</span>
