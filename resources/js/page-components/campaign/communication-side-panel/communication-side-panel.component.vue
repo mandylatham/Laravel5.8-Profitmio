@@ -197,9 +197,9 @@
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
 
-                <div class="message-drop-text" v-if="threads.textDrop && threads.textDrop.text_message">
+                <div class="message-drop-text" v-if="threads.textDrop && threads.textDrop[0].text_message">
                     <strong class="mb-3">Original Message</strong>
-                    <div>{{ threads.textDrop.text_message }}</div>
+                    <div>{{ threads.textDrop[0].text_message }}</div>
                 </div>
 
                 <div class="panel-body">
@@ -260,7 +260,7 @@
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
 
-                <div class="message-drop-text" v-if="threads.emailDrop && threads.emailDrop.email_html">
+                <div class="message-drop-text" v-if="threads.emailDrop && threads.emailDrop[0].email_html">
                     <div class="cursor-pointer" v-b-toggle.emailTemplateCollapse>
                         <strong class="mb-3">Original Message</strong>&nbsp;
                         <i class="fa fa-angle-down closed"></i>
@@ -268,7 +268,7 @@
                     </div>
 
                     <b-collapse id="emailTemplateCollapse" class="mt-2">
-                        <div v-html="threads.emailDrop.email_html"></div>
+                        <div v-html="threads.emailDrop[0].email_html"></div>
                     </b-collapse>
                 </div>
 
@@ -443,8 +443,8 @@
                         this.notes = r.data.lead.notes;
                         this.labels = r.data.lead.labels.length === 0 ? {} : r.data.lead.labels;
 
-                        if (this.threads.textDrop && this.threads.textDrop.text_message) {
-                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.data.lead);
+                        if (this.threads.textDrop && this.threads.textDrop[0].text_message) {
+                            this.threads.textDrop[0].text_message = replacePlaceholders(this.threads.textDrop[0].text_message, r.data.lead);
                         }
                         if (this.threads.emailDrop && this.threads.emailDrop.email_html) {
                             this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.data.lead);
