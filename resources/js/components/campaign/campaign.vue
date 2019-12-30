@@ -10,7 +10,7 @@
                     <p>{{ campaign.name }}</p>
                 </div>
 
-                <div class="campaign-header--dates">
+                <div class="campaign-header--dates" v-if="campaign.is_legacy === false">
                     <div>
                         <span class="label">Start Date:</span>
                         <span class="value">{{ campaign.starts_at | amDateFormat('MM.DD.YY') }}</span>
@@ -38,7 +38,21 @@
                 </div>
             </div>
         </div>
-        <div class="col-6 col-md-4 campaign-count">
+        <div class="col-6 col-md-4 campaign-date" v-if="campaign.is_legacy === true">
+           <p>
+               <span class="label">Start Date:</span>
+               <span class="value">{{ campaign.starts_at | amDateFormat('MM.DD.YY') }}</span>
+           </p>
+           <p>
+               <span class="label">End Date:</span>
+               <span class="value">{{ campaign.ends_at | amDateFormat('MM.DD.YY') }}</span>
+           </p>
+           <div class="campaign-date--left">
+               <small>Days Left:</small>
+               <strong>{{ daysLeft | zeroIfNegative }}</strong>
+           </div>
+        </div>
+        <div class="col-6 col-md-4 campaign-count" v-if="campaign.is_legacy === false">
             <div class="campaign-count--top">
                 <div class="campaign-count--stat">
                     <span class="label">New:</span>
@@ -54,12 +68,12 @@
                 </div>
             </div>
             <div class="campaign-count--bottom">
-                <span class="label">Total Not Closed/Total Closed:</span>
-                <span class="value">{{ campaign.counters.total - campaign.counters.closed }} / {{ campaign.counters.closed }}</span>
+                <span class="label">Unfinished Leads / Total Leads:</span>
+                <span class="value">{{ campaign.counters.total - campaign.counters.closed }} / {{ campaign.counters.total }}</span>
             </div>
         </div>
         <div class="col-6 col-md-3 campaign-links" v-if="isAdmin">
-            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="far fa-chart-bar"></span> Stats</a>
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})" v-if="campaign.is_legacy === false"><span class="far fa-chart-bar"></span> Stats</a>
             <a class="drop-link" :href="generateRoute(campaignDropIndex, {'campaignId': campaign.id})"><span class="fas fa-tint"></span> Drops</a>
             <a class="recipient-list-link" :href="generateRoute(campaignRecipientIndex, {'campaignId': campaign.id})"><span class="fa fa-users"></span> Recipients</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
@@ -92,7 +106,7 @@
             </div>
         </div>
         <div class="col-6 col-md-2 campaign-postcard--image campaign-links">
-            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})"><span class="far fa-chart-bar"></span> Stats</a>
+            <a :href="generateRoute(campaignStatsUrl, {'campaignId': campaign.id})" v-if="campaign.is_legacy === false"><span class="far fa-chart-bar"></span> Stats</a>
             <a :href="generateRoute(campaignEditUrl, {'campaignId': campaign.id})" v-if="isAdmin"><span class="fas fa-edit"></span> Edit</a>
             <a :href="generateRoute(campaignResponseConsoleIndex, {'campaignId': campaign.id})"><span class="fa fa-terminal"></span> Console</a>
         </div>
