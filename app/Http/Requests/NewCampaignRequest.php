@@ -43,6 +43,7 @@ class NewCampaignRequest extends FormRequest
             'enable_sms_on_callback' => 'boolean',
             'sms_on_callback_number' => 'required_if:enable_service_dept,true',
             'phone_number_id' => 'nullable',
+            'tags' => 'nullable|array',
         ];
     }
 }

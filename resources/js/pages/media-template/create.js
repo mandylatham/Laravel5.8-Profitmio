@@ -5,8 +5,8 @@ import 'vue-toastr-2/dist/vue-toastr-2.min.css'
 import axios from 'axios';
 
 // Toastr Library
-import VueToastr2 from 'vue-toastr-2'
-window.toastr = require('toastr').default;
+import VueToastr2 from 'vue-toastr-2';
+window.toastr = require('toastr');
 Vue.use(VueToastr2);
 
 // Bootstrap Vue
@@ -25,11 +25,11 @@ Vue.use(Vue2AceEditor);
 window['app'] = new Vue({
     el: '#template-create',
     components: {
-        editor: require('vue2-ace-editor').default,
+        editor: require('vue2-ace-editor'),
     },
     computed: {
         readyToSubmitForm: function () {
-            return this.oldTemplate.name.length > 0 && 
+            return this.oldTemplate.name && this.oldTemplate.name.length > 0 &&
             (
                 (
                     this.oldTemplate.type == 'email' &&
@@ -52,16 +52,16 @@ window['app'] = new Vue({
             text_message: '',
             email_subject: '',
             email_text: '',
-            email_html: ''
+            email_html: window.emailTemplate || ''
         },
-        oldTemplate: '',
+        oldTemplate: {},
         renderedTemplate: '',
 
         showNameControls: true,
         showTextMessageControls: true,
         showEmailSubjectControls: true,
         showEmailTextControls: true,
-        showEmailHtmlControls: false,
+        showEmailHtmlControls: !!window.emailTemplate,
 
         createForm: new Form({
             name: '',
@@ -87,6 +87,10 @@ window['app'] = new Vue({
         this.createForm.email_subject = this.oldTemplate.email_subject;
         this.createForm.email_text = this.oldTemplate.email_text;
         this.createForm.email_html = this.oldTemplate.email_html;
+
+        if (window.templateType) {
+            this.selectType(window.templateType);
+        }
     },
     methods: {
         selectType: function (value) {
@@ -172,6 +176,7 @@ window['app'] = new Vue({
                     }
                 })
                 .catch(error => {
+                    console.log('error', error);
                     window.PmEvent.fire('errors.api', "Unable to save");
                 });
         }

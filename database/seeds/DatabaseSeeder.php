@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Artisan;
 
 class DatabaseSeeder extends Seeder
 {
@@ -14,10 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call(CompanyTableSeeder::class);
         $this->call(UserTableSeeder::class);
         $this->call(CampaignTableSeeder::class);
-//        $this->call(PhoneNumberSeeder::class);
-//        $this->call(RecipientListTableSeeder::class);
-//        $this->call(RecipientTableSeeder::class);
-//        $this->call(AppointmentTableSeeder::class);
-//        $this->call(CampaignScheduleTemplateTableSeeder::class);
+        $this->call(LeadTagSeeder::class);
     }
 }

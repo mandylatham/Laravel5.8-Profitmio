@@ -7,7 +7,7 @@ const PUSHER_AUTH_ENDPOINT = window.pusherAuthEndpoint;
 export default class PusherService {
     constructor() {
         // TODO: Enable pusher logging - don't include this in production
-        Pusher.logToConsole = true;
+        Pusher.logToConsole = false;
 
         this.subscribedTo = {};
 

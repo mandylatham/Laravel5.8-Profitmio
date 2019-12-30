@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import './../../common';
 import Form from './../../common/form';
+import Str from './../../common/str';
 import VueFormWizard from 'vue-form-wizard';
 import {filter} from 'lodash';
 import moment from 'moment';
@@ -26,7 +27,15 @@ window['app'] = new Vue({
         'input-errors': require('./../../components/input-errors/input-errors').default,
         'date-pick': require('./../../components/date-pick/date-pick').default
     },
+    computed: {
+    },
     data: {
+        addCampaignTagForm: new Form({
+            name: null,
+            text: null,
+            indication: null,
+        }),
+        removeTagForm: new Form(),
         addCrmExportEmail: '',
         adfCrmExportEmail: '',
         agencies: [],
@@ -54,6 +63,7 @@ window['app'] = new Vue({
             client_passthrough: window.campaign.client_passthrough,
             client_passthrough_email: window.campaign.client_passthrough_email || [],
             dealership: null,
+            tags: window.campaign.tags || [],
             end: moment.utc(window.campaign.ends_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD'),
             expires: window.campaign.expires_at? moment.utc(window.campaign.expires_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD') : undefined,
             lead_alerts: window.campaign.lead_alerts,
@@ -71,7 +81,12 @@ window['app'] = new Vue({
         editPhoneNumberForm: {},
         getCampaignPhonesForm: new Form(),
         getCampaignPhonesUrl: window.getCampaignPhonesUrl,
+        getTagsForm: new Form(),
         leadAlertEmail: '',
+        tags: window.campaign.tags,
+        leadTag: '',
+        leadTagHumanText: '',
+        leadTagIndication: '',
         loading: false,
         loadingPhoneModal: false,
         loadingPurchaseNumber: false,
@@ -117,7 +132,13 @@ window['app'] = new Vue({
     },
     methods: {
         countDownChanged: function(dismissCountDown) {
-            this.dismissCountDown = dismissCountDown
+            this.dismissCountDown = dismissCountDown;
+        },
+        tagIndicationClass: function (tag) {
+            if (tag.indication == 'positive') return 'fa-thumbs-up';
+            if (tag.indication == 'negative') return 'fa-thumbs-down';
+            if (tag.indication == 'neutral') return 'fa-minus';
+            return 'fa-warning-triangle';
         },
         availableCallSourcesWithCurrent: function (call_source_name) {
             if (call_source_name === undefined) return;
@@ -141,6 +162,16 @@ window['app'] = new Vue({
             console.log(this.showPhoneNumberForm[phone.id]);
             Vue.set(this.showPhoneNumberForm, phone.id, true);
             console.log(this.showPhoneNumberForm[phone.id]);
+        },
+        getTags: function () {
+            this.getTagsForm.get(window.getTagsUrl)
+                .then((response) => {
+                    this.tags = response.data;
+                })
+                .catch((error) => {
+                    console.error(error);
+                    this.$toastr.error("Unable to fetch campaign lead tags");
+                });
         },
         savePhoneNumber: function (phone) {
             this.editPhoneNumberForm[phone.id].patch(generateRoute(window.savePhoneNumberUrl, {'phone_number_id': phone.id}))
@@ -197,6 +228,32 @@ window['app'] = new Vue({
             if (!this[field]) return;
             list.push(this[field]);
             this[field] = null;
+        },
+        addNewTag: function() {
+            this.addCampaignTagForm.name = Str.snake(this.addCampaignTagForm.name);
+            this.addCampaignTagForm.post(window.addNewTagUrl)
+                .then((response) => {
+                    this.getTags();
+                    this.addCampaignTagForm.reset();
+                    this.$toastr.success("Tag added");
+                })
+                .catch((error) => {
+                    console.error(error.response.data.message);
+                    this.$toastr.error("Unable to add tag: " + error.response.data.message);
+                });
+        },
+        removeTag: function (tag) {
+            this.removeTagForm.delete(generateRoute(window.deleteTagUrl, {tagName: tag}))
+                .then((response) => {
+                    var index = this.tags.findIndex(t => t.name == tag.name);
+                    console.log(tag, index);
+                    this.tags.splice(index, 1);
+                    console.log(this.tags);
+                })
+                .catch((error) => {
+                    console.error(error);
+                    this.$toastr.error("Unable to delete the tag");
+                });
         },
         showVerificationStartedAlert: function(variant, message) {
             this.verificationStartedVariant = variant;
@@ -311,7 +368,7 @@ window['app'] = new Vue({
                 }, (error) => {
                     this.loadingPurchaseNumber = false;
                     window.PmEvent.fire('errors.api', 'Unable to process your request: ' + error);
-                })
+                });
         },
         removeAdditionalFeature: function (index, list) {
           if (list[index]) {

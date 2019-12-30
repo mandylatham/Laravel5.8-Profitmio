@@ -12,6 +12,7 @@ use App\Models\Campaign;
 use App\Models\Company;
 use App\Models\Recipient;
 use App\Services\PusherBroadcastingService;
+use App\Services\CampaignUserScoreService;
 use App\Facades\TwilioClient;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -41,6 +42,8 @@ class AppointmentController extends Controller
 
     private $mail;
 
+    private $scoring;
+
     /**
      * AppointmentController constructor.
      * @param Appointment $appointment
@@ -57,7 +60,8 @@ class AppointmentController extends Controller
         Company $company,
         Recipient $recipient,
         Logger $log,
-        Mailer $mail
+        Mailer $mail,
+        CampaignUserScoreService $scoring
     ) {
         $this->appointment = $appointment;
         $this->carbon = $carbon;
@@ -66,6 +70,7 @@ class AppointmentController extends Controller
         $this->log = $log;
         $this->recipient = $recipient;
         $this->mail = $mail;
+        $this->scoring = $scoring;
     }
 
     public function getCampaignIds()
@@ -240,9 +245,12 @@ class AppointmentController extends Controller
 
     /**
      * Add Call Data
+     *
      * @param Appointment $appointment
      * @param Request     $request
+     *
      * @return int|mixed [type]
+     *
      * @throws \Pusher\PusherException
      */
     public function updateCalledStatus(Appointment $appointment, Request $request)
@@ -293,6 +301,9 @@ class AppointmentController extends Controller
 
         event(new AppointmentCreated($appointment));
         event(new CampaignCountsUpdated($campaign));
+
+        // Add User Score
+        $this->scoring->addAppointment();
 
         return $appointment;
     }

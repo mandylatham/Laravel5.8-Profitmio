@@ -12,9 +12,7 @@ class TemplateBuildController extends Controller
      */
     public function index()
     {
-        // TODO: Add Template Builds to database and assign user
-
-        return view('template-builder.index');
+        return redirect()->route('template.index');
     }
 
     /**
@@ -39,7 +37,6 @@ class TemplateBuildController extends Controller
                 ->header('Content-Type', 'image/png');
         }
 
-        dd($request->get('src'));
         if ($request->has('src')) {
             if (Str::contains($request->get('src'), '/storage/template-data/')) {
                 $array = explode('/', $request->get('src'));
@@ -70,7 +67,7 @@ class TemplateBuildController extends Controller
      */
     public function getImageList(Request $request)
     {
-        $files = \Storage::files('email-images', 's3');
+        $files = \Storage::files('email-images', 'media');
         $list = [];
 
         foreach ($files as $file) {
@@ -112,11 +109,11 @@ class TemplateBuildController extends Controller
 
         $attrs = [];
         foreach ($files as $file) {
-            // dd($file->store('email-images', 's3'));
-            $name = $file->store('email-images', 's3');
-            \Storage::disk('s3')->setVisibility($name, 'public');
-            $size = \Storage::disk('s3')->size($name);
-            $url = url(\Storage::disk('s3')->url($name));
+            // dd($file->store('email-images', 'media'));
+            $name = $file->store('email-images', 'media');
+            \Storage::disk('media')->setVisibility($name, 'public');
+            $size = \Storage::disk('media')->size($name);
+            $url = url(\Storage::disk('media')->url($name));
 
             $attr = [
                 'deleteType' => 'DELETE',

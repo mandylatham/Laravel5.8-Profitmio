@@ -1,7 +1,7 @@
 <template>
     <div class="container-fluid list-campaign-container">
         <div class="clearfix mt-3 mb-1">
-            <button class="btn pm-btn pm-btn-blue float-right " v-on:click.prevent="closePanel">Close</button>
+            <button class="btn pm-btn pm-btn-blue float-right " v-on:click.prevent="closePanel">&times;</button>
         </div>
 
         <div class="table-loader-spinner" v-if="loading">
@@ -29,7 +29,7 @@
                         <a :href="this.phone_link">{{ recipient.phone }}</a>
                     </div>
                 </div>
-                <div class="col-4">
+                <div class="col-4" v-show="false">
                     <b-dropdown right text="Add Label" :disabled="Object.keys(labelDropdownOptions).length === 0"
                                 class="float-right" v-if="campaign.status == 'Active'">
                         <b-dropdown-item v-for="(label, index) in labelDropdownOptions" :key="index" :value="index"
@@ -37,9 +37,32 @@
                         </b-dropdown-item>
                     </b-dropdown>
                 </div>
+                <div class="col-4" v-if="recipient.status == 'Closed'">
+                    <button class="btn btn-secondary"
+                            v-show="true"
+                            style="width: 100%; font-size: 1.2rem;"
+                            @click="reopenLead(recipient.id)">
+                        ReOpen Lead
+                    </button>
+                    <p v-show="false" class="alert alert-secondary">Closed Lead</p>
+                </div>
+                <div class="col-4" v-if="recipient.status == 'Open'">
+                    <button class="btn btn-warning"
+                            style="width: 100%; font-size: 1.2rem;"
+                            @click="closeLead(recipient.id)">
+                        Close Lead
+                    </button>
+                </div>
+                <div class="col-4 no-gutters" v-if="recipient.status == 'New'">
+                    <button class="btn btn-success"
+                            style="width: 100%; font-size: 1.2rem;"
+                            @click="openLead(recipient.id)">
+                        Open Lead
+                    </button>
+                </div>
             </div>
 
-            <div class="row align-items-end no-gutters mt-4 mb-3" v-if="Object.keys(labels).length > 0">
+            <div class="row align-items-end no-gutters mt-4 mb-3" v-show="false" v-if="recipient.status != 'New' && Object.keys(labels).length > 0">
                 <div class="col-12 labels-wrapper">
                     <ul class="labels">
                         <li :class="index" v-for="(label, index) in labels">{{ label }}<i
@@ -48,16 +71,16 @@
                 </div>
             </div>
 
-            <div class="notes-wrapper">
+            <div class="notes-wrapper" v-if="recipient.status != 'New'">
                 <div class="form-group">
-                    <textarea class="form-control" placeholder="Notes..." name="notes" rows="4"
-                              v-model="notes">{{ this.recipient.notes }}</textarea>
+                    <textarea class="form-control" placeholder="Notes..." name="notes" rows="4" :class="recipient.status != 'Open' ? 'disabled' : ''" :disabled="recipient.status != 'Open'"
+                              v-model="notes"></textarea>
                 </div>
                 <div class="form-group" v-if="campaign.status == 'Active'">
-                    <button type="button" class="btn btn-primary" @click="addNotes(recipientId)">Save note</button>
+                    <button type="button" class="btn btn-primary" v-if="starting_notes !== notes" @click="addNotes(recipientId)">Save note</button>
                 </div>
             </div>
-            <div class="call-in-wrapper" v-if="appointments.length">
+            <div class="call-in-wrapper" v-if="recipient.status != 'New' && appointments.length">
                 <ul class="list-group">
                     <li class="list-group-item" v-for="appointment in appointments">
                         <div v-if="appointment.type === 'callback'" class="alert" :class="{'alert-success': appointment.called_back, 'alert-warning': !appointment.called_back}">
@@ -67,8 +90,8 @@
                             </span>
                             {{ appointment.name }} @ {{ appointment.phone_number }}
                             <label class="ml-2">
-                                <input type="checkbox" class="toggle_called" :checked="appointment.called_back"
-                                        @click="appointmentCalledBackToggle($event, appointment)">
+                                <input type="checkbox" class="toggle_called" :class="recipient.status == 'Open' ? '' : 'disabled'" :checked="appointment.called_back"
+                                        @click="appointmentCalledBackToggle($event, appointment)" :disabled="recipient.status != 'Open'">
                                 Called
                             </label>
                         </div>
@@ -77,7 +100,7 @@
                                 <i class="fas fa-question-circle mr-2"></i>
                                 Curiosity Call
                             </span>
-                            <span>{{ recipient.name }} called, but did not elect to reserve a callback or an appointment</span>
+                            <span>{{ recipient.first_name }} called, but did not elect to reserve a callback or an appointment</span>
                         </div>
                         <div v-else-if="appointment.type === 'appointment'" class="alert alert-success">
                             <span class="btn btn-success recipient-action mr-2">
@@ -89,12 +112,16 @@
                     </li>
                 </ul>
             </div>
-            <div id="new-appointment" class="mail-attachments mt-2 mb-3" v-if="needsAppointment()">
+            <div id="new-appointment" class="mail-attachments mt-2 mb-3" v-if="recipient.status != 'New' && needsAppointment()">
                 <div class="alert alert-info" role="alert">
-                    <button class="btn pm-btn btn-primary mr-2" @click="showNewApptForm = !showNewApptForm" v-if="campaign.status == 'Active'">
+                    <button class="btn pm-btn btn-primary mr-2"
+                            :class="recipient.status != 'Open' ? 'disabled' : ''"
+                            @click="showNewApptForm = !showNewApptForm"
+                            :disabled="recipient.status != 'Open'"
+                            v-if="campaign.status == 'Active'">
                         Add Appointment
                     </button>
-                    {{ recipient.name }} has no appointments.
+                    {{ recipient.first_name }} has no appointments.
                 </div>
                 <div id="add-appointment-form" class="card" v-if="showNewApptForm">
                     <div class="card-body">
@@ -114,18 +141,37 @@
                 </div>
             </div>
 
-            <div class="alert alert-info" role="alert" v-if="campaign.adf_crm_export && !recipient.sent_to_crm">
-                <button class="btn pm-btn btn-primary mr-2" @click.once="sendToCrm()">
+            <div class="alert alert-info" role="alert" v-if="recipient.status != 'New' && campaign.adf_crm_export && !recipient.sent_to_crm">
+                <button class="btn pm-btn btn-primary mr-2" :class="recipient.status != 'Open' ? 'disabled' : ''"
+                        @click.once="sendToCrm()" :disabled="recipient.status != 'Open'">
                     Send to CRM
                 </button>
-                {{ recipient.name }} has not been sent to the CRM.
+                {{ recipient.first_name }} has not been sent to the CRM.
             </div>
-            <div class="alert alert-success" role="alert" v-if="campaign.adf_crm_export && recipient.sent_to_crm">
-                <i class="fa fa-database mr-2"></i>
-                {{ recipient.name }} has already been sent to the CRM.
+            <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.adf_crm_export && recipient.sent_to_crm">
+                <span class="btn btn-success recipient-action mr-2">
+                    <i class="fa fa-database mr-2"></i>
+                    CRM
+                </span>
+                {{ recipient.first_name }} has already been sent to the CRM.
             </div>
 
-            <div class="mail-attachments" v-if="threads.phone && threads.phone.length">
+            <div class="alert alert-info" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 0">
+                <button class="btn pm-btn btn-primary mr-2" :class="recipient.status != 'Open' ? 'disabled' : ''" @click.once="sendToService()"
+                        v-if="campaign.status == 'Active'" :disabled="recipient.status != 'Open'">
+                    Send To Service Department
+                </button>
+                {{ recipient.first_name }} not sent to Service.
+            </div>
+            <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 1">
+                <span class="btn btn-success recipient-action mr-2">
+                    <i class="fa fa-wrench mr-2"></i>
+                    Service
+                </span>
+                {{ recipient.first_name }} already sent to Service.
+            </div>
+
+            <div class="mail-attachments" v-if="recipient.status != 'New' && threads.phone && threads.phone.length">
                 <h5>Call History</h5>
                 <ul class="list-group">
                     <li class="list-group-item" v-for="call in threads.phone">
@@ -146,7 +192,7 @@
                 </ul>
             </div>
 
-            <div class="panel panel-primary messaging-panel sms-messages" v-if="threads.text && threads.text.length">
+            <div class="panel panel-primary messaging-panel sms-messages" v-if="recipient.status != 'New' && threads.text && threads.text.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
@@ -181,7 +227,8 @@
                                 <div class="message" :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}">{{ msg.message_formatted }}</div>
                                 <div class="checkbox" v-if="msg.incoming">
                                     <label>
-                                        <input type="checkbox" class="message-read" :checked="msg.read"
+                                        <input type="checkbox" class="message-read" :class="recipient.status != 'Open' ? 'disabled' : ''"
+                                               :checked="msg.read" :disabled="recipient.status != 'Open'"
                                                @click="messageUpdateReadStatus($event, msg.id)">
                                         Read
                                     </label>
@@ -189,7 +236,10 @@
                             </div>
                         </div>
                     </div>
-                    <form @submit.prevent="sendText" v-if="campaign.status == 'Active' && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
+                    <!-- @todo: refactor v-if into discrete checker method -->
+                    <form @submit.prevent="sendText"
+                            v-if="campaign.status == 'Active' && recipient.status == 'Open' &&
+                                (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="sms-form" style="margin-top: 20px;">
                             <div class="input-group">
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
@@ -205,7 +255,7 @@
                 </div>
             </div>
 
-            <div class="panel panel-primary messaging-panel email-messages" v-if="threads.email && threads.email.length">
+            <div class="panel panel-primary messaging-panel email-messages" v-if="recipient.status != 'New' && threads.email && threads.email.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">Email Messaging</h3>
                 </div>
@@ -246,7 +296,8 @@
 
                                 <div class="checkbox" v-if="msg.incoming">
                                     <label>
-                                        <input type="checkbox" class="message-read" :checked="msg.read"
+                                        <input type="checkbox" class="message-read" :class="recipient.status != 'Open' ? 'disabled' : ''"
+                                               :checked="msg.read" :disabled="recipient.status != 'Open'"
                                                @click="messageUpdateReadStatus($event, msg.id)">
                                         Read
                                     </label>
@@ -256,7 +307,9 @@
                     </div>
 
 
-                    <form class="mt-3" @submit.prevent="sendEmail" v-if="campaign.status == 'Active' && (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
+                    <form class="mt-3" @submit.prevent="sendEmail"
+                            v-if="campaign.status == 'Active' && recipient.status == 'Open' &&
+                                (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="email-form">
                             <div class="input-group">
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
@@ -325,6 +378,7 @@
                 isAdmin: false,
                 rest: [],
                 loading: false,
+                starting_notes: '',
                 notes: '',
                 calledCheckbox: false,
                 appointmentSelectedDateUnformatted: '',
@@ -364,6 +418,7 @@
                 this.appointments = [];
                 this.rest = [];
                 this.loading = false;
+                this.starting_notes = '';
                 this.notes = '';
                 this.calledCheckbox = false;
                 this.appointmentSelectedDateUnformatted = '';
@@ -380,18 +435,19 @@
 
                 axios.get(generateRoute(window.getResponsesUrl, {'recipientId': recipientId}))
                     .then(({data: r}) => {
-                        this.recipient = r.recipient;
-                        this.threads = r.threads;
-                        this.appointments = r.appointments;
-                        this.rest = r.rest;
-                        this.notes = r.recipient.notes;
-                        this.labels = r.recipient.labels.length === 0 ? {} : r.recipient.labels;
+                        this.recipient = r.data.lead;
+                        this.threads = r.data.threads;
+                        this.appointments = r.data.appointments;
+                        // this.rest = r.rest;
+                        this.starting_notes = r.data.lead.notes;
+                        this.notes = r.data.lead.notes;
+                        this.labels = r.data.lead.labels.length === 0 ? {} : r.data.lead.labels;
 
                         if (this.threads.textDrop && this.threads.textDrop.text_message) {
-                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.recipient);
+                            this.threads.textDrop.text_message = replacePlaceholders(this.threads.textDrop.text_message, r.data.lead);
                         }
                         if (this.threads.emailDrop && this.threads.emailDrop.email_html) {
-                            this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.recipient);
+                            this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.data.lead);
                         }
 
                         this.registerPusherListeners();
@@ -399,6 +455,7 @@
                     })
                     .catch((response) => {
                         this.setLoading(false);
+                        console.log(response);
                         window.PmEvent.fire('errors.api', "Couldn't fetch responses.");
                     });
             },
@@ -419,6 +476,46 @@
                     })
                     .catch((response) => {
                         window.PmEvent.fire('errors.api', 'Failed to add note.');
+                    });
+            },
+            openLead: function (leadId) {
+                axios.post(generateRoute(window.openLeadUrl, {'leadId': leadId}))
+                    .then(response => {
+                        this.$toastr.success('Lead Opened with status: ' + response.data.data.status);
+                        window.app.$set(this.recipient, 'status', response.data.data.status);
+                        window.PmEvent.fire('changed.recipient.status', response.data.data);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        window.PmEvent.fire('errors.api', 'Failed to open lead');
+                    });
+            },
+            closeLead: function (leadId) {
+               // show modal with requirements
+                window.PmEvent.fire('lead.close-request', leadId);
+                /*
+                axios.post(generateRoute(window.closeLeadUrl, {'leadId': leadId}))
+                    .then(response => {
+                        this.$toastr.success('Lead Closed');
+                        window.app.$set(this.recipient, 'status', response.data.recipient.status);
+                        window.PmEvent.fire('changed.recipient.status', response.data.recipient);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        window.PmEvent.fire('errors.api', 'Failed to open lead');
+                    });
+                */
+            },
+            reopenLead: function (leadId) {
+                axios.post(generateRoute(window.reopenLeadUrl, {'leadId': leadId}))
+                    .then(response => {
+                        this.$toastr.success('Lead Reopened');
+                        window.app.$set(this.recipient, 'status', response.data.data.status);
+                        window.PmEvent.fire('changed.recipient.status', response.data.data);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                        window.PmEvent.fire('errors.api', 'Failed to open lead');
                     });
             },
             needsAppointment: function () {
@@ -471,8 +568,19 @@
                         this.$toastr.success("Recipient sent to CRM");
                     })
                     .catch(error => {
-                        console.log(error);
+                        console.error(error);
                         window.PmEvent.fire('errors.api', "Unable to send recipient to CRM at this time");
+                    });
+            },
+            sendToService: function () {
+                axios.post(generateRoute(window.sendServiceUrl, {'leadId': this.recipientId}))
+                    .then(response => {
+                        this.recipient.service = 1;
+                        this.$toastr.success("Lead sent to Service");
+                    })
+                    .catch(error => {
+                        console.error(error);
+                        window.PmEvent.fire('errors.api', "Unable to send lead to Service at this time");
                     });
             },
             sendText: function () {
@@ -600,6 +708,12 @@
             this.isImpersonated = window.isImpersonated;
             pusherService = new PusherService();
             this.getResponses();
+            window.PmEvent.listen('recipient.closed', (data) => {
+                this.recipient.status = 'Closed';
+                setTimeout(() => {
+                    this.$emit('closePanel', {});
+                }, 800);
+            });
         },
         props: ['campaign', 'recipientId', 'currentUser', 'recipientKey'],
         watch: {

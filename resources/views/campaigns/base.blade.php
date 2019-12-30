@@ -9,6 +9,13 @@
     <nav class="company-navigation">
         <ul>
             <li>
+                <a class="{{ \Route::current()->getName() === 'campaigns.stats' ? 'active' : '' }}" href="{{ route('campaigns.stats', ['campaign' => $campaign->id]) }}">
+                    <i class="far fa-chart-bar"></i>
+                    <span>STATS</span>
+                </a>
+            </li>
+            @if(auth()->user()->isAdmin())
+            <li>
                 <a class="{{ \Route::current()->getName() === 'campaigns.drops.index' ? 'active' : '' }}" href="{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}">
                     <i class="pm-font-drops-icon"></i>
                     <span>DROPS</span>
@@ -32,6 +39,7 @@
                     <span>EDIT</span>
                 </a>
             </li>
+            @endif
             <li>
                 <hr>
             </li>
