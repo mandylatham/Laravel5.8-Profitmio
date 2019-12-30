@@ -5,6 +5,8 @@ public/css
 public/js
 public/img
 public/fonts
+public/images
+public/emailTemplates
 .idea/
 .env.backup
 .vscode/
@@ -18,3 +20,5 @@ yarn-error.log
 .phpunit.result.cache
 public/storage
 public/mix-manifest.json
+ctags
+tags

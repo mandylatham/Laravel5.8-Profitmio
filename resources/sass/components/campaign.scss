@@ -28,7 +28,7 @@
         color: $brand-purple;
         display: flex;
         justify-content: center;
-        margin-bottom: 0.8rem;
+        margin-bottom: 0;
 
         .far {
             font-size: 2.5rem;
@@ -75,7 +75,9 @@
         color: #fff;
 
         &--status {
-            flex-grow: 1;
+            flex-grow: 0;
+            flex-shrink: 0;
+            padding: 0 25px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -83,7 +85,8 @@
 
         &--title {
             display: flex;
-            flex-grow: 5;
+            overflow: hidden;
+            flex-grow: 1;
             flex-flow: column;
             align-items: flex-start;
             justify-content: center;
@@ -94,9 +97,34 @@
                 line-height: 1em;
             }
 
+            b {
+                font-weight: bold;
+            }
+
             p {
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                width: 100%;
                 font-weight: 300;
                 margin-top: 0.7em;
+                &:first-child {
+                    margin-top: 0;
+                }
+            }
+        }
+
+        &--dates {
+            flex-shrink: 0;
+            padding-left: 10px;
+            height: 100%;
+            font-size: 12px;
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
+            .value {
+                font-weight: bold;
+                font-size: 15px;
             }
         }
     }
@@ -148,7 +176,7 @@
         //}
     }
 
-    .campaign-date {
+    .campaign-count {
         background-color: #fff;
         padding: 20px;
         display: flex;
@@ -161,14 +189,33 @@
             border-left: 3px solid $brand-white;
         }
 
-        p {
-            line-height: 1em;
-            margin-bottom: 0.5em;
+        &--bottom {
+            display: flex;
+            align-items: center;
+            flex-flow: column;
+            margin-top: 10px;
+            .value {
+                font-weight: bold;
+                font-size: 33px;
+            }
         }
 
-        .value {
-            font-weight: bold;
-            margin-left: 15px;
+        &--top {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-evenly;
+        }
+
+        &--stat {
+            display: flex;
+            justify-content: center;
+            flex-flow: column;
+            align-items: center;
+            .value {
+                font-weight: bold;
+                font-size: 25px;
+            }
         }
 
         &--left {
@@ -212,8 +259,16 @@
         background-color: #fff;
         padding: 0.5rem;
 
+        &--charts {
+            display: flex;
+            align-items: center;
+        }
+
         &--labels {
             padding-left: 10px;
+            display: flex;
+            flex-flow: column;
+            justify-content: center;
 
             span {
                 position: relative;
@@ -257,7 +312,7 @@
                     height: 100%;
                 }
 
-                .campaign-postcard, .campaign-date, .campaign-links {
+                .campaign-postcard, .campaign-count, .campaign-links {
                     max-height: 0;
                     padding: 0;
                     border: 0;
@@ -289,7 +344,7 @@
             }
         }
 
-        .campaign-date {
+        .campaign-count {
             span {
                 margin: 0;
             }
@@ -299,11 +354,11 @@
         .campaign-chart {
             border-left: 3px solid #edf0f5;
         }
-        
+
 
 
         @include media-breakpoint-down(sm) {
-            .campaign-date {
+            .campaign-count {
                 border-right: 0;
             }
 

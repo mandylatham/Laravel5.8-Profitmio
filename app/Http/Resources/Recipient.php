@@ -26,7 +26,8 @@ class Recipient extends JsonResource
             'zip' => $this->zip,
             'vehicle' => $this->vehicle,
             'vin' => $this->vin,
-            'dropped_at' => $this->getDroppedTime()
+            'dropped_at' => $this->getDroppedTime(),
+            'status' => $this->status,
         ];
     }
 }

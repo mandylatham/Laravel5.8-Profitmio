@@ -9,8 +9,13 @@ import PusherService from "../../common/pusher-service";
 import './../../filters/m-utc-parse.filter';
 import './../../filters/m-format-localized.filter';
 import './../../filters/m-duration-for-humans.filter';
+import {generateRoute} from './../../common/helpers';
+import Modal from 'bootstrap-vue';
+Vue.use(Modal);
+import { BFormCheckbox } from 'bootstrap-vue';
+Vue.component('checkbox', BFormCheckbox);
 
-toastr.options.positionClass = "toast-bottom-left"; 
+toastr.options.positionClass = "toast-bottom-left";
 toastr.options.newestOnTop = true;
 toastr.options.progressBar = true;
 
@@ -19,12 +24,13 @@ Vue.use(VueSlideoutPanel);
 let pusherService = null;
 
 // Main vue
-window['app'] = new Vue({
+window.app = new Vue({
     el: '#console',
     components: {
         SearchIcon,
         'pm-pagination': require('./../../components/pm-pagination/pm-pagination').default,
         'spinner-icon': require('./../../components/spinner-icon/spinner-icon').default,
+        'countdown': require('./../../components/countdown/countdown').default,
     },
     computed: {
         pagination: function () {
@@ -37,20 +43,41 @@ window['app'] = new Vue({
     },
     data: {
         campaign: {},
+        closeLeadForm: new Form({
+            outcome: null,
+            tags: null,
+        }),
         currentRecipientId: null,
         currentUser: {},
         recipientKey: null,
         loading: false,
+        mediaOption: null,
+        mediaOptions: [
+            {
+                label: 'Email',
+                value: 'email'
+            },
+            {
+                label: 'SMS',
+                value: 'text'
+            },
+            {
+                label: 'Call',
+                value: 'phone'
+            }
+        ],
         panel1Form: {
             openOn: 'right'
         },
+        positiveOptions: window.positiveTags,
+        negativeOptions: window.negativeTags,
         recipients: [],
         rowsTest: [],
         searchForm: new Form({
             search: null,
             page: 1,
             per_page: 30,
-            filter: null,
+            status: null,
             label: null,
             media: null
         }),
@@ -58,26 +85,33 @@ window['app'] = new Vue({
         pusherKey: '',
         pusherCluster: '',
         pusherAuthEndpoint: '',
+        leadClosePositiveDetails: false,
+        leadCloseNegativeDetails: false,
+        closingLead: null,
+        closed_details: [],
     },
     filters: {
         shortDate: function(value) {
             if (value == "") { return; }
-            return moment(String(value)).format('MM/DD/YYYY hh:mm A')
+            return moment(String(value)).format('MM/DD/YYYY hh:mm A');
         }
     },
     methods: {
+        test() {
+            console.log(this.mediaOption);
+        },
         fetchRecipients() {
             this.loading = true;
             this.searchForm
                 .get(window.getRecipientsUrl)
-                .then(response => {
+                .then((response) => {
                     this.recipients = response.data;
                     this.searchForm.page = response.current_page;
                     this.searchForm.per_page = response.per_page;
                     this.total = response.total;
                     this.loading = false;
                 })
-                .catch(error => {
+                .catch((error) => {
                     this.loading = false;
                     window.PmEvent.fire('errors.api', 'Unable to get recipient');
                 });
@@ -107,6 +141,46 @@ window['app'] = new Vue({
             this.searchForm.page = page;
             return this.fetchRecipients();
         },
+        closeLead: function (lead) {
+            this.closingLead = lead;
+            this.$refs.closeLeadModalRef.show();
+        },
+        cancelCloseLead: function (lead) {
+            this.closingLead = null;
+            this.$refs.closeLeadModalRef.hide();
+            this.closeLeadForm.tags = [];
+            this.closeLeadForm.outcome = null;
+        },
+        sendCloseForm: function () {
+            this.closeLeadForm.post(generateRoute(window.closeLeadUrl, {leadId: this.closingLead}))
+                .then((response) => {
+                    this.recipients.forEach((recipient, index) => {
+                        if (recipient.id === response.data.id) {
+                            if (this.searchForm.status == 'new' || this.searchForm.status == 'open') {
+                                this.recipients.splice(index, 1);
+                            } else {
+                                this.$set(this.recipients[index], 'status', response.data.status);
+                            }
+                        }
+                    });
+                    window.PmEvent.fire('recipient.closed', response.data);
+                    this.$toastr.success("Lead has been closed");
+                    this.cancelCloseLead();
+
+                })
+                .catch((err) => {
+                    // @TODO other stuff
+                    this.$toastr.error(err);
+                });
+        },
+        selectPositiveOutcome: function () {
+            this.closeLeadForm.tags = [];
+            this.closeLeadForm.outcome = 'positive';
+        },
+        selectNegativeOutcome: function () {
+            this.closeLeadForm.tags = [];
+            this.closeLeadForm.outcome = 'negative';
+        },
         registerGlobalEventListeners() {
             // Events
             window.PmEvent.listen('removed.recipient.label', (data) => {
@@ -125,17 +199,33 @@ window['app'] = new Vue({
                 });
             });
 
+            window.PmEvent.listen('changed.recipient.status', (data) => {
+                this.recipients.forEach((recipient, index) => {
+                    if (recipient.id === data.id) {
+                        this.$set(this.recipients[index], 'status', data.status);
+                    }
+                });
+            });
+
             window.PmEvent.listen('filters.filter-changed', (data) => {
                 if (data.filter === 'media') {
                     this.searchForm.media = data.value;
-                } else if (data.filter === 'filter') {
-                    this.searchForm.filter = data.value;
+                } else if (data.filter === 'status') {
+                    this.searchForm.status = data.value;
+                    window.displayFilter = data.value;
                 } else if (data.filter === 'label') {
                     this.searchForm.label = data.value;
+                } else if (data.filter === 'reset') {
+                    this.searchForm.status = '';
+                    this.searchForm.media = '';
+                    this.searchForm.label = '';
                 }
                 this.fetchRecipients();
             });
 
+            window.PmEvent.listen('lead.close-request', (data) => {
+                this.closeLead(data);
+            });
         }
     },
     mounted() {
@@ -145,20 +235,21 @@ window['app'] = new Vue({
         this.pusherCluster = window.pusherCluster;
         this.pusherAuthEndpoint = window.pusherAuthEndpoint;
 
-        // this.fetchRecipients();
-        
+        this.fetchRecipients();
+
         this.registerGlobalEventListeners();
     }
 });
 
 // Sidebar
-window['sidebar'] = new Vue({
+window.sidebar = new Vue({
     el: '#sidebar-nav-content',
     data: {
         activeFilterSection: 'all',
+        baseUrl: window.baseUrl,
         counters: {},
         campaign: {},
-        baseUrl: window.baseUrl
+        loggedUser: {}
     },
     mounted: function () {
         each(window.counters, (value, key) => {
@@ -174,15 +265,12 @@ window['sidebar'] = new Vue({
             this.changeFilter('filter', this.activeFilterSection);
         }
 
+        this.loggedUser = window['app'].currentUser;
+
         this.registerPusherListeners();
     },
     methods: {
         changeFilter: function (filter, value) {
-            let newUrl = window.baseUrl;
-            newUrl += value;
-            if (newUrl !== window.location.href) {
-                window.history.pushState("", "", newUrl);
-            }
             this.activeFilterSection = value;
 
             window.PmEvent.fire('filters.filter-changed', {

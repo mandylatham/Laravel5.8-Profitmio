@@ -19,6 +19,9 @@
         window.provisionPhoneUrl = @json(route('phone.provision'));
         window.getCampaignPhonesUrl = @json(route('phone.list', ['campaign' => $campaign->id]));
         window.savePhoneNumberUrl = @json(route('phone.store', ['campaign' => $campaign->id, 'phone' => ':phone_number_id']));
+        window.getTagsUrl = @json(route('tag.index', ['campaign' => $campaign->id]));
+        window.addNewTagUrl = @json(route('tag.store', ['campaign' => $campaign->id]));
+        window.deleteTagUrl = @json(route('tag.destory', ['campaign' => $campaign->id, 'tag' => ':tagName']));
     </script>
     <script src="{{ asset('js/campaigns-edit.js') }}"></script>
 @endsection
@@ -55,13 +58,13 @@
                             <div class="form-row">
                                 <div class="form-group col-6">
                                     <label for="start">Starts on</label>
-                                    <date-pick v-model="campaignForm.start" :custom-formatter="formatDate" :has-input-element="true" :input-attributes="datePickInputClasses" 
+                                    <date-pick v-model="campaignForm.start" :custom-formatter="formatDate" :has-input-element="true" :input-attributes="datePickInputClasses"
                                         @input="clearError(campaignForm, 'start')" :class="{'is-invalid': campaignForm.errors.has('start')}"></date-pick>
                                     <input-errors :error-bag="campaignForm.errors" :field="'start'"></input-errors>
                                 </div>
                                 <div class="form-group col-6">
                                     <label for="end">Ends on</label>
-                                    <date-pick v-model="campaignForm.end" :custom-formatter="formatDate" :has-input-element="true" :input-attributes="datePickInputClasses" 
+                                    <date-pick v-model="campaignForm.end" :custom-formatter="formatDate" :has-input-element="true" :input-attributes="datePickInputClasses"
                                         @input="clearError(campaignForm, 'end')" :class="{'is-invalid': campaignForm.errors.has('end')}"></date-pick>
                                     <input-errors :error-bag="campaignForm.errors" :field="'end'"></input-errors>
                                 </div>
@@ -69,7 +72,7 @@
                             <div class="form-row">
                                 <div class="form-group col-6">
                                     <label for="expires">Expires on</label>
-                                    <date-pick v-model="campaignForm.expires" :custom-formatter="formatDate" :has-input-element="true" :input-attributes="datePickInputClasses" 
+                                    <date-pick v-model="campaignForm.expires" :custom-formatter="formatDate" :has-input-element="true" :input-attributes="datePickInputClasses"
                                         @input="clearError(campaignForm, 'expires')" :class="{'is-invalid': campaignForm.errors.has('expires')}"></date-pick>
                                     <input-errors :error-bag="campaignForm.errors" :field="'expires'"></input-errors>
                                 </div>
@@ -342,7 +345,7 @@
                                                         <i class="fa fa-info-circle mr-2"></i>
                                                         A code will be sent via SMS to verify the phone number
                                                     </div>
-                                                    <b-alert 
+                                                    <b-alert
                                                         :show="dismissCountDown"
                                                         :variant="verificationStartedVariant"
                                                         class="mt-2 mb-0"
@@ -363,7 +366,7 @@
                                                     </div>
                                                 </form>
                                                 <form @submit.prevent="finishPhoneNumberVerification" v-if="verificationStarted">
-                                                    <b-alert 
+                                                    <b-alert
                                                         :show="dismissCountDown"
                                                         :variant="verificationStartedVariant"
                                                         class="mt-2 mb-0"
@@ -414,6 +417,64 @@
                                 <span v-if="!loading">Save</span>
                                 <spinner-icon class="white" :size="'xs'" v-if="loading"></spinner-icon>
                             </button>
+                        </b-tab>
+                        <b-tab title="TAGS">
+                            <h4 class="mb-3">Lead Tags</h4>
+                            <div class="card mb-3 card-tags">
+                                <div class="card-body">
+                                    <div class="row no-gutters">
+                                        <div class="col-12 col-md-4">
+                                            <div class="feature-input">
+                                                <form @submit.prevent="addNewTag()">
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" placeholder="Tag Name" v-model="addCampaignTagForm.name">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <input type="text" class="form-control" placeholder="Tag Description" v-model="addCampaignTagForm.text">
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <v-select :options="['positive', 'negative', 'neutral']"
+                                                                  placeholder="Tag Indication"
+                                                                  v-model="addCampaignTagForm.indication"></v-select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button class="btn pm-btn pm-btn-purple" type="submit" :disabled="!addCampaignTagForm.name || !addCampaignTagForm.text || !addCampaignTagForm.indication">Add</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-8">
+                                            <div class="feature-table">
+                                                <table class="table table-sm m-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Tag</th>
+                                                        <th></th>
+                                                        <th>Tag Text</th>
+                                                        <th></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr v-for="(tag, index) in tags">
+                                                        <td>@{{ tag.name }}</td>
+                                                        <td> <a class="fa" :class="tagIndicationClass(tag)"></i></td>
+                                                        <td>@{{ tag.text }}</td>
+                                                        <td class="text-center align-middle">
+                                                            <a href="javascript:;" @click="removeTag(tag.name)">
+                                                                <i class="far fa-times-circle"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <tr v-if="tags.length === 0">
+                                                        <td colspan="4" class="text-center">No items.</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </b-tab>
                     </b-tabs>
                 </b-card>

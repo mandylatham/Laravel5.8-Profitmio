@@ -9,8 +9,10 @@
 
 @section('body-script')
     <script>
-        window.createUrl = "{{ route('template.create') }}";
-        window.indexUrl = "{{ route('template.index') }}";
+        window.createUrl = @json(route('template.create'));
+        window.indexUrl = @json(route('template.index'));
+        window.templateType = @json(Request::get('type'));
+        window.emailTemplate = @json(session('email_html'));
     </script>
     <script src="{{ asset('js/media-template-create.js') }}"></script>
 @endsection
@@ -45,7 +47,7 @@
                                 <div>
                                     <div class="form-group mb-1">
                                         <h1>
-                                            <input name="name" class="form-control" v-model="template.name" 
+                                            <input name="name" class="form-control" v-model="template.name"
                                                    aria-label="Template Name" aria-describedby="save-name-button"
                                                    placeholder="Template Name" @keyup="showNameControls = true">
                                         </h1>

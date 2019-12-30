@@ -5,6 +5,10 @@
     background: #7485c2;
 }
 
+button.disabled {
+    cursor: not-allowed;
+}
+
 .slideout {
     &.communication-side-panel {
         width: 100%;

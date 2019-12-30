@@ -2,12 +2,14 @@
 
 use Faker\Generator as Faker;
 
-$factory->define(\App\Models\Response::class, function (Faker $faker) {
+$factory->define(\App\Models\Response::class, function (Faker $faker, $type = null) {
+    $type = $type ?: $faker->randomElement(['text', 'phone', 'email']);
+
     return [
-        'type' => $faker->randomElement(['text', 'phone', 'email']),
-        'message' => $faker->realText,
-        'call_sid' => $faker->randomNumber,
-        'recording_sid' => $faker->randomNumber,
-        'incoming' => $faker->randomElement([true, false])
+        'type' => $type,
+        'message' => $type != 'phone' ? $faker->realText : null,
+        'call_sid' => $type == 'phone' ? $faker->randomNumber : null,
+        'recording_sid' => $type == 'phone' ? $faker->randomNumber : null,
+        'incoming' => $faker->randomElement([true, false]),
     ];
 });
