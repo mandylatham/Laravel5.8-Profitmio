@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use App\Factories\ActivityLogFactory;
-use App\Models\Impersonation\ImpersonatedUser;
+use DB;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Sofa\Eloquence\Eloquence;
+use App\Factories\ActivityLogFactory;
 use Spatie\Activitylog\Models\Activity;
 use Spatie\Activitylog\Traits\LogsActivity;
-use DB;
+use App\Models\Impersonation\ImpersonatedUser;
 
 class Campaign extends \ProfitMiner\Base\Models\Campaign
 {
@@ -23,6 +24,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
 
     protected $appends = [
         'is_expired',
+        'is_legacy',
         'text_responses_count',
         'phone_responses_count',
         'email_responses_count',
@@ -523,5 +525,17 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         }
 
         return $stats;
+    }
+
+    /**
+     * Is this campaign a PRE STATS campaign?
+     *
+     * @return bool
+     */
+    public function getIsLegacyAttribute() : bool
+    {
+        $cuttoff = new Carbon('2019-12-30');
+
+        return $this->created_at->lt($cuttoff);
     }
 }
