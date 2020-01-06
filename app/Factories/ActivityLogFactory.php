@@ -2,6 +2,7 @@
 
 namespace App\Factories;
 
+use App\Models\Impersonation\ImpersonatedUser;
 use App\Models\Lead;
 use App\Models\Response;
 use App\Models\User;
@@ -9,9 +10,7 @@ use Illuminate\Log\Logger;
 use App\Models\Appointment;
 use App\Models\LeadActivity;
 use Spatie\Activitylog\Models\Activity;
-use Illuminate\Contracts\Auth\Authenticatable;
 use Lab404\Impersonate\Services\ImpersonateManager;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class ActivityLogFactory
 {
@@ -23,6 +22,8 @@ class ActivityLogFactory
     /** @var User */
     private $user;
 
+    private $impersonationManager;
+
     /**
      * @todo fix imperation stripping
      * @param ImpersonateManager $manager
@@ -31,14 +32,7 @@ class ActivityLogFactory
     public function __construct(ImpersonateManager $manager, Logger $log)
     {
         $this->log = $log;
-        $this->user = auth()->user();
-
-        try {
-            $this->user = $this->getImpersonationStrippedUser($manager);
-        } catch (ModelNotFoundException $e) {
-            $this->log->error('User impersonator not found');
-            throw new \Exception('Unable to process action: improper user impersonation detected');
-        }
+        $this->impersonationManager = $manager;
     }
 
     /**
@@ -49,7 +43,7 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->log(LeadActivity::OPENED);
     }
 
@@ -61,7 +55,7 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->log(LeadActivity::CLOSED);
     }
 
@@ -73,7 +67,7 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->log(LeadActivity::REOPENED);
     }
 
@@ -86,7 +80,7 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->withProperties([
                 'response_id' => $response->id,
             ])
@@ -102,7 +96,7 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->withProperties([
                 'response_id' => $response->id,
             ])
@@ -117,7 +111,7 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->log(LeadActivity::SENTTOCRM);
     }
 
@@ -129,7 +123,7 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->log(LeadActivity::SENTTOSERVICE);
     }
 
@@ -142,7 +136,7 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->withProperties([
                 'appointment_id' => $appointment->id,
             ])
@@ -158,26 +152,21 @@ class ActivityLogFactory
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
-            ->causedBy($this->user)
+            ->causedBy($this->getActivityUser())
             ->withProperties([
                 'appointment_id' => $callback->id,
             ])
             ->log(LeadActivity::CALLEDBACK);
     }
 
-    /**
-     * Get the user stripping impersonation
-     *
-     * @param  ImpersonateManager $manager
-     * @return User
-     * @throws ModelNotFoundException|
-     */
-    private function getImpersonationStrippedUser(ImpersonateManager $manager) : ?Authenticatable
+    public function getActivityUser()
     {
-        if ($manager->isImpersonating()) {
-            return User::firstOrFail($manager->getImpersonatorId());
+        if ($this->impersonationManager->isImpersonating()) {
+            $impersonationRecord = ImpersonatedUser::find($this->impersonationManager->getImpersonatorId());
+            if ($impersonationRecord) {
+                return $impersonationRecord->impersonatorUser;
+            }
         }
-
         return auth()->user();
     }
 }

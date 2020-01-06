@@ -268,8 +268,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
             }
             $score->openLeads = Activity::where('causer_id', $score->user_id)
                 ->where(function ($query) {
-                    return $query->where('activity_log.causer_type', ImpersonatedUser::class)
-                        ->orWhere('activity_log.causer_type', User::class);
+                    return $query->where('activity_log.causer_type', User::class);
                 })
                 ->where('activity_log.subject_type', Lead::class)
                 ->where('description', LeadActivity::OPENED)
@@ -280,8 +279,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
             $closedLeads = Lead::closed()
                 ->join('activity_log', 'activity_log.subject_id', '=', 'recipients.id')
                 ->where(function ($query) {
-                    return $query->where('activity_log.causer_type', ImpersonatedUser::class)
-                        ->orWhere('activity_log.causer_type', User::class);
+                    return $query->where('activity_log.causer_type', User::class);
                 })
                 ->where('activity_log.causer_id', $score->user_id)
                 ->where('activity_log.subject_type', Lead::class)
@@ -536,6 +534,10 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
     {
         $cuttoff = new Carbon('2019-12-30');
 
-        return $this->created_at->lt($cuttoff);
+        if (!$this->created_at) {
+            return false;
+        } else {
+            return $this->created_at->lt($cuttoff);
+        }
     }
 }
