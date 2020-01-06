@@ -4,19 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Classes\MailgunService;
 use App\Events\RecipientTextResponseReceived;
-use App\Models\Campaign;
 use App\Models\EmailLog;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\Campaign;
 use App\Models\PhoneNumber;
 use App\Models\Response;
 use App\Models\Recipient;
 use App\Services\SentimentService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Events\CampaignCountsUpdated;
 use App\Events\RecipientEmailResponseReceived;
+use App\Services\TwilioClient;
 use Twilio\Twiml;
 use Twilio\Twiml\MessagingResponse;
-use App\Services\TwilioClient;
+use Illuminate\Log\Logger;
 use Log;
 
 class IncomingMessageController extends Controller
@@ -25,10 +26,13 @@ class IncomingMessageController extends Controller
 
     private $mailgun;
 
-    public function __construct(SentimentService $sentiment, MailgunService $mailgun)
+    private $log;
+
+    public function __construct(SentimentService $sentiment, Logger $log, MailgunService $mailgun)
     {
         $this->sentiment = $sentiment;
         $this->mailgun = $mailgun;
+        $this->log = $log;
     }
 
     /**
@@ -96,7 +100,7 @@ class IncomingMessageController extends Controller
 		}
 
 		if (!$messageId) {
-			Log::error('Received bad request from Mailgun: (cannot find message-id) ' . json_encode($request->all()), JSON_UNESCAPED_SLASHES);
+            $this->log->error('Received bad request from Mailgun: (cannot find message-id) ' . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
 			abort(406);
 		}
 
