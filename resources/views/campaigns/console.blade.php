@@ -277,7 +277,8 @@
                 <div class="col-12 col-sm-5 col-md-6 no-gutters d-flex flex-column justify-content-center">
                     <div class="name-wrapper">
                         <strong>@{{ recipient.name }}</strong>
-                        <countdown v-if="recipient.status != 'Closed'" class="mt-3" v-bind:seconds-left="recipient.secondsLeft"></countdown>
+                        <div class="recipient-date mt-1" v-if="recipient.status === 'New'">@{{ recipient.last_status_changed_at | shortDate}}</div>
+                        <div class="recipient-date mt-1" v-if="recipient.status !== 'New'">@{{ recipient.last_responded_at || recipient.last_status_changed_at | shortDate }}</div>
                     </div>
                     <div class="label-wrapper" v-if="recipient.labels" v-show="false">
                         <span v-for="(label, index) in recipient.labels" :class="index">@{{ label }}</span>

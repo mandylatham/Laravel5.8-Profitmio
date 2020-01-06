@@ -325,7 +325,13 @@ class RecipientController extends Controller
             $leads->search($request->input('search'));
         }
 
-        return $leads->orderBy('last_responded_at', 'DESC')->paginate($request->input('per_page', 30));
+        if ($request->input('status') === 'new') {
+            $leads->orderBy('last_status_changed_at', 'DESC');
+        } else {
+            $leads->orderBy('last_responded_at', 'DESC');
+        }
+
+        return $leads->paginate($request->input('per_page', 30));
     }
 
     public function showRecipientList(Request $request, Campaign $campaign, RecipientList $list)

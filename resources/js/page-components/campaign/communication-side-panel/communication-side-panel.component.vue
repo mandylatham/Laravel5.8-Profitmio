@@ -197,7 +197,7 @@
                     <h3 class="panel-title">SMS Messaging</h3>
                 </div>
 
-                <div class="message-drop-text" v-if="threads.textDrop && threads.textDrop[0].text_message">
+                <div class="message-drop-text" v-if="threads.textDrop && threads.textDrop.length > 0 && threads.textDrop[0].text_message">
                     <strong class="mb-3">Original Message</strong>
                     <div>{{ threads.textDrop[0].text_message }}</div>
                 </div>
@@ -443,7 +443,7 @@
                         this.notes = r.data.lead.notes;
                         this.labels = r.data.lead.labels.length === 0 ? {} : r.data.lead.labels;
 
-                        if (this.threads.textDrop && this.threads.textDrop[0].text_message) {
+                        if (this.threads.textDrop && this.threads.textDrop.length > 0 && this.threads.textDrop[0].text_message) {
                             this.threads.textDrop[0].text_message = replacePlaceholders(this.threads.textDrop[0].text_message, r.data.lead);
                         }
                         if (this.threads.emailDrop && this.threads.emailDrop.email_html) {
