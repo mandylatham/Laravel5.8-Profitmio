@@ -203,6 +203,7 @@ class CampaignController extends Controller
             'ends_at' => $ends_at,
             'agency_id' => $request->input('agency'),
             'dealership_id' => $request->input('dealership'),
+            'enable_text_to_value' => (bool) $request->input('enable_text_to_value', false),
             'adf_crm_export' => (bool) $request->input('adf_crm_export'),
             'adf_crm_export_email' => $request->input('adf_crm_export_email', []),
             'client_passthrough' => (bool) $request->input('client_passthrough'),
@@ -505,6 +506,10 @@ class CampaignController extends Controller
             'starts_at' => $starts_at,
             'status' => $status
         ]);
+
+        if (!$campaign->hasTextToValueEnabled() && $request->input('enable_text_to_value')) {
+            $campaign->enable_text_to_value = $request->input('enable_text_to_value');
+        }
 
         $campaign->save();
 

@@ -36,6 +36,7 @@ window['app'] = new Vue({
         loading: false,
         campaignForm: new Form({
             agency: null,
+            enable_text_to_value: false,
             adf_crm_export: false,
             adf_crm_export_email: [],
             client_passthrough: false,
@@ -104,6 +105,15 @@ window['app'] = new Vue({
             if (!this[field]) return;
             list.push(this[field]);
             this[field] = null;
+        },
+        campaignHasMailerPhone() {
+            let hasMailerPhone = false;
+            this.phoneNumbers.forEach(phone => {
+               if (phone.call_source_name === 'mailer') {
+                   hasMailerPhone = true;
+               }
+            });
+            return hasMailerPhone;
         },
         clearError: function (form, field) {
             form.errors.clear(field);

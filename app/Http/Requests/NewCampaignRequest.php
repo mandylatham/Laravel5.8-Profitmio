@@ -33,6 +33,7 @@ class NewCampaignRequest extends FormRequest
             'agency' => 'required',
             'dealership' => 'required',
             'enable_adf_crm_export' => 'boolean',
+            'enable_text_to_value' => 'boolean',
             'adf_crm_export' => 'required_if:enable_adf_crm_export,true',
             'enable_lead_alerts' => 'boolean',
             'lead_alert_emails' => 'required_if:enable_lead_alerts,true',

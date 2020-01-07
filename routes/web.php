@@ -223,6 +223,8 @@ Route::group(['middleware' => 'auth'], function () {
 
     //region RECIPIENT
     Route::group(['prefix' => '/lead/{lead}', ['middleware' => 'can:update,lead']], function () {
+        Route::get('/check-in', 'LeadController@showCheckInForm')->name('lead.check-in');
+        Route::post('/check-in', 'LeadController@saveCheckInForm')->name('lead.store-check-in');
         Route::post('/open', 'LeadController@open')->name('lead.open');
         Route::post('/close', 'LeadController@close')->name('lead.close');
         Route::post('/reopen', 'LeadController@reopen')->name('lead.reopen');

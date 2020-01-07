@@ -2,18 +2,33 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RecipientTextResponseReceived;
 use App\Models\Campaign;
+use App\Models\PhoneNumber;
 use App\Models\Response;
 use App\Models\Recipient;
+use App\Services\SentimentService;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use App\Events\CampaignCountsUpdated;
 use App\Events\RecipientEmailResponseReceived;
+use Twilio\Twiml;
+use Twilio\Twiml\MessagingResponse;
+use App\Services\TwilioClient;
+use Log;
 
 class IncomingMessageController extends Controller
 {
+    private $sentiment;
+
+    public function __construct(SentimentService $sentiment)
+    {
+        $this->sentiment = $sentiment;
+    }
+
     /**
      * Handle inbound email message from Mailgun
-     * 
+     *
      * @param Request $request The Mailgun inbound request
      */
     public function receiveEmailMessage(Request $request)
@@ -73,7 +88,7 @@ class IncomingMessageController extends Controller
 
 		if ($request->has('message-id')) {
 			$messageId = $request->input('message-id');
-		} 
+		}
 
 		if (!$messageId) {
 			Log::error('Received bad request from Mailgun: (cannot find message-id) ' . json_encode($request->all()), JSON_UNESCAPED_SLASHES);
@@ -119,9 +134,9 @@ class IncomingMessageController extends Controller
 
     /**
      * Get the Campaign object from the email request
-     * 
+     *
      * @param Request $request The mailgun email request
-     * 
+     *
      * @return Campaign
      */
 	private function getCampaignFromEmailTag($request)
@@ -137,7 +152,7 @@ class IncomingMessageController extends Controller
 
     /**
      * Handle inbound sms message from Twilio
-     * 
+     *
      * @param Request $request The twilio inbound request
      */
     public function receiveSmsMessage(Request $request)
@@ -192,9 +207,24 @@ class IncomingMessageController extends Controller
                 $suppress->save();
             }
 
-            return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
-                ->header('Content-Type', 'text/xml');
+            // Check text-to-value
+            $response = new Twiml();
+            $responseMessage = $response->message();
+            if ($phoneNumber->isMailer()) {
+                if ($recipient->textToValue && $recipient->textToValue->text_to_value_code === $message) {
+                    $responseMessage->body($recipient->textToValue->text_to_value_amount);
+                    $responseMessage->media($recipient->qrCode->image_url);
+                    return $responseMessage;
+                }
+            } else if ($mailerPhone = $campaign->getMailerPhone()) {
+                $responseMessage->body("Not an interactive number, text " . $campaign->getMailerPhone()->phone_number . " to reach someone.");
+                return $responseMessage;
+            } else {
+                return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
+                    '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
+                    ->header('Content-Type', 'text/xml');
+            }
+
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
 
@@ -212,7 +242,7 @@ class IncomingMessageController extends Controller
 
     /**
      * Handle inbound phone call from Twilio
-     * 
+     *
      * @param Request $request The twilio inbound request
      */
     public function receivePhoneCall(Request $request)
@@ -308,7 +338,7 @@ class IncomingMessageController extends Controller
 
     /**
      * Get the objects from the Request
-     * 
+     *
      * @param \Illuminate\Http\Request $request
      *
      * @return array
@@ -335,7 +365,7 @@ class IncomingMessageController extends Controller
 
     /**
      * Create a Recipient from a Twilio request
-     * 
+     *
      * @param \Illuminate\Http\Request $request
      * @param                          $campaign
      *
@@ -365,7 +395,7 @@ class IncomingMessageController extends Controller
      * Parse out From field from Mailgun message
      *
      * @param $from
-     * 
+     *
      * @return mixed
      */
     private function parseMailgunFromField($from)
@@ -398,9 +428,9 @@ class IncomingMessageController extends Controller
 
     /**
      * Check for Unsubscribe Verbage
-     * 
+     *
      * @param $message
-     * 
+     *
      * @return bool
      */
     private function isUnsubscribeMessage($message)
@@ -416,9 +446,9 @@ class IncomingMessageController extends Controller
 
     /**
      * Contains Unsubscribe Verbage
-     * 
+     *
      * @param $message
-     * 
+     *
      * @return bool
      */
     private function containsUnsubscribeVerbage($message)
@@ -428,9 +458,9 @@ class IncomingMessageController extends Controller
 
     /**
      * Simplify the Sms Message Body
-     * 
+     *
      * @param $message
-     * 
+     *
      * @return string|string[]|null
      */
     private function simplifySmsMessage($message)

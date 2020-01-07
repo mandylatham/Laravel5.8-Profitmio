@@ -50,6 +50,9 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/campaigns/stats.scss', 'public/css/campaigns-stats.css')
     .js('resources/js/pages/campaigns/responses.js', 'public/js/campaigns-responses.js')
     .sass('resources/sass/campaigns/responses.scss', 'public/css/campaigns-responses.css')
+    // Lead
+    .js('resources/js/pages/lead/check-in-form.js', 'public/js/check-in-form.js')
+    .sass('resources/sass/lead/check-in-form.scss', 'public/css/check-in-form.css')
     // Recipients
     .js('resources/js/pages/campaigns/recipients/index.js', 'public/js/recipients-index.js')
     .sass('resources/sass/campaigns/recipients/index.scss', 'public/css/recipients-index.css')

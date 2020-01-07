@@ -27,6 +27,7 @@ class LeadTagSeeder extends Seeder
             ["campaign_id" => 0, "name" => "wrong-lead-identity-phone", "text" => "Wrong Number", "indication" => "negative"],
             ["campaign_id" => 0, "name" => "wrong-lead-identity-email", "text" => "Wrong Email Address", "indication" => "negative"],
             ["campaign_id" => 0, "name" => "deceased", "text" => "Recipient is deceased", "indication" => "negative"],
+            ["campaign_id" => 0, "name" => "checked-in-from-text-to-value", "text" => "Checked In From text-to-value", "indication" => "feature"],
         ]);
     }
 }

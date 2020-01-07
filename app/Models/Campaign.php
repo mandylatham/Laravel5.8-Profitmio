@@ -193,8 +193,8 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
     public function users()
     {
         return $this->belongsToMany(User::class)
-                    ->using(CampaignUser::class)
-                    ->withPivot(['points']);
+            ->using(CampaignUser::class)
+            ->withPivot(['points']);
     }
 
     /**
@@ -305,6 +305,11 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         return $scores;
     }
 
+    public function hasTextToValueEnabled()
+    {
+        return !is_null($this->enable_text_to_value) && (bool)$this->enable_text_to_value === true;
+    }
+
     /**
      * Scope by company
      */
@@ -370,7 +375,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
      */
     public function getPhoneResponsesCountAttribute()
     {
-        return $this->phoneResponses()->count() ;
+        return $this->phoneResponses()->count();
     }
 
     /**
@@ -397,8 +402,8 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
     public function getInterestedCountsAttribute()
     {
         return $this->recipients()
-                    ->whereInterested(true)
-                    ->count();
+            ->whereInterested(true)
+            ->count();
     }
 
     /**
@@ -532,10 +537,15 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
      *
      * @return bool
      */
-    public function getIsLegacyAttribute() : bool
+    public function getIsLegacyAttribute(): bool
     {
         $cuttoff = new Carbon('2019-12-30');
 
         return $this->created_at->lt($cuttoff);
+    }
+
+    public function getMailerPhone()
+    {
+        return $this->phones()->where('call_source_name', 'mailer')->first();
     }
 }

@@ -17,6 +17,11 @@
                 </div>
                 <div class="form-row">
                     <div class="col-6 mb-3">
+                        <div v-if="textToValueEnabled">
+                            <p-check color="primary" class="p-default display-block" name="enable_text_to_value" value="enable_text_to_value" v-model="fileForm.enable_text_to_value">
+                                Contains Text-to-value fields
+                            </p-check>
+                        </div>
                         <label>Type</label>
                         <div>
                             <p-radio color="primary" class="p-default display-block" name="pm_list_type" value="all_conquest" v-model="fileForm.pm_list_type">All
@@ -123,6 +128,18 @@
                             <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.is_database" class="filter--v-select"></v-select>
                         </td>
                     </tr>
+                    <tr v-if="fileForm.enable_text_to_value">
+                        <td>Text To Value Code</td>
+                        <td>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.text_to_value_code" class="filter--v-select"></v-select>
+                        </td>
+                    </tr>
+                    <tr v-if="fileForm.enable_text_to_value">
+                        <td>Text To Value Amount</td>
+                        <td>
+                            <v-select :options="fileHeaders" v-model="fileForm.uploaded_file_fieldmap.text_to_value_amount" class="filter--v-select"></v-select>
+                        </td>
+                    </tr>
                     </tbody>
                 </table>
             </tab-content>
@@ -152,8 +169,6 @@
         computed: {
             fileHeaders() {
                 const headers = [];
-                console.log('===this.fileForm.uploaded_file_headers===', this.fileForm.uploaded_file_headers);
-                console.log('===this.fileForm.uploaded_file_fieldmap===', this.fileForm.uploaded_file_fieldmap);
                 this.fileForm.uploaded_file_headers.forEach(header => {
                     let find = false;
                     each(this.fileForm.uploaded_file_fieldmap, val => {
@@ -175,6 +190,7 @@
                     pm_list_type: 'all_conquest',
                     uploaded_file_name: null,
                     uploaded_file_headers: [],
+                    enable_text_to_value: false,
                     uploaded_file_fieldmap: {
                         first_name: null,
                         last_name: null,
@@ -188,11 +204,14 @@
                         make: null,
                         model: null,
                         vin: null,
-                        is_database: null
+                        is_database: null,
+                        text_to_value_code: null,
+                        text_to_value_amount: null
                     }
                 }),
                 headers: [],
-                loading: false
+                loading: false,
+                textToValueEnabled: window.enableTextToValue
             };
         },
         props: ['targetUrl'],

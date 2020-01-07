@@ -413,6 +413,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="card mb-3 card-feature text-to-value-container">
+                                <div class="card-body">
+                                    <div class="row no-gutters">
+                                        <div class="col-12">
+                                            <div class="feature-input">
+                                                <p-check color="primary" :disabled="!campaignHasMailerPhone() || campaign.enable_text_to_value" class="p-default" name="enable_text_to_value" v-model="campaignForm.enable_text_to_value">Enable Text to Value</p-check>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <button dusk="save-additional-features-button" type="button" class="btn pm-btn pm-btn-purple mt-3" @click="saveCampaign">
                                 <span v-if="!loading">Save</span>
                                 <spinner-icon class="white" :size="'xs'" v-if="loading"></spinner-icon>

@@ -18,8 +18,24 @@ class Lead extends Recipient
     const POSITIVE_OUTCOME = 'positive';
     const NEGATIVE_OUTCOME = 'negative';
 
-    protected $fillable = ['status', 'notes', 'last_status_changed_at', 'last_responded_at', 'sent_to_crm',
-        'service', 'interested', 'not_interested', 'heat'];
+    protected $fillable = [
+        'status',
+        'notes',
+        'last_status_changed_at',
+        'last_responded_at',
+        'sent_to_crm',
+        'service',
+        'interested',
+        'not_interested',
+        'heat',
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'make',
+        'model',
+        'year'
+    ];
 
     public $dates = ['last_status_changed_at', 'last_responded_at'];
 

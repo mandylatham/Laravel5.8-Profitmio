@@ -3,16 +3,16 @@ import './../../common';
 import Form from './../../common/form';
 import Str from './../../common/str';
 import VueFormWizard from 'vue-form-wizard';
-import {filter} from 'lodash';
 import moment from 'moment';
 import Alert from 'bootstrap-vue';
 import Modal from 'bootstrap-vue';
 import Progress from 'bootstrap-vue';
-import { PackageIcon } from 'vue-feather-icons';
 import {generateRoute} from '../../common/helpers';
+import filter from 'lodash/filter';
+import map from 'lodash/map';
 // custom validation
 import Vuelidate from 'vuelidate';
-import { helpers, required, minLength, between } from 'vuelidate/lib/validators';
+import { required, between } from 'vuelidate/lib/validators';
 import { isNorthAmericanPhoneNumber } from './../../common/validators';
 Vue.use(Alert);
 Vue.use(Modal);
@@ -58,6 +58,7 @@ window['app'] = new Vue({
         campaign: window.campaign,
         campaignForm: new Form({
             agency: null,
+            enable_text_to_value: window.campaign.enable_text_to_value || false,
             adf_crm_export: window.campaign.adf_crm_export,
             adf_crm_export_email: window.campaign.adf_crm_export_email || [],
             client_passthrough: window.campaign.client_passthrough,
@@ -131,6 +132,15 @@ window['app'] = new Vue({
         this.getCampaignPhones();
     },
     methods: {
+        campaignHasMailerPhone() {
+            let hasMailerPhone = false;
+            this.phoneNumbers.forEach(phone => {
+                if (phone.call_source_name === 'mailer') {
+                    hasMailerPhone = true;
+                }
+            });
+            return hasMailerPhone;
+        },
         countDownChanged: function(dismissCountDown) {
             this.dismissCountDown = dismissCountDown;
         },
@@ -142,7 +152,7 @@ window['app'] = new Vue({
         },
         availableCallSourcesWithCurrent: function (call_source_name) {
             if (call_source_name === undefined) return;
-            let phoneSource = _.filter(this.callSources, {name: call_source_name});
+            let phoneSource = filter(this.callSources, {name: call_source_name});
             if (phoneSource.length > 0) {
                 phoneSource = phoneSource[0];
             }
@@ -204,7 +214,7 @@ window['app'] = new Vue({
             }
         },
         getCallSourceName: function (value) {
-            let displayValue = _.filter(this.callSources, {name: value});
+            let displayValue = filter(this.callSources, {name: value});
             if (displayValue.length == 1) {
                 return displayValue[0].label;
             }
@@ -212,13 +222,13 @@ window['app'] = new Vue({
         },
         updateCallSources: function () {
             this.availableCallSources = [];
-            let campaign_sources = _.map(this.campaignPhones, 'call_source_name');
+            let campaign_sources = map(this.campaignPhones, 'call_source_name');
             if (campaign_sources.length == 0) {
                 this.availableCallSources = this.callSources;
                 return;
             }
 
-            _.map(this.callSources, (source, index) => {
+            map(this.callSources, (source, index) => {
                 if (campaign_sources.indexOf(source.name) < 0) {
                     this.availableCallSources.push(source);
                 }
@@ -383,6 +393,8 @@ window['app'] = new Vue({
                 .post(window.saveCampaignUrl)
                 .then(() => {
                     this.loading = false;
+                    console.log('enable_text_to_value', this.campaignForm);
+                    this.campaign.enable_text_to_value = this.campaignForm.enable_text_to_value;
                     this.$swal({
                         title: 'Campaign Updated!',
                         type: 'success',
