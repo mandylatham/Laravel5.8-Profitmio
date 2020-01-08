@@ -80,6 +80,17 @@ window['app'] = new Vue({
             rule: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
         }]
     },
+    computed: {
+        campaign_has_mailer_phone: function () {
+            let hasMailerPhone = false;
+            this.phoneNumbers.forEach(phone => {
+                if (phone.call_source_name === 'mailer') {
+                    hasMailerPhone = true;
+                }
+            });
+            return hasMailerPhone;
+        },
+    },
     mounted() {
         this.agencies = window.agencies;
         this.dealerships = window.dealerships;
@@ -105,15 +116,6 @@ window['app'] = new Vue({
             if (!this[field]) return;
             list.push(this[field]);
             this[field] = null;
-        },
-        campaignHasMailerPhone() {
-            let hasMailerPhone = false;
-            this.phoneNumbers.forEach(phone => {
-               if (phone.call_source_name === 'mailer') {
-                   hasMailerPhone = true;
-               }
-            });
-            return hasMailerPhone;
         },
         clearError: function (form, field) {
             form.errors.clear(field);

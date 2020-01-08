@@ -347,7 +347,7 @@
                                 <div class="row no-gutters">
                                     <div class="col-12">
                                         <div class="feature-input">
-                                            <p-check color="primary" :disabled="!campaignHasMailerPhone()" class="p-default" name="enable_text_to_value" v-model="campaignForm.enable_text_to_value">Enable Text To Value</p-check>
+                                            <p-check color="primary" :disabled="!campaign_has_mailer_phone" class="p-default" name="enable_text_to_value" v-model="campaignForm.enable_text_to_value">Enable Text To Value</p-check>
                                         </div>
                                     </div>
                                 </div>
