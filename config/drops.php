@@ -60,12 +60,18 @@ return [
 
         'email' => [
 
+            'class' => env('MAIL_DROP_PROCESSOR', 'ProfitMiner\Base\Services\Media\Transport\DummyEmailTransport'),
+
             // Default chunk size for batch processing
             'chunk_size' => 500,
         ],
 
         'sms' => [
+
             'class' => env('SMS_DROP_PROCESSOR', 'ProfitMiner\Base\Services\Media\Transport\DummySMSTransport'),
         ],
+
+        'mailer' => [
+        ]
     ],
 ];
