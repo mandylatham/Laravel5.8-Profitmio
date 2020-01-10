@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Events\CampaignCountsUpdated;
 use App\Events\AppointmentCreated;
 use App\Classes\MailgunService;
+use App\Factories\ActivityLogFactory;
 use App\Mail\CrmAppointmentNotification;
 use App\Mail\LeadNotification;
 use App\Models\Appointment;
 use App\Models\Campaign;
 use App\Models\Company;
+use App\Models\Lead;
 use App\Models\Recipient;
 use App\Services\PusherBroadcastingService;
 use App\Services\CampaignUserScoreService;
@@ -27,6 +29,8 @@ use Illuminate\Support\Facades\Log;
 class AppointmentController extends Controller
 {
     private const CALLBACK_MESSAGE = 'Profit Miner callback requested for %s at %s';
+
+    private $activityFactory;
 
     private $appointment;
 
@@ -54,6 +58,7 @@ class AppointmentController extends Controller
      * @param Mailer      $mail
      */
     public function __construct(
+        ActivityLogFactory $activityFactory,
         Appointment $appointment,
         Carbon $carbon,
         Campaign $campaign,
@@ -63,6 +68,7 @@ class AppointmentController extends Controller
         Mailer $mail,
         CampaignUserScoreService $scoring
     ) {
+        $this->activityFactory = $activityFactory;
         $this->appointment = $appointment;
         $this->carbon = $carbon;
         $this->campaign = $campaign;
@@ -266,14 +272,7 @@ class AppointmentController extends Controller
         ]);
     }
 
-    /**
-     * @param Campaign  $campaign
-     * @param Recipient $recipient
-     * @param Request   $request
-     * @return \Illuminate\Http\JsonResponse
-     * @throws \Pusher\PusherException
-     */
-    public function addAppointmentFromConsole(Campaign $campaign, Recipient $recipient, Request $request)
+    public function addAppointmentFromConsole(Campaign $campaign, Lead $lead, Request $request)
     {
         if ($request->has('appointment_date_time')) {
             $dateTime = explode(' ', $request->input('appointment_date_time'));
@@ -284,26 +283,27 @@ class AppointmentController extends Controller
         }
 
         $appointment = Appointment::create([
-            'recipient_id'   => $recipient->id,
+            'recipient_id'   => $lead->id,
             'campaign_id'    => $campaign->id,
-            'first_name'     => $recipient->first_name,
-            'last_name'      => $recipient->last_name,
+            'first_name'     => $lead->first_name,
+            'last_name'      => $lead->last_name,
             'appointment_at' => $appointment_at->timezone('UTC'),
-            'auto_year'      => intval($recipient->year),
-            'auto_make'      => $recipient->make,
-            'auto_model'     => $recipient->model,
-            'phone_number'   => $recipient->phone,
-            'email'          => $recipient->email,
+            'auto_year'      => intval($lead->year),
+            'auto_make'      => $lead->make,
+            'auto_model'     => $lead->model,
+            'phone_number'   => $lead->phone,
+            'email'          => $lead->email,
             'type'           => 'appointment',
         ]);
 
-        $recipient->update(['appointment' => true, 'last_responded_at' => \Carbon\Carbon::now('UTC')]);
+        $lead->update(['appointment' => true, 'last_responded_at' => \Carbon\Carbon::now('UTC')]);
 
         event(new AppointmentCreated($appointment));
         event(new CampaignCountsUpdated($campaign));
 
         // Add User Score
-        $this->scoring->addAppointment();
+        $activity = $this->activityFactory->forUserAddedLeadAppointment($lead, $appointment);
+        $this->scoring->forActivity($activity);
 
         return $appointment;
     }

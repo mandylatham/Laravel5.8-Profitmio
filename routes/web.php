@@ -142,7 +142,7 @@ Route::group(['middleware' => 'auth'], function () {
     Route::group(['prefix' => '/campaign/{campaign}', 'middleware' => ['can:view,campaign']], function () {
         Route::post('/text-response/{lead}', 'LeadController@sendSms')->name('campaign.recipient.text-response');
         Route::post('/email-response/{lead}', 'LeadController@sendEmail')->name('campaign.recipient.email-response');
-        Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
+        Route::any('/responses/{lead}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
         Route::group(['middleware' => ['can:site-admin,App\Models\User']], function () {
             Route::post('/user-access/{user}', 'CampaignController@toggleCampaignUserAccess')->name('campaigns.toggle-user-access');
             Route::get('/', 'CampaignController@show')->name('campaigns.view');
@@ -211,7 +211,7 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/response/{lead}', 'LeadController@show')->name('campaign.recipient.responses');
         Route::any('/leads', 'LeadController@index')->name('lead.index');
-        Route::any('/responses/{recipient}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
+        Route::any('/responses/{lead}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');
 
         Route::get('/recipients/for-user-display', 'RecipientController@getRecipients')->name('campaign.recipient.for-user-display');
         Route::get('/response-console/{field?}', 'CampaignController@console')->name('campaign.response-console.index');
