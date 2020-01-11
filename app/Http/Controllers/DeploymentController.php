@@ -306,7 +306,7 @@ class DeploymentController extends Controller
 
     public function updateForm(Campaign $campaign, Drop $drop)
     {
-        if ($campaign->isExpired) {
+        if ($campaign->isExpired()) {
             abort(403, 'Illegal Request. This abuse of the system has been logged.');
         }
         $viewData['campaign'] = $campaign;
@@ -422,7 +422,7 @@ class DeploymentController extends Controller
             $deployment = $base;
 
             $deployment['send_at'] = (new Carbon(
-                    $request->get('Group' . $i . '_date') . ' ' . $request->get('Group' . $i . '_time'), 
+                    $request->get('Group' . $i . '_date') . ' ' . $request->get('Group' . $i . '_time'),
                     $userTimezone))
                 ->timezone('UTC');
             \Log::debug("time is ".$request->get('Group' . $i . '_time') . " and send at is ". $deployment['send_at']);
@@ -484,13 +484,13 @@ class DeploymentController extends Controller
         }
         if ($contact == 'no-resp-email') {
             $recipients->whereNotIn('id',
-                \DB::table('responses')->where('campaign_id', 
+                \DB::table('responses')->where('campaign_id',
                     $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
                 ->where('email_valid', 1);
         }
         if ($contact == 'no-resp-sms') {
             $recipients->whereNotIn('id',
-                \DB::table('responses')->where('campaign_id', 
+                \DB::table('responses')->where('campaign_id',
                     $campaign->id)->select('recipient_id')->get()->pluck('recipient_id')->toArray())
                 ->whereRaw("length(phone) > 9");
         }

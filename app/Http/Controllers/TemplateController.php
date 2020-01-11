@@ -44,14 +44,15 @@ class TemplateController extends Controller
         return view('template.details', $viewData);
     }
 
-    public function update(CampaignScheduleTemplate $template, Request $request)
+    public function update(Request $request, CampaignScheduleTemplate $template)
     {
-        dd($request->input('params'));
-        $template->fill($request->input('params'));
+        $template->fill($request->only('name', 'text_message', 'email_subject', 'email_text', 'email_html'));
 
         $template->save();
 
-        return redirect()->route('template.edit', ['template' => $template->id]);
+        return response()->json();
+//
+//        return redirect()->route('template.edit', ['template' => $template->id]);
     }
 
     public function show(CampaignScheduleTemplate $template)

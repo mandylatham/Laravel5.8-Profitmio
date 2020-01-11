@@ -20,6 +20,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
     protected static $logAttributes = ['id', 'agency_id', 'dealership_id', 'name'];
 
     protected $fillable = [];
+
     protected $guarded = [];
 
     protected $appends = [
@@ -80,7 +81,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
      */
     public function agency()
     {
-        return $this->hasOne(Company::class, 'id', 'agency_id');
+        return $this->hasOne(Company::class, 'id', 'agency_id')->withTrashed();
     }
 
     /**
@@ -96,7 +97,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
      */
     public function dealership()
     {
-        return $this->hasOne(Company::class, 'id', 'dealership_id');
+        return $this->hasOne(Company::class, 'id', 'dealership_id')->withTrashed();
     }
 
     /**
