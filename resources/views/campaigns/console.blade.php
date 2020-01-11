@@ -33,7 +33,7 @@
         window.closeLeadUrl = "{{ route('lead.close', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
         window.reopenLeadUrl = "{{ route('lead.reopen', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
         window.getResponsesUrl = "{{ route('campaign.recipient.responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
-        window.updateNotesUrl = "{{ route('recipient.update-notes', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.updateNotesUrl = "{{ route('recipient.update-notes', ['lead' => ':leadId']) }}";
         window.appointmentUpdateCalledStatusUrl = "{{ route('appointment.update-called-status', ['appointment' => ':appointmentId']) }}";
         window.addAppointmentUrl = "{{ route('add-appointment', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.messageUpdateReadStatusUrl = "{{ route('response.update-read-status', ['response' => ':responseId']) }}";

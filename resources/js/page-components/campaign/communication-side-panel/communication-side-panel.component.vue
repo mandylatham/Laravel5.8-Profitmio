@@ -467,16 +467,16 @@
                 this.loading = bool;
             },
             addNotes: function (recipientId) {
-                axios.post(generateRoute(window.updateNotesUrl, {'recipientId': recipientId}),
-                    {
-                        notes: this.notes
-                    })
-                    .then((response) => {
-                        this.$toastr.success('Note added.');
-                    })
-                    .catch((response) => {
-                        window.PmEvent.fire('errors.api', 'Failed to add note.');
-                    });
+                axios.post(generateRoute(window.updateNotesUrl, {'leadId': recipientId}), {
+                    notes: this.notes
+                })
+                .then((response) => {
+                    this.recipient.notes = this.notes;
+                    this.$toastr.success('Note added.');
+                })
+                .catch((response) => {
+                    window.PmEvent.fire('errors.api', 'Failed to add note.');
+                });
             },
             openLead: function (leadId) {
                 axios.post(generateRoute(window.openLeadUrl, {'leadId': leadId}))

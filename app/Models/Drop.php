@@ -107,7 +107,12 @@ class Drop extends \ProfitMiner\Base\Models\Drop implements HasMedia
 
     public function scopeFilterByQuery($query, $q)
     {
-        return $query->search($q);
+        return $query->where(function($query) use ($q) {
+            $qLike = "%{$q}%";
+            $query->orWhere('send_at', 'like', $qLike);
+            $query->orWhere('started_at', 'like', $qLike);
+            $query->orWhere('status', 'like', $qLike);
+        });
     }
 
     public function getSendAtFormattedAttribute()

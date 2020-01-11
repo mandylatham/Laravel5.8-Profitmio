@@ -8,10 +8,10 @@ cp .env.staging .env
 cp .env.dusk.example .env.dusk
 # Environment-Specific configuration
 if [[ $DEPLOYMENT_GROUP_NAME == "production" || $DEPLOYMENT_GROUP_NAME == "pm-prod-web-server-asg" ]]; then
-    aws ssm get-parameter --name /Pm/Production/WebServers/environment --region us-east-1 --query Parameter.Value | sed -e 's/^"//' -e 's/"$//' | awk '{gsub(/\\n/,"\n")}1' >> .env
+    aws ssm get-parameter --name /Pm/Production/WebServers/environment --region us-east-1 --query Parameter.Value | sed -e "s/\\\\\\\/\\\/g" | sed -e 's/^"//' -e 's/"$//' | awk '{gsub(/\\n/,"\n")}1' >> .env
     composer install --no-dev
 elif [[ $DEPLOYMENT_GROUP_NAME == "testing" ]]; then
-    aws ssm get-parameter --name /Pm/Staging/WebServers/environment --region us-east-1 --query Parameter.Value | sed -e 's/^"//' -e 's/"$//' | awk '{gsub(/\\n/,"\n")}1' >> .env
+    aws ssm get-parameter --name /Pm/Staging/WebServers/environment --region us-east-1 --query Parameter.Value | sed -e "s/\\\\\\\/\\\/g" | sed -e 's/^"//' -e 's/"$//' | awk '{gsub(/\\n/,"\n")}1' >> .env
     composer install
 else
     echo "This server is misconfigured for code deployment";

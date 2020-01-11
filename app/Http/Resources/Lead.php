@@ -23,6 +23,7 @@ class Lead extends JsonResource
             'email' => $this->email,
             'phone' => $this->phone,
             'labels' => $this->labels,
+            'notes' => $this->notes,
             'last_responded_at' => $this->last_responded_at,
             'last_status_changed_at' => $this->last_status_changed_at,
             'status' => $this->status_for_humans,

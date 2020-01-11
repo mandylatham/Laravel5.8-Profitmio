@@ -20,6 +20,7 @@ class LeadDetails extends JsonResource
             'status' => $this->status_for_humans,
             'first_name' => $this->first_name,
             'last_name' => $this->last_name,
+            'notes' => $this->notes,
             'email' => $this->email,
             'phone' => $this->phone,
             'location' => $this->location,
