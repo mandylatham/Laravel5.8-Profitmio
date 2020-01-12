@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\MailgunService;
 use App\Events\RecipientTextResponseReceived;
 use App\Models\Campaign;
+use App\Models\EmailLog;
 use App\Models\PhoneNumber;
 use App\Models\Response;
 use App\Models\Recipient;
@@ -21,9 +23,12 @@ class IncomingMessageController extends Controller
 {
     private $sentiment;
 
-    public function __construct(SentimentService $sentiment)
+    private $mailgun;
+
+    public function __construct(SentimentService $sentiment, MailgunService $mailgun)
     {
         $this->sentiment = $sentiment;
+        $this->mailgun = $mailgun;
     }
 
     /**

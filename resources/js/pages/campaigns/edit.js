@@ -28,7 +28,7 @@ window['app'] = new Vue({
         'date-pick': require('./../../components/date-pick/date-pick').default
     },
     computed: {
-        campaign_has_mailer_phone: function () {
+        campaignHasMailerPhone: function() {
             let hasMailerPhone = false;
             this.campaignPhones.forEach(phone => {
                 if (phone.call_source_name === 'mailer') {
