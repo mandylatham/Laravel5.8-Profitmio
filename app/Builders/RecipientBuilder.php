@@ -107,8 +107,8 @@ class RecipientBuilder
                     // Generate qr and upload to s3
                     $filePath = storage_path('app/' . Str::random(15) . '.png');
                     QrCode::format('png')
-                        ->size(150)
-                        ->margin(0)
+                        ->size(200)
+                        ->margin(15)
                         ->errorCorrection('M')
                         ->generate($recipient->getCheckInUrl(), $filePath);
                     $path = Storage::disk('media')->putFile('text-to-value', new File($filePath), 'public');

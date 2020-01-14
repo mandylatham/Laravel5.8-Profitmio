@@ -15,8 +15,7 @@ use Illuminate\Http\Request;
 use App\Events\CampaignCountsUpdated;
 use App\Events\RecipientEmailResponseReceived;
 use App\Services\TwilioClient;
-use Twilio\Twiml;
-use Twilio\Twiml\MessagingResponse;
+use Twilio\TwiML\MessagingResponse;
 use Illuminate\Log\Logger;
 use Carbon\Carbon;
 use Log;
@@ -49,15 +48,15 @@ class IncomingMessageController extends Controller
         $recipient = Recipient::findOrFail($recipient_id);
 
         $response = new Response([
-            'campaign_id'   => $campaign->id,
-            'recipient_id'  => $recipient->id,
-            'message'       => $request->get('stripped-text'),
-            'message_id'    => $request->get('Message-Id'),
-            'in_reply_to'   => $request->get('In-Reply-To'),
-            'subject'       => $request->get('subject'),
-            'type'          => 'email',
+            'campaign_id' => $campaign->id,
+            'recipient_id' => $recipient->id,
+            'message' => $request->get('stripped-text'),
+            'message_id' => $request->get('Message-Id'),
+            'in_reply_to' => $request->get('In-Reply-To'),
+            'subject' => $request->get('subject'),
+            'type' => 'email',
             'recording_sid' => 0,
-            'incoming'      => 1,
+            'incoming' => 1,
         ]);
 
         $response->save();
@@ -90,50 +89,50 @@ class IncomingMessageController extends Controller
     {
         //find out if we can grab the campaign details from the messageId
         $log = new EmailLog();
-		$messageId = null;
-			//somtimes message ID is a different variable.
-		if ($request->has('Message-Id')) {
-			$messageId = str_replace(['<', '>'], '', $request->input('Message-Id'));
-		}
+        $messageId = null;
+        //somtimes message ID is a different variable.
+        if ($request->has('Message-Id')) {
+            $messageId = str_replace(['<', '>'], '', $request->input('Message-Id'));
+        }
 
-		if ($request->has('message-id')) {
-			$messageId = $request->input('message-id');
-		}
+        if ($request->has('message-id')) {
+            $messageId = $request->input('message-id');
+        }
 
-		if (!$messageId) {
+        if (!$messageId) {
             $this->log->error('Received bad request from Mailgun: (cannot find message-id) ' . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
-			abort(406);
-		}
+            abort(406);
+        }
 
-		$log->message_id = $messageId;
+        $log->message_id = $messageId;
 
-		$existing = EmailLog::where('message_id', $messageId)
-			->where('campaign_id', '!=', 0)
-			->orderBy('id', 'ASC')
-			->first();
+        $existing = EmailLog::where('message_id', $messageId)
+            ->where('campaign_id', '!=', 0)
+            ->orderBy('id', 'ASC')
+            ->first();
 
         if ($existing) {
             $log->campaign_id = $existing->campaign_id;
             $log->recipient_id = $existing->recipient_id;
         } else {
-			$campaign = null;
-			$recipient = null;
-			if ($request->has('tag') && $request->has('recipient') && $campaign = $this->getCampaignFromEmailTag($request)) {
-				$recipient = $campaign->recipients()->whereEmail($request->input('recipient'))->first();
-			}
-			if (! $recipient) {
-				$from = $this->parseMailgunFromField($request->input('from'));
-				$log->campaign_id = $from->campaign_id;
-				$log->recipient_id = $from->recipient_id;
-				if (!$from->campaign_id || !$from->recipient_id) {
-					Log::error('Received bad request from Mailgun (cannot find campaign) ' . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
+            $campaign = null;
+            $recipient = null;
+            if ($request->has('tag') && $request->has('recipient') && $campaign = $this->getCampaignFromEmailTag($request)) {
+                $recipient = $campaign->recipients()->whereEmail($request->input('recipient'))->first();
+            }
+            if (!$recipient) {
+                $from = $this->parseMailgunFromField($request->input('from'));
+                $log->campaign_id = $from->campaign_id;
+                $log->recipient_id = $from->recipient_id;
+                if (!$from->campaign_id || !$from->recipient_id) {
+                    Log::error('Received bad request from Mailgun (cannot find campaign) ' . json_encode($request->all(), JSON_UNESCAPED_SLASHES));
 
-					abort(406);
-				}
-			} else {
-				$log->campaign_id = $campaign->id;
-				$log->recipient_id = $recipient->id;
-			}
+                    abort(406);
+                }
+            } else {
+                $log->campaign_id = $campaign->id;
+                $log->recipient_id = $recipient->id;
+            }
         }
 
         $log->code = $request->input('code') ?: '000';
@@ -149,16 +148,16 @@ class IncomingMessageController extends Controller
      *
      * @return Campaign
      */
-	private function getCampaignFromEmailTag($request)
-	{
-		$tag = $request->input('tag');
-		if (is_array($tag)) {
-			$id = str_replace('profitminer_campaign_', '', $tag[0]);
-		} else {
-			$id = str_replace('profitminer_campaign_', '', $tag);
-		}
-		return Campaign::find($id);
-	}
+    private function getCampaignFromEmailTag($request)
+    {
+        $tag = $request->input('tag');
+        if (is_array($tag)) {
+            $id = str_replace('profitminer_campaign_', '', $tag[0]);
+        } else {
+            $id = str_replace('profitminer_campaign_', '', $tag);
+        }
+        return Campaign::find($id);
+    }
 
     /**
      * Handle inbound sms message from Twilio
@@ -174,11 +173,11 @@ class IncomingMessageController extends Controller
             $message = preg_replace($invalidCharacters, '', $request->get('Body'));
 
             $response = new Response([
-                'message'       => $message,
-                'incoming'      => 1,
-                'type'          => 'text',
+                'message' => $message,
+                'incoming' => 1,
+                'type' => 'text',
                 'recording_sid' => 0,
-                'campaign_id'   => $campaign->id,
+                'campaign_id' => $campaign->id,
             ]);
 
             if (!$recipient) {
@@ -217,26 +216,25 @@ class IncomingMessageController extends Controller
 
             // ubsubscribe happens at twilio level
             if ($this->isUnsubscribeMessage($message)) {
-                Log::debug('unsubscribing recipient #' . $recipient->id);
                 $suppress = new \App\Models\SmsSuppression([
-                    'phone'         => substr($recipient->phone, -10, 10),
+                    'phone' => substr($recipient->phone, -10, 10),
                     'suppressed_at' => \Carbon\Carbon::now('UTC'),
                 ]);
                 $suppress->save();
             }
 
             // Check text-to-value
-            $response = new Twiml();
-            $responseMessage = $response->message();
+            $twilioResponse = new MessagingResponse();
+            $twilioMessage = $twilioResponse->message('');
             if ($phoneNumber->isMailer()) {
                 if ($recipient->textToValue && $recipient->textToValue->text_to_value_code === $message) {
-                    $responseMessage->body($recipient->textToValue->text_to_value_amount);
-                    $responseMessage->media($recipient->qrCode->image_url);
-                    return $responseMessage;
+                    $twilioMessage->body(($recipient->first_name ?  $recipient->first_name . ', ' : ''). 'We need your vehicle. We’re willing to pay you up to ' . $recipient->textToValue->text_to_value_amount . '. Don’t miss out on this great opportunity. Please don’t forget to get your QR code scanned below when you visit the dealership.');
+                    $twilioMessage->media($recipient->qrCode->image_url);
+                    return $twilioResponse;
                 }
             } else if ($mailerPhone = $campaign->getMailerPhone()) {
-                $responseMessage->body("Not an interactive number, text " . $campaign->getMailerPhone()->phone_number . " to reach someone.");
-                return $responseMessage;
+                $twilioMessage->body("Not an interactive number, text " . $campaign->getMailerPhone()->phone_number . " to reach someone.");
+                return $twilioResponse;
             } else {
                 return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
                     '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
@@ -278,13 +276,13 @@ class IncomingMessageController extends Controller
 
             if (!$response) {
                 $response = new Response([
-                    'call_sid'             => $request->get('CallSid'),
+                    'call_sid' => $request->get('CallSid'),
                     'call_phone_number_id' => $phone_number_id,
-                    'incoming'             => 1,
-                    'type'                 => 'phone',
-                    'duration'             => $request->get('CallDuration')?: 0,
-                    'campaign_id'          => $campaign->id,
-                    'response_source'      => $request->get('From'),
+                    'incoming' => 1,
+                    'type' => 'phone',
+                    'duration' => $request->get('CallDuration') ?: 0,
+                    'campaign_id' => $campaign->id,
+                    'response_source' => $request->get('From'),
                     'response_destination' => $request->get('To'),
                 ]);
             }
@@ -344,7 +342,7 @@ class IncomingMessageController extends Controller
      *
      * @return array
      */
-    protected function getEmailMetadata($email) : array
+    protected function getEmailMetadata($email): array
     {
         $metadata = preg_split('/(_|@)/', $email);
 
@@ -398,9 +396,9 @@ class IncomingMessageController extends Controller
 
         // Create a new Recipient and add it to the campaign for the person
         $recipient = new Recipient([
-            'first_name'  => $sender->first_name,
-            'last_name'   => $sender->last_name,
-            'phone'       => $request->get('From'),
+            'first_name' => $sender->first_name,
+            'last_name' => $sender->last_name,
+            'phone' => $request->get('From'),
             'campaign_id' => $campaign->id,
         ]);
 
@@ -418,8 +416,7 @@ class IncomingMessageController extends Controller
      */
     private function parseMailgunFromField($from)
     {
-        $data = new class()
-        {
+        $data = new class() {
             public function __get($name)
             {
                 if (!isset($this->name)) {
