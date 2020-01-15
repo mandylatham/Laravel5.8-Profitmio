@@ -228,7 +228,9 @@ class IncomingMessageController extends Controller
             $twilioMessage = $twilioResponse->message('');
             if ($phoneNumber->isMailer()) {
                 if ($recipient->textToValue && $recipient->textToValue->text_to_value_code === $message) {
-                    $twilioMessage->body(($recipient->first_name ?  $recipient->first_name . ', ' : ''). 'We need your vehicle. We’re willing to pay you up to ' . $recipient->textToValue->text_to_value_amount . '. Don’t miss out on this great opportunity. Please don’t forget to get your QR code scanned below when you visit the dealership.');
+                    $textToValueAmount = $recipient->textToValue->text_to_value_amount;
+                    $textToValueAmount = ltrim($textToValueAmount, '$');
+                    $twilioMessage->body(($recipient->first_name ?  $recipient->first_name . ', ' : ''). 'We need your vehicle. We’re willing to pay you up to $' . $textToValueAmount . '. Don’t miss out on this great opportunity. Please don’t forget to get your QR code scanned below when you visit the dealership.');
                     $twilioMessage->media($recipient->qrCode->image_url);
                     return $twilioResponse;
                 }

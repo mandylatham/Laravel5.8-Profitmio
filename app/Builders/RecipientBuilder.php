@@ -108,7 +108,7 @@ class RecipientBuilder
                     $filePath = storage_path('app/' . Str::random(15) . '.png');
                     QrCode::format('png')
                         ->size(200)
-                        ->margin(15)
+                        ->margin(5)
                         ->errorCorrection('M')
                         ->generate($recipient->getCheckInUrl(), $filePath);
                     $path = Storage::disk('media')->putFile('text-to-value', new File($filePath), 'public');
