@@ -70,6 +70,6 @@ class Response extends Model
         }
 
         // Provide recipient name
-        return $this->recipient->name ?: 'Unknown Name';
+        return $this->recipient->name ?? 'Unknown Name';
     }
 }
