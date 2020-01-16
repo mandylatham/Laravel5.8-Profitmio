@@ -67,6 +67,7 @@ window['app'] = new Vue({
         campaign: window.campaign,
         campaignForm: new Form({
             agency: null,
+            text_to_value_message: window.campaign.text_to_value_message || '',
             enable_text_to_value: window.campaign.enable_text_to_value || false,
             adf_crm_export: window.campaign.adf_crm_export,
             adf_crm_export_email: window.campaign.adf_crm_export_email || [],
@@ -402,7 +403,6 @@ window['app'] = new Vue({
                 .post(window.saveCampaignUrl)
                 .then(() => {
                     this.loading = false;
-                    console.log('enable_text_to_value', this.campaignForm);
                     this.campaign.enable_text_to_value = this.campaignForm.enable_text_to_value;
                     this.$swal({
                         title: 'Campaign Updated!',
