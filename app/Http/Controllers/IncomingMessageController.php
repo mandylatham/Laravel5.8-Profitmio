@@ -224,15 +224,15 @@ class IncomingMessageController extends Controller
             }
 
             // Check text-to-value
-            $twilioResponse = new MessagingResponse();
-            $twilioMessage = $twilioResponse->message('');
             if ($phoneNumber->isMailer()) {
                 if ($recipient->textToValue && $recipient->textToValue->text_to_value_code === $message) {
-                    $twilioMessage->body($campaign->getTextToValueMessage($recipient));
-                    $twilioMessage->media($recipient->qrCode->image_url);
-                    return $twilioResponse;
+                    $twilioClient = new TwilioClient();
+                    $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $campaign->getTextToValueMessageForRecipient($recipient));
+                    $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, '', $recipient->qrCode->image_url);
                 }
             } else if ($mailerPhone = $campaign->getMailerPhone()) {
+                $twilioResponse = new MessagingResponse();
+                $twilioMessage = $twilioResponse->message('');
                 $twilioMessage->body("Not an interactive number, text " . $campaign->getMailerPhone()->phone_number . " to reach someone.");
                 return $twilioResponse;
             } else {
