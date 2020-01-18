@@ -33,6 +33,8 @@ class LeadDetails extends JsonResource
             'service' => $this->service,
             'vehicle' => implode(' ', [$this->year, $this->make, $this->model]),
             'labels' => $this->labels,
+            'checked_in' => $this->checkedIn(),
+            'checked_in_at_formatted' => $this->getCheckedInAt(),
         ];
 
         $data['threads']['mailer'] = EmailResponse::collection($this->responses()->whereType(Response::MAILER_TYPE)->get());

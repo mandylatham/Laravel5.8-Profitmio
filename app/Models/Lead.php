@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -61,6 +62,15 @@ class Lead extends Recipient
             return $textToValue->checked_in;
         }
         return false;
+    }
+
+    public function getCheckedInAt()
+    {
+        $textToValue = $this->textToValue;
+        if ($textToValue) {
+            return Carbon::createFromFormat('Y-m-d H:i:s', $textToValue->checked_in_at)->format('m/d/Y @ g:m A');
+        }
+        return '';
     }
 
     public function isClosed()

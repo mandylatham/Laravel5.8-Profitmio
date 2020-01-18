@@ -163,6 +163,15 @@
                 </button>
                 {{ recipient.first_name }} not sent to Service.
             </div>
+
+            <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && recipient.checked_in">
+                <span class="btn btn-success recipient-action mr-2">
+                    <i class="fa fa-calendar-check mr-2"></i>
+                    Checked in
+                </span>
+                Checked in at {{ recipient.checked_in_at_formatted }}.
+            </div>
+
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 1">
                 <span class="btn btn-success recipient-action mr-2">
                     <i class="fa fa-wrench mr-2"></i>
