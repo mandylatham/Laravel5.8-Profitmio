@@ -8,8 +8,9 @@
 
 @section('body-script')
     <script>
-        window.saveCheckInFormUrl = @json(route('lead.store-check-in', ['lead' => $recipient->id]));
-        window.lead = @json($recipient);
+        window.lead = @json($lead);
+        window.checkedIn = @json($lead->checkedIn());
+        window.saveCheckInFormUrl = @json(route('lead.store-check-in', ['lead' => $lead->id]));
     </script>
     <script src="{{ asset('js/check-in-form.js') }}"></script>
 @endsection

@@ -181,8 +181,15 @@ class LeadController extends Controller
 
     public function showCheckInForm(Lead $lead)
     {
+        if ($lead->isClosed()) {
+            $lead->open();
+        }
+        if (!$lead->checkedIn()) {
+            $activity = $this->activityFactory->forUserOpenedLead($lead);
+            $this->scoring->forActivity($activity);
+        }
         return view('lead.check-in-form')->with([
-            'lead' => $lead
+            'lead' => $lead,
         ]);
     }
 

@@ -9,6 +9,7 @@ class LeadActivity
     const VIEWED = 'viewed';
     const SENTSMS = 'sent sms';
     const REOPENED = 'reopened';
+    const CHECK_IN = 'check in';
     const MARKETED = 'sent marketing';
     const SENTEMAIL = 'sent email';
     const SENTTOCRM = 'sent lead to the crm';

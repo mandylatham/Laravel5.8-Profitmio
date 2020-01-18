@@ -54,6 +54,20 @@ class Lead extends Recipient
         });
     }
 
+    public function checkedIn()
+    {
+        $textToValue = $this->textToValue;
+        if ($textToValue) {
+            return $textToValue->checked_in;
+        }
+        return false;
+    }
+
+    public function isClosed()
+    {
+        return $this->status === self::CLOSED_STATUS;
+    }
+
     // todo: find a way to perform serches in-model
 
     public function scopeNew($query)
