@@ -192,6 +192,52 @@
                 </ul>
             </div>
 
+            <div class="panel panel-primary messaging-panel mailer-messages" v-if="recipient.status != 'New' && threads.mailer && threads.mailer.length">
+                <div class="panel-heading">
+                    <h3 class="panel-title">MAILER Messaging</h3>
+                </div>
+
+                <div class="message-drop-text">
+                    <strong class="mb-3">Original Message</strong>
+                    <div>{{ threads.mailer[0].message }}</div>
+                </div>
+
+                <div class="panel-body" v-if="threads.mailer.length > 1">
+                    <div class="sms-message-container">
+                        <div v-for="(msg, idx) in threads.mailer" v-if="idx > 0">
+                            <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
+                                <div class="message-user">
+                                    <template v-if="msg.impersonation">
+                                        {{ msg.impersonation.impersonator.name }} (id: {{ msg.impersonation.impersonator.id}})
+                                        <p><small>on behalf of <strong>{{ msg.reply_user }}</strong></small></p>
+                                    </template>
+                                    <template v-else>
+                                        {{ msg.reply_user }}
+                                    </template>
+                                </div>
+
+                                <div class="message-time" v-if="msg.created_at">{{
+                                    msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
+                                    msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
+                                </div>
+                                <div class="message-time"  :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}" v-else><span
+                                    class="text-danger">UNKNOWN RECEIVE DATE</span></div>
+
+                                <div class="message" :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}">{{ msg.message_formatted }}</div>
+                                <div class="checkbox" v-if="msg.incoming">
+                                    <label>
+                                        <input type="checkbox" class="message-read" :class="recipient.status != 'Open' ? 'disabled' : ''"
+                                               :checked="msg.read" :disabled="recipient.status != 'Open'"
+                                               @click="messageUpdateReadStatus($event, msg.id)">
+                                        Read
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="panel panel-primary messaging-panel sms-messages" v-if="recipient.status != 'New' && threads.text && threads.text.length">
                 <div class="panel-heading">
                     <h3 class="panel-title">SMS Messaging</h3>
