@@ -159,6 +159,8 @@ class IncomingMessageController extends Controller
         return Campaign::find($id);
     }
 
+    // TODO create a new method for handle mailer
+    // TODO use strategy pattern if possible to handle different types of inbound sms
     /**
      * Handle inbound sms message from Twilio
      *
@@ -229,18 +231,22 @@ class IncomingMessageController extends Controller
                     $twilioClient = new TwilioClient();
                     $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $campaign->getTextToValueMessageForRecipient($recipient));
                     $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, '', $recipient->qrCode->image_url);
+                    return;
                 }
-            } else if ($mailerPhone = $campaign->getMailerPhone()) {
                 $twilioResponse = new MessagingResponse();
                 $twilioMessage = $twilioResponse->message('');
-                $twilioMessage->body("Not an interactive number, text " . $campaign->getMailerPhone()->phone_number . " to reach someone.");
+                $twilioMessage->body('Code not found');
                 return $twilioResponse;
-            } else {
+            }
+
+            if ($phoneNumber->forward) {
+                // TODO fix forward response
                 return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
                     '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
                     ->header('Content-Type', 'text/xml');
             }
-
+            // TODO respond Twilio empty response
+            return;
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
 
