@@ -185,6 +185,7 @@ class LeadController extends Controller
             $lead->open();
         }
         if (!$lead->checkedIn()) {
+            $lead->setCheckedIn();
             $activity = $this->activityFactory->forUserOpenedLead($lead);
             $this->scoring->forActivity($activity);
         }

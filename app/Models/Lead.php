@@ -132,6 +132,13 @@ class Lead extends Recipient
         ]);
     }
 
+    public function setCheckedIn()
+    {
+        $this->checked_in = true;
+        $this->checked_in_at = Carbon::now()->toDateTimeString();
+        $this->save();
+    }
+
     public function reopen()
     {
         $this->update([
