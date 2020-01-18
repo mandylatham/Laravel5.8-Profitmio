@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Models\Response;
 
 class LeadDetails extends JsonResource
 {
@@ -34,6 +35,7 @@ class LeadDetails extends JsonResource
             'labels' => $this->labels,
         ];
 
+        $data['threads']['mailer'] = EmailResponse::collection($this->responses()->whereType(Response::MAILER_TYPE)->get());
         $data['threads']['email'] = EmailResponse::collection($this->responses()->whereType('email')->get());
         $data['threads']['text'] = EmailResponse::collection($this->responses()->whereType('text')->get());
         $data['threads']['phone'] = EmailResponse::collection($this->responses()->whereType('phone')->get());

@@ -159,14 +159,33 @@ class IncomingMessageController extends Controller
         return Campaign::find($id);
     }
 
-    // TODO create a new method for handle mailer
-    // TODO use strategy pattern if possible to handle different types of inbound sms
     /**
      * Handle inbound sms message from Twilio
      *
      * @param Request $request The twilio inbound request
      */
     public function receiveSmsMessage(Request $request)
+    {
+        try {
+            $phoneNumber = $this->getPhoneNumberFromRequest($request);
+
+            if ($phoneNumber->isMailer()) {
+                return $this->receiveMailerSmsMessage($request);
+            }
+            return $this->receivePhoneSmsMessage($request);
+
+        } catch (ModelNotFoundException $e) {
+            Log::error("Model not found: " . $e->getMessage());
+            return response('<Response><Reject /></Response>', 401)
+                ->header('Content-Type', 'text/xml');
+        } catch (\Exception $e) {
+            Log::error("Exception: " . $e->getMessage());
+            return response("<Response>{$e->getMessage()}</Response>", 401)
+                ->header('Content-Type', 'text/xml');
+        }
+    }
+
+    public function receivePhoneSmsMessage(Request $request)
     {
         try {
             list($phoneNumber, $campaign, $recipient) = $this->getRequestObjects($request);
@@ -225,39 +244,72 @@ class IncomingMessageController extends Controller
                 $suppress->save();
             }
 
-            // Check text-to-value
-            if ($phoneNumber->isMailer()) {
-                if ($recipient->textToValue && $recipient->textToValue->text_to_value_code === $message) {
-                    $twilioClient = new TwilioClient();
-                    $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $campaign->getTextToValueMessageForRecipient($recipient));
-                    $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, '', $recipient->qrCode->image_url);
-                    return;
-                }
-                $twilioResponse = new MessagingResponse();
-                $twilioMessage = $twilioResponse->message('');
-                $twilioMessage->body('Code not found');
-                return $twilioResponse;
-            }
-
             if ($phoneNumber->forward) {
-                // TODO fix forward response
-                return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                    '<Response><Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial></Response>', 200)
-                    ->header('Content-Type', 'text/xml');
+                return response('<Response><Message to="' . $phoneNumber->forward . '">' . htmlspecialchars(substr($request->input('from') . ': ' . $request->input('body'), 0, 1600)) . ' </Message></Response>')->header('Content-Type', 'text/xml');
             }
-            // TODO respond Twilio empty response
-            return;
+            return response('<Response></Response>')->header('Content-Type', 'text/xml');
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
+            return response('<Response><Reject /></Response>', 401)->header('Content-Type', 'text/xml');
+        } catch (\Exception $e) {
+            Log::error("Exception: " . $e->getMessage());
+            return response("<Response>{$e->getMessage()}</Response>", 401)->header('Content-Type', 'text/xml');
+        }
+    }
 
-            return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                '<Response><Reject /></Response>', 401)
+    public function receiveMailerSmsMessage(Request $request)
+    {
+        try {
+            list($phoneNumber, $campaign, $recipient) = $this->getRequestObjects($request);
+
+            $invalidCharacters = '/[^\w\s]*/';
+            $message = preg_replace($invalidCharacters, '', $request->get('Body'));
+
+            $response = new Response([
+                'message' => $message,
+                'incoming' => 1,
+                'type' => Response::MAILER_TYPE,
+                'recording_sid' => 0,
+                'campaign_id' => $campaign->id,
+            ]);
+
+            if (!$recipient) {
+                # Lookup caller's "caller-name" from Twilio
+                $recipient = $this->createRecipientFromSender($request, $campaign);
+            }
+
+            $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
+            $recipient->save();
+
+            $response->recipient_id = $recipient->id;
+            $response->save();
+
+            // unsubscribe happens at twilio level
+            if ($this->isUnsubscribeMessage($message)) {
+                $suppress = new \App\Models\SmsSuppression([
+                    'phone' => substr($recipient->phone, -10, 10),
+                    'suppressed_at' => \Carbon\Carbon::now('UTC'),
+                ]);
+                $suppress->save();
+            }
+
+            if ($recipient->textToValue && $recipient->textToValue->text_to_value_code === $message) {
+                $twilioClient = new TwilioClient();
+                $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $campaign->getTextToValueMessageForRecipient($recipient));
+                $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, '', $recipient->qrCode->image_url);
+                return response('<Response></Response>')->header('Content-Type', 'text/xml');
+            }
+            $twilioResponse = new MessagingResponse();
+            $twilioMessage = $twilioResponse->message('');
+            $twilioMessage->body('Code not found');
+            return $twilioResponse;
+        } catch (ModelNotFoundException $e) {
+            Log::error("Model not found: " . $e->getMessage());
+            return response('<Response><Reject /></Response>', 401)
                 ->header('Content-Type', 'text/xml');
         } catch (\Exception $e) {
             Log::error("Exception: " . $e->getMessage());
-
-            return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                "<Response>{$e->getMessage()}</Response>", 401)
+            return response("<Response>{$e->getMessage()}</Response>", 401)
                 ->header('Content-Type', 'text/xml');
         }
     }
@@ -383,6 +435,15 @@ class IncomingMessageController extends Controller
             ->first();
 
         return [$phoneNumber, $phoneNumber->campaign, $recipient];
+    }
+
+    protected function getPhoneNumberFromRequest(Request $request)
+    {
+        $number = str_replace('+1', '', trim($request->input('To') ?: $request->input('Called')));
+        $phoneNumber = PhoneNumber::with('campaign')
+            ->whereRaw("replace(phone_number, '+1', '') like '%{$number}'")
+            ->firstOrFail();
+        return $phoneNumber;
     }
 
     /**

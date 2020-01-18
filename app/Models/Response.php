@@ -12,6 +12,8 @@ class Response extends Model
 {
     use SoftDeletes, MayBeImpersonated;
 
+    const MAILER_TYPE = 'mailer';
+
 	protected $guarded = [];
 
     protected $appends = ['message_formatted', 'reply_user', 'recording_url'];
