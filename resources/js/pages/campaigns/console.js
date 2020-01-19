@@ -91,7 +91,8 @@ window.app = new Vue({
         closingLead: null,
         closed_details: [],
         trueValue: true,
-        textToValueRequestedTag: window.textToValueRequestedTag
+        textToValueRequestedTag: window.textToValueRequestedTag,
+        checkedInTextToValueTag: window.checkedInTextToValueTag,
     },
     filters: {
         shortDate: function(value) {
@@ -181,12 +182,18 @@ window.app = new Vue({
             if (this.closingLead.text_to_value_requested) {
                 this.closeLeadForm.tags.push(window.textToValueRequestedTag.name);
             }
+            if (this.closingLead.checked_in) {
+                this.closeLeadForm.tags.push(window.checkedInTextToValueTag.name);
+            }
             this.closeLeadForm.outcome = 'positive';
         },
         selectNegativeOutcome: function () {
             this.closeLeadForm.tags = [];
             if (this.closingLead.text_to_value_requested) {
                 this.closeLeadForm.tags.push(window.textToValueRequestedTag.name);
+            }
+            if (this.closingLead.checked_in) {
+                this.closeLeadForm.tags.push(window.checkedInTextToValueTag.name);
             }
             this.closeLeadForm.outcome = 'negative';
         },
