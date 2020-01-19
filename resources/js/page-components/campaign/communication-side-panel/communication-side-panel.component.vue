@@ -233,14 +233,6 @@
                                     class="text-danger">UNKNOWN RECEIVE DATE</span></div>
 
                                 <div class="message" :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}">{{ msg.message_formatted }}</div>
-                                <div class="checkbox" v-if="msg.incoming">
-                                    <label>
-                                        <input type="checkbox" class="message-read" :class="recipient.status != 'Open' ? 'disabled' : ''"
-                                               :checked="msg.read" :disabled="recipient.status != 'Open'"
-                                               @click="messageUpdateReadStatus($event, msg.id)">
-                                        Read
-                                    </label>
-                                </div>
                             </div>
                         </div>
                     </div>

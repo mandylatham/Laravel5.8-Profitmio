@@ -221,7 +221,8 @@ class CampaignController extends Controller
             'service_dept' => (bool) $request->input('service_dept'),
             'service_dept_email' => $request->input('service_dept_email', []),
             'sms_on_callback' => (bool) $request->input('service_dept'),
-            'sms_on_callback_number' => $request->input('sms_on_callback_number', [])
+            'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
+            'text_to_value_message' => $request->input('text_to_value_message', '')
         ]);
 
         if (! $campaign->expires_at) {

@@ -67,7 +67,7 @@ class Lead extends Recipient
     public function getCheckedInAt()
     {
         $textToValue = $this->textToValue;
-        if ($textToValue) {
+        if ($textToValue && $textToValue->checked_in_at) {
             return Carbon::createFromFormat('Y-m-d H:i:s', $textToValue->checked_in_at)->format('m/d/Y @ g:m A');
         }
         return '';

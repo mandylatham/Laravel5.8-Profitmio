@@ -421,6 +421,10 @@
                                         <div class="col-12 col-md-6">
                                             <div class="feature-input">
                                                 <p-check color="primary" :disabled="!campaignHasMailerPhone || campaign.enable_text_to_value" class="p-default" name="enable_text_to_value" v-model="campaignForm.enable_text_to_value">Enable Text to Value</p-check>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.enable_text_to_value">
+                                            <div class="feature-table">
                                                 <form v-if="campaignForm.enable_text_to_value">
                                                     <div class="alert alert-info mt-2">
                                                         <i class="fa fa-info-circle mr-2"></i>
