@@ -142,9 +142,12 @@ class Lead extends Recipient
 
     public function setCheckedIn()
     {
-        $this->checked_in = true;
-        $this->checked_in_at = Carbon::now()->toDateTimeString();
-        $this->save();
+        $textToValue = $this->textToValue;
+        if ($textToValue) {
+            $textToValue->checked_in = true;
+            $textToValue->checked_in_at = Carbon::now()->toDateTimeString();
+            $textToValue->save();
+        }
     }
 
     public function reopen()
