@@ -73,6 +73,14 @@ class Lead extends Recipient
         return '';
     }
 
+    public function textToValueRequested()
+    {
+        if (!$this->textToValue) {
+            return false;
+        }
+        return $this->textToValue->value_requested;
+    }
+
     public function isClosed()
     {
         return $this->status === self::CLOSED_STATUS;

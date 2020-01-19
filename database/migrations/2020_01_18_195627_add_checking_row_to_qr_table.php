@@ -14,6 +14,8 @@ class AddCheckingRowToQrTable extends Migration
     public function up()
     {
         Schema::table('recipient_text_to_value', function (Blueprint $table) {
+            $table->boolean('value_requested')->default(false);
+            $table->timestamp('value_requested_at')->nullable();
             $table->boolean('checked_in')->default(false);
             $table->timestamp('checked_in_at')->nullable();
         });
@@ -27,7 +29,10 @@ class AddCheckingRowToQrTable extends Migration
     public function down()
     {
         Schema::table('recipient_text_to_value', function (Blueprint $table) {
+            $table->dropColumn('value_requested');
+            $table->dropColumn('value_requested_at');
             $table->dropColumn('checked_in');
+            $table->dropColumn('checked_in_at');
         });
     }
 }

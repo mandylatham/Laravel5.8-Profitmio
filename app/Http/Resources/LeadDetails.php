@@ -35,6 +35,7 @@ class LeadDetails extends JsonResource
             'labels' => $this->labels,
             'checked_in' => $this->checkedIn(),
             'checked_in_at_formatted' => $this->getCheckedInAt(),
+            'text_to_value_requested' => $this->textToValueRequested()
         ];
 
         $data['threads']['mailer'] = EmailResponse::collection($this->responses()->whereType(Response::MAILER_TYPE)->get());

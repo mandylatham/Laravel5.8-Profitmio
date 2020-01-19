@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Classes\MailgunService;
 use App\Events\RecipientTextResponseReceived;
 use App\Models\EmailLog;
+use App\Models\Lead;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Campaign;
 use App\Models\PhoneNumber;
@@ -294,6 +295,11 @@ class IncomingMessageController extends Controller
             }
 
             if ($recipient->textToValue && $recipient->textToValue->text_to_value_code === $message) {
+                $textToValue = $recipient->textToValue;
+                $textToValue->value_requested = true;
+                $textToValue->value_requested_at = Carbon::now()->toDateTimeString();
+                $textToValue->save();
+
                 $twilioClient = new TwilioClient();
                 $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $campaign->getTextToValueMessageForRecipient($recipient));
                 $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, '', $recipient->qrCode->image_url);

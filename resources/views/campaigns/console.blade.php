@@ -44,6 +44,7 @@
         window.recipientGetResponsesUrl = "{{ route('recipient.get-responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.sendCrmUrl = "{{ route('recipient.send-to-crm', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.sendServiceUrl = "{{ route('recipient.send-to-service', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
+        window.textToValueRequestedTag = @json($textToValueRequestedTag);
     </script>
     {{--<script src="//js.pusher.com/4.3/pusher.min.js"></script>--}}
     <script src="{{ asset('js/console.js') }}"></script>
@@ -335,6 +336,16 @@
                             @{{ option.text }}
                         </b-form-checkbox>
                     </div>
+                    <b-form-checkbox
+                        button
+                        button-variant="info"
+                        v-model="closeLeadForm.tags"
+                        v-if="closingLead.text_to_value_requested"
+                        disabled
+                        :key="textToValueRequestedTag.name"
+                        :value="textToValueRequestedTag.name">
+                        @{{ textToValueRequestedTag.text }}
+                    </b-form-checkbox>
                 </div>
             <template v-slot:modal-footer="">
                 <button class="btn btn-secondary" @click="cancelCloseLead">

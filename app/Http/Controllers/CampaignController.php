@@ -77,6 +77,9 @@ class CampaignController extends Controller
             ->whereIn('indication', ['positive', 'neutral'])
             ->select(['name', 'text'])
             ->get();
+        $textToValueRequestedTag = LeadTag::where('name', LeadTag::VEHICLE_VALUE_REQUESTED_TAG)
+            ->select(['name', 'text'])
+            ->first();
         $negativeTags = LeadTag::whereIn('campaign_id', [0, $campaign->id])
             ->whereIn('indication', ['negative', 'neutral'])
             ->select(['name', 'text'])
@@ -85,8 +88,9 @@ class CampaignController extends Controller
         $data = [
             'counters' => $counters,
             'campaign' => $campaign,
+            'textToValueRequestedTag' => $textToValueRequestedTag,
             'positiveTags' => $positiveTags,
-            'negativeTags' => $negativeTags,
+            'negativeTags' => $negativeTags
         ];
 
         if ($filter) {

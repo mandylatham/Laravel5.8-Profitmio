@@ -49,7 +49,7 @@
                 <div class="col-4" v-if="recipient.status == 'Open'">
                     <button class="btn btn-warning"
                             style="width: 100%; font-size: 1.2rem;"
-                            @click="closeLead(recipient.id)">
+                            @click="closeLead(recipient)">
                         Close Lead
                     </button>
                 </div>
@@ -545,9 +545,9 @@
                         window.PmEvent.fire('errors.api', 'Failed to open lead');
                     });
             },
-            closeLead: function (leadId) {
+            closeLead: function (lead) {
                // show modal with requirements
-                window.PmEvent.fire('lead.close-request', leadId);
+                window.PmEvent.fire('lead.close-request', lead);
                 /*
                 axios.post(generateRoute(window.closeLeadUrl, {'leadId': leadId}))
                     .then(response => {

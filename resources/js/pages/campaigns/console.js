@@ -45,7 +45,7 @@ window.app = new Vue({
         campaign: {},
         closeLeadForm: new Form({
             outcome: null,
-            tags: null,
+            tags: [],
         }),
         currentRecipientId: null,
         currentUser: {},
@@ -71,6 +71,7 @@ window.app = new Vue({
         },
         positiveOptions: window.positiveTags,
         negativeOptions: window.negativeTags,
+        featureTags: window.featureTags,
         recipients: [],
         rowsTest: [],
         searchForm: new Form({
@@ -89,6 +90,8 @@ window.app = new Vue({
         leadCloseNegativeDetails: false,
         closingLead: null,
         closed_details: [],
+        trueValue: true,
+        textToValueRequestedTag: window.textToValueRequestedTag
     },
     filters: {
         shortDate: function(value) {
@@ -152,7 +155,7 @@ window.app = new Vue({
             this.closeLeadForm.outcome = null;
         },
         sendCloseForm: function () {
-            this.closeLeadForm.post(generateRoute(window.closeLeadUrl, {leadId: this.closingLead}))
+            this.closeLeadForm.post(generateRoute(window.closeLeadUrl, {leadId: this.closingLead.id}))
                 .then((response) => {
                     this.recipients.forEach((recipient, index) => {
                         if (recipient.id === response.data.id) {
@@ -175,10 +178,16 @@ window.app = new Vue({
         },
         selectPositiveOutcome: function () {
             this.closeLeadForm.tags = [];
+            if (this.closingLead.text_to_value_requested) {
+                this.closeLeadForm.tags.push(window.textToValueRequestedTag.name);
+            }
             this.closeLeadForm.outcome = 'positive';
         },
         selectNegativeOutcome: function () {
             this.closeLeadForm.tags = [];
+            if (this.closingLead.text_to_value_requested) {
+                this.closeLeadForm.tags.push(window.textToValueRequestedTag.name);
+            }
             this.closeLeadForm.outcome = 'negative';
         },
         registerGlobalEventListeners() {
