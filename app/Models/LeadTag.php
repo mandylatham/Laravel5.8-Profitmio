@@ -11,7 +11,7 @@ class LeadTag extends Model
     protected $guarded = [];
 
     const CHECKED_IN_FROM_TEXT_TO_VALUE_TAG = 'checked-in-from-text-to-value';
-    const VEHICLE_VALUE_REQUESTED_TAG = 'vehicle-value-request-using-text-to-value';
+    const VEHICLE_VALUE_REQUESTED_TAG = 'vehicle-value-requested-from-text-to-value';
 
     /**
      * primaryKey

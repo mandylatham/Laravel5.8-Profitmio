@@ -24,7 +24,7 @@ class AddTextToValueTagsSeeder extends Migration
         }
         if (\App\Models\LeadTag::where('name', 'vehicle-value-request-using-text-to-value')->count() === 0) {
             $inserts[] = [
-                'name' => 'vehicle-value-request-using-text-to-value',
+                'name' => 'vehicle-value-requested-using-text-to-value',
                 'text' => 'Requested vehicle value using text-to-value feature',
                 'indication' => 'feature',
                 'campaign_id' => 0
@@ -41,6 +41,6 @@ class AddTextToValueTagsSeeder extends Migration
     public function down()
     {
         \App\Models\LeadTag::where('name', 'checked-in-from-text-to-value')->delete();
-        \App\Models\LeadTag::where('name', 'vehicle-value-request-using-text-to-value')->delete();
+        \App\Models\LeadTag::where('name', 'vehicle-value-requested-using-text-to-value')->delete();
     }
 }
