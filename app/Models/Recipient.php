@@ -96,6 +96,17 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
     {
         return $this->hasMany(SmsSuppression::class, 'phone', 'phone');
     }
+
+    public function qrCode()
+    {
+        return $this->hasOne(RecipientQrCode::class, 'recipient_id', 'id');
+    }
+
+    public function textToValue()
+    {
+        return $this->hasOne(RecipientTextToValue::class, 'recipient_id', 'id');
+    }
+
     /** END RELATIONSHIPS BLOCK **/
 
     /** BEGIN SCOPES BLOCK **/
@@ -185,6 +196,11 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
     /** BEGIN ACTIONS BLOCK **/
 
+    public function getCheckInUrl()
+    {
+        return route('lead.check-in', ['lead' => $this->id]);
+    }
+
     public static function searchByRequest(Request $request, RecipientList $recipientList)
     {
         $query = $recipientList->recipients();
@@ -272,6 +288,7 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
         return $inbound ? $leadDialogStarts->last() : $companyDialogStarts->last();
     }
+
 
     /** END ACTIONS BLOCK **/
 }

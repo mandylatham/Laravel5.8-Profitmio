@@ -3,8 +3,10 @@ namespace App\Builders;
 
 use App\Models\Recipient;
 use App\Models\RecipientList;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use QrCode;
+use Storage;
+use Illuminate\Http\File;
 
 class RecipientBuilder
 {
@@ -53,7 +55,6 @@ class RecipientBuilder
 
         $file = fopen(Storage::disk('local')->path($media->file_name), 'r');
         $headers = fgetcsv($file);
-        $rows = [];
         $i = 1;
         while (($row = fgetcsv($file)) !== false) {
             if (count($headers) != count($row)) {
@@ -61,52 +62,74 @@ class RecipientBuilder
                 throw new \Exception("Invalid CSV - column count mismatch at row {$i}");
             }
             $row = array_combine($headers, $row);
-            $staging = [];
-            $staging['campaign_id'] = $list->campaign_id;
-            $staging['recipient_list_id'] = $list->id;
-            $staging['first_name'] = $this->sanitize($row[$list->fieldmap['first_name']], true);
-            $staging['last_name'] = $this->sanitize($row[$list->fieldmap['last_name']], true);
+
+            $recipient = new Recipient();
+            $recipient->campaign_id = $list->campaign_id;
+            $recipient->recipient_list_id = $list->id;
+            $recipient->first_name = $this->sanitize($row[$list->fieldmap['first_name']], true);
+            $recipient->last_name = $this->sanitize($row[$list->fieldmap['first_name']], true);
             if (array_key_exists('email', $list->fieldmap)) {
-                $staging['email'] = '';
+                $recipient->email = '';
                 if (filter_var($row[$list->fieldmap['email']], FILTER_VALIDATE_EMAIL)) {
-                    $staging['email'] = $row[$list->fieldmap['email']];
+                    $recipient->email = $row[$list->fieldmap['email']];
                 }
             }
+
             if ($list->type == 'database') {
-                $staging['from_dealer_db'] = true;
+                $recipient->from_dealer_db = true;
             } elseif ($list->type == 'mixed') {
                 if ($row[$list->fieldmap['is_database']] == 'D') {
-                    $staging['from_dealer_db'] = true;
+                    $recipient->from_dealer_db = true;
                 }
             }
             foreach ($this->listFields as $field) {
                 if (array_key_exists($field, $list->fieldmap) && $list->fieldmap[$field] !== null) {
-                    $staging[$field] = $this->sanitize($row[$list->fieldmap[$field]], true);
+                    $recipient->$field = $this->sanitize($row[$list->fieldmap[$field]], true);
                 }
             }
-            $rows[] = $staging;
+            try {
+                $recipient->save();
 
-            if ($i % 100 == 0) {
-                if (! Recipient::insert($rows)) {
-                    \Log::debug("RecipientBuilder: Unable to load recipients - cannot add to db");
-                    throw new \Exception("Unable to load recipients - cannot add to db");
+                // Create text to value code and value
+                if (
+                    array_key_exists('text_to_value_code', $list->fieldmap) &&
+                    isset($row[$list->fieldmap['text_to_value_code']]) &&
+                    $row[$list->fieldmap['text_to_value_code']] !== '' &&
+                    array_key_exists('text_to_value_amount', $list->fieldmap) &&
+                    isset($row[$list->fieldmap['text_to_value_amount']]) &&
+                    $row[$list->fieldmap['text_to_value_amount']] !== ''
+                ) {
+                    $textToValue = $recipient->textToValue()->create([
+                        'checked_in' => false,
+                        'text_to_value_code' => $row[$list->fieldmap['text_to_value_code']],
+                        'text_to_value_amount' => $row[$list->fieldmap['text_to_value_amount']],
+                    ]);
+
+                    // Generate qr and upload to s3
+                    $filePath = storage_path('app/' . Str::random(15) . '.png');
+                    QrCode::format('png')
+                        ->size(200)
+                        ->margin(5)
+                        ->errorCorrection('M')
+                        ->generate($recipient->getCheckInUrl(), $filePath);
+                    $path = Storage::disk('media')->putFile('text-to-value', new File($filePath), 'public');
+
+                    $recipient->qrCode()->create([
+                        'image_url' => Storage::disk('media')->url($path)
+                    ]);
                 }
-                \Log::debug("Processing file for list {$list->id}: inserting ". count($rows) ." records");
-                $rows = [];
+
+            } catch (\Exception $e) {
+                \Log::debug("RecipientBuilder: Unable to load recipients - cannot add to db, error" . $e->getMessage());
+                throw new \Exception("Unable to load recipients - cannot add to db");
             }
-
-            $i++;
         }
-
-        if (! Recipient::insert($rows)) {
-            \Log::debug("Processing file for list {$list->id}: inserting ". count($rows) ." records");
-            throw new \Exception("Unable to load recipients - cannot add to db");
-        }
-        \Log::debug("Processing file for list {$list->id}: inserting ". count($rows) ." records");
 
         $list->update([
             'recipients_added' => true,
         ]);
+
+        $i++;
     }
 
     /**

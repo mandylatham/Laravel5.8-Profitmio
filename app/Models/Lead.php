@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 
@@ -18,8 +19,24 @@ class Lead extends Recipient
     const POSITIVE_OUTCOME = 'positive';
     const NEGATIVE_OUTCOME = 'negative';
 
-    protected $fillable = ['status', 'notes', 'last_status_changed_at', 'last_responded_at', 'sent_to_crm',
-        'service', 'interested', 'not_interested', 'heat'];
+    protected $fillable = [
+        'status',
+        'notes',
+        'last_status_changed_at',
+        'last_responded_at',
+        'sent_to_crm',
+        'service',
+        'interested',
+        'not_interested',
+        'heat',
+        'first_name',
+        'last_name',
+        'email',
+        'phone',
+        'make',
+        'model',
+        'year'
+    ];
 
     public $dates = ['last_status_changed_at', 'last_responded_at'];
 
@@ -36,6 +53,37 @@ class Lead extends Recipient
             // $query->whereNotNull('last_responded_at');
             $query->has('responses');
         });
+    }
+
+    public function checkedIn()
+    {
+        $textToValue = $this->textToValue;
+        if ($textToValue) {
+            return $textToValue->checked_in;
+        }
+        return false;
+    }
+
+    public function getCheckedInAt()
+    {
+        $textToValue = $this->textToValue;
+        if ($textToValue && $textToValue->checked_in_at) {
+            return Carbon::createFromFormat('Y-m-d H:i:s', $textToValue->checked_in_at)->format('m/d/Y @ g:m A');
+        }
+        return '';
+    }
+
+    public function textToValueRequested()
+    {
+        if (!$this->textToValue) {
+            return false;
+        }
+        return $this->textToValue->value_requested;
+    }
+
+    public function isClosed()
+    {
+        return $this->status === self::CLOSED_STATUS;
     }
 
     // todo: find a way to perform serches in-model
@@ -90,6 +138,16 @@ class Lead extends Recipient
             'status' => self::CLOSED_STATUS,
             'last_status_changed_at' => now(),
         ]);
+    }
+
+    public function setCheckedIn()
+    {
+        $textToValue = $this->textToValue;
+        if ($textToValue) {
+            $textToValue->checked_in = true;
+            $textToValue->checked_in_at = Carbon::now()->toDateTimeString();
+            $textToValue->save();
+        }
     }
 
     public function reopen()

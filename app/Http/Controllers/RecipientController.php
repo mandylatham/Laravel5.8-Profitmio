@@ -26,6 +26,7 @@ use Illuminate\Log\Logger;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\MessageBag;
+use Illuminate\Validation\Rule;
 use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
@@ -785,6 +786,7 @@ class RecipientController extends Controller
              */
             $validator = Validator::make($request->all(), [
                 'uploaded_file_name'     => 'required',
+                'enable_text_to_value'   => 'boolean',
                 'uploaded_file_headers'  => 'required',
                 'uploaded_file_fieldmap' => 'required',
                 'pm_list_name'           => 'required',
@@ -804,11 +806,18 @@ class RecipientController extends Controller
                 'last_name'  => 'required',
                 'email'      => 'required_if:phone,',
                 'phone'      => 'required_if:email,',
+                'text_to_value_code' => Rule::requiredIf(function () use ($request) {
+                    return (bool) $request->input('enable_text_to_value');
+                }),
+                'text_to_value_amount' => Rule::requiredIf(function () use ($request) {
+                    return (bool) $request->input('enable_text_to_value');
+                }),
             ], [
                 'first_name' => 'The "first_name" field must be mapped',
                 'last_name'  => 'The "last_name" field must be mapped',
                 'email'      => 'The "email" field must be mapped if the "phone" field is not',
-                'phone'      => 'The "phones" field must be mapped if the "email" field is not',
+                'text_to_value_code' => 'The "text to value code" field must be mapped if the "Text to value" feature is enabled',
+                'text_to_value_amount' => 'The "text to value amount" field must be mapped if the "Text to value" feature is enabled',
             ]);
 
             if ($validator->fails()) {
@@ -838,6 +847,7 @@ class RecipientController extends Controller
             $list = RecipientList::create([
                 'campaign_id' => $campaign->id,
                 'uploaded_by' => auth()->user()->id,
+                'text_to_value' => $request->input('text_to_value', false),
                 'fieldmap'    => $fieldmap,
                 'type'        => $type,
                 'name'        => $request->input('pm_list_name'),

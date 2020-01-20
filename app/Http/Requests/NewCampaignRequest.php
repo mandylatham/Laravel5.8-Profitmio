@@ -33,6 +33,7 @@ class NewCampaignRequest extends FormRequest
             'agency' => 'required',
             'dealership' => 'required',
             'enable_adf_crm_export' => 'boolean',
+            'enable_text_to_value' => 'boolean',
             'adf_crm_export' => 'required_if:enable_adf_crm_export,true',
             'enable_lead_alerts' => 'boolean',
             'lead_alert_emails' => 'required_if:enable_lead_alerts,true',
@@ -42,6 +43,8 @@ class NewCampaignRequest extends FormRequest
             'service_dept_email' => 'required_if:enable_service_dept,true',
             'enable_sms_on_callback' => 'boolean',
             'sms_on_callback_number' => 'required_if:enable_service_dept,true',
+            'enable_text_to_value' => 'boolean',
+            'text_to_value_message' => 'required_if:enable_text_to_value,true|regex:/^.*\{\{\s+text_to_value_amount\s+\}\}.*$/i',
             'phone_number_id' => 'nullable',
             'tags' => 'nullable|array',
         ];

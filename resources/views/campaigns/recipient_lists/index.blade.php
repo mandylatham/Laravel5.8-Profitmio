@@ -6,6 +6,7 @@
 
 @section('body-script')
     <script>
+        window.enableTextToValue = @json($campaign->hasTextToValueEnabled());
         window.searchRecipientsUrl = @json(route('campaigns.recipient-lists.for-user-display', ['campaign' => $campaign->id]));
         window.uploadRecipientsUrl = @json(route('campaigns.recipient-lists.upload', ['campaign' => $campaign->id]));
         window.downloadRecipientListUrl = @json(route('campaigns.recipient-lists.download', ['campaign' => $campaign->id, 'list' => ':listId']));

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Builders\ResponseBuilder;
+use App\Http\Requests\SaveCheckinFormRequest;
 use App\Events\{CampaignCountsUpdated, ServiceDeptLabelAdded};
 use App\Factories\ActivityLogFactory;
 use App\Http\Requests\CloseLeadRequest;
@@ -157,6 +158,32 @@ class LeadController extends Controller
         event(new CampaignCountsUpdated($lead->campaign));
 
         return new LeadResource($lead);
+    }
+
+    public function saveCheckInForm(Lead $lead, SaveCheckinFormRequest $request)
+    {
+        $lead->update($request->only('first_name', 'last_name', 'email', 'phone', 'make', 'year', 'model'));
+
+        if ($lead->campaign->adf_crm_export) {
+            $this->sendToCrm($lead);
+        }
+
+        return $lead;
+    }
+
+    public function showCheckInForm(Lead $lead)
+    {
+        if ($lead->isClosed()) {
+            $lead->open();
+        }
+        if (!$lead->checkedIn()) {
+            $lead->setCheckedIn();
+            $activity = $this->activityFactory->forUserCheckedLeadIn($lead);
+            $this->scoring->forActivity($activity);
+        }
+        return view('lead.check-in-form')->with([
+            'lead' => $lead,
+        ]);
     }
 
     /**

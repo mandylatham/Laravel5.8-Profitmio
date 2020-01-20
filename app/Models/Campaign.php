@@ -194,8 +194,8 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
     public function users()
     {
         return $this->belongsToMany(User::class)
-                    ->using(CampaignUser::class)
-                    ->withPivot(['points']);
+            ->using(CampaignUser::class)
+            ->withPivot(['points']);
     }
 
     /**
@@ -304,6 +304,11 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         return $scores;
     }
 
+    public function hasTextToValueEnabled()
+    {
+        return !is_null($this->enable_text_to_value) && (bool)$this->enable_text_to_value === true;
+    }
+
     /**
      * Scope by company
      */
@@ -369,7 +374,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
      */
     public function getPhoneResponsesCountAttribute()
     {
-        return $this->phoneResponses()->count() ;
+        return $this->phoneResponses()->count();
     }
 
     /**
@@ -396,8 +401,8 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
     public function getInterestedCountsAttribute()
     {
         return $this->recipients()
-                    ->whereInterested(true)
-                    ->count();
+            ->whereInterested(true)
+            ->count();
     }
 
     /**
@@ -531,7 +536,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
      *
      * @return bool
      */
-    public function getIsLegacyAttribute() : bool
+    public function getIsLegacyAttribute(): bool
     {
         $cuttoff = new Carbon('2019-12-30');
 
@@ -540,5 +545,26 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         } else {
             return $this->created_at->lt($cuttoff);
         }
+    }
+
+    public function getMailerPhone()
+    {
+        return $this->phones()->where('call_source_name', 'mailer')->first();
+    }
+
+    public function getTextToValueMessageForRecipient(Recipient $recipient)
+    {
+        $message = str_replace('{{first_name}}', $recipient->first_name, $this->text_to_value_message);
+        $message = str_replace('{{last_name}}', $recipient->last_name, $message);
+        $message = str_replace('{{make}}', $recipient->make, $message);
+        $message = str_replace('{{model}}', $recipient->model, $message);
+        $message = str_replace('{{year}}', $recipient->year, $message);
+        if ($recipient->textToValue) {
+            $textToValueAmount = ltrim($recipient->textToValue->text_to_value_amount, '$');
+            $message = str_replace('{{text_to_value_amount}}', $textToValueAmount, $message);
+        } else {
+            $message = str_replace('{{text_to_value_amount}}', '', $message);
+        }
+        return $message;
     }
 }

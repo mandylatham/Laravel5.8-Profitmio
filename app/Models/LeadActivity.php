@@ -12,6 +12,7 @@ class LeadActivity
     const MARKETED = 'sent marketing';
     const SENTEMAIL = 'sent email';
     const SENTTOCRM = 'sent lead to the crm';
+    const CHECKED_IN = 'checked in';
     const CALLEDBACK = 'logged call back';
     const UPDATEDNOTES = 'updated the notes';
     const SENTTOSERVICE = 'sent lead to the service department';

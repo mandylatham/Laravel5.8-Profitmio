@@ -49,7 +49,7 @@
                 <div class="col-4" v-if="recipient.status == 'Open'">
                     <button class="btn btn-warning"
                             style="width: 100%; font-size: 1.2rem;"
-                            @click="closeLead(recipient.id)">
+                            @click="closeLead(recipient)">
                         Close Lead
                     </button>
                 </div>
@@ -163,6 +163,15 @@
                 </button>
                 {{ recipient.first_name }} not sent to Service.
             </div>
+
+            <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && recipient.checked_in">
+                <span class="btn btn-success recipient-action mr-2">
+                    <i class="fa fa-calendar-check mr-2"></i>
+                    Checked in
+                </span>
+                Checked in at {{ recipient.checked_in_at_formatted }}.
+            </div>
+
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 1">
                 <span class="btn btn-success recipient-action mr-2">
                     <i class="fa fa-wrench mr-2"></i>
@@ -190,6 +199,44 @@
                         </div>
                     </li>
                 </ul>
+            </div>
+
+            <div class="panel panel-primary messaging-panel mailer-messages" v-if="recipient.status != 'New' && threads.mailer && threads.mailer.length">
+                <div class="panel-heading">
+                    <h3 class="panel-title">MAILER Messaging</h3>
+                </div>
+
+                <div class="message-drop-text">
+                    <strong class="mb-3">Original Message</strong>
+                    <div>{{ threads.mailer[0].message }}</div>
+                </div>
+
+                <div class="panel-body" v-if="threads.mailer.length > 1">
+                    <div class="sms-message-container">
+                        <div v-for="(msg, idx) in threads.mailer" v-if="idx > 0">
+                            <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
+                                <div class="message-user">
+                                    <template v-if="msg.impersonation">
+                                        {{ msg.impersonation.impersonator.name }} (id: {{ msg.impersonation.impersonator.id}})
+                                        <p><small>on behalf of <strong>{{ msg.reply_user }}</strong></small></p>
+                                    </template>
+                                    <template v-else>
+                                        {{ msg.reply_user }}
+                                    </template>
+                                </div>
+
+                                <div class="message-time" v-if="msg.created_at">{{
+                                    msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }} - {{
+                                    msg.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mDurationForHumans('MM/DD/YYYY hh:mm A')}}
+                                </div>
+                                <div class="message-time"  :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}" v-else><span
+                                    class="text-danger">UNKNOWN RECEIVE DATE</span></div>
+
+                                <div class="message" :class="{'inbound-message': msg.incoming == 1, 'outbound-message': msg.incoming == 0}">{{ msg.message_formatted }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="panel panel-primary messaging-panel sms-messages" v-if="recipient.status != 'New' && threads.text && threads.text.length">
@@ -490,9 +537,9 @@
                         window.PmEvent.fire('errors.api', 'Failed to open lead');
                     });
             },
-            closeLead: function (leadId) {
+            closeLead: function (lead) {
                // show modal with requirements
-                window.PmEvent.fire('lead.close-request', leadId);
+                window.PmEvent.fire('lead.close-request', lead);
                 /*
                 axios.post(generateRoute(window.closeLeadUrl, {'leadId': leadId}))
                     .then(response => {

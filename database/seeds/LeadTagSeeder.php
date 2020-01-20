@@ -12,7 +12,7 @@ class LeadTagSeeder extends Seeder
      */
     public function run()
     {
-        LeadTag::insert([
+        $inserts = [
             ["campaign_id" => 0, "name" => "walk-in", "text" => "Lead came in", "indication" => "positive"],
             ["campaign_id" => 0, "name" => "will-come-in", "text" => "Lead will come in", "indication" => "positive"],
             ["campaign_id" => 0, "name" => "serviced", "text" => "Serviced their vehicle", "indication" => "positive"],
@@ -27,6 +27,23 @@ class LeadTagSeeder extends Seeder
             ["campaign_id" => 0, "name" => "wrong-lead-identity-phone", "text" => "Wrong Number", "indication" => "negative"],
             ["campaign_id" => 0, "name" => "wrong-lead-identity-email", "text" => "Wrong Email Address", "indication" => "negative"],
             ["campaign_id" => 0, "name" => "deceased", "text" => "Recipient is deceased", "indication" => "negative"],
-        ]);
+        ];
+        if (\App\Models\LeadTag::where('name', 'checked-in-from-text-to-value')->count() === 0) {
+            $inserts[] = [
+                'name' => 'checked-in-from-text-to-value',
+                'text' => 'Checked in from text-to-value feature',
+                'indication' => 'feature',
+                'campaign_id' => 0
+            ];
+        }
+        if (\App\Models\LeadTag::where('name', 'vehicle-value-request-using-text-to-value')->count() === 0) {
+            $inserts[] = [
+                'name' => 'vehicle-value-request-using-text-to-value',
+                'text' => 'Requested vehicle value using text-to-value feature',
+                'indication' => 'feature',
+                'campaign_id' => 0
+            ];
+        }
+        LeadTag::insert($inserts);
     }
 }

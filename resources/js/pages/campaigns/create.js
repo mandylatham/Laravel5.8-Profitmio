@@ -36,6 +36,8 @@ window['app'] = new Vue({
         loading: false,
         campaignForm: new Form({
             agency: null,
+            text_to_value_message: '',
+            enable_text_to_value: false,
             adf_crm_export: false,
             adf_crm_export_email: [],
             client_passthrough: false,
@@ -78,6 +80,17 @@ window['app'] = new Vue({
             classes: 'asdf',
             rule: /^\w+@[a-zA-Z_]+?\.[a-zA-Z]{2,3}$/
         }]
+    },
+    computed: {
+        campaign_has_mailer_phone: function () {
+            let hasMailerPhone = false;
+            this.phoneNumbers.forEach(phone => {
+                if (phone.call_source_name === 'mailer') {
+                    hasMailerPhone = true;
+                }
+            });
+            return hasMailerPhone;
+        },
     },
     mounted() {
         this.agencies = window.agencies;
