@@ -260,24 +260,35 @@ class IncomingMessageController extends Controller
 
     public function processTextToValueMessage(Request $request)
     {
+        $invalidCharacters = '/[^\w\s]*/';
+        $message = preg_replace($invalidCharacters, '', $request->get('Body'));
+
         try {
-            list($phoneNumber, $campaign, $recipient) = $this->getRequestObjects($request);
+            $number = str_replace('+1', '', trim($request->input('To') ?: $request->input('Called')));
+            $fromNumber = str_replace('+1', '', trim($request->input('From')));
 
-            $invalidCharacters = '/[^\w\s]*/';
-            $message = preg_replace($invalidCharacters, '', $request->get('Body'));
 
-            $response = new Response([
-                'message' => $message,
-                'incoming' => 1,
-                'type' => Response::TTV_TYPE,
-                'recording_sid' => 0,
-                'campaign_id' => $campaign->id,
-            ]);
+            $phoneNumber = PhoneNumber::with('campaign')
+                ->whereRaw("replace(phone_number, '+1', '') like '%{$number}'")
+                ->firstOrFail();
+
+            $recipient = RecipientTextToValue::whereCampaignId($phoneNumber->campaign)
+                ->whereTextToValueCode($message)
+                ->first();
 
             if (!$recipient) {
                 # Lookup caller's "caller-name" from Twilio
                 $recipient = $this->createRecipientFromSender($request, $campaign);
             }
+
+            $response = Response::create([
+                'message' => $message,
+                'incoming' => 1,
+                'type' => Response::TTV_TYPE,
+                'recording_sid' => 0,
+                'campaign_id' => $campaign->id,
+                'recipient_id' => $recipient->id,
+            ]);
 
             if ($recipient->status !== Recipient::NEW_STATUS &&
                 $recipient->status !== Recipient::CLOSED_STATUS &&
@@ -314,12 +325,13 @@ class IncomingMessageController extends Controller
                 $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $valueMessage);
                 $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, '', $recipient->qrCode->image_url);
 
-                $response = new Response([
+                $response = Response::create([
                     'message' => $valueMessage,
                     'incoming' => 0,
                     'type' => Response::TTV_TYPE,
                     'recording_sid' => 0,
                     'campaign_id' => $campaign->id,
+                    'recipient_id' => $recipient->id,
                 ]);
 
                 return response('<Response></Response>')->header('Content-Type', 'text/xml');
@@ -330,12 +342,13 @@ class IncomingMessageController extends Controller
             $twilioMessage = $twilioResponse->message('');
             $twilioMessage->body($valueMessage);
 
-            $response = new Response([
+            $response = Response::create([
                 'message' => $valueMessage,
                 'incoming' => 0,
                 'type' => Response::TTV_TYPE,
                 'recording_sid' => 0,
                 'campaign_id' => $campaign->id,
+                'recipient_id' => $recipient->id,
             ]);
 
             return $twilioResponse;
