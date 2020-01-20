@@ -178,7 +178,7 @@ class LeadController extends Controller
         }
         if (!$lead->checkedIn()) {
             $lead->setCheckedIn();
-            $activity = $this->activityFactory->forUserOpenedLead($lead);
+            $activity = $this->activityFactory->forUserCheckedLeadIn($lead);
             $this->scoring->forActivity($activity);
         }
         return view('lead.check-in-form')->with([

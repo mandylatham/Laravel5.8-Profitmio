@@ -51,12 +51,12 @@ class ActivityLogFactory
      * @param Lead $lead
      * @return Activity|void
      */
-    public function forUserCheckedLead(Lead $lead) : ?Activity
+    public function forUserCheckedLeadIn(Lead $lead) : ?Activity
     {
         return activity(self::LEAD_ACTIVITY_LOG)
             ->performedOn($lead)
             ->causedBy($this->getActivityUser())
-            ->log(LeadActivity::CHECK_IN);
+            ->log(LeadActivity::CHECKED_IN);
     }
 
     /**
