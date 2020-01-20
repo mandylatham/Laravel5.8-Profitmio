@@ -557,7 +557,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         $text_to_value_amount = $recipient->textToValue->text_to_value_amount;
         $text_to_value_code = $recipient->textToValue->text_to_value_code;
 
-        if (strpos($recipient->text_to_value_amount,'$') < 0) {
+        if (strpos($recipient->textToValue->text_to_value_amount,'$') < 0) {
             $text_to_value_amount = '$'.$recipient->text_to_value_amount;
         }
 
@@ -570,7 +570,7 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
             ])
         );
 
-        $message = $this->twig->render('text', array_diff_key($recipient->toArray(), ['pivot' => null]));
+        $message = $twig->render('text', array_diff_key($recipient->toArray(), ['pivot' => null]));
 
         return $message;
     }
