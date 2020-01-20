@@ -15,6 +15,7 @@ use App\Services\SentimentService;
 use Illuminate\Http\Request;
 use App\Events\CampaignCountsUpdated;
 use App\Events\RecipientEmailResponseReceived;
+use App\Models\RecipientTextToValue;
 use App\Services\TwilioClient;
 use Twilio\TwiML\MessagingResponse;
 use Illuminate\Log\Logger;
