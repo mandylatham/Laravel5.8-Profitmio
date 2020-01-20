@@ -203,17 +203,12 @@
 
             <div class="panel panel-primary messaging-panel mailer-messages" v-if="recipient.status != 'New' && threads.mailer && threads.mailer.length">
                 <div class="panel-heading">
-                    <h3 class="panel-title">MAILER Messaging</h3>
-                </div>
-
-                <div class="message-drop-text">
-                    <strong class="mb-3">Original Message</strong>
-                    <div>{{ threads.mailer[0].message }}</div>
+                    <h3 class="panel-title">Text To Value Messages</h3>
                 </div>
 
                 <div class="panel-body" v-if="threads.mailer.length > 1">
                     <div class="sms-message-container">
-                        <div v-for="(msg, idx) in threads.mailer" v-if="idx > 0">
+                        <div v-for="(msg, idx) in threads.mailer">
                             <div class="message-wrapper" :class="{'outbound-message': !msg.incoming}">
                                 <div class="message-user">
                                     <template v-if="msg.impersonation">

@@ -554,17 +554,24 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
 
     public function getTextToValueMessageForRecipient(Recipient $recipient)
     {
-        $message = str_replace('{{first_name}}', $recipient->first_name, $this->text_to_value_message);
-        $message = str_replace('{{last_name}}', $recipient->last_name, $message);
-        $message = str_replace('{{make}}', $recipient->make, $message);
-        $message = str_replace('{{model}}', $recipient->model, $message);
-        $message = str_replace('{{year}}', $recipient->year, $message);
-        if ($recipient->textToValue) {
-            $textToValueAmount = ltrim($recipient->textToValue->text_to_value_amount, '$');
-            $message = str_replace('{{text_to_value_amount}}', $textToValueAmount, $message);
-        } else {
-            $message = str_replace('{{text_to_value_amount}}', '', $message);
+        $text_to_value_amount = $recipient->textToValue->text_to_value_amount;
+        $text_to_value_code = $recipient->textToValue->text_to_value_code;
+
+        if (strpos($ttv_amount, '$') === FALSE) {
+            $text_to_value_amount = '$' . $recipient->text_to_value_amount;
         }
+
+        $recipient->text_to_value_amount = $text_to_value_amount;
+        $recipient->text_to_value_code = $text_to_value_code;
+
+        $twig = new \Twig\Environment(
+            new \Twig\Loader\ArrayLoader([
+                'text' => $this->text_to_value_message,
+            ])
+        );
+
+        $message = $twig->render('text', array_diff_key($recipient->toArray(), ['pivot' => null]));
+
         return $message;
     }
 }
