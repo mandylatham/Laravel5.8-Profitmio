@@ -308,14 +308,36 @@ class IncomingMessageController extends Controller
                 $textToValue->value_requested_at = Carbon::now()->toDateTimeString();
                 $textToValue->save();
 
+                $valueMessage = $campaign->getTextToValueMessageForRecipient($recipient));
+
                 $twilioClient = new TwilioClient();
-                $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $campaign->getTextToValueMessageForRecipient($recipient));
+                $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $valueMessage);
                 $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, '', $recipient->qrCode->image_url);
+
+                $response = new Response([
+                    'message' => $valueMessage,
+                    'incoming' => 0,
+                    'type' => Response::TTV_TYPE,
+                    'recording_sid' => 0,
+                    'campaign_id' => $campaign->id,
+                ]);
+
                 return response('<Response></Response>')->header('Content-Type', 'text/xml');
             }
+
+            $valueMessage = 'Code not found';
             $twilioResponse = new MessagingResponse();
             $twilioMessage = $twilioResponse->message('');
-            $twilioMessage->body('Code not found');
+            $twilioMessage->body($valueMessage);
+
+            $response = new Response([
+                'message' => $valueMessage,
+                'incoming' => 0,
+                'type' => Response::TTV_TYPE,
+                'recording_sid' => 0,
+                'campaign_id' => $campaign->id,
+            ]);
+
             return $twilioResponse;
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
