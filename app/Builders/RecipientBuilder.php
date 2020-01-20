@@ -67,7 +67,7 @@ class RecipientBuilder
             $recipient->campaign_id = $list->campaign_id;
             $recipient->recipient_list_id = $list->id;
             $recipient->first_name = $this->sanitize($row[$list->fieldmap['first_name']], true);
-            $recipient->last_name = $this->sanitize($row[$list->fieldmap['first_name']], true);
+            $recipient->last_name = $this->sanitize($row[$list->fieldmap['last_name']], true);
             if (array_key_exists('email', $list->fieldmap)) {
                 $recipient->email = '';
                 if (filter_var($row[$list->fieldmap['email']], FILTER_VALIDATE_EMAIL)) {
