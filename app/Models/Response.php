@@ -12,7 +12,10 @@ class Response extends Model
 {
     use SoftDeletes, MayBeImpersonated;
 
-    const MAILER_TYPE = 'mailer';
+    const EMAIL_TYPE = 'email';
+    const PHONE_TYPE = 'phone';
+    const SMS_TYPE = 'text';
+    const TTV_TYPE = 'text-to-value';
 
 	protected $guarded = [];
 

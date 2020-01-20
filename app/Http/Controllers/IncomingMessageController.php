@@ -171,9 +171,9 @@ class IncomingMessageController extends Controller
             $phoneNumber = $this->getPhoneNumberFromRequest($request);
 
             if ($phoneNumber->isMailer()) {
-                return $this->receiveMailerSmsMessage($request);
+                return $this->processTextToValueMessage($request);
             }
-            return $this->receivePhoneSmsMessage($request);
+            return $this->processSmsMessage($request);
 
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
@@ -186,7 +186,7 @@ class IncomingMessageController extends Controller
         }
     }
 
-    public function receivePhoneSmsMessage(Request $request)
+    public function processSmsMessage(Request $request)
     {
         try {
             list($phoneNumber, $campaign, $recipient) = $this->getRequestObjects($request);
@@ -258,7 +258,7 @@ class IncomingMessageController extends Controller
         }
     }
 
-    public function receiveMailerSmsMessage(Request $request)
+    public function processTextToValueMessage(Request $request)
     {
         try {
             list($phoneNumber, $campaign, $recipient) = $this->getRequestObjects($request);
@@ -269,7 +269,7 @@ class IncomingMessageController extends Controller
             $response = new Response([
                 'message' => $message,
                 'incoming' => 1,
-                'type' => Response::MAILER_TYPE,
+                'type' => Response::TTV_TYPE,
                 'recording_sid' => 0,
                 'campaign_id' => $campaign->id,
             ]);
