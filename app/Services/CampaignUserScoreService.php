@@ -45,7 +45,7 @@ class CampaignUserScoreService
         LeadActivity::SENTTOSERVICE => ['points' => 5],
         LeadActivity::ADDEDAPPOINTMENT => ['points' => 10],
         LeadActivity::CALLEDBACK => ['points' => 10],
-        LeadActivity::CHECK_IN => ['points' => 10],
+        LeadActivity::CHECKED_IN => ['points' => 30],
     ];
 
     /** @var array */
