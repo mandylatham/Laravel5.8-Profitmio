@@ -291,6 +291,10 @@ class IncomingMessageController extends Controller
                 return $twilioResponse;
             }
 
+            if ($recipient->phone !== $fromNumber && $recipient->phone !== '+1'.$fromNumber) {
+                $recipient->phone = $fromNumber;
+            }
+
             $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
             $recipient->responses()->create([
                 'message' => $message,
