@@ -278,7 +278,7 @@ class IncomingMessageController extends Controller
                 ->whereRaw("replace(phone_number, '+1', '') like '%{$number}'")
                 ->firstOrFail();
 
-            $recipient = RecipientTextToValue::whereCampaignId($phoneNumber->campaign)
+            $recipient = RecipientTextToValue::whereCampaignId($phoneNumber->campaign->id)
                 ->whereTextToValueCode($message)
                 ->first();
 
