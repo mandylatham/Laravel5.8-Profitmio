@@ -557,8 +557,8 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         $text_to_value_amount = $recipient->textToValue->text_to_value_amount;
         $text_to_value_code = $recipient->textToValue->text_to_value_code;
 
-        if (strpos($recipient->textToValue->text_to_value_amount,'$') < 0) {
-            $text_to_value_amount = '$'.$recipient->text_to_value_amount;
+        if (strpos($ttv_amount, '$') === FALSE) {
+            $text_to_value_amount = '$' . $recipient->text_to_value_amount;
         }
 
         $recipient->text_to_value_amount = $text_to_value_amount;
