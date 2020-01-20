@@ -554,15 +554,15 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
 
     public function getTextToValueMessageForRecipient(Recipient $recipient)
     {
-        $text_to_value_amount = $recipient->textToValue->text_to_value_amount;
-        $text_to_value_code = $recipient->textToValue->text_to_value_code;
+        $ttv_amount = $recipient->textToValue->text_to_value_amount;
+        $ttv_code = $recipient->textToValue->text_to_value_code;
 
-        if (strpos($ttv_amount, '$') === FALSE) {
-            $text_to_value_amount = '$' . $recipient->text_to_value_amount;
+        if (strpos($ttv_amount, '$') === false) {
+            $ttv_amount = '$' . $ttv_amount;
         }
 
-        $recipient->text_to_value_amount = $text_to_value_amount;
-        $recipient->text_to_value_code = $text_to_value_code;
+        $recipient->text_to_value_amount = $ttv_amount;
+        $recipient->text_to_value_code = $ttv_code;
 
         $twig = new \Twig\Environment(
             new \Twig\Loader\ArrayLoader([
