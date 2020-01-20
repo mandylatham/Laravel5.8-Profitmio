@@ -15,7 +15,6 @@ use App\Services\SentimentService;
 use Illuminate\Http\Request;
 use App\Events\CampaignCountsUpdated;
 use App\Events\RecipientEmailResponseReceived;
-use App\Models\RecipientTextToValue;
 use App\Services\TwilioClient;
 use Twilio\TwiML\MessagingResponse;
 use Illuminate\Log\Logger;
@@ -279,8 +278,13 @@ class IncomingMessageController extends Controller
                 ->whereRaw("replace(phone_number, '+1', '') like '%{$number}'")
                 ->firstOrFail();
 
-            $recipient = RecipientTextToValue::whereCampaignId($phoneNumber->campaign->id)
-                ->whereTextToValueCode($message)
+            $campaign = $phoneNumber->campaign;
+
+            $recipient = $campaign->recipients()
+                ->wherehas('textToValue', function ($subQ) use ($message) {
+                    $subQ->whereTextToValueCode($message);
+                })
+                ->with('textToValue')
                 ->first();
 
             if (! $recipient) {
