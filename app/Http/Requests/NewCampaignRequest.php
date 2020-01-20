@@ -44,7 +44,7 @@ class NewCampaignRequest extends FormRequest
             'enable_sms_on_callback' => 'boolean',
             'sms_on_callback_number' => 'required_if:enable_service_dept,true',
             'enable_text_to_value' => 'boolean',
-            'text_to_value_message' => 'required_if:enable_text_to_value,true|regex:/^.*\{\{\s+text_to_value_amount\s+\}\}.*$/i',
+            'text_to_value_message' => 'required_if:enable_text_to_value,true|regex:/^.*\{\{\s*text_to_value_amount\s*\}\}.*$/i',
             'phone_number_id' => 'nullable',
             'tags' => 'nullable|array',
         ];
