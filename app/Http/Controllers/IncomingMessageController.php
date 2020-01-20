@@ -171,10 +171,16 @@ class IncomingMessageController extends Controller
             $phoneNumber = $this->getPhoneNumberFromRequest($request);
 
             if ($phoneNumber->isMailer()) {
-                return $this->processTextToValueMessage($request);
-            }
-            return $this->processSmsMessage($request);
+                if ($phoneNumber->campaign->enable_text_to_value) {
+                    return $this->processTextToValueMessage($request);
+                }
 
+                Log::error("Received SMS on non-Text-To-Value Mailer number ({$phoneNumber})");
+                return response('<Response><Reject /></Response>', 401)
+                    ->header('Content-Type', 'text/xml');
+            }
+
+            return $this->processSmsMessage($request);
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
             return response('<Response><Reject /></Response>', 401)
@@ -276,20 +282,26 @@ class IncomingMessageController extends Controller
                 ->whereTextToValueCode($message)
                 ->first();
 
-            if (!$recipient) {
-                # Lookup caller's "caller-name" from Twilio
-                $recipient = $this->createRecipientFromSender($request, $campaign);
+            if (! $recipient) {
+                $valueMessage = 'Code not found';
+                $twilioResponse = new MessagingResponse();
+                $twilioMessage = $twilioResponse->message('');
+                $twilioMessage->body($valueMessage);
+
+                return $twilioResponse;
             }
 
-            $response = Response::create([
+            $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
+            $recipient->responses()->create([
                 'message' => $message,
                 'incoming' => 1,
                 'type' => Response::TTV_TYPE,
                 'recording_sid' => 0,
                 'campaign_id' => $campaign->id,
-                'recipient_id' => $recipient->id,
             ]);
+            $recipient->save();
 
+            // @todo refactor this conditional which repeats in this class
             if ($recipient->status !== Recipient::NEW_STATUS &&
                 $recipient->status !== Recipient::CLOSED_STATUS &&
                 $recipient->status !== Recipient::OPEN_STATUS
@@ -297,12 +309,6 @@ class IncomingMessageController extends Controller
                 $recipient->status = Recipient::NEW_STATUS;
                 $recipient->last_status_changed_at = Carbon::now()->toDateTimeString();
             }
-
-            $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
-            $recipient->save();
-
-            $response->recipient_id = $recipient->id;
-            $response->save();
 
             // unsubscribe happens at twilio level
             if ($this->isUnsubscribeMessage($message)) {
@@ -316,16 +322,16 @@ class IncomingMessageController extends Controller
             if ($recipient->textToValue && $recipient->textToValue->text_to_value_code === $message) {
                 $textToValue = $recipient->textToValue;
                 $textToValue->value_requested = true;
-                $textToValue->value_requested_at = Carbon::now()->toDateTimeString();
+                $textToValue->value_requested_at = Carbon::now('UTC')->toDateTimeString();
                 $textToValue->save();
 
-                $valueMessage = $campaign->getTextToValueMessageForRecipient($recipient));
+                $valueMessage = $campaign->getTextToValueMessageForRecipient($recipient);
 
                 $twilioClient = new TwilioClient();
                 $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, $valueMessage);
                 $twilioClient->sendSms($phoneNumber->phone_number, $recipient->phone, '', $recipient->qrCode->image_url);
 
-                $response = Response::create([
+                $recipient->responses()->create([
                     'message' => $valueMessage,
                     'incoming' => 0,
                     'type' => Response::TTV_TYPE,
@@ -336,22 +342,6 @@ class IncomingMessageController extends Controller
 
                 return response('<Response></Response>')->header('Content-Type', 'text/xml');
             }
-
-            $valueMessage = 'Code not found';
-            $twilioResponse = new MessagingResponse();
-            $twilioMessage = $twilioResponse->message('');
-            $twilioMessage->body($valueMessage);
-
-            $response = Response::create([
-                'message' => $valueMessage,
-                'incoming' => 0,
-                'type' => Response::TTV_TYPE,
-                'recording_sid' => 0,
-                'campaign_id' => $campaign->id,
-                'recipient_id' => $recipient->id,
-            ]);
-
-            return $twilioResponse;
         } catch (ModelNotFoundException $e) {
             Log::error("Model not found: " . $e->getMessage());
             return response('<Response><Reject /></Response>', 401)
