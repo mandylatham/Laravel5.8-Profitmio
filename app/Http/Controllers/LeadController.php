@@ -164,17 +164,9 @@ class LeadController extends Controller
     {
         $lead->update($request->only('first_name', 'last_name', 'email', 'phone', 'make', 'year', 'model'));
 
-        $tags = $lead->tags;
-
-        if (is_null($tags)) {
-            $tags = ['checked-in-from-text-to-value'];
-        } else {
-            $tags[] = 'checked-in-from-text-to-value';
+        if ($lead->campaign->adf_crm_export) {
+            $this->sendToCrm($lead);
         }
-        $lead->tags = $tags;
-        $lead->save();
-
-        $this->sendToCrm($lead);
 
         return $lead;
     }
