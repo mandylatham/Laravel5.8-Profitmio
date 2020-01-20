@@ -24,4 +24,9 @@ class PhoneNumber extends \ProfitMiner\Base\Models\PhoneNumber
     {
         return $this->call_source_name === 'mailer';
     }
+
+    public function isSms()
+    {
+        return $this->call_source_name === 'text';
+    }
 }
