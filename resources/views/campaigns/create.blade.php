@@ -345,9 +345,22 @@
                         <div class="card mb-3">
                             <div class="card-body">
                                 <div class="row no-gutters">
-                                    <div class="col-12">
+                                    <div class="col-12 col-md-6">
                                         <div class="feature-input">
                                             <p-check color="primary" :disabled="!campaign_has_mailer_phone" class="p-default" name="enable_text_to_value" v-model="campaignForm.enable_text_to_value">Enable Text To Value</p-check>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.enable_text_to_value">
+                                        <div class="feature-table">
+                                            <form v-if="campaignForm.enable_text_to_value">
+                                                <div class="alert alert-info mt-2">
+                                                    <i class="fa fa-info-circle mr-2"></i>
+                                                    Available placeholders: <span v-pre>@{{first_name}}, @{{last_name}}, @{{make}}, @{{model}}, @{{year}}, @{{text_to_value_amount}}</span>
+                                                </div>
+                                                <div class="mt-3 mb-0" v-if="campaignForm.enable_text_to_value">
+                                                    <textarea name="text_to_value_message" class="form-control" required v-model="campaignForm.text_to_value_message"></textarea>
+                                                </div>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

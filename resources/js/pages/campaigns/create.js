@@ -36,6 +36,7 @@ window['app'] = new Vue({
         loading: false,
         campaignForm: new Form({
             agency: null,
+            text_to_value_message: '',
             enable_text_to_value: false,
             adf_crm_export: false,
             adf_crm_export_email: [],

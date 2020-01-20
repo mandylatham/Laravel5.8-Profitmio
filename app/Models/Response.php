@@ -12,6 +12,11 @@ class Response extends Model
 {
     use SoftDeletes, MayBeImpersonated;
 
+    const EMAIL_TYPE = 'email';
+    const PHONE_TYPE = 'phone';
+    const SMS_TYPE = 'text';
+    const TTV_TYPE = 'text-to-value';
+
 	protected $guarded = [];
 
     protected $appends = ['message_formatted', 'reply_user', 'recording_url'];

@@ -198,7 +198,7 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 
     public function getCheckInUrl()
     {
-        return env('APP_URL') . '/lead/' . $this->id . '/check-in/';
+        return route('lead.check-in', ['lead' => $this->id]);
     }
 
     public static function searchByRequest(Request $request, RecipientList $recipientList)

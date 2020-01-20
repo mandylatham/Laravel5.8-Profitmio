@@ -100,6 +100,7 @@ class RecipientBuilder
                     $row[$list->fieldmap['text_to_value_amount']] !== ''
                 ) {
                     $textToValue = $recipient->textToValue()->create([
+                        'checked_in' => false,
                         'text_to_value_code' => $row[$list->fieldmap['text_to_value_code']],
                         'text_to_value_amount' => $row[$list->fieldmap['text_to_value_amount']],
                     ]);
