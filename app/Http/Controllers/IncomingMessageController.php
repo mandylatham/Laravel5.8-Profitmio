@@ -296,6 +296,15 @@ class IncomingMessageController extends Controller
                 return $twilioResponse;
             }
 
+            // @todo refactor this conditional which repeats in this class
+            if ($recipient->status !== Recipient::NEW_STATUS &&
+                $recipient->status !== Recipient::CLOSED_STATUS &&
+                $recipient->status !== Recipient::OPEN_STATUS
+            ) {
+                $recipient->status = Recipient::NEW_STATUS;
+                $recipient->last_status_changed_at = Carbon::now()->toDateTimeString();
+            }
+
             if ($recipient->phone !== $fromNumber && $recipient->phone !== '+1'.$fromNumber) {
                 $recipient->phone = $fromNumber;
             }
@@ -309,15 +318,6 @@ class IncomingMessageController extends Controller
                 'campaign_id' => $campaign->id,
             ]);
             $recipient->save();
-
-            // @todo refactor this conditional which repeats in this class
-            if ($recipient->status !== Recipient::NEW_STATUS &&
-                $recipient->status !== Recipient::CLOSED_STATUS &&
-                $recipient->status !== Recipient::OPEN_STATUS
-            ) {
-                $recipient->status = Recipient::NEW_STATUS;
-                $recipient->last_status_changed_at = Carbon::now()->toDateTimeString();
-            }
 
             // unsubscribe happens at twilio level
             if ($this->isUnsubscribeMessage($message)) {
