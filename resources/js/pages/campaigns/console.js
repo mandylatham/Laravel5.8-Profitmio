@@ -50,6 +50,7 @@ window.app = new Vue({
         currentRecipientId: null,
         currentUser: {},
         recipientKey: null,
+        leadTags: window.leadTags,
         loading: false,
         mediaOption: null,
         mediaOptions: [
@@ -79,9 +80,10 @@ window.app = new Vue({
             page: 1,
             per_page: 30,
             status: null,
-            label: null,
+            labels: null,
             media: null
         }),
+        searchTags: [],
         total: null,
         pusherKey: '',
         pusherCluster: '',
@@ -106,6 +108,7 @@ window.app = new Vue({
         },
         fetchRecipients() {
             this.loading = true;
+            this.searchForm.labels = this.searchTags.map(t => t.name);
             this.searchForm
                 .get(window.getRecipientsUrl)
                 .then((response) => {

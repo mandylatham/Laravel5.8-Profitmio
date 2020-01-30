@@ -77,12 +77,6 @@ class CampaignCountsUpdated implements ShouldBroadcast
         $counters['email'] = $this->campaign->leads()->whereHas('responses', function ($q) { $q->whereType('email'); })->count();
         $counters['sms'] = $this->campaign->leads()->whereHas('responses', function ($q) { $q->whereType('text'); })->count();
 
-        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
-        foreach ($labels as $label) {
-            $counters[$label] = $this->campaign->leads()
-                ->labelled($label, $this->campaign->id)
-                ->count();
-        }
         return $counters;
     }
 }

@@ -141,13 +141,7 @@ class LeadSearch implements SearchableRepositoryContract
     {
         $labels = (array) $labels;
 
-        foreach ($labels as $label) {
-            if (in_array($label, $this->labels)) {
-                $this->leads->labelled($label);
-            } else {
-                throw new \Exception('invalid parameter for labels');
-            }
-        }
+        $this->leads->labelled($labels);
 
         return $this;
     }
