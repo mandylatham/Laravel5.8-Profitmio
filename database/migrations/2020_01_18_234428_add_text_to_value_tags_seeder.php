@@ -1,8 +1,7 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use App\Models\LeadTag;
 
 class AddTextToValueTagsSeeder extends Migration
 {
@@ -14,17 +13,17 @@ class AddTextToValueTagsSeeder extends Migration
     public function up()
     {
         $inserts = [];
-        if (\App\Models\LeadTag::where('name', 'checked-in-from-text-to-value')->count() === 0) {
+        if (\App\Models\LeadTag::where('name', LeadTag::CHECKED_IN_FROM_TEXT_TO_VALUE_TAG)->count() === 0) {
             $inserts[] = [
-                'name' => 'checked-in-from-text-to-value',
+                'name' => LeadTag::CHECKED_IN_FROM_TEXT_TO_VALUE_TAG,
                 'text' => 'Checked in from text-to-value feature',
                 'indication' => 'feature',
                 'campaign_id' => 0
             ];
         }
-        if (\App\Models\LeadTag::where('name', 'vehicle-value-request-using-text-to-value')->count() === 0) {
+        if (\App\Models\LeadTag::where('name', LeadTag::VEHICLE_VALUE_REQUESTED_TAG)->count() === 0) {
             $inserts[] = [
-                'name' => 'vehicle-value-requested-using-text-to-value',
+                'name' => LeadTag::VEHICLE_VALUE_REQUESTED_TAG,
                 'text' => 'Requested vehicle value using text-to-value feature',
                 'indication' => 'feature',
                 'campaign_id' => 0
@@ -40,7 +39,7 @@ class AddTextToValueTagsSeeder extends Migration
      */
     public function down()
     {
-        \App\Models\LeadTag::where('name', 'checked-in-from-text-to-value')->delete();
-        \App\Models\LeadTag::where('name', 'vehicle-value-requested-using-text-to-value')->delete();
+        \App\Models\LeadTag::where('name', LeadTag::CHECKED_IN_FROM_TEXT_TO_VALUE_TAG)->delete();
+        \App\Models\LeadTag::where('name', LeadTag::VEHICLE_VALUE_REQUESTED_TAG)->delete();
     }
 }
