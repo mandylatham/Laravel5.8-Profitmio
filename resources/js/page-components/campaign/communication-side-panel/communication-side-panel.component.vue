@@ -169,7 +169,7 @@
                     <i class="fa fa-calendar-check mr-2"></i>
                     Checked in
                 </span>
-                Checked in at {{ recipient.checked_in_at_formatted }}.
+                Checked in at {{ recipient.checked_in_at_formatted | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }}.
             </div>
 
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 1">
