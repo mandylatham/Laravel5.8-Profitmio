@@ -2,7 +2,7 @@ version: 0.0
 os: linux
 files:
   - source: /
-    destination: /home/forge/app.profitminer.io/
+    destination: /home/profitminer/profitminer/
 hooks:
   BeforeInstall:
     - location: .aws/codedeploy/scripts/beforeInstall.sh
