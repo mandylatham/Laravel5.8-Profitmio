@@ -30,7 +30,7 @@ find $path -type f -exec chmod 664 {} \;
 find $path -type d -exec chmod 755 {} \;
 chmod -R 775 $path/storage $path/bootstrap/cache
 
-exit
+logout
 
 semanage fcontext --add --type httpd_sys_content_t "${path}(/.*)?"
 semanage fcontext --add --type httpd_sys_rw_content_t "${path}/storage(/.*)?"
