@@ -9,7 +9,6 @@ elif [[ $DEPLOYMENT_GROUP_NAME == "testing" ]]; then
 fi
 mv /home/profitminer/profitminer $path
 chown profitminer:profitminer -R $path
-su - profitminer
 cd $path
 echo '{"github-oauth": {"github.com": "5cd9cd2879e7f6c642c0fdceedfd68b9dc6345fb"}}' > auth.json
 touch .env
@@ -30,17 +29,15 @@ find $path -type f -exec chmod 664 {} \;
 find $path -type d -exec chmod 755 {} \;
 chmod -R 775 $path/storage $path/bootstrap/cache
 
-logout
-
 semanage fcontext --add --type httpd_sys_content_t "${path}(/.*)?"
 semanage fcontext --add --type httpd_sys_rw_content_t "${path}/storage(/.*)?"
 semanage fcontext --add --type httpd_sys_rw_content_t "${path}/cache(/.*)?"
 restorecon -Rv $path
 
-#php artisan key:generate
-php artisan queue:restart
-
 # Run as root
 chown profitminer:profitminer -R $path
+
+#php artisan key:generate
+php artisan queue:restart
 
 exit 0;
