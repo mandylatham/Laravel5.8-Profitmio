@@ -3,14 +3,13 @@
 export HOME=/root
 export COMPOSER_HOME=/root
 if [[ $DEPLOYMENT_GROUP_NAME == "production" || $DEPLOYMENT_GROUP_NAME == "pm-prod-web-server-asg" ]]; then
-    path=/home/profitminer/profitminer.io
+    path=/home/profitminer/app.profitminer.io
 elif [[ $DEPLOYMENT_GROUP_NAME == "testing" ]]; then
     path=/home/profitminer/testing.profitminer.io
 fi
 mv /home/profitminer/profitminer $path
-chown profitminer:profitminer -R $path
 cd $path
-echo '{"github-oauth": {"github.com": "5cd9cd2879e7f6c642c0fdceedfd68b9dc6345fb"}}' > auth.json
+chown profitminer:profitminer -R $path
 touch .env
 cp .env.dusk.example .env.dusk
 # Environment-Specific configuration
@@ -36,6 +35,8 @@ restorecon -Rv $path
 
 # Run as root
 chown profitminer:profitminer -R $path
+
+su - profitminer
 
 #php artisan key:generate
 php artisan queue:restart
