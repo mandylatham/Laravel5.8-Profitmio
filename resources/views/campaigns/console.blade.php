@@ -54,8 +54,8 @@
 
 @section('sidebar-content')
     <div class="logo">
-        <img src="/img/logo-large.png" height="30px" class="d-none d-xl-block">
-        <img src="/img/apple-icon-120x120.png" height="40px" class="d-block d-xl-none">
+        <img src="/img/logo-large.png" height="40px" class="d-none d-xl-block">
+        <img src="/img/logo.png" height="40px" class="d-block d-xl-none">
     </div>
     <nav id="sidebar-nav-content" class="wrapper-aside--navigation" v-cloak>
         <h4>Campaign</h4>

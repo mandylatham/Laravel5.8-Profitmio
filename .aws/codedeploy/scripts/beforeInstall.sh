@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [[ $CODEDEPLOY_ENVIRONMENT == "" ]]; then
-    echo "This server is not configured for CodeDeploy script use";
-    exit 125;
-fi
-
-pip install --upgrade awscli
-if [[ -d /home/forge/app.profitminer.io ]]; then
-    rm -R /home/forge/app.profitminer.io
+if [[ -d /home/profitminer/profitminer ]]; then
+    rm -R /home/profitminer/profitminer
 fi

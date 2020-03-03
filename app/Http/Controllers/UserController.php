@@ -20,6 +20,7 @@ use Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException;
 use Pion\Laravel\ChunkUpload\Handler\AbstractHandler;
 use Pion\Laravel\ChunkUpload\Handler\HandlerFactory;
 use Pion\Laravel\ChunkUpload\Receiver\FileReceiver;
+use Storage;
 
 class UserController extends Controller
 {
@@ -295,8 +296,10 @@ class UserController extends Controller
 
         // check if the upload has finished (in chunk mode it will send smaller files)
         if ($save->isFinished()) {
-            $image = $user->addMedia($save->getFile())->toMediaCollection('profile-photo', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
-            return response()->json(['location' => $image->getFullUrl()], 201);
+            $image = $user->sudoaddMedia($save->getFile())->toMediaCollection('profile-photo', env('MEDIA_LIBRARY_DEFAULT_PUBLIC_FILESYSTEM'));
+            return response()->json([
+                'location' => Storage::disk($image->disk)->url($image->id.'/'.$image->file_name)
+            ], 201);
         }
 
         // we are in chunk mode, lets send the current progress
