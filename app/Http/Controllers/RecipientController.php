@@ -206,10 +206,6 @@ class RecipientController extends Controller
         if ($filter == 'closed') {
             $recipients = $campaign->leads()->closed();
         }
-        if ($filter == 'labelled') {
-            $recipients = $campaign->leads()
-                ->labelled($campaign->id, $label);
-        }
         if ($filter == 'email') {
             $recipients = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('email'); });
         }
@@ -313,12 +309,6 @@ class RecipientController extends Controller
 
         if ($media == 'calls') {
             $leads->whereHas('responses', function ($q) { $q->whereType('phone'); });
-        }
-
-        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
-        if (in_array($label, $labels)) {
-            $leads = $campaign->leads()
-                ->labelled($label, $campaign->id);
         }
 
         if ($request->filled('search')) {

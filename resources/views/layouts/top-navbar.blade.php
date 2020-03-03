@@ -9,7 +9,7 @@
 
         <b-navbar-brand href="{{ url('/') }}" class="ml-sm-4 ml-md-6 ml-lg-8">
             <img src="/img/logo.png" height="40px" class="logo d-sm-none">
-            <img src="/img/logo-large.png" height="40px" class="logo-large d-none d-sm-block">
+            <img src="/img/logo-large.png" height="30px" class="logo-large d-none d-sm-block">
         </b-navbar-brand>
 
         <b-navbar-toggle target="top-navbar" class="top-navbar-toggle m-0 ml-sm-auto d-inline-flex d-sm-none">

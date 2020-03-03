@@ -9,6 +9,7 @@
 @section('body-script')
     <script>
         window.baseUrl = @json(route("campaign.response-console.index", ['campaign' => $campaign->id]).'/');
+        window.leadTags = @json($leadTags);
         window.positiveTags = @json($positiveTags);
         window.negativeTags = @json($negativeTags);
         window.counters = @json($counters);
@@ -42,7 +43,7 @@
         window.addLabelUrl = "{{ route('recipient.add-label', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.removeLabelUrl = "{{ route('recipient.remove-label', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.recipientGetResponsesUrl = "{{ route('recipient.get-responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
-        window.sendCrmUrl = "{{ route('recipient.send-to-crm', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
+        window.sendCrmUrl = "{{ route('recipient.send-to-crm', ['lead' => ':recipientId']) }}";
         window.sendServiceUrl = "{{ route('recipient.send-to-service', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
         window.textToValueRequestedTag = @json($textToValueRequestedTag);
         window.checkedInTextToValueTag = @json($checkedInTextToValueTag);
@@ -252,8 +253,9 @@
             ></v-select>
             <v-select class="mb-3 filter--v-select"
                       placeholder="Tags"
-                      :options="['heat', 'service', 'appointment']"
-                      v-model="searchForm.label"
+                      label="text"
+                      :options="leadTags"
+                      v-model="searchTags"
                       v-if="searchForm.status == 'closed'"
                       @input="fetchRecipients"
                       multiple

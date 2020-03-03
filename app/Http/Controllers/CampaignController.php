@@ -66,13 +66,6 @@ class CampaignController extends Controller
         $counters['email'] = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('email'); })->count();
         $counters['sms'] = $campaign->leads()->whereHas('responses', function ($q) { $q->whereType('text'); })->count();
 
-        $labels = ['none', 'interested', 'appointment', 'callback', 'service', 'not_interested', 'wrong_number', 'car_sold', 'heat'];
-        foreach ($labels as $label) {
-            $counters[$label] = Recipient::withResponses($campaign->id)
-                ->labelled($label, $campaign->id)
-                ->count();
-        }
-
         $positiveTags = LeadTag::whereIn('campaign_id', [0, $campaign->id])
             ->whereIn('indication', ['positive', 'neutral'])
             ->select(['name', 'text'])
@@ -87,10 +80,15 @@ class CampaignController extends Controller
             ->whereIn('indication', ['negative', 'neutral'])
             ->select(['name', 'text'])
             ->get();
+        $leadTags = LeadTag::whereIn('campaign_id', [0, $campaign->id])
+            ->orderBy('text', 'ASC')
+            ->select(['name', 'text'])
+            ->get();
 
         $data = [
             'counters' => $counters,
             'campaign' => $campaign,
+            'leadTags' => $leadTags,
             'checkedInTextToValueTag' => $checkedInTextToValueTag,
             'textToValueRequestedTag' => $textToValueRequestedTag,
             'positiveTags' => $positiveTags,

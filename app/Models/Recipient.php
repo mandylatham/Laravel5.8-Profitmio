@@ -174,22 +174,9 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         return $query->whereNotNull('archived_at');
     }
 
-    public function scopeLabelled($query, $label)
+    public function scopeLabelled($query, $labels)
     {
-        if ($label == 'none') {
-            return $query->where([
-                'interested'     => 0,
-                'not_interested' => 0,
-                'service'        => 0,
-                'heat'           => 0,
-                'appointment'    => 0,
-                'car_sold'       => 0,
-                'wrong_number'   => 0,
-                'callback'       => 0,
-            ]);
-        }
-
-        return $query->where($label, 1);
+        return $query->whereJsonContains('tags', $labels);
     }
 
     /** END SCOPES BLOCK **/

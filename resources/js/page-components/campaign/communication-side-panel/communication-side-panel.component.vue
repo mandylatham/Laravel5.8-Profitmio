@@ -169,7 +169,7 @@
                     <i class="fa fa-calendar-check mr-2"></i>
                     Checked in
                 </span>
-                Checked in at {{ recipient.checked_in_at_formatted }}.
+                Checked in at {{ recipient.checked_in_at_formatted | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }}.
             </div>
 
             <div class="alert alert-success" role="alert" v-if="recipient.status != 'New' && campaign.service_dept && recipient.service === 1">
@@ -287,7 +287,7 @@
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="textMessage">
                                 <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-primary waves-effect send-sms">
+                                    <button type="submit" :disabled="textMessage.length === 0" class="btn btn-primary waves-effect send-sms">
                                         <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
@@ -357,7 +357,7 @@
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="emailMessage">
                                 <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-primary waves-effect send-email">
+                                    <button type="submit" :disabled="emailMessage.length === 0" class="btn btn-primary waves-effect send-email">
                                         <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
@@ -604,7 +604,8 @@
                     });
             },
             sendToCrm: function () {
-                axios.post(generateRoute(window.sendCrmUrl, {'recipientId': this.recipientId}))
+                axios
+                    .post(generateRoute(window.sendCrmUrl, {recipientId: this.recipientId}))
                     .then(response => {
                         this.recipient.sent_to_crm = true;
                         this.$toastr.success("Recipient sent to CRM");
@@ -626,6 +627,7 @@
                     });
             },
             sendText: function () {
+                if (this.textMessage.length === 0) return;
                 const textMessage = this.textMessage;
                 // Add temporal message, this message will be replaced
                 this.threads.text.push({
@@ -654,6 +656,7 @@
                     });
             },
             sendEmail: function () {
+                if (this.emailMessage.length === 0) return;
                 const emailMessage = this.emailMessage;
                 // Add temporal message, this message will be replaced
                 this.threads.email.push({
