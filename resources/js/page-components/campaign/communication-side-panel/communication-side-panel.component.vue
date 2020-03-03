@@ -287,7 +287,7 @@
                                 <input type="text" id="sms-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="textMessage">
                                 <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-primary waves-effect send-sms">
+                                    <button type="submit" :disabled="textMessage.length === 0" class="btn btn-primary waves-effect send-sms">
                                         <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
@@ -357,7 +357,7 @@
                                 <input type="text" id="email-message" class="form-control message-field" name="message"
                                        placeholder="Type your message..." v-model="emailMessage">
                                 <div class="input-group-btn">
-                                    <button type="submit" class="btn btn-primary waves-effect send-email">
+                                    <button type="submit" :disabled="emailMessage.length === 0" class="btn btn-primary waves-effect send-email">
                                         <i class="fas fa-paper-plane"></i>
                                     </button>
                                 </div>
@@ -629,6 +629,7 @@
                     });
             },
             sendText: function () {
+                if (this.textMessage.length === 0) return;
                 const textMessage = this.textMessage;
                 // Add temporal message, this message will be replaced
                 this.threads.text.push({
@@ -657,6 +658,7 @@
                     });
             },
             sendEmail: function () {
+                if (this.emailMessage.length === 0) return;
                 const emailMessage = this.emailMessage;
                 // Add temporal message, this message will be replaced
                 this.threads.email.push({
