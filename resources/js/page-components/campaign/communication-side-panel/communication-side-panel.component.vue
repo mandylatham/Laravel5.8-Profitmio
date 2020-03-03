@@ -605,9 +605,7 @@
             },
             sendToCrm: function () {
                 axios
-                    .post(window.sendCrmUrl, {
-                        recipientId: this.recipientId
-                    })
+                    .post(generateRoute(window.sendCrmUrl, {recipientId: this.recipientId}))
                     .then(response => {
                         this.recipient.sent_to_crm = true;
                         this.$toastr.success("Recipient sent to CRM");

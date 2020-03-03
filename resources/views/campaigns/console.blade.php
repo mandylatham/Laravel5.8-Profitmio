@@ -43,7 +43,7 @@
         window.addLabelUrl = "{{ route('recipient.add-label', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.removeLabelUrl = "{{ route('recipient.remove-label', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
         window.recipientGetResponsesUrl = "{{ route('recipient.get-responses', ['campaign' => $campaign->id, 'recipient' => ':recipientId']) }}";
-        window.sendCrmUrl = "{{ route('recipient.send-to-crm', ['campaign' => $campaign->id]) }}";
+        window.sendCrmUrl = "{{ route('recipient.send-to-crm', ['lead' => ':recipientId']) }}";
         window.sendServiceUrl = "{{ route('recipient.send-to-service', ['campaign' => $campaign->id, 'lead' => ':leadId']) }}";
         window.textToValueRequestedTag = @json($textToValueRequestedTag);
         window.checkedInTextToValueTag = @json($checkedInTextToValueTag);
