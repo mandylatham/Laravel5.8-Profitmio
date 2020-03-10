@@ -16,7 +16,14 @@ class CloseLeadRequest extends FormRequest
     {
         $lead = $this->route('lead');
 
-        return !! auth()->user()->getCampaigns()->whereCampaignId($lead->campaign_id)->count() || auth()->user()->isAdmin();
+        $authUser = auth()->user();
+
+        if ($authUser->isAdmin() || (!$authUser->isAdmin() && $authUser->isCompanyAdmin(get_active_company()))) {
+            return true;
+        } else if (!$authUser->isAdmin() && $authUser->isCompanyUser(get_active_company())) {
+            return auth()->user()->getCampaigns()->whereCampaignId($lead->campaign_id)->count() > 0;
+        }
+        return false;
     }
 
     /**
