@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Classes\MailgunService;
 use App\Events\RecipientTextResponseReceived;
+use App\Events\RecipientPhoneResponseReceived;
 use App\Models\EmailLog;
 use App\Models\Lead;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
