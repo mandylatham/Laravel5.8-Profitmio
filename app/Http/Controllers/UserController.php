@@ -73,11 +73,17 @@ class UserController extends Controller
         return view('user.index', []);
     }
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('user.create', [
-            'companies' => $this->company->all()
-        ]);
+        $data = [];
+        if ($request->has('company') && auth()->user()->isAdmin()) {
+            $data['company'] = Company::findOrFail($request->input('company'));
+        } else {
+            $data = [
+                'companies' => $this->company->all()
+            ];
+        }
+        return view('user.create', $data);
     }
 
     public function deactivate(User $user, Request $request)

@@ -3,7 +3,7 @@
 @import '~vue2-datepicker/index.css';
 // @import './../components/spinner-ico';
 @import './../components/pm-pagination';
-
+@import '~vue-simple-suggest/dist/styles.css';
 
 $iconbar-width: 80px;
 
@@ -17,6 +17,12 @@ $iconbar-width: 80px;
 .collapsed > .opened,
 :not(.collapsed) > .closed {
     display: none;
+}
+
+#sms-form {
+    .vue-simple-suggest.designed {
+        flex-grow: 1;
+    }
 }
 
 div#close-lead-modal {

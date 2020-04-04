@@ -284,8 +284,14 @@
                                 (isAdmin || ((!isAdmin || isImpersonated) && activeCompany.type === 'dealership'))">
                         <div id="sms-form" style="margin-top: 20px;">
                             <div class="input-group">
-                                <input type="text" id="sms-message" class="form-control message-field" name="message"
-                                       placeholder="Type your message..." v-model="textMessage">
+                                <vue-simple-suggest
+                                    v-model="textMessage"
+                                    placeholder="Type your message..."
+                                    :styles="{defaultInput: 'form-control message-field'}"
+                                    :min-length="0"
+                                    :list="cannedResponses"
+                                    :filter-by-query="true">
+                                </vue-simple-suggest>
                                 <div class="input-group-btn">
                                     <button type="submit" :disabled="textMessage.length === 0" class="btn btn-primary waves-effect send-sms">
                                         <i class="fas fa-paper-plane"></i>
@@ -376,6 +382,7 @@
     import {generateRoute, replacePlaceholders} from './../../../common/helpers';
     import DatePicker from 'vue2-datepicker';
     import {pickBy} from 'lodash';
+    import VueSimpleSuggest from 'vue-simple-suggest';
     import PusherService from './../../../common/pusher-service';
     import './../../../filters/m-utc-parse.filter';
     import './../../../filters/m-format-localized.filter';
@@ -389,7 +396,8 @@
         },
         components: {
             'spinner-icon': require('./../../../components/spinner-icon/spinner-icon').default,
-            DatePicker
+            DatePicker,
+            VueSimpleSuggest
         },
         computed: {
             phone_link: function () {
@@ -405,6 +413,7 @@
         },
         data() {
             return {
+                cannedResponses: [],
                 showNewApptForm: false,
                 disableBgClick: false,
                 recipient: [],
@@ -491,6 +500,8 @@
                         if (this.threads.emailDrop && this.threads.emailDrop.email_html) {
                             this.threads.emailDrop.email_html = replacePlaceholders(this.threads.emailDrop && this.threads.emailDrop.email_html, r.data.lead);
                         }
+
+                        this.cannedResponses = this.threads.textCannedResponses.map(response => response.response);
 
                         this.registerPusherListeners();
                         this.setLoading(false);

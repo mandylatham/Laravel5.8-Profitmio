@@ -214,7 +214,7 @@
                             <div class="row no-gutters mb-md-4">
                                 <div class="col-12 col-sm-5 col-lg-4">
                                     <a dusk="add-user-button" class="btn pm-btn pm-btn-outline-purple float-left"
-                                       href="{{ route('user.create') }}"><i class="fas fa-plus mr-3"></i>New User</a>
+                                       href="{{ route('user.create', ['company' => $company->id]) }}"><i class="fas fa-plus mr-3"></i>New User</a>
                                 </div>
                                 <div class="col-none col-sm-2 col-lg-4"></div>
                                 <div class="col-12 col-sm-5 col-lg-4">

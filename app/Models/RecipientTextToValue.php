@@ -14,4 +14,9 @@ class RecipientTextToValue extends Model
         'text_to_value_code',
         'text_to_value_amount'
     ];
+
+    public function recipient()
+    {
+        return $this->belongsTo(Recipient::class, 'recipient_id', 'id');
+    }
 }

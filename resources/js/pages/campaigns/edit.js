@@ -44,7 +44,13 @@ window['app'] = new Vue({
             text: null,
             indication: null,
         }),
+        addCannedResponseForm: new Form({
+            response: null,
+            sentiment: null
+        }),
+        cannedResponses: window.cannedResponses || [],
         removeTagForm: new Form(),
+        removeCannedResponseForm: new Form(),
         addCrmExportEmail: '',
         adfCrmExportEmail: '',
         agencies: [],
@@ -58,6 +64,12 @@ window['app'] = new Vue({
         },
         dealerships: [],
         dealershipSelected: window.dealershipSelected,
+        cannedResponseTypes: [
+            {value: 'positive', label: 'Positive'},
+            {value: 'negative', label: 'Negative'},
+            {value: 'neutral', label: 'Neutral'},
+        ],
+        cannedResponseType: null,
         callSources: [
             {name: 'email', label: 'Email'},
             {name: 'mailer', label: 'Mailer'},
@@ -142,6 +154,36 @@ window['app'] = new Vue({
         this.getCampaignPhones();
     },
     methods: {
+        addCannedResponse() {
+            this.addCannedResponseForm.sentiment = this.cannedResponseType.value;
+            this.addCannedResponseForm.post(window.addCannedResponseUrl)
+                .then(cannedResponse => {
+                    this.addCannedResponseForm.reset();
+                    this.cannedResponses = [...this.cannedResponses, cannedResponse];
+                    this.$toastr.success('Canned response added');
+                })
+                .catch((error) => {
+                    window.PmEvent.fire('errors.api', "Unable to add canned responses");
+                });
+        },
+        addFieldToAdditionalFeature: function (field, list) {
+            if (!this[field]) return;
+            list.push(this[field]);
+            this[field] = null;
+        },
+        addNewTag: function() {
+            this.addCampaignTagForm.name = Str.snake(this.addCampaignTagForm.name);
+            this.addCampaignTagForm.post(window.addNewTagUrl)
+                .then((response) => {
+                    this.getTags();
+                    this.addCampaignTagForm.reset();
+                    this.$toastr.success("Tag added");
+                })
+                .catch((error) => {
+                    console.error(error.response.data.message);
+                    this.$toastr.error("Unable to add tag: " + error.response.data.message);
+                });
+        },
         campaignHasMailerPhone() {
             let hasMailerPhone = false;
             this.phoneNumbers.forEach(phone => {
@@ -179,9 +221,7 @@ window['app'] = new Vue({
         },
         editPhoneNumber: function (phone) {
             this.editPhoneNumberForm[phone.id].reset();
-            console.log(this.showPhoneNumberForm[phone.id]);
             Vue.set(this.showPhoneNumberForm, phone.id, true);
-            console.log(this.showPhoneNumberForm[phone.id]);
         },
         getTags: function () {
             this.getTagsForm.get(window.getTagsUrl)
@@ -244,24 +284,6 @@ window['app'] = new Vue({
                 }
             });
         },
-        addFieldToAdditionalFeature: function (field, list) {
-            if (!this[field]) return;
-            list.push(this[field]);
-            this[field] = null;
-        },
-        addNewTag: function() {
-            this.addCampaignTagForm.name = Str.snake(this.addCampaignTagForm.name);
-            this.addCampaignTagForm.post(window.addNewTagUrl)
-                .then((response) => {
-                    this.getTags();
-                    this.addCampaignTagForm.reset();
-                    this.$toastr.success("Tag added");
-                })
-                .catch((error) => {
-                    console.error(error.response.data.message);
-                    this.$toastr.error("Unable to add tag: " + error.response.data.message);
-                });
-        },
         removeTag: function (tag) {
             this.removeTagForm.delete(generateRoute(window.deleteTagUrl, {tagName: tag}))
                 .then((response) => {
@@ -273,6 +295,18 @@ window['app'] = new Vue({
                 .catch((error) => {
                     console.error(error);
                     this.$toastr.error("Unable to delete the tag");
+                });
+        },
+        removeCannedResponse: function (cannedResponse) {
+            this.removeCannedResponseForm.delete(generateRoute(window.deleteCannedResponseUrl, {cannedResponse: cannedResponse.id}))
+                .then(() => {
+                    this.cannedResponses = this.cannedResponses.filter(cr => {
+                        return cr.id !== cannedResponse.id;
+                    });
+                })
+                .catch((error) => {
+                    console.error(error);
+                    this.$toastr.error("Unable to delete the canned response");
                 });
         },
         showVerificationStartedAlert: function(variant, message) {

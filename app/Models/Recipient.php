@@ -107,6 +107,11 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
         return $this->hasOne(RecipientTextToValue::class, 'recipient_id', 'id');
     }
 
+    public function textToValueOptIns()
+    {
+        return $this->hasMany(TextToValueOptIn::class, 'recipient_id', 'id');
+    }
+
     /** END RELATIONSHIPS BLOCK **/
 
     /** BEGIN SCOPES BLOCK **/

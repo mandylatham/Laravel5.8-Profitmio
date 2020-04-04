@@ -46,7 +46,6 @@ class CampaignController extends Controller
         return view('campaigns.index', []);
     }
 
-
     /**
      * Load Campaign Console Page
      *
@@ -238,10 +237,12 @@ class CampaignController extends Controller
 
     public function edit(Campaign $campaign)
     {
+
         $dealerships = Company::getDealerships();
         $agencies = Company::getAgencies();
         $viewData = [
             'campaign' => new CampaignResource($campaign),
+            'cannedResponses' => $campaign->cannedResponses,
             'dealerships' => $dealerships,
             'agencies' => $agencies,
         ];

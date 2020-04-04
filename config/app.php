@@ -173,6 +173,7 @@ return [
         Spatie\Activitylog\ActivitylogServiceProvider::class,
         Pion\Laravel\ChunkUpload\Providers\ChunkUploadServiceProvider::class,
         Aws\Laravel\AwsServiceProvider::class,
+        \App\Providers\TextToValueResponderServiceProvider::class,
 
         ProfitMiner\Base\Providers\MediaServiceProvider::class,
         ProfitMiner\Base\Providers\DropServiceProvider::class,

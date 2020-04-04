@@ -47,6 +47,19 @@ class LeadDetails extends JsonResource
 
         $data['appointments'] = Appointment::collection($this->appointments);
         $data['responses'] = $this->responses;
+        $data['threads']['textCannedResponses'] = [];
+
+        $lastLeadResponse = $this->responses()
+            ->where('incoming', 1)
+            ->where('type', Response::SMS_TYPE)
+            ->orderBy('created_at', 'desc')
+            ->first();
+        if ($lastLeadResponse && $lastLeadResponse->sentiment)  {
+            $sentiment = $lastLeadResponse->sentiment;
+            $data['threads']['textCannedResponses'] = $this->campaign->cannedResponses()
+                ->where('sentiment', $sentiment->sentiment)
+                ->get();
+        }
 
         return $data;
     }

@@ -1,6 +1,7 @@
 {
   "private": true,
   "scripts": {
+    "testing": "npm run development",
     "dev": "npm run development",
     "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "watch": "npm run development -- --watch",
@@ -40,6 +41,7 @@
     "vue-good-table": "^2.16.2",
     "vue-scrollto": "^2.13.0",
     "vue-select": "^2.5.1",
+    "vue-simple-suggest": "^1.10.1",
     "vue-sweetalert2": "^1.6.4",
     "vue-toastr-2": "^0.0.10",
     "vue2-ace-editor": "0.0.13",

@@ -11,6 +11,9 @@
         window.campaign = @json($campaign);
         window.agencySelected = @json($campaign->agency);
         window.dealershipSelected = @json($campaign->dealership);
+        window.deleteCannedResponseUrl = @json(route('campaigns.canned-response.delete', ['campaign' => $campaign->id, 'cannedResponse' => ':cannedResponse']));
+        window.cannedResponses = @json($cannedResponses);
+        window.addCannedResponseUrl = @json(route('campaigns.canned-response.store', ['campaign' => $campaign->id]));
         window.saveCampaignUrl = @json(route('campaigns.update', ['campaign' => $campaign->id]));
         window.campaignStatsUrl = @json(route('campaigns.stats', ['campaign' => $campaign->id]));
         window.searchPhoneUrl = @json(route('phone.search'));
@@ -483,7 +486,7 @@
                                                     <tbody>
                                                     <tr v-for="(tag, index) in tags">
                                                         <td>@{{ tag.name }}</td>
-                                                        <td> <a class="fa" :class="tagIndicationClass(tag)"></i></td>
+                                                        <td><i class="fa" :class="tagIndicationClass(tag)"></i></td>
                                                         <td>@{{ tag.text }}</td>
                                                         <td class="text-center align-middle">
                                                             <a href="javascript:;" @click="removeTag(tag.name)">
@@ -493,6 +496,56 @@
                                                     </tr>
                                                     <tr v-if="tags.length === 0">
                                                         <td colspan="4" class="text-center">No items.</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </b-tab>
+                        <b-tab title="CANNED RESPONSES">
+                            <h4 class="mb-3">Canned Responses</h4>
+                            <div class="card mb-3 card-canned-responses">
+                                <div class="card-body">
+                                    <div class="row no-gutters">
+                                        <div class="col-12 col-md-4">
+                                            <div class="feature-input">
+                                                <form @submit.prevent="addCannedResponse()">
+                                                    <div class="form-group">
+                                                        <textarea rows="5" class="form-control" placeholder="Response" v-model="addCannedResponseForm.response"></textarea>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <v-select :options="cannedResponseTypes" label="label" v-model="cannedResponseType" class="filter--v-select"></v-select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button class="btn pm-btn pm-btn-purple" type="submit" :disabled="!addCannedResponseForm.response || !cannedResponseType">Add</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-8">
+                                            <div class="feature-table">
+                                                <table class="table table-sm m-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Message</th>
+                                                        <th>Sentiment</th>
+                                                        <th></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr v-for="(cannedResponse, index) in cannedResponses">
+                                                        <td>@{{ cannedResponse.response }}</td>
+                                                        <td class="text-capitalize">@{{ cannedResponse.sentiment }}</td>
+                                                        <td class="text-center align-middle">
+                                                            <a href="javascript:;" @click="removeCannedResponse(cannedResponse)">
+                                                                <i class="far fa-times-circle"></i>
+                                                            </a>
+                                                        </td>
+                                                    <tr v-if="cannedResponses.length === 0">
+                                                        <td colspan="3" class="text-center">No items.</td>
                                                     </tr>
                                                     </tbody>
                                                 </table>
@@ -566,7 +619,7 @@
                         <div class="col-12">
                             <div class="form-group">
                                 <label for="forward">Forward Number</label>
-                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward"></v-select>
+                                <input type="text" class="form-control" name="forward" v-model="purchasePhoneNumberForm.forward">
                                 <input-errors :error-bag="purchasePhoneNumberForm.errors" :field="'forward'"></input-errors>
                             </div>
                         </div>

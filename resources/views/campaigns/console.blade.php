@@ -302,6 +302,7 @@
 
         <b-modal ref="closeLeadModalRef"
                  id="close-lead-modal"
+                 static="true"
                  title="Close Lead"
                  size="sm">
             <template v-slot:modal-header="">

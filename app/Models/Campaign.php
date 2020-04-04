@@ -92,6 +92,11 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         return $this->hasMany(Appointment::class);
     }
 
+    public function cannedResponses()
+    {
+        return $this->hasMany(CannedResponse::class, 'campaign_id', 'id');
+    }
+
     /**
      * Related Company: dealership
      */
@@ -564,11 +569,10 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         $recipient->text_to_value_amount = $ttv_amount;
         $recipient->text_to_value_code = $ttv_code;
 
-        $twig = new \Twig\Environment(
-            new \Twig\Loader\ArrayLoader([
-                'text' => $this->text_to_value_message,
-            ])
-        );
+        $loader = new \Twig\Loader\ArrayLoader([
+            'text' => $this->text_to_value_message,
+        ]);
+        $twig = new \Twig\Environment($loader);
 
         $message = $twig->render('text', array_diff_key($recipient->toArray(), ['pivot' => null]));
 

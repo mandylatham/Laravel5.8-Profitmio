@@ -6,7 +6,8 @@ use App\Classes\MailgunService;
 use App\Events\RecipientTextResponseReceived;
 use App\Events\RecipientPhoneResponseReceived;
 use App\Models\EmailLog;
-use App\Models\Lead;
+use App\Models\TextToValueOptIn;
+use App\Services\TextToValueResponder;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\Campaign;
 use App\Models\PhoneNumber;
@@ -21,6 +22,7 @@ use Twilio\TwiML\MessagingResponse;
 use Illuminate\Log\Logger;
 use Carbon\Carbon;
 use Log;
+use Cache;
 
 class IncomingMessageController extends Controller
 {
@@ -30,11 +32,14 @@ class IncomingMessageController extends Controller
 
     private $log;
 
-    public function __construct(SentimentService $sentiment, Logger $log, MailgunService $mailgun)
+    private $textToValueResponder;
+
+    public function __construct(SentimentService $sentiment, Logger $log, TextToValueResponder $textToValueResponder, MailgunService $mailgun)
     {
         $this->sentiment = $sentiment;
         $this->mailgun = $mailgun;
         $this->log = $log;
+        $this->textToValueResponder = $textToValueResponder;
     }
 
     /**
@@ -173,7 +178,10 @@ class IncomingMessageController extends Controller
 
             if ($phoneNumber->isMailer()) {
                 if ($phoneNumber->campaign->enable_text_to_value) {
-                    return $this->processTextToValueMessage($request);
+                    $message = preg_replace('/[^\w\s]*/', '', $request->get('Body'));
+                    $toNumber = str_replace('+1', '', trim($request->input('To') ?: $request->input('Called')));
+                    $fromNumber = str_replace('+1', '', trim($request->input('From')));
+                    return $this->textToValueResponder->generateMessageResponse($message, $toNumber, $fromNumber);
                 }
 
                 Log::error("Received SMS on non-Text-To-Value Mailer number ({$phoneNumber})");
@@ -269,17 +277,54 @@ class IncomingMessageController extends Controller
     {
         $invalidCharacters = '/[^\w\s]*/';
         $message = preg_replace($invalidCharacters, '', $request->get('Body'));
-
         try {
             $number = str_replace('+1', '', trim($request->input('To') ?: $request->input('Called')));
             $fromNumber = str_replace('+1', '', trim($request->input('From')));
-
 
             $phoneNumber = PhoneNumber::with('campaign')
                 ->whereRaw("replace(phone_number, '+1', '') like '%{$number}'")
                 ->firstOrFail();
 
             $campaign = $phoneNumber->campaign;
+
+            $recipient = $phoneNumber->campaign->recipients()
+                ->whereRaw("replace(phone, '+1', '') = ?", [$fromNumber])
+                ->first();
+
+            if (!$recipient) {
+                $response = new MessagingResponse();
+                $response->message('Invalid code');
+                return $response;
+            }
+
+            $pendingOptIn = Cache::get('recipient.' . $recipient->id . '.waiting-opt-message');
+            if ($pendingOptIn) {
+                if ($message === 'yes') {
+                    $optInMessage = new TextToValueOptIn();
+                    $optInMessage->recipient_id = $recipient->id;
+                    $optInMessage->accepted = true;
+                    $optInMessage->save();
+
+                    Cache::forget('recipient.' . $recipient->id . '.waiting-opt-message');
+
+                    $response = new MessagingResponse();
+                    $response->message('Respond with the code');
+                    return $response;
+                } else {
+                    $response = new MessagingResponse();
+                    $response->message('Invalid code');
+                    return $response;
+                }
+            }
+
+            if (!$recipient->hasAcceptedTextToValueMessages()) {
+                $expiresAt = now()->addMinutes(10);
+                Cache::put('recipient.' . $recipient->id . '.waiting-opt-message', true, $expiresAt);
+
+                $response = new MessagingResponse();
+                $response->message('Reply yes');
+                return $response;
+            }
 
             $recipient = $campaign->recipients()
                 ->wherehas('textToValue', function ($subQ) use ($message) {

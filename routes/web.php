@@ -209,6 +209,12 @@ Route::group(['middleware' => 'auth'], function () {
             Route::delete('/{tag}', 'LeadTagController@destroy')->name('tag.destory');
         });
 
+        // Canned Response
+        Route::group(['prefix' => 'canned-response'], function () {
+            Route::post('/', 'CannedResponseController@store')->name('campaigns.canned-response.store');
+            Route::delete('/{cannedResponse}', 'CannedResponseController@delete')->name('campaigns.canned-response.delete');
+        });
+
         Route::get('/response/{lead}', 'LeadController@show')->name('campaign.recipient.responses');
         Route::any('/leads', 'LeadController@index')->name('lead.index');
         Route::any('/responses/{lead}/add-appointment', 'AppointmentController@addAppointmentFromConsole')->name('add-appointment');

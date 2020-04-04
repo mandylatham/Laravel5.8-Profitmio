@@ -18,12 +18,15 @@ window['app'] = new Vue({
         userForm: new Form({
             role: null,
             email: '',
-            company: null
+            company: window.companySelectedId ? window.companySelectedId : null
         })
     },
     mounted() {
         this.isAdmin = window.isAdmin;
-        if (this.isAdmin) {
+        if (this.isAdmin && window.companySelectedId) {
+            this.roles = ['admin', 'user'];
+            this.fetchCompanies();
+        } else if (this.isAdmin && !window.companySelectedId) {
             this.roles = ['admin', 'user', 'site_admin'];
             this.fetchCompanies();
         } else {

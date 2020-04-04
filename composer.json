@@ -13,6 +13,7 @@
     "require": {
         "php": "^7.1.3",
         "aws/aws-sdk-php": "^3.71",
+        "nlp-tools/nlp-tools": "1.0.*@dev",
         "aws/aws-sdk-php-laravel": "^3.3",
         "barryvdh/laravel-debugbar": "^3.2",
         "bogardo/mailgun": "^5.0",

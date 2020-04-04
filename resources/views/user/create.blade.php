@@ -12,6 +12,7 @@
         window.isAdmin = @json(auth()->user()->isAdmin());
         window.getCompaniesUrl = "{{ route('company.for-dropdown') }}";
         window.userIndexUrl = "{{ route('user.index') }}";
+        window.companySelectedId = @json(isset($company) ? $company->id : null);
     </script>
     <script src="{{ asset('js/user-create.js') }}"></script>
 @endsection
@@ -41,11 +42,16 @@
                                 <label for="email">Email</label>
                                 <input type="text" name="email" class="form-control" required v-model="userForm.email">
                             </div>
+                            @if(isset($companies))
                             <div class="form-group" v-if="isAdmin && userForm.role !== 'site_admin'">
                                 <label for="email">Company</label>
                                 <v-select dusk="company-select" name="company" :options="companies" label="name" v-model="companySelected" class="filter--v-select">
                                 </v-select>
                             </div>
+                            @endif
+                            @if(isset($company))
+                                <input type="hidden" name="company" value="{{ $company->id }}">
+                            @endif
                             <button dusk="save-user-button" type="submit" :disabled="loading" class="btn pm-btn-submit pm-btn pm-btn-purple pm-btn-md mt-4">
                                 <span v-if="!loading"><i class="fas fa-plus mr-2"></i>Add User</span>
                                 <div class="loader-spinner" v-if="loading">
