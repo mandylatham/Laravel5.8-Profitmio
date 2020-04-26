@@ -87,6 +87,7 @@ class RecipientBuilder
                     $recipient->$field = $this->sanitize($row[$list->fieldmap[$field]], true);
                 }
             }
+            $recipient->phone = preg_replace('/[^0-9+]+/', '', $recipient->phone);
             try {
                 $recipient->save();
 
