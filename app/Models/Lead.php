@@ -50,8 +50,14 @@ class Lead extends Recipient
         parent::boot();
 
         static::addGlobalScope(function ($query) {
-            // $query->whereNotNull('last_responded_at');
-            $query->has('responses');
+            $query->whereHas('responses', function ($q) {
+                $q->where('responses.type', Response::EMAIL_TYPE)
+                    ->orWhere('responses.type', Response::SMS_TYPE);
+            })->orWhere(function ($q) {
+                $q->whereHas('responses', function ($query) {
+                    $query->where('responses.type', Response::PHONE_TYPE);
+                })->whereHas('appointments');
+            });
         });
     }
 
