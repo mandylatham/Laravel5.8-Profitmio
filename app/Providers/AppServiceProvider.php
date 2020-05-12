@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Repositories\LeadSearch;
+use App\Services\CloudOneService;
 use Illuminate\Support\Facades\View;
 use Laravel\Dusk\DuskServiceProvider;
 use Illuminate\Support\Facades\Schema;
@@ -44,6 +45,10 @@ class AppServiceProvider extends ServiceProvider
          */
         $this->app->singleton(LeadSearch::class, function () {
             return new LeadSearch();
+        });
+
+        $this->app->singleton(CloudOneService::class, function () {
+            return new CloudOneService();
         });
 
         View::composer('*', function ($view) {

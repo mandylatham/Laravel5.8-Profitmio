@@ -4,10 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Auth;
 
 class Appointment extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'appointments';
 
     const TYPE_DISCUSSION = 'discussion';

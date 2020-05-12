@@ -25,6 +25,10 @@ $iconbar-width: 80px;
     }
 }
 
+#close-lead-modal___BV_modal_outer_ {
+    z-index: unset;
+}
+
 div#close-lead-modal {
     .modal-content {
         background-color: #333;

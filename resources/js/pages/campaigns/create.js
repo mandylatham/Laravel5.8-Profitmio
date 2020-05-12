@@ -4,6 +4,7 @@ import Form from './../../common/form';
 import VueFormWizard from 'vue-form-wizard';
 import Modal from 'bootstrap-vue';
 import {filter} from 'lodash';
+import {getRequestError} from "../../common/helpers";
 Vue.use(Modal);
 Vue.use(VueFormWizard);
 
@@ -26,8 +27,7 @@ window['app'] = new Vue({
         callSources: [
             {name: 'email', label: 'Email'},
             {name: 'mailer', label: 'Mailer'},
-            {name: 'sms', label: 'SMS'},
-            {name: 'text_in', label: 'Text-In'},
+            {name: 'sms', label: 'SMS'}
         ],
         datePickInputClasses: {
             class: 'form-control'
@@ -42,8 +42,10 @@ window['app'] = new Vue({
             adf_crm_export_email: [],
             client_passthrough: false,
             client_passthrough_email: [],
+            cloud_one_campaign_id: '',
             dealership: null,
             end: null,
+            enable_call_center: false,
             expires: null,
             lead_alerts: false,
             lead_alert_emails: [],
@@ -167,6 +169,11 @@ window['app'] = new Vue({
             return '';
         },
         saveCampaign: function () {
+            if (this.campaignForm.enable_call_center && !this.campaignForm.cloud_one_campaign_id) {
+                this.campaignForm.errors.add('cloud_one_campaign_id', 'CloudOne Campaign ID is required.');
+                return;
+            }
+            this.campaignForm.errors.clear('cloud_one_campaign_id');
             this.loading = true;
             this.campaignForm.agency = this.agencySelected.id;
             this.campaignForm.dealership = this.dealershipSelected.id;
@@ -183,7 +190,7 @@ window['app'] = new Vue({
                     });
                 })
                 .catch(e => {
-                    window.PmEvent.fire('errors.api', "Unable to process your request");
+                    window.PmEvent.fire('errors.api', getRequestError(e));
                     this.loading = false;
                 });
         },

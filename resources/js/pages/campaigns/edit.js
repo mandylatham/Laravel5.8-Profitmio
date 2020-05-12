@@ -7,7 +7,7 @@ import moment from 'moment';
 import Alert from 'bootstrap-vue';
 import Modal from 'bootstrap-vue';
 import Progress from 'bootstrap-vue';
-import {generateRoute} from '../../common/helpers';
+import {generateRoute, getRequestError} from '../../common/helpers';
 import filter from 'lodash/filter';
 import map from 'lodash/map';
 // custom validation
@@ -74,7 +74,6 @@ window['app'] = new Vue({
             {name: 'email', label: 'Email'},
             {name: 'mailer', label: 'Mailer'},
             {name: 'sms', label: 'SMS'},
-            {name: 'text_in', label: 'Text-In'},
         ],
         campaign: window.campaign,
         campaignForm: new Form({
@@ -86,6 +85,8 @@ window['app'] = new Vue({
             client_passthrough: window.campaign.client_passthrough,
             client_passthrough_email: window.campaign.client_passthrough_email || [],
             dealership: null,
+            enable_call_center: window.campaign.enable_call_center,
+            cloud_one_campaign_id: window.campaign.cloud_one_campaign_id,
             tags: window.campaign.tags || [],
             end: moment.utc(window.campaign.ends_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD'),
             expires: window.campaign.expires_at? moment.utc(window.campaign.expires_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD') : undefined,
@@ -430,6 +431,11 @@ window['app'] = new Vue({
           }
         },
         saveCampaign: function () {
+            if (this.campaignForm.enable_call_center && !this.campaignForm.cloud_one_campaign_id) {
+                this.campaignForm.errors.add('cloud_one_campaign_id', 'CloudOne Campaign ID is required.');
+                return;
+            }
+            this.campaignForm.errors.clear('cloud_one_campaign_id');
             this.loading = true;
             this.campaignForm.agency = this.agencySelected.id;
             this.campaignForm.dealership = this.dealershipSelected.id;
@@ -442,12 +448,10 @@ window['app'] = new Vue({
                         title: 'Campaign Updated!',
                         type: 'success',
                         allowOutsideClick: false
-                    }).then(() => {
-                        // window.location.replace(window.campaignStatsUrl);
                     });
                 })
                 .catch(e => {
-                    window.PmEvent.fire('errors.api', "Unable to process your request");
+                    window.PmEvent.fire('errors.api', getRequestError(e));
                     this.loading = false;
                 });
         },

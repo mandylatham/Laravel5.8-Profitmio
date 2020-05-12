@@ -230,6 +230,17 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
     //==============================================================================
     // Begin utility methods
     // -----------------------------------------------------------------------------
+    public function findOrCreateRecipientByPhone($phone, $data)
+    {
+        $recipient = $this->recipients()
+            ->whereRaw("replace(phone, '+1', '') = ?", [$phone])
+            ->first();
+        if (!$recipient) {
+            $recipient = new Recipient($data);
+            $recipient->save();
+        }
+        return $recipient;
+    }
 
     /**
      * Get stats for recipients
@@ -577,5 +588,36 @@ class Campaign extends \ProfitMiner\Base\Models\Campaign
         $message = $twig->render('text', array_diff_key($recipient->toArray(), ['pivot' => null]));
 
         return $message;
+    }
+
+    public function findOrCreateRecipientFromPhones(array $phones, $first_name, $last_name, $email)
+    {
+        // Find a recipient from a phone number
+        foreach ((array)$phones as $phone) {
+            $phone = preg_replace('/[^0-9\+]+/', '', $phone);
+
+            $recipient = $this->recipients()
+                ->whereRaw("replace(phone, '+1', '') = ?", str_replace('+1', '', $fromNumber))
+                ->first();
+
+            if ($recipient) {
+                return $recipient;
+            }
+        }
+
+        if (! $first_name && ! $last_name) {
+            $sender = (object)(new TwilioClient)->getNameFromPhoneNumber($request->get('From'));
+            $first_name = $sender->first_name;
+            $last_name = $sender->last_name;
+        }
+
+        $recipient = new Recipient([
+            'first_name'  => $first_name,
+            'last_name'   => $last_name,
+            'phone'       => $request->json()->get('phone_home') ?? $request->json()->get('phone_work') ?? $request->json()->get('phone_cell'),
+            'email'       => $request->json()->get('email_address'),
+            'campaign_id' => $campaign->id,
+        ]);
+        $recipient->save();
     }
 }

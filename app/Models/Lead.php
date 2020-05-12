@@ -53,11 +53,7 @@ class Lead extends Recipient
             $query->whereHas('responses', function ($q) {
                 $q->where('responses.type', Response::EMAIL_TYPE)
                     ->orWhere('responses.type', Response::SMS_TYPE);
-            })->orWhere(function ($q) {
-                $q->whereHas('responses', function ($query) {
-                    $query->where('responses.type', Response::PHONE_TYPE);
-                })->whereHas('appointments');
-            });
+            })->orWhereHas('appointments');
         });
     }
 

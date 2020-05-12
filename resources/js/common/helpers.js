@@ -10,14 +10,14 @@ export function getRequestError(error) {
     let messages = ['Unable to process your request.'];
     if (error) {
         const response = error.response;
-        if (response.status === 422 && response.data) {
-            if (response.data.message) {
-                messages = [response.data.message];
-            }
-            if (response.data.errors) {
+        if (response.data) {
+            if (response.data.errors && response.status === 422) {
+                messages = [];
                 Object.values(response.data.errors).forEach(errors => {
                     messages = messages.concat(errors);
                 });
+            } else if (response.data.message) {
+                messages = [response.data.message];
             }
         }
     }

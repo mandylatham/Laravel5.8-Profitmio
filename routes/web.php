@@ -15,6 +15,8 @@ Route::any('/email-responses/log', 'IncomingMessageController@logEmail')->name('
 Route::any('/phone-responses/inbound', 'IncomingMessageController@receivePhoneCall')->name('pub-api.phone-response-inbound')->middleware(null);
 Route::any('/phone-responses/status', 'IncomingMessageController@receivePhoneCallStatus')->name('pub-api.phone-response-status')->middleware(null);
 
+Route::any('/cloudone', 'CloudOneController@handleWebhook')->name('pub-api.handle-cloudone');
+
 Route::any('/appointments/insert', 'AppointmentController@insert')->name('pub-api.appointment-insert')->middleware(null);
 Route::any('/appointments/save', 'AppointmentController@save')->name('pub-api.appointment-save')->middleware(null);
 Route::any('/appointments/get', 'AppointmentController@get')->name('pub-api.appointment-get')->middleware(null);

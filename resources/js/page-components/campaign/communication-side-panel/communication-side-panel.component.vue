@@ -185,10 +185,10 @@
                 <ul class="list-group">
                     <li class="list-group-item" v-for="call in threads.phone">
                         <i class="fas fa-phone"></i>
-                        Called at {{ call.created_at }}
-
+                        Called at {{ call.created_at | mUtcParse('YYYY-MM-DD HH:mm:ss') | mFormatLocalized('MM/DD/YYYY hh:mm A') }}
+                        ({{ call.duration | humanizeWithNumber }})
                         <div v-if="currentUser.is_admin === 1">
-                            <div class="audio-player" v-if="call.recording_url">
+                            <div class="audio-player" v-if="call.recording_url && call.duration > 0">
                                 <audio controls preload="none" style="width:100%;">
                                     <source :src="call.recording_url" type="audio/mpeg">
                                 </audio>
@@ -387,6 +387,7 @@
     import './../../../filters/m-utc-parse.filter';
     import './../../../filters/m-format-localized.filter';
     import './../../../filters/m-duration-for-humans.filter';
+    import './../../../filters/humanize-with-number.filter';
 
     let pusherService = null;
 

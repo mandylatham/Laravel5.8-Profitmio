@@ -11,8 +11,7 @@ class PhoneNumber extends \ProfitMiner\Base\Models\PhoneNumber
     static public $callSources = [
         'email' => 'Email',
         'mailer' => 'Mailer',
-        'sms' => 'SMS',
-        'text_in' => 'Text-In'
+        'sms' => 'SMS'
     ];
 
     public function campaign()

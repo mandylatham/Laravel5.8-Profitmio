@@ -21,6 +21,6 @@ class VerifyCsrfToken extends Middleware
     protected $except = [
         'text-responses/inbound', 'email-responses/inbound', 'phone-responses/inbound',
         'phone-responses/status', 'email-responses/log', 'appointments/insert', 'appointments/get',
-        'appointments/save', 'text-in',
+        'appointments/save', 'text-in', 'cloudone'
     ];
 }

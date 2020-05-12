@@ -337,7 +337,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="card mb-3 card-feature sms_on_callback-container">
                                 <div class="card-body">
                                     <div class="row no-gutters">
@@ -417,13 +416,12 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="card mb-3 card-feature text-to-value-container">
                                 <div class="card-body">
                                     <div class="row no-gutters">
                                         <div class="col-12 col-md-6">
                                             <div class="feature-input">
-                                                <p-check color="primary" :disabled="!campaignHasMailerPhone || campaign.enable_text_to_value" class="p-default" name="enable_text_to_value" v-model="campaignForm.enable_text_to_value">Enable Text to Value</p-check>
+                                                <p-check color="primary" :disabled="!campaignHasMailerPhone" class="p-default" name="enable_text_to_value" v-model="campaignForm.enable_text_to_value">Enable Text to Value</p-check>
                                             </div>
                                         </div>
                                         <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.enable_text_to_value">
@@ -437,6 +435,38 @@
                                                         <textarea name="text_to_value_message" class="form-control" required v-model="campaignForm.text_to_value_message"></textarea>
                                                     </div>
                                                 </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card mb-3 card-feature text-to-value-container">
+                                <div class="card-body">
+                                    <div class="row no-gutters">
+                                        <div class="col-12 col-md-6">
+                                            <div class="feature-input">
+                                                <p-check color="primary" class="p-default" name="enable_call_center" v-model="campaignForm.enable_call_center">Enable Call Center</p-check>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.enable_call_center">
+                                            <div class="feature-table">
+                                                <table class="table table-sm m-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>CloudOne Campaign ID</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" name="cloud_one_campaign_id" class="form-control" required v-model="campaignForm.cloud_one_campaign_id">
+                                                            <div class="text-sm mt-2 invalid-feedback" v-if="campaignForm.errors.has('cloud_one_campaign_id')">
+                                                                <div>CloudOne Campaign ID is required.</div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
                                     </div>

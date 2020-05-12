@@ -6,6 +6,7 @@ use App\Models\Appointment;
 use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Models\Response;
+use App\Services\CloudOneService;
 use DB;
 use Carbon\Carbon;
 use App\Models\User;
@@ -33,8 +34,11 @@ class CampaignController extends Controller
 
     private $recipient;
 
-    public function __construct(Campaign $campaign, Company $company, EmailLog $emailLog, Recipient $recipient)
+    private $cloudOneService;
+
+    public function __construct(CloudOneService $cloudOneService, Campaign $campaign, Company $company, EmailLog $emailLog, Recipient $recipient)
     {
+        $this->cloudOneService = $cloudOneService;
         $this->campaign = $campaign;
         $this->company = $company;
         $this->emailLog = $emailLog;
@@ -200,7 +204,8 @@ class CampaignController extends Controller
         if ($expires_at <= \Carbon\Carbon::now('UTC')) {
             $status = 'Expired';
         }
-        $campaign = Campaign::create([
+
+        $campaign = new Campaign([
             'name' => $request->input('name'),
             'status' => $status,
             'order_id' => $request->input('order'),
@@ -217,14 +222,46 @@ class CampaignController extends Controller
             'lead_alert_email' => $request->input('lead_alert_emails', []),
             'service_dept' => (bool) $request->input('service_dept'),
             'service_dept_email' => $request->input('service_dept_email', []),
+            'enable_call_center' => $request->input('enable_call_center', false),
             'sms_on_callback' => (bool) $request->input('service_dept'),
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'text_to_value_message' => $request->input('text_to_value_message', '')
         ]);
 
-        if (! $campaign->expires_at) {
-            $campaign->update(['expires_at' => $campaign->ends_at->addMonth()]);
+        /**
+         * Verify existence of mailer phone number to enable text_to_value
+         */
+        if ($campaign->hasTextToValueEnabled()) {
+            $hasMailerPhoneNumber = false;
+            foreach ((array)($request->input('phone_number_ids') ?? []) as $phoneNumberId) {
+                $phoneNumber = PhoneNumber::find($phoneNumberId);
+                if ($phoneNumber->isMailer()) {
+                    $hasMailerPhoneNumber = true;
+                    break;
+                }
+            }
+            if (!$hasMailerPhoneNumber) {
+                abort(422, 'You must add a mailer phone number to enable Text To Value feature.');
+            }
         }
+
+        if ($campaign->enable_call_center) {
+            if ($request->has('phone_number_ids') && count((array) $request->input('phone_number_ids')) === 0) {
+                abort(422, 'You must add a phone number to enable Call Center feature.');
+            }
+
+            $this->validateDuplicatedCloudOneCampaignId($campaign, $request->input('cloud_one_campaign_id'));
+
+            $campaign->cloud_one_campaign_id = $request->input('cloud_one_campaign_id', '');
+
+            $this->setCloudOnePhoneNumber($campaign);
+        }
+
+        if (! $campaign->expires_at) {
+            $campaign->expires_at = $campaign->ends_at->addMonth();
+        }
+
+        $campaign->save();
 
         if ($request->has('phone_number_ids')) {
             foreach ((array)$request->input('phone_number_ids') as $phone_number_id) {
@@ -512,12 +549,29 @@ class CampaignController extends Controller
             'sms_on_callback' => (bool) $request->input('sms_on_callback'),
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'text_to_value_message' => $request->input('text_to_value_message', ''),
+            'enable_call_center' => $request->input('enable_call_center', false),
             'starts_at' => $starts_at,
             'status' => $status
         ]);
 
+
         if (!$campaign->hasTextToValueEnabled() && $request->input('enable_text_to_value')) {
+            if ($campaign->phones()->where('call_source_name',  PhoneNumber::$callSources['mailer'])->count() === 0) {
+                abort(422, 'You must add a mailer phone number to enable Text To Value feature.');
+            }
             $campaign->enable_text_to_value = $request->input('enable_text_to_value');
+        }
+
+        if ($campaign->enable_call_center) {
+            if ($campaign->phones()->count() === 0) {
+                abort(422, 'You must add a phone number to enable Call Center feature.');
+            }
+
+            $this->validateDuplicatedCloudOneCampaignId($campaign, $request->input('cloud_one_campaign_id'));
+
+            $campaign->cloud_one_campaign_id = $request->input('cloud_one_campaign_id', '');
+            $campaign->cloud_one_phone_number = $this->cloudOneService->getCampaignPhoneNumber($campaign->cloud_one_campaign_id);
+            $campaign->save();
         }
 
         $campaign->save();
@@ -537,5 +591,29 @@ class CampaignController extends Controller
         $campaign->users()->toggle($user->id);
 
         return response()->json(['message' => 'Resource updated.']);
+    }
+
+    private function setCloudOnePhoneNumber(Campaign $campaign)
+    {
+        $existCloudOneCampaign = Campaign::where('cloud_one_campaign_id', $campaign->cloud_one_campaign_id)
+            ->where('id', '!=', $campaign->id)
+            ->first();
+
+        if ($existCloudOneCampaign)  {
+            abort(422, 'Campaign ' . $existCloudOneCampaign->id . ' is already using Cloud One Campaign Id ' . $campaign->cloud_one_campaign_id);
+        }
+
+        $campaign->cloud_one_phone_number = $this->cloudOneService->getCampaignPhoneNumber($campaign->cloud_one_campaign_id);
+        $campaign->save();
+    }
+
+    private function validateDuplicatedCloudOneCampaignId(Campaign $campaign, $cloudOneCampaignId)
+    {
+        if ($cloudOneCampaignId !== $campaign->cloud_one_campaign_id) {
+            $existingCloudOneCampaign = Campaign::where('cloud_one_campaign_id', $cloudOneCampaignId)->first();
+            if ($existingCloudOneCampaign) {
+                abort(422, 'Campaign ' . $existingCloudOneCampaign->id . ' is already using Cloud One Campaign Id ' . $cloudOneCampaignId);
+            }
+        }
     }
 }

@@ -366,6 +366,38 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row no-gutters">
+                                    <div class="col-12 col-md-6">
+                                        <div class="feature-input">
+                                            <p-check color="primary" class="p-default" name="enable_call_center" v-model="campaignForm.enable_call_center">Enable Call Center</p-check>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.enable_call_center">
+                                        <div class="feature-table">
+                                            <table class="table table-sm m-0">
+                                                <thead>
+                                                <tr>
+                                                    <th>CloudOne Campaign ID</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input type="text" name="cloud_one_campaign_id" class="form-control" required v-model="campaignForm.cloud_one_campaign_id">
+                                                        <div class="text-sm mt-2 invalid-feedback" :style="{display: campaignForm.errors.has('cloud_one_campaign_id') ? 'block' : 'none'}">
+                                                            <div>CloudOne Campaign ID is required.</div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </tab-content>
                     <template slot="finish">
                         <button type="button" class="wizard-btn" :disabled="loading">

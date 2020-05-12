@@ -13,6 +13,7 @@ class Recipient extends \ProfitMiner\Base\Models\Recipient
 {
     use SoftDeletes, Eloquence;
 
+    const NOT_MARKETED_STATUS = 'not-marketed';
     const UNMARKETED_STATUS = 'unmarketed';
     const MARKETED_STATUS = 'marketed';
     const NEW_STATUS = 'new-lead';

@@ -3,8 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Classes\MailgunService;
-use App\Events\RecipientTextResponseReceived;
 use App\Events\RecipientPhoneResponseReceived;
+use App\Events\RecipientTextResponseReceived;
 use App\Models\EmailLog;
 use App\Models\TextToValueOptIn;
 use App\Services\TextToValueResponder;
@@ -23,6 +23,7 @@ use Illuminate\Log\Logger;
 use Carbon\Carbon;
 use Log;
 use Cache;
+use Twilio\TwiML\VoiceResponse;
 
 class IncomingMessageController extends Controller
 {
@@ -452,12 +453,21 @@ class IncomingMessageController extends Controller
             event(new RecipientPhoneResponseReceived($campaign, $recipient, $response));
             event(new CampaignCountsUpdated($campaign));
 
-            return response('<?xml version="1.0" encoding="UTF-8"?>' . "\n" .
-                '<Response>' . "\n" .
-                '<Say voice="Polly.Joanna">This call may be recorded for quality assurance purposes</Say>' . "\n" .
-                '<Dial record="record-from-answer">' . $phoneNumber->forward . '</Dial>' . "\n" .
-                '</Response>', 200)
-                ->header('Content-Type', 'text/xml');
+            $forwardNumber = $phoneNumber->forward;
+            if ($campaign->enable_call_center && $campaign->cloud_one_phone_number) {
+                $forwardNumber = $campaign->cloud_one_phone_number;
+            }
+
+            $response = new VoiceResponse();
+            if (!$forwardNumber) {
+                $response->say("There was an error connecting your call, please try again later.", ['voice' => 'polly.joanna']);
+                return $response;
+            }
+            if (!$campaign->enable_call_center) {
+                $response->say("This call may be recorded for quality assurance purposes", ['voice' => 'Polly.Joanna']);
+            }
+            $response->dial($forwardNumber, ['record' => 'record-from-answer']);
+            return $response;
         } catch (\Exception $e) {
             Log::error("inboundPhone(): {$e->getMessage()}");
 
@@ -556,15 +566,13 @@ class IncomingMessageController extends Controller
         // TODO: resolve unverified call output
         $sender = (object)(new TwilioClient)->getNameFromPhoneNumber($request->get('From'));
 
-        // Create a new Recipient and add it to the campaign for the person
-        $recipient = new Recipient([
+        $data = [
             'first_name' => $sender->first_name,
             'last_name' => $sender->last_name,
             'phone' => $request->get('From'),
             'campaign_id' => $campaign->id,
-        ]);
-
-        $recipient->save();
+        ];
+        $recipient = $campaign->findOrCreateRecipientByPhone($request->get('From'), $data);
 
         return $recipient;
     }
