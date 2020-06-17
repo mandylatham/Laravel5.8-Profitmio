@@ -53,6 +53,7 @@ class Lead extends Recipient
             $query->whereHas('responses', function ($q) {
                 $q->where('responses.type', Response::EMAIL_TYPE)
                     ->orWhere('responses.type', Response::SMS_TYPE);
+                    ->orWhere('responses.type', Response::TTV_TYPE);
             })->orWhereHas('appointments');
         });
     }
@@ -61,7 +62,7 @@ class Lead extends Recipient
     {
         $textToValue = $this->textToValue;
         if ($textToValue) {
-            return $textToValue->checked_in;
+ Z           return $textToValue->checked_in;
         }
         return false;
     }
