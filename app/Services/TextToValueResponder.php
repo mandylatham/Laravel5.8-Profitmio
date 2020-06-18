@@ -67,7 +67,7 @@ class TextToValueResponder
 
             $recipient = $textToValue->recipient;
 
-            if (!$this->hasAcceptedTextToValueOptIn($fromNumber)) {
+            if (!$this->hasAcceptedTextToValueOptIn($fromNumber, $recipient)) {
                 $this->setPendingOptInResponseStatus($fromNumber, $recipient);
 
                 $response = new MessagingResponse();
@@ -114,12 +114,12 @@ class TextToValueResponder
 
     }
 
-    private function hasAcceptedTextToValueOptIn($fromNumber)
+    private function hasAcceptedTextToValueOptIn($fromNumber, Recipient $recipient)
     {
-        if (TextToValueOptIn::where('phone_number', $fromNumber)->where('accepted', true)->count() > 0) {
-            return true;
-        }
-        return false;
+        return TextToValueOptIn::where('phone_number', $fromNumber)
+                ->where('recipient_id', $recipient->id)
+                ->where('accepted', true)
+                ->count() > 0;
     }
 
     private function setPendingOptInResponseStatus($fromNumber, Recipient $recipient)
