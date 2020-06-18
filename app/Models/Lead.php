@@ -52,7 +52,7 @@ class Lead extends Recipient
         static::addGlobalScope(function ($query) {
             $query->whereHas('responses', function ($q) {
                 $q->where('responses.type', Response::EMAIL_TYPE)
-                    ->orWhere('responses.type', Response::SMS_TYPE);
+                    ->orWhere('responses.type', Response::SMS_TYPE)
                     ->orWhere('responses.type', Response::TTV_TYPE);
             })->orWhereHas('appointments');
         });
