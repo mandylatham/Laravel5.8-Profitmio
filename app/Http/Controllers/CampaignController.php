@@ -541,7 +541,7 @@ class CampaignController extends Controller
             'ends_at' => $ends_at,
             'expires_at' => $expires_at,
             'lead_alerts' => (bool) $request->input('lead_alerts'),
-            'lead_alert_email' => $request->input('lead_alert_email', []),
+            'lead_alert_email' => $request->input('lead_alert_emails', []),
             'name' => $request->input('name'),
             'order_id' => $request->input('order'),
             'service_dept' => (bool) $request->input('service_dept'),
