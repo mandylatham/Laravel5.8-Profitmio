@@ -62,7 +62,7 @@ class Lead extends Recipient
     {
         $textToValue = $this->textToValue;
         if ($textToValue) {
- Z           return $textToValue->checked_in;
+            return $textToValue->checked_in;
         }
         return false;
     }
