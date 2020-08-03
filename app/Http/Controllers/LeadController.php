@@ -318,8 +318,11 @@ class LeadController extends Controller
 
         $message = $request->input('message');
 
+        $domain = env('MAILGUN_DOMAIN');
+        $from = $campaign->dealership->name;
         $email = new EmailMessage(
-            $this->getEmailFromLine($campaign, $lead),
+            $from,
+            Str::slug("{$from}") . "_{$campaign->id}_{$lead->id}@{$domain}",
             $lead->email,
             $subject,
             $message,

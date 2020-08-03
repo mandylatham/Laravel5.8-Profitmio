@@ -25,14 +25,6 @@ window['app'] = new Vue({
         }),
         fileTypes: ['jpeg', 'jpg', 'png', 'bmp', 'gif', 'svg'],
         image: null,
-        sendAtDateTransformers: {
-            value2date: (value) =>{
-                return moment(value, 'YYYY-MM-DD').toDate();
-            },
-            date2value: (date) =>{
-                return moment(date).format('YYYY-MM-DD');
-            }
-        },
         uploadImageUrl: window.saveMailerDropUrl
     },
     methods: {
@@ -71,7 +63,8 @@ window['app'] = new Vue({
                 return;
             }
             this.loading = true;
-            this.$refs.resumable.addData('send_at', this.dropForm.send_at);
+            const parseData = moment(this.dropForm.send_at, 'MM/DD/YYYY').format('YYYY-MM-DD');
+            this.$refs.resumable.addData('send_at', parseData);
             this.$refs.resumable.startUpload();
         }
     }

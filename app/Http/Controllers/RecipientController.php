@@ -638,10 +638,10 @@ class RecipientController extends Controller
     }
 
     /**
-     * @param \Illuminate\Http\Request $request
-     * @param \App\Models\Campaign     $campaign
+     * @param Request $request
+     * @param Campaign $campaign
      * @return \Illuminate\Http\JsonResponse
-     * @throws \Pion\Laravel\ChunkUpload\Exceptions\UploadMissingFileException
+     * @throws UploadMissingFileException
      * @throws \Pion\Laravel\ChunkUpload\Exceptions\UploadFailedException
      */
     public function uploadFile(Request $request, Campaign $campaign)

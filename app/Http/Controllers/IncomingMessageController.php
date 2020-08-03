@@ -69,6 +69,13 @@ class IncomingMessageController extends Controller
 
         $response->save();
 
+        if ($recipient->status !== Recipient::NEW_STATUS &&
+            $recipient->status !== Recipient::CLOSED_STATUS &&
+            $recipient->status !== Recipient::OPEN_STATUS
+        ) {
+            $recipient->status = Recipient::NEW_STATUS;
+            $recipient->last_status_changed_at = Carbon::now()->toDateTimeString();
+        }
         $recipient->last_responded_at = \Carbon\Carbon::now('UTC');
         $recipient->save();
 

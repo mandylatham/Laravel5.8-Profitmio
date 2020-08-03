@@ -35,7 +35,7 @@
                             <div class="form-group row mt-4">
                                 <label for="email" class="col-xs-12 col-md-3 col-form-label">In-home Date: </label>
                                 <div class="col-xs-12 col-md-8">
-                                    <date-picker v-model="dropForm.send_at" @change="clearError('send_at')" lang="en" type="date" format="MM/DD/YYYY" :value-type="sendAtDateTransformers" :class="{'is-invalid': dropForm.errors.has('send_at')}"></date-picker>
+                                    <date-picker v-model="dropForm.send_at" @change="clearError('send_at')" lang="en" type="date" format="MM/DD/YYYY" :value-type="'format'" :class="{'is-invalid': dropForm.errors.has('send_at')}"></date-picker>
                                     <input-errors :error-bag="dropForm.errors" :field="'send_at'"></input-errors>
                                 </div>
                             </div>
