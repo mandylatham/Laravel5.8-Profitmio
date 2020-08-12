@@ -27,7 +27,7 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('drops:notify')->everyMinute();
-        $schedule->command('drops:send')->everyMinute();
+//        $schedule->command('drops:send')->everyMinute();
         $schedule->command('campaigns:expire')->daily();
     }
 
