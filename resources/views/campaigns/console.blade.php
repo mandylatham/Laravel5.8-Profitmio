@@ -240,7 +240,7 @@
             </div>
             <div class="col-12 col-sm-5 col-lg-3 mb-3">
                 <input type="text" v-model="searchForm.search" class="form-control filter--search-box"
-                           aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients">
+                           aria-describedby="search" placeholder="Search" @keypress.enter="fetchRecipients(1)">
             </div>
         </div>
         <div class="col-12 d-flex flex-wrap">
@@ -249,7 +249,7 @@
                       :options="mediaOptions"
                       v-model="searchForm.media"
                       index="value"
-                      @input="fetchRecipients"
+                      @input="fetchRecipients(1)"
             ></v-select>
             <v-select class="mb-3 filter--v-select"
                       placeholder="Tags"
@@ -257,7 +257,7 @@
                       :options="leadTags"
                       v-model="searchTags"
                       v-if="searchForm.status == 'closed'"
-                      @input="fetchRecipients"
+                      @input="fetchRecipients(1)"
                       multiple
                       taggable
             ></v-select>

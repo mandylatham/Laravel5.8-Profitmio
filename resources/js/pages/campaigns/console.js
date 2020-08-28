@@ -106,9 +106,12 @@ window.app = new Vue({
         test() {
             console.log(this.mediaOption);
         },
-        fetchRecipients() {
+        fetchRecipients(resetPagination = false) {
             this.loading = true;
             this.searchForm.labels = this.searchTags.map(t => t.name);
+            if (resetPagination) {
+                this.searchForm.page = 1;
+            }
             this.searchForm
                 .get(window.getRecipientsUrl)
                 .then((response) => {
@@ -239,7 +242,7 @@ window.app = new Vue({
                     this.searchForm.media = '';
                     this.searchForm.label = '';
                 }
-                this.fetchRecipients();
+                this.fetchRecipients(1);
             });
 
             window.PmEvent.listen('lead.close-request', (data) => {
