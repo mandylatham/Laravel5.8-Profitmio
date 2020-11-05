@@ -226,6 +226,9 @@ Route::group(['middleware' => 'auth'], function () {
 
         Route::get('/stats', 'CampaignController@stats')->name('campaigns.stats');
         Route::get('/stats/data', 'CampaignController@getStatsData')->name('campaigns.stats.data');
+
+        Route::get('/facebook-campaign', 'CampaignController@facebookCampaign')->name('campaigns.facebook-campaign');
+        Route::get('/facebook-campaign/data', 'CampaignController@getfacebookCampaignData')->name('campaigns.facebook-campaign.data');
     });
     //endregion
 
@@ -298,6 +301,13 @@ Route::group(['middleware' => 'auth'], function () {
             Route::get('/{user}/edit', 'CompanyController@userEdit')->middleware('can:manage,company')->name('company.user.edit');
             Route::post('/{user}', 'CompanyController@userUpdate')->middleware('can:manage,company')->name('company.user.update');
         });
+    });
+    //endregion
+
+    //region SETTINGS
+    Route::group(['prefix' => 'settings'], function () {
+        Route::get('/', 'SettingsController@index')->name('settings.index');
+        Route::post('/facebook-access-token', 'SettingsController@facebookAccessTokenStore')->name('settings.facebook-access-token.store');
     });
     //endregion
 });

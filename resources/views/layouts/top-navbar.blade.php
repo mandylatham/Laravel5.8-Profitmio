@@ -52,6 +52,21 @@
                 <span>Companies</span>
             </b-nav-item>
             @endif
+            @if (auth()->user()->isAdmin())
+            <b-nav-item href="{{ route('settings.index') }}" active>
+                <i class="fas fa fa-cogs"></i>
+                <span>
+                    Settings
+                    <span
+                    v-if="notifications && notifications.settings && notifications.settings.length > 0"
+                    class="badge badge-pill badge-danger"
+                    style="font-size: 7px;">
+                        !
+                    </span>
+                </span>
+
+            </b-nav-item>
+            @endif
         </b-navbar-nav>
 
         <b-collapse is-nav id="top-navbar">

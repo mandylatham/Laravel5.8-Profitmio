@@ -48,6 +48,8 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/campaigns/edit.scss', 'public/css/campaigns-edit.css')
     .js('resources/js/pages/campaigns/stats.js', 'public/js/campaigns-stats.js')
     .sass('resources/sass/campaigns/stats.scss', 'public/css/campaigns-stats.css')
+    .js('resources/js/pages/campaigns/facebook-campaign.js', 'public/js/campaigns-facebook-campaign.js')
+    .sass('resources/sass/campaigns/facebook-campaign.scss', 'public/css/campaigns-facebook-campaign.css')
     .js('resources/js/pages/campaigns/responses.js', 'public/js/campaigns-responses.js')
     .sass('resources/sass/campaigns/responses.scss', 'public/css/campaigns-responses.css')
     // Lead
@@ -83,6 +85,9 @@ mix.js('resources/js/pages/campaigns/index.js', 'public/js/campaign-index.js')
     .sass('resources/sass/auth/forget-password.scss', 'public/css/forget-password.css')
     .js('resources/js/pages/auth/reset-password.js', 'public/js/reset-password.js')
     .sass('resources/sass/auth/reset-password.scss', 'public/css/reset-password.css')
+    //Settings
+    .js('resources/js/pages/settings/settings.js', 'public/js/settings.js')
+    .sass('resources/sass/settings/settings.scss', 'public/css/settings.css')
     // Plugins
     .copyDirectory('resources/js/plugins', 'public/js/plugins')
     .copyDirectory('resources/sass/plugins', 'public/css/plugins')

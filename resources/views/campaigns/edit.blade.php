@@ -472,6 +472,38 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="card mb-3 card-feature text-to-value-container">
+                                <div class="card-body">
+                                    <div class="row no-gutters">
+                                        <div class="col-12 col-md-6">
+                                            <div class="feature-input">
+                                                <p-check color="primary" class="p-default" name="enable_facebook_campaign" v-model="campaignForm.enable_facebook_campaign">Enable Facebook Campaign</p-check>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.enable_facebook_campaign">
+                                            <div class="feature-table">
+                                                <table class="table table-sm m-0">
+                                                    <thead>
+                                                    <tr>
+                                                        <th>Facebook Campaign ID</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr>
+                                                        <td>
+                                                            <input type="text" name="facebook_campaign_id" class="form-control" required v-model="campaignForm.facebook_campaign_id">
+                                                            <div class="text-sm mt-2 invalid-feedback" v-if="campaignForm.errors.has('facebook_campaign_id')">
+                                                                <div>Facebook Campaign ID is required.</div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <button dusk="save-additional-features-button" type="button" class="btn pm-btn pm-btn-purple mt-3" @click="saveCampaign">
                                 <span v-if="!loading">Save</span>
                                 <spinner-icon class="white" :size="'xs'" v-if="loading"></spinner-icon>

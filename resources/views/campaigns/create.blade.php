@@ -398,6 +398,38 @@
                                 </div>
                             </div>
                         </div>
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <div class="row no-gutters">
+                                    <div class="col-12 col-md-6">
+                                        <div class="feature-input">
+                                            <p-check color="primary" class="p-default" name="enable_facebook_campaign" v-model="campaignForm.enable_facebook_campaign">Enable Facebook Campaign</p-check>
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-md-6 feature-table-col" v-if="campaignForm.enable_facebook_campaign">
+                                        <div class="feature-table">
+                                            <table class="table table-sm m-0">
+                                                <thead>
+                                                <tr>
+                                                    <th>Facebook Campaign ID</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <tr>
+                                                    <td>
+                                                        <input type="text" name="facebook_campaign_id" class="form-control" required v-model="campaignForm.facebook_campaign_id">
+                                                        <div class="text-sm mt-2 invalid-feedback" :style="{display: campaignForm.errors.has('facebook_campaign_id') ? 'block' : 'none'}">
+                                                            <div>Facebook Campaign ID is required.</div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </tab-content>
                     <template slot="finish">
                         <button type="button" class="wizard-btn" :disabled="loading">

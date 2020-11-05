@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         Commands\SendDropNotifications::class,
         Commands\SendDrops::class,
         Commands\ExpireCampaigns::class,
+        Commands\RenewFacebookToken::class,
     ];
 
     /**
@@ -29,6 +30,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('drops:notify')->everyMinute();
 //        $schedule->command('drops:send')->everyMinute();
         $schedule->command('campaigns:expire')->daily();
+        $schedule->command('facebook-integration:reminder-renew-token')->daily();
     }
 
     /**

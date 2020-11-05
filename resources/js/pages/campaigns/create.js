@@ -43,9 +43,11 @@ window['app'] = new Vue({
             client_passthrough: false,
             client_passthrough_email: [],
             cloud_one_campaign_id: '',
+            facebook_campaign_id: '',
             dealership: null,
             end: null,
             enable_call_center: false,
+            enable_facebook_campaign: false,
             expires: null,
             lead_alerts: false,
             lead_alert_emails: [],
@@ -174,6 +176,13 @@ window['app'] = new Vue({
                 return;
             }
             this.campaignForm.errors.clear('cloud_one_campaign_id');
+
+            if (this.campaignForm.enable_facebook_campaign && !this.campaignForm.facebook_campaign_id) {
+                this.campaignForm.errors.add('facebook_campaign_id', 'Facebook Campaign ID is required.');
+                return;
+            }
+            this.campaignForm.errors.clear('facebook_campaign_id');
+
             this.loading = true;
             this.campaignForm.agency = this.agencySelected.id;
             this.campaignForm.dealership = this.dealershipSelected.id;

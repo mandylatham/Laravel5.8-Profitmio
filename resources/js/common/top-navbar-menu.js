@@ -5,6 +5,14 @@ import './pm-icons';
 Vue.use(Dropdown);
 Vue.use(Navbar);
 
+Vue.mixin({
+    data: function() {
+        return {
+            notifications: window.notifications
+        }
+    }
+});
+
 new Vue({
     el: '#top-navbar-menu',
     mounted: function () {

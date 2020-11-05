@@ -4,6 +4,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
+use App\Services\FacebookService;
+use App\Models\GlobalSettings;
 /**
  * Created by PhpStorm.
  * User: brett
@@ -107,4 +109,37 @@ function get_times($default = '19:00', $interval = '+30 minutes', $firstElement 
     }
 
     return $output;
+}
+
+function getNotifications()
+{
+    $globalSettings = GlobalSettings::where('name', 'facebook_access_token')->first() ?? (object) ['value' => null];
+    $access_token = $globalSettings->value;
+    if(empty($access_token)){
+        return [
+            "settings" => [
+                (object) [
+                    "level" => "warning",
+                    "title" => "Connect your Facebook account",
+                    "description" => "The credentials for accessing the Facebook API are not configurated."
+                ]
+            ]
+        ];
+    }
+
+    $facebookService = new FacebookService();
+
+    if(!$facebookService->isValidAccessToken($access_token)){
+        return [
+            "settings" => [
+                (object) [
+                    "level" => "warning",
+                    "title" => "Facebook access credentials expired",
+                    "description" => "The credentials for accessing the Facebook API have expired or are no longer valid. It is necessary to renew them manually by reconnecting your account."
+                ]
+            ]
+        ];
+    }
+
+    return [];
 }

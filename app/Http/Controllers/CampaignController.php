@@ -6,7 +6,9 @@ use App\Models\Appointment;
 use App\Models\Lead;
 use App\Models\LeadActivity;
 use App\Models\Response;
+use App\Models\GlobalSettings;
 use App\Services\CloudOneService;
+use App\Services\FacebookAdsService;
 use DB;
 use Carbon\Carbon;
 use App\Models\User;
@@ -223,6 +225,7 @@ class CampaignController extends Controller
             'service_dept' => (bool) $request->input('service_dept'),
             'service_dept_email' => $request->input('service_dept_email', []),
             'enable_call_center' => $request->input('enable_call_center', false),
+            'enable_facebook_campaign' => $request->input('enable_facebook_campaign', false),
             'sms_on_callback' => (bool) $request->input('service_dept'),
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'text_to_value_message' => $request->input('text_to_value_message', '')
@@ -255,6 +258,11 @@ class CampaignController extends Controller
             $campaign->cloud_one_campaign_id = $request->input('cloud_one_campaign_id', '');
 
             $this->setCloudOnePhoneNumber($campaign);
+        }
+
+        if ($campaign->enable_facebook_campaign) {
+
+            $campaign->facebook_campaign_id = $request->input('facebook_campaign_id', '');
         }
 
         if (! $campaign->expires_at) {
@@ -508,6 +516,32 @@ class CampaignController extends Controller
         return $viewData;
     }
 
+    public function facebookCampaign(Campaign $campaign)
+    {
+        return view('campaigns.facebook-campaign', [
+            'campaign' => $campaign
+        ]);
+    }
+
+    public function getfacebookCampaignData(Campaign $campaign, Request $request)
+    {
+        /** @var User $user */
+        $user = auth()->user();
+        if (!$this>authorize('view', $campaign)) {
+            abort(401);
+        }
+
+        $metrics = (object)[];
+        if($campaign->facebook_campaign_id) {
+            $globalSettings = GlobalSettings::where('name', 'facebook_access_token')->first();
+            $access_token = $globalSettings->value;
+            $facebookAdsService = new FacebookAdsService($access_token);
+            $metrics = $facebookAdsService->getCampaignMetrics($campaign->facebook_campaign_id);
+        }
+
+        return $metrics;
+    }
+
     public function update(Campaign $campaign, NewCampaignRequest $request)
     {
         if ($request->filled('phone_number_id') || $request->filled('forward')) {
@@ -550,6 +584,7 @@ class CampaignController extends Controller
             'sms_on_callback_number' => $request->input('sms_on_callback_number', []),
             'text_to_value_message' => $request->input('text_to_value_message', ''),
             'enable_call_center' => $request->input('enable_call_center', false),
+            'enable_facebook_campaign' => $request->input('enable_facebook_campaign', false),
             'starts_at' => $starts_at,
             'status' => $status
         ]);
@@ -572,6 +607,16 @@ class CampaignController extends Controller
             $campaign->cloud_one_campaign_id = $request->input('cloud_one_campaign_id', '');
             $campaign->cloud_one_phone_number = $this->cloudOneService->getCampaignPhoneNumber($campaign->cloud_one_campaign_id);
             $campaign->save();
+        }
+
+        if ($campaign->enable_facebook_campaign && $request->filled('facebook_campaign_id')) {
+            $campaign->facebook_campaign_id = $request->input('facebook_campaign_id', '');
+            $globalSettings = GlobalSettings::where('name', 'facebook_access_token')->first();
+            $accessToken = $globalSettings->value;
+            $facebookAdsService = new FacebookAdsService($accessToken);
+            if (!$facebookAdsService->hasAccessToCampaign($campaign->facebook_campaign_id)) {
+                abort(422, "You don't have access to the Facebook campaign $campaign->facebook_campaign_id, please check your facebook account.");
+            }
         }
 
         $campaign->save();

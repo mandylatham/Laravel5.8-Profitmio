@@ -86,7 +86,9 @@ window['app'] = new Vue({
             client_passthrough_email: window.campaign.client_passthrough_email || [],
             dealership: null,
             enable_call_center: window.campaign.enable_call_center,
+            enable_facebook_campaign: window.campaign.enable_facebook_campaign,
             cloud_one_campaign_id: window.campaign.cloud_one_campaign_id,
+            facebook_campaign_id: window.campaign.facebook_campaign_id,
             tags: window.campaign.tags || [],
             end: moment.utc(window.campaign.ends_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD'),
             expires: window.campaign.expires_at? moment.utc(window.campaign.expires_at, 'YYYY-MM-DD HH:mm:ss').local().format('YYYY-MM-DD') : undefined,
@@ -431,11 +433,20 @@ window['app'] = new Vue({
           }
         },
         saveCampaign: function () {
+            const facebookCampaignEnabled = window.campaign.enable_facebook_campaign;
+
             if (this.campaignForm.enable_call_center && !this.campaignForm.cloud_one_campaign_id) {
                 this.campaignForm.errors.add('cloud_one_campaign_id', 'CloudOne Campaign ID is required.');
                 return;
             }
             this.campaignForm.errors.clear('cloud_one_campaign_id');
+
+            if (this.campaignForm.enable_facebook_campaign && !this.campaignForm.facebook_campaign_id) {
+                this.campaignForm.errors.add('facebook_campaign_id', 'Facebook Campaign ID is required.');
+                return;
+            }
+            this.campaignForm.errors.clear('facebook_campaign_id');
+
             this.loading = true;
             this.campaignForm.agency = this.agencySelected.id;
             this.campaignForm.dealership = this.dealershipSelected.id;
@@ -448,7 +459,11 @@ window['app'] = new Vue({
                         title: 'Campaign Updated!',
                         type: 'success',
                         allowOutsideClick: false
-                    });
+                    }).then(() => {
+                        if (facebookCampaignEnabled !== +this.campaignForm.enable_facebook_campaign) {
+                            window.location.reload();
+                        }
+                    })
                 })
                 .catch(e => {
                     window.PmEvent.fire('errors.api', getRequestError(e));

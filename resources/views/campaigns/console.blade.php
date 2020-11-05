@@ -66,6 +66,14 @@
                     <span>STATS</span>
                 </a>
             </li>
+            @if($campaign->enable_facebook_campaign)
+            <li>
+                <a class="{{ \Route::current()->getName() === 'campaigns.facebook-campaign' ? 'active' : '' }}" href="{{ route('campaigns.facebook-campaign', ['campaign' => $campaign->id]) }}">
+                    <i class="far fa-chart-bar"></i>
+                    <span>FACEBOOK CAMPAIGN</span>
+                </a>
+            </li>
+            @endif
             @if(auth()->user()->isAdmin())
             <li class="list-group-item">
                 <a class="{{ \Route::current()->getName() === 'campaigns.drops.index' ? 'active' : '' }}" href="{{ route('campaigns.drops.index', ['campaign' => $campaign->id]) }}">
