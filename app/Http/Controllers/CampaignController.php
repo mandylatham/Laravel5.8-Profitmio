@@ -527,7 +527,7 @@ class CampaignController extends Controller
     {
         /** @var User $user */
         $user = auth()->user();
-        if (!$this>authorize('view', $campaign)) {
+        if (!$this->authorize('view', $campaign)) {
             abort(401);
         }
 
