@@ -350,7 +350,7 @@ class CampaignController extends Controller
         $firstResponsePerRecipient = $campaign->responses()
             ->selectRaw('MIN(created_at) as created_at, recipient_id')
             ->groupBy('recipient_id');
-        $lastOpenActivityPerRecipient = Activity::selectRaw('MAX(created_at) as created_at, subject_id as recipient_id')
+        $firstOpenActivityPerRecipient = Activity::selectRaw('MIN(created_at) as created_at, subject_id as recipient_id')
             ->where('subject_type', Lead::class)
             ->where('description', LeadActivity::OPENED)
             ->whereIn('subject_id', function ($query) use ($campaign) {
@@ -363,10 +363,10 @@ class CampaignController extends Controller
             ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, q1.created_at, q2.created_at)) AS total')
             ->from(DB::raw("({$firstResponsePerRecipient->toSql()}) as q1"))
             ->mergeBindings($firstResponsePerRecipient->getQuery()->getQuery())
-            ->join(DB::raw("({$lastOpenActivityPerRecipient->toSql()}) as q2"), function ($join) {
+            ->join(DB::raw("({$firstOpenActivityPerRecipient->toSql()}) as q2"), function ($join) {
                 $join->on('q1.recipient_id', '=', 'q2.recipient_id');
             })
-            ->mergeBindings($lastOpenActivityPerRecipient->getQuery())
+            ->mergeBindings($firstOpenActivityPerRecipient->getQuery())
             ->first();
         if ($averageTimeToOpen->total) {
             $averageTimeToOpen = $averageTimeToOpen->total;
@@ -460,10 +460,10 @@ class CampaignController extends Controller
             ->selectRaw('TIMESTAMPDIFF(SECOND, q1.created_at, q2.created_at) AS total')
             ->from(DB::raw("({$firstResponsePerRecipient->toSql()}) as q1"))
             ->mergeBindings($firstResponsePerRecipient->getQuery()->getQuery())
-            ->join(DB::raw("({$lastOpenActivityPerRecipient->toSql()}) as q2"), function ($join) {
+            ->join(DB::raw("({$firstOpenActivityPerRecipient->toSql()}) as q2"), function ($join) {
                 $join->on('q1.recipient_id', '=', 'q2.recipient_id');
             })
-            ->mergeBindings($lastOpenActivityPerRecipient->getQuery())
+            ->mergeBindings($firstOpenActivityPerRecipient->getQuery())
             ->get();
         // Count number of leads per range of hours
         // The range of hours follow a 1hour gap until 12hrs. i.e: 0-1hr, 1-2hr, 2-3hr, ... ,12+hrs
