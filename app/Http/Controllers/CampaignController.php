@@ -470,6 +470,7 @@ class CampaignController extends Controller
         $leadsOpenByTime = array_fill(0, 12, 0);
         foreach ($leadsOpenedWithTime as $lead) {
             $hours = floor($lead->total / SECONDS_PER_HOUR);
+            if ($hours < 0) continue;
             if ($hours > 11) {
                 $leadsOpenByTime[11]++;
             } else {
